@@ -76,6 +76,14 @@ function openTributeTab(name) {
   }
   document.getElementById(name).style.display = "inline-block";  
 }
+function openStatisticsTab(name) {
+  var i;
+  var x = document.getElementsByClassName("statisticsTab");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  document.getElementById(name).style.display = "inline-block";  
+}
 
 
 
