@@ -46,7 +46,17 @@
       </tr></table>
     </div>
     <div class="tab" id="Statistics" style="display:none">
-      You have played for <span id="timePlayed">0 seconds</span>
+      <div class="statisticsNavigation">
+        <button onClick="openStatisticsTab('Statistics')">Statistics</button>
+        <button onClick="openStatisticsTab('Changelog')">Changelog</button>
+      </div>
+      <div class="statisticsTab" id="Statistics">
+        You have played for <span id="timePlayed">0 seconds</span>
+      </div>
+      <div class="statisticsTab" id="Changelog">
+        <h1>v1 (5 Jan 2022)</h1>
+        Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts
+      </div>
     </div>
     <div class="tab" id="Tributes" style="display:none">
       <div class="tributeNavigation">
