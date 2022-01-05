@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="interface.css" />                                 <!-- Internally embeds CSS -->
+    <meta charset="utf-8"/>
+    <title>
+      Exotic Matter Dimensions
+    </title>
+  </head>
+  <body onload="load()">
+    <table id="toptable">
+      <colgroup>
+        <col style="width: 33%;">
+        <col style="width: 33%;">
+        <col style="width: 33%;">
+      </colgroup>
+      <tr>
+        <td><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
+        <p>You are getting <span class="matterlayertext" id="exoticmatterPerSec">0</span> exotic matter per second</p>
+        <p id="tributeDisplay">You have <span class="tributelayertext" id="currentTributes">0</span> tributes</p></td>
+        <td>Debug value: <span id="debugValue"></span></td>
+        <td><button id="tributeResetButton" onClick="tributeReset()" class="tributeResetButton">Reset to gain <span style="color:#ffcc33; font-size:18px" id="pendingTributes">0</span> tributes</button>
+        </td>
+      </tr>
+    </table>
+    <div class="navigation">
+      <button id="mainbigtab" onClick="openTab('Main')" class="mainbigtab">Main</button>
+      <button id="optionsbigtab" onClick="openTab('Options')" class="bigtab">Options</button>
+      <button id="statisticsbigtab" onClick="openTab('Statistics')" class="bigtab">Statistics</button>
+      <button id="tributesbigtab" onClick="openTab('Tributes')" class="tributesbigtab">Tributes</button>
+    </div>
+    <div class="tab" id="Main">                                                                     <!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
+      <table><tr>                                                                                   <!-- Axis are arranged as a table so that they are aligned -->
+        <td><button class="axisbutton" onClick="buyXAxis()" id="XAxisButton">X Axis (<span id="XAxisAmount">0</span>)<br>Exotic matter gain is <span id="XAxisEffect">2</span>x faster<br>Cost: <span id="XAxisCost">10</span></button></td>
+        <td><button class="axisbutton" onClick="buyYAxis()" id="YAxisButton">Y Axis (<span id="YAxisAmount">0</span>)<br>Increase X axis effect by +<span id="YAxisEffect">0.1</span>x<br>Cost: <span id="YAxisCost">100</span></button></td>
+        <td><button class="axisbutton" onClick="buyZAxis()" id="ZAxisButton">Z Axis (<span id="ZAxisAmount">0</span>)<br>Exotic matter gain is <span id="ZAxisEffect">1</span>x faster (based on exotic matter)<br>Cost: <span id="ZAxisCost">10 K</span></button></td>
+        <td><button class="axisbutton" onClick="buyWAxis()" id="WAxisButton">W Axis (<span id="WAxisAmount">0</span>)<br>Exotic matter gain is <span id="WAxisEffect">1</span>x faster (based on time played)<br>Cost: <span id="WAxisCost">1 M</span></button></td>
+      </tr></table>
+    </div>
+    <div class="tab" id="Options" style="display:none">
+      <table><tr>
+        <td><button class="optionsbutton" onClick="toggleNotation()">Notation: <span id="notationButton"></span></button></td>
+        <td><button class="optionsbutton" onClick="save()">Save</button></td>
+        <td><button class="optionsbutton" onClick="toggleAutosave()">Autosave: <span id="toggleAutosave"></span></button></td>
+        <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>
+      </tr></table>
+    </div>
+    <div class="tab" id="Statistics" style="display:none">
+      You have played for <span id="timePlayed">0 seconds</span>
+    </div>
+    <div class="tab" id="Tributes" style="display:none">
+      <div class="tributeNavigation">
+        <button onClick="openTributeTab('Tribute Boosts')">Tribute Boosts</button>
+        <button onClick="openTributeTab('Enhancers')">Enhancers</button>
+      </div>
+      <div class="tributeTab" id="Tribute Boosts">
+        Thanks to your Tributes,
+        <ul>
+          <li>Exotic matter gain is multiplied by <span id="TributeBoostOne" class="tributelayertext">1</span></li>
+          <li>Y axis is <span id="TributeBoostTwo" class="tributelayertext">0</span>% stronger</li>
+          <li>Multiply exotic matter gain by log(exoticmatter)</li>
+        </ul>
+      </div>
+      <div class="tributeTab" id="Enhancers" style="display:none">
+        Test 2
+      </div>
+    </div>
+    <script type="text/javascript" src="main.js"></script>                                         <!-- Internally embeds JavaScript -->
+  </body>
+</html>

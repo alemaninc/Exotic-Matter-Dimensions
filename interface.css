@@ -1,0 +1,93 @@
+body {
+  color: #3399ff;
+  background-color: #190033;
+  font-size: 15px;
+  font-family:verdana;
+}
+.toptable {
+  border: 1px solid black;
+  border-color: #190033
+  width: 33%
+}
+.axisbutton {
+  background-color: #009999;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  height: 125px;
+}
+.lockedaxisbutton {
+  background-color: #999999;
+  color: #000000;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  height: 125px;
+}
+.optionsbutton {
+  background-color: #cccccc;
+  color: #000000;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 18px;
+  width: 175px;
+  height: 150px;
+}
+.redoptionsbutton {
+  background-color: #000000;
+  color: #ff0000;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 18px;
+  width: 175px;
+  height: 150px;
+}
+.mainbigtab{
+  background-color: #000000;
+  color: #0000ff;
+  font-size: 20px;
+  border: 2px solid white;
+  border-radius: 4px;
+  border-color: #0000ff;
+}
+.bigtab{
+  background-color: #cccccc;
+  color: #000000;
+  font-size: 20px;
+  border: 2px solid white;
+  border-radius: 4px;
+  border-color: #000000;
+}
+.tributesbigtab{
+  background-color: #9900ff;
+  color: #ffffff;
+  font-size: 20px;
+  border: 2px solid white;
+  border-radius: 4px;
+  border-color: #ff9900;
+}
+.tributeResetButton{
+  background-color: #ff9900;
+  color: #000000;
+  font-size: 15px;
+  border-radius: 4px;
+  width: 100px;
+  height: 80px;
+}
+.lockedtributeResetButton{
+  background-color: #cccccc;
+  color: #000000;
+  font-size: 15px;
+  border-radius: 4px;
+  width: 100px;
+  height: 80px;
+}
+.matterlayertext{
+  color: #00ff00;
+  font-size: 18px;
+}
+.tributelayertext{
+  color: #ff9900;
+  font-size: 18px;
+}
