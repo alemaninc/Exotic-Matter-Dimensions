@@ -275,6 +275,8 @@ function ProgressBar() {
     progressbarvalue = 1
     progressbartooltip = "All features unlocked!"
   }
+  document.getElementById("mainprogressbartooltip").innerHTML = progressbartooltip
+  document.getElementById("mainprogressbarvalue").progressbarvalue
 }
 function toggleNotation() {
   if (notation == "Mixed scientific") {
