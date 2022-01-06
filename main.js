@@ -114,6 +114,7 @@ var pendingTributes = 0; // InfOperator
 var notation = "Mixed scientific"
 var autosaveIsOn = "On"
 var progressbarvalue = 0
+var progressbartooltip = ""
 var tributeBoostOne = 0 // InfOperator
 var tributeBoostTwo = 0
 var tributeUpgradesUnlocked = false
@@ -248,6 +249,7 @@ window.setInterval(function(){                                                  
   document.getElementById("WAxisCost").innerHTML = infFormat(WAxisCost,false);
   document.getElementById("WAxisAmount").innerHTML = WAxis;
   document.getElementById("timePlayed").innerHTML = timeFormat(timePlayed);
+  ProgressBar()
   document.getElementById("currentTributes").innerHTML = infFormat(tributes,false);
   if (autosaveIsOn == "On") {
     save()
