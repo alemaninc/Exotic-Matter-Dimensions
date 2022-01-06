@@ -18,7 +18,6 @@
         <td><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
         <p>You are getting <span class="matterlayertext" id="exoticmatterPerSec">0</span> exotic matter per second</p>
         <p id="tributeDisplay">You have <span class="tributelayertext" id="currentTributes">0</span> tributes</p></td>
-        <td>Debug value: <span id="debugValue"></span></td>
         <td><button id="tributeResetButton" onClick="tributeReset()" class="tributeResetButton">Reset to gain <span style="color:#ffcc33; font-size:18px" id="pendingTributes">0</span> tributes</button>
         </td>
       </tr>
@@ -47,32 +46,27 @@
     </div>
     <div class="tab" id="Statistics" style="display:none">
       <div class="statisticsNavigation">
-        <button onClick="openStatisticsTab('Statistics')">Statistics</button>
+        <button onClick="openStatisticsTab('Main Statistics')">Statistics</button>
         <button onClick="openStatisticsTab('Changelog')">Changelog</button>
       </div>
-      <div class="statisticsTab" id="Statistics">
+      <div class="statisticsTab" id="Main Statistics">
         You have played for <span id="timePlayed">0 seconds</span>
       </div>
-      <div class="statisticsTab" id="Changelog">
-        <h1>v1 (5 Jan 2022)</h1>
+      <div class="statisticsTab" id="Changelog" style="display:none">
+        <h1>v0 (5 Jan 2022)</h1>
         Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts
       </div>
     </div>
     <div class="tab" id="Tributes" style="display:none">
       <div class="tributeNavigation">
         <button onClick="openTributeTab('Tribute Boosts')">Tribute Boosts</button>
-        <button onClick="openTributeTab('Enhancers')">Enhancers</button>
       </div>
       <div class="tributeTab" id="Tribute Boosts">
         Thanks to your Tributes,
         <ul>
           <li>Exotic matter gain is multiplied by <span id="TributeBoostOne" class="tributelayertext">1</span></li>
           <li>Y axis is <span id="TributeBoostTwo" class="tributelayertext">0</span>% stronger</li>
-          <li>Multiply exotic matter gain by log(exoticmatter)</li>
         </ul>
-      </div>
-      <div class="tributeTab" id="Enhancers" style="display:none">
-        Test 2
       </div>
     </div>
     <script type="text/javascript" src="main.js"></script>                                         <!-- Internally embeds JavaScript -->
