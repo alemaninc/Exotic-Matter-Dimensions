@@ -89,7 +89,7 @@ function openStatisticsTab(name) {
 
 
 
-var exoticmatter = 8; // InfOperator         // All variables start empty and are updated automatically
+var exoticmatter = 0; // InfOperator         // All variables start empty and are updated automatically
 var exoticmatterPerSec = 0; // InfOperator
 var XAxis = 0;
 var YAxis = 0;
@@ -113,13 +113,13 @@ var tributes = -100; // InfOperator
 var pendingTributes = 0; // InfOperator
 var notation = "Mixed scientific"
 var autosaveIsOn = "On"
+var progressbarvalue = 0
 var tributeBoostOne = 0 // InfOperator
 var tributeBoostTwo = 0
-var tributeBoostThree = 0
+var tributeUpgradesUnlocked = false
 
-document.getElementById("YAxisButton").style.visibility="hidden"
-document.getElementById("ZAxisButton").style.visibility="hidden"
-document.getElementById("WAxisButton").style.visibility="hidden"
+document.getElementById("notationButton").innerHTML = notation
+document.getElementById("toggleAutosave").innerHTML = autosaveIsOn;
 
 function incrementExoticMatter(x) {
   exoticmatter = infAdd(exoticmatter,x)
@@ -248,21 +248,32 @@ window.setInterval(function(){                                                  
   document.getElementById("WAxisCost").innerHTML = infFormat(WAxisCost,false);
   document.getElementById("WAxisAmount").innerHTML = WAxis;
   document.getElementById("timePlayed").innerHTML = timeFormat(timePlayed);
-  document.getElementById("toggleAutosave").innerHTML = autosaveIsOn;
   document.getElementById("currentTributes").innerHTML = infFormat(tributes,false);
   if (autosaveIsOn == "On") {
     save()
   }
   document.getElementById("pendingTributes").innerHTML = infFormat(infSubtract(Math.max(pendingTributes,tributes),tributes),false)
-  tributeBoostOne=tributes*0.5+tributes**1.5/100
+  tributeBoostOne=Math.max(0,tributes)*0.5+Math.max(0,tributes)**1.5/100
   document.getElementById("TributeBoostOne").innerHTML = infFormat(tributeBoostOne,true)
-  tributeBoostTwo=Math.min(tributes,50*(tributes/50)**0.2)*20
+  tributeBoostTwo=Math.min(Math.max(0,tributes),50*Math.max(0,tributes/50)**0.2)*20
   document.getElementById("TributeBoostTwo").innerHTML = normFormat(tributeBoostTwo)
-  tributeBoostThree=Math.log10(Math.max(tributes,0)+10)-1
-  document.getElementById("TributeBoostThree").innerHTML = normFormat(tributeBoostThree)
-  document.getElementById("debugValue").innerHTML = tributeBoostThree
+  if ((tributes < 3) && (tributeUpgradesUnlocked = false)) {
+    tributeUpgradesUnlocked = true
+  }
 }, 50);
 
+function ProgressBar() {
+  if (fastestTributeReset > 1e12) {
+    progressbarvalue = Math.max(exoticatter,0)/25
+    progressbartooltip = "Progress to Tributes: "+progressbarvalue*100+"% (Need "+infFormat(25)+" exotic matter"
+  } else if (tributeUpgradesUnlocked == false) {
+    progressbarvalue = 10**(3-tributes)
+    progressbartooltip = "Progress to Tribute Upgrades: "+progressbarvalue*100+"% (Need "+infFormat(3)+" tributes"
+  } else {
+    progressbarvalue = 1
+    progressbartooltip = "All features unlocked!"
+  }
+}
 function toggleNotation() {
   if (notation == "Mixed scientific") {
     notation = "Scientific"
@@ -288,7 +299,8 @@ function save() {
     fasTestWormholeReset: fastestWormholeReset,
     tributes: tributes,
     notation: notation,
-    autosaveIsOn: autosaveIsOn
+    autosaveIsOn: autosaveIsOn,
+    tributeUpgradesUnlocked: tributeUpgradesUnlocked
   }
   localStorage.setItem("save",JSON.stringify(save)); 
 }
@@ -308,6 +320,7 @@ function load() {
   if (typeof savegame.tributes !== "undefined") tributes = savegame.tributes;
   if (typeof savegame.notation !== "undefined") notation = savegame.notation;
   if (typeof savegame.autosaveIsOn !== "undefined") autosaveIsOn = savegame.autosaveIsOn;
+  if (typeof savegame.tributeUpgradesUnlocked !== "undefined") tributeUpgradesUnlocked = savegame.tributeUpgradesUnlocked
 }
 function wipeSave() {
   exoticmatter = 0; // InfOperator         // All variables start empty and are updated automatically
@@ -340,4 +353,5 @@ function toggleAutosave() {
   } else if (autosaveIsOn =="Off") {
     autosaveIsOn = "On"
   }
+  document.getElementById("toggleAutosave").innerHTML = autosaveIsOn;
 }
