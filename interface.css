@@ -6,8 +6,8 @@ body {
 }
 .toptable {
   border: 1px solid black;
-  border-color: #190033
-  width: 33%
+  border-color: #190033;
+  width: 33%;
 }
 .axisbutton {
   background-color: #009999;
@@ -90,4 +90,77 @@ body {
 .tributelayertext{
   color: #ff9900;
   font-size: 18px;
+}
+.tributeupgradebutton {
+  background-color: #ff9900;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  height: 125px;
+}
+.enhancerbutton {
+  background-color: #cccccc;
+  color: #000000;
+  padding: 0px;
+  font-size: 12px;
+  border-radius: 20px;
+  width: 100px;
+  height: 100px;
+}
+.lockedenhancerbutton {
+  background-color: #999999;
+  color: #000000;
+  padding: 0px;
+  font-size: 12px;
+  border-radius: 20px;
+  width: 100px;
+  height: 100px;
+}
+.ownedenhancerbutton {
+  background-color: #00ff00;
+  color: #000000;
+  padding: 0px;
+  font-size: 12px;
+  border-radius: 20px;
+  width: 100px;
+  height: 100px;
+}
+.enhancerbuybutton {
+  background-color: #cccccc;
+  color: #000000;
+  padding: 0px;
+  border-radius: 20px;
+  width: 200px;
+  height: 50px;
+}
+.automatordiv {
+  background-color: #999999;
+  color: #000000;
+  text-align: center;
+  font-size: 12px;
+  font-family: "Courier New";
+  padding: 10px;
+  border-radius: 40px;
+  width: 200px;
+  height: 150px;
+}
+.automatortoggleon {
+  background-color: #00ff00;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+.automatortoggleoff {
+  background-color: #ff0000;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+.autobuyerupgrade {
+  background-color: #cccccc;
+  color: #000000;
+  font-size: 12px;
+  padding: 2px;
+  border-radius: 10px;
 }
