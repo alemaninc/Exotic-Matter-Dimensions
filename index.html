@@ -18,7 +18,8 @@
         <td><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
         <p>You are getting <span class="matterlayertext" id="exoticmatterPerSec">0</span> exotic matter per second</p>
         <p id="tributeDisplay">You have <span class="tributelayertext" id="currentTributes">0</span> tributes</p></td>
-        <td><button id="tributeResetButton" onClick="tributeReset()" class="tributeResetButton">Reset to gain <span style="color:#ffcc33; font-size:18px" id="pendingTributes">0</span> tributes</button>
+        <td><span id="offlineSpeedupDisplay"></span></td>
+        <td><button id="tributeResetButton" onClick="tributeReset()" class="tributeResetButton">Reset to gain <span style="color:#ffcc33; font-size:18px" id="pendingTributes">0</span> tributes<br><span style="font-size:8px" id="tributeExoticMatterRequirement"></span></button>
         </td>
       </tr>
     </table>
@@ -27,6 +28,7 @@
       <button id="optionsbigtab" onClick="openTab('Options')" class="bigtab">Options</button>
       <button id="statisticsbigtab" onClick="openTab('Statistics')" class="bigtab">Statistics</button>
       <button id="tributesbigtab" onClick="openTab('Tributes')" class="tributesbigtab">Tributes</button>
+      <button id="automationbigtab" onClick="openTab('Automation')" class="bigtab">Automation</button>
     </div>
     <div class="tab" id="Main">                                                                     <!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
       <table><tr>                                                                                   <!-- Axis are arranged as a table so that they are aligned -->
@@ -34,6 +36,11 @@
         <td><button class="axisbutton" onClick="buyYAxis()" id="YAxisButton">Y Axis (<span id="YAxisAmount">0</span>)<br>Increase X axis effect by +<span id="YAxisEffect">0.1</span>x<br>Cost: <span id="YAxisCost">100</span></button></td>
         <td><button class="axisbutton" onClick="buyZAxis()" id="ZAxisButton">Z Axis (<span id="ZAxisAmount">0</span>)<br>Exotic matter gain is <span id="ZAxisEffect">1</span>x faster (based on exotic matter)<br>Cost: <span id="ZAxisCost">10 K</span></button></td>
         <td><button class="axisbutton" onClick="buyWAxis()" id="WAxisButton">W Axis (<span id="WAxisAmount">0</span>)<br>Exotic matter gain is <span id="WAxisEffect">1</span>x faster (based on time played)<br>Cost: <span id="WAxisCost">1 M</span></button></td>
+      </tr><tr>
+        <td><button class="axisbutton" onClick="buyVAxis()" id="VAxisButton">V Axis (<span id="VAxisAmount">0</span>)<br>All axis are <span id="VAxisEffect">1</span>x cheaper<br>Cost: <span id="VAxisCost">100 Qt</span></button></td>
+        <td><button class="axisbutton" onClick="buyUAxis()" id="UAxisButton">U Axis (<span id="UAxisAmount">0</span>)<br>Tribute gain is <span id="UAxisEffect">1.2</span>x stronger<br>Cost: <span id="UAxisCost">1e35</span></button></td>
+        <td><button class="axisbutton" onClick="buyTAxis()" id="TAxisButton">T Axis (<span id="TAxisAmount">0</span>)<br>Exotic matter gain is <span id="TAxisEffect">1</span>x faster (based on total axis)<br>Cost: <span id="TAxisCost">1e50</span></button></td>
+        <td><button class="axisbutton" onClick="buySAxis()" id="SAxisButton">S Axis (<span id="SAxisAmount">0</span>)<br>Exotic matter gain is raised to the power of <span id="SAxisEffect">1</span><br>Cost: <span id="SAxisCost">1e120</span></button></td>
       </tr></table>
     </div>
     <div class="tab" id="Options" style="display:none">
@@ -50,23 +57,82 @@
         <button onClick="openStatisticsTab('Changelog')">Changelog</button>
       </div>
       <div class="statisticsTab" id="Main Statistics">
-        You have played for <span id="timePlayed">0 seconds</span>
+        <p>You have played for <span id="timePlayed">0 seconds</span><br>You have made a total of <span id="totalExoticMatter">0</span> exotic matter<p>
+        <p id="tributeStatistics">You have spent <span id="timeThisTributeReset">0 seconds</span> in this Tribute reset<br>Your fastest Tribute reset is <span id="fastestTributeReset">100 years</span><br>You have made <span id="exoticMatterThisTributeReset">0</span> exotic matter this tribute reset</p>
+        <p id="wormholeStatistics">You have spent <span id="timeThisWormholeReset">0 seconds</span> in this Wormhole reset<br>Your fastest Wormhole reset is <span id="fastestWormholeReset">100 years</span><br>You have made <span id="exoticMatterThisWormholeReset">0</span> exotic matter this wormhole reset</p>
       </div>
       <div class="statisticsTab" id="Changelog" style="display:none">
-        <h1>v0 (5 Jan 2022)</h1>
-        Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts
+        <h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
+        <h1>v0.1 (11/01/2022)</h1>
+        - Added Tribute Upgrades<br>
+        - Added Enhancers<br>
+        - Added V, U, T, S Axis<br>
+        - Added automation<br>
+        - Added more statistics<br>
+        - Added offline progress<br>
+        - Made W Axis effect slightly stronger (added 15 minutes to the timer)<br>
+        Current endgame: 1e23 (100 Sx) tributes
+        <h1>v0 (05/01/2022)</h1>
+        Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts<br><br>
+        Note: Dates use the British/International dating system (DD/MM/YYYY).
       </div>
     </div>
     <div class="tab" id="Tributes" style="display:none">
       <div class="tributeNavigation">
         <button onClick="openTributeTab('Tribute Boosts')">Tribute Boosts</button>
+        <button onClick="openTributeTab('Enhancers')">Enhancers</button>
       </div>
       <div class="tributeTab" id="Tribute Boosts">
         Thanks to your Tributes,
         <ul>
           <li>Exotic matter gain is multiplied by <span id="TributeBoostOne" class="tributelayertext">1</span></li>
           <li>Y axis is <span id="TributeBoostTwo" class="tributelayertext">0</span>% stronger</li>
+          <li id="TributeBoostThreeDisplay">Multiply W Axis effect by <span id="TributeBoostThree" class="tributelayertext">1</span>x</li>
+          <li id="TributeBoostFourDisplay">Multiply tribute gain by <span id="TributeBoostFour" class="tributelayertext">1</span></li>
+          <li id="TributeBoostFiveDisplay">X Axis base price ratio is divided by <span id="TributeBoostFive" class="tributelayertext">1</span></li>
+          <li id="TributeBoostSixDisplay">Exotic matter gain is multiplied by <span id="TributeBoostSix" class="tributelayertext">1</span>x per Y axis</li>
+          <li id="TributeBoostSevenDisplay">Axis cost scaling starts <span id="TributeBoostSeven" class="tributelayertext">0</span> later</li>
+          <li id="TributeBoostEightDisplay">V Axis is <span id="TributeBoostEight" class="tributelayertext">0</span>% stronger</li>
         </ul>
+        <table><tr>
+          <td><button id="TributeUpgradeOneButton" class="tributeupgradebutton" onClick="buyTributeUpgradeOne()">Unlock a new Axis<br>Cost: <span id="TributeUpgradeOneCost">X tributes</span></button></td>
+          <td><button id="TributeUpgradeTwoButton" class="tributeupgradebutton" onClick="buyTributeUpgradeTwo()"><span id="TributeUpgradeTwoTooltip">Unlock ? axis autobuyer</span><br>Cost: <span id="TributeUpgradeTwoCost">X tributes</span></button></td>
+          <td><button id="TributeUpgradeThreeButton" class="tributeupgradebutton" onClick="buyTributeUpgradeThree()">Unlock a new Tribute Boost<br>Cost: <span id="TributeUpgradeThreeCost">X tributes</span></button></td>
+        </tr></table>
+      </div>
+      <div class="tributeTab" id="Enhancers" style="display:none">
+        <table><tr>
+          <td><button id="Enhancer11" class="enhancerbutton" onClick="buyEnhancerUpgrade(11)">Exotic matter gain is <span id="Enhancer11Effect">1</span>x faster (increases with exotic matter)</button></td>
+          <td><button id="Enhancer12" class="enhancerbutton" onClick="buyEnhancerUpgrade(12)">Exotic matter gain is <span id="Enhancer12Effect">1 K</span>x faster (decreases with exotic matter)</button></td>
+          <td><button id="Enhancer13" class="enhancerbutton" onClick="buyEnhancerUpgrade(13)">Exotic matter gain is <span id="Enhancer13Effect">1</span>x faster (increases with time this tribute reset)</button></td>
+          <td><button id="Enhancer14" class="enhancerbutton" onClick="buyEnhancerUpgrade(14)">Exotic matter gain is <span id="Enhancer14Effect">1 K</span>x faster (decreases with time this tribute reset)</button></td>
+        </tr><tr>
+          <td><button id="Enhancer21" class="enhancerbutton" onClick="buyEnhancerUpgrade(21)">Gain 2 free X Axis</button></td>
+          <td><button id="Enhancer22" class="enhancerbutton" onClick="buyEnhancerUpgrade(22)">Gain 2 free Y Axis</button></td>
+          <td><button id="Enhancer23" class="enhancerbutton" onClick="buyEnhancerUpgrade(23)">Gain 2 free Z Axis</button></td>
+          <td><button id="Enhancer24" class="enhancerbutton" onClick="buyEnhancerUpgrade(24)">Gain 2 free W Axis</button></td>
+        </tr><tr>
+          <td><button id="Enhancer31" class="enhancerbutton" onClick="buyEnhancerUpgrade(31)">Cube the effect of enhancer 11 (two above this)</button></td>
+          <td><button id="Enhancer32" class="enhancerbutton" onClick="buyEnhancerUpgrade(32)">Cube the effect of enhancer 12 (two above this)</button></td>
+          <td><button id="Enhancer33" class="enhancerbutton" onClick="buyEnhancerUpgrade(33)">Cube the effect of enhancer 13 (two above this)</button></td>
+          <td><button id="Enhancer34" class="enhancerbutton" onClick="buyEnhancerUpgrade(34)">Cube the effect of enhancer 14 (two above this)</button></td>
+        </tr><tr>
+          <td><button id="Enhancer41" class="enhancerbutton" onClick="buyEnhancerUpgrade(41)">Raise exotic matter gain ^1.1</button></td>
+          <td><button id="Enhancer42" class="enhancerbutton" onClick="buyEnhancerUpgrade(42)">Multiply exotic matter gain by <span id="Enhancer42Effect">10 B</span></button></td>
+          <td><button id="Enhancer43" class="enhancerbutton" onClick="buyEnhancerUpgrade(43)">Raise tribute gain ^1.1</button></td>
+          <td><button id="Enhancer44" class="enhancerbutton" onClick="buyEnhancerUpgrade(44)">Multiply tribute gain by 10</button></td>
+        </tr></table>
+        You have <span id="unspentEnhancers" style="color: #ffffff; font-size: 18px">0</span> enhancers.<br>
+        <table><tr><td><button id="EnhancerBuyButton" class="enhancerbuybutton" onClick="buyEnhancer()">Buy an Enhancer<br>Cost: <span id="enhancerCost">0</span> tributes</button></td>
+        <td><button id="EnhancerRespecButton" class="enhancerbuybutton" onClick="respecEnhancers()">Respec your Enhancers (This forces a Tribute reset)</button></td></tr></table>
+      </div>
+    </div>
+    <div class="tab" id="Automation" style="display:none">
+      <div class="automatordiv" id="axisAutobuyer">
+        <h3>Axis Autobuyer</h3>
+        <button class="automatortoggleon" id="axisAutobuyerToggle" onClick="toggleAxisAutobuyer()"></button><br>
+        Interval: <span id="axisAutobuyerInterval">X seconds</span>
+        <button class="autobuyerupgrade" id="axisAutobuyerUpgrade" onClick="upgradeAxisAutobuyer()">Reduce the interval by 5%<br>Cost: <span id="axisAutobuyerUpgradeCost">1e50</span> exotic matter</button>
       </div>
     </div>
     <script type="text/javascript" src="main.js"></script>                                         <!-- Internally embeds JavaScript -->
