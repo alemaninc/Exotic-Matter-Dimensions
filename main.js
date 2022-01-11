@@ -915,35 +915,35 @@ function save() {
 }
 function load() {
   var savegame = JSON.parse(localStorage.getItem("save"));
-  if (typeof savegame.exoticmatter !== "undefined") exoticmatter = savegame.exoticmatter;
-  if (typeof savegame.exoticmatterPerSec !== "undefined") exoticmatterPerSec = savegame.exoticmatterPerSec;
-  if (typeof savegame.XAxis !== "undefined") XAxis = savegame.XAxis;
-  if (typeof savegame.YAxis !== "undefined") YAxis = savegame.YAxis;
-  if (typeof savegame.ZAxis !== "undefined") ZAxis = savegame.ZAxis;
-  if (typeof savegame.WAxis !== "undefined") WAxis = savegame.WAxis;
-  if (typeof savegame.VAxis !== "undefined") VAxis = savegame.VAxis;
-  if (typeof savegame.UAxis !== "undefined") UAxis = savegame.UAxis;
-  if (typeof savegame.TAxis !== "undefined") TAxis = savegame.TAxis;
-  if (typeof savegame.SAxis !== "undefined") SAxis = savegame.SAxis;
-  if (typeof savegame.timePlayed !== "undefined") timePlayed = savegame.timePlayed;
-  if (typeof savegame.timeThisTributeReset !== "undefined") timeThisTributeReset = savegame.timeThisTributeReset;
-  if (typeof savegame.fastestTributeReset !== "undefined") fastestTributeReset = savegame.fastestTributeReset;
-  if (typeof savegame.timeThisWormholeReset !== "undefined") timeThisWormholeReset = savegame.timeThisWormholeReset;
-  if (typeof savegame.fastestWormholeReset !== "undefined") fastestWormholeReset = savegame.fastestWormholeReset;
-  if (typeof savegame.tributes !== "undefined") tributes = savegame.tributes; 
-  if (typeof savegame.notation !== "undefined") notation = savegame.notation;
-  if (typeof savegame.autosaveIsOn !== "undefined") autosaveIsOn = savegame.autosaveIsOn;
-  if (typeof savegame.timeLeft !== "undefined") baseOfflineSpeedup = 1+(Number(new Date())-savegame.timeLeft)/30000
+  if ((typeof savegame.exoticmatter !== "undefined") && !isNaN(savegame.exoticmatter)) exoticmatter = savegame.exoticmatter;
+  if ((typeof savegame.exoticmatterPerSec !== "undefined") && !isNaN(savegame.exoticmatterPerSec)) exoticmatterPerSec = savegame.exoticmatterPerSec;
+  if ((typeof savegame.XAxis !== "undefined") && !isNaN(savegame.XAxis)) XAxis = savegame.XAxis;
+  if ((typeof savegame.YAxis !== "undefined") && !isNaN(savegame.YAxis)) YAxis = savegame.YAxis;
+  if ((typeof savegame.ZAxis !== "undefined") && !isNaN(savegame.ZAxis)) ZAxis = savegame.ZAxis;
+  if ((typeof savegame.WAxis !== "undefined") && !isNaN(savegame.WAxis)) WAxis = savegame.WAxis;
+  if ((typeof savegame.VAxis !== "undefined") && !isNaN(savegame.VAxis)) VAxis = savegame.VAxis;
+  if ((typeof savegame.UAxis !== "undefined") && !isNaN(savegame.UAxis)) UAxis = savegame.UAxis;
+  if ((typeof savegame.TAxis !== "undefined") && !isNaN(savegame.TAxis)) TAxis = savegame.TAxis;
+  if ((typeof savegame.SAxis !== "undefined") && !isNaN(savegame.SAxis)) SAxis = savegame.SAxis;
+  if ((typeof savegame.timePlayed !== "undefined") && !isNaN(savegame.timePlayed)) timePlayed = savegame.timePlayed;
+  if ((typeof savegame.timeThisTributeReset !== "undefined") && !isNaN(savegame.timeThisTributeReset)) timeThisTributeReset = savegame.timeThisTributeReset;
+  if ((typeof savegame.fastestTributeReset !== "undefined") && !isNaN(savegame.fastestTributeReset)) fastestTributeReset = savegame.fastestTributeReset;
+  if ((typeof savegame.timeThisWormholeReset !== "undefined") && !isNaN(savegame.timeThisWormholeReset)) timeThisWormholeReset = savegame.timeThisWormholeReset;
+  if ((typeof savegame.fastestWormholeReset !== "undefined") && !isNaN(savegame.fastestWormholeReset)) fastestWormholeReset = savegame.fastestWormholeReset;
+  if ((typeof savegame.tributes !== "undefined") && !isNaN(savegame.tributes)) tributes = savegame.tributes; 
+  if ((typeof savegame.notation !== "undefined") && !isNaN(savegame.notation)) notation = savegame.notation;
+  if ((typeof savegame.autosaveIsOn !== "undefined") && !isNaN(savegame.autosaveIsOn)) autosaveIsOn = savegame.autosaveIsOn;
+  if ((typeof savegame.timeLeft !== "undefined") && !isNaN(savegame.timeLeft)) baseOfflineSpeedup = 1+(Number(new Date())-savegame.timeLeft)/30000
   offlineTime = 30
-  if (typeof savegame.tributeUpgradeOneBought !=="undefined") tributeUpgradeOne.purchased = savegame.tributeUpgradeOneBought;
-  if (typeof savegame.tributeUpgradeTwoBought !=="undefined") tributeUpgradeTwo.purchased = savegame.tributeUpgradeTwoBought;
-  if (typeof savegame.tributeUpgradeThreeBought !=="undefined") tributeUpgradeThree.purchased = savegame.tributeUpgradeThreeBought;
-  if (typeof savegame.axisAutobuyerOn !== "undefined") axisAutobuyerOn = savegame.axisAutobuyerOn;
-  if (typeof savegame.axisAutobuyerUpgrades !== "undefined") axisAutobuyerUpgrades = savegame.axisAutobuyerUpgrades;
-  if (typeof savegame.enhancers !=="undefined") enhancers = savegame.enhancers;
-  if (typeof savegame.unspentEnhancers !=="undefined") unspentEnhancers = savegame.unspentEnhancers;
-  if (typeof savegame.enhancerCost !=="undefined") enhancerCost = savegame.enhancerCost;
-  if (typeof savegame.ownedEnhancers !=="undefined") ownedEnhancers = savegame.ownedEnhancers;
+  if ((typeof savegame.tributeUpgradeOneBought !=="undefined") && !isNaN(savegame.tributeUpgradeOneBought)) tributeUpgradeOne.purchased = savegame.tributeUpgradeOneBought;
+  if ((typeof savegame.tributeUpgradeTwoBought !=="undefined") && !isNaN(savegame.tributeUpgradeTwoBought)) tributeUpgradeTwo.purchased = savegame.tributeUpgradeTwoBought;
+  if ((typeof savegame.tributeUpgradeThreeBought !=="undefined") && !isNaN(savegame.tributeUpgradeThreeBought)) tributeUpgradeThree.purchased = savegame.tributeUpgradeThreeBought;
+  if ((typeof savegame.axisAutobuyerOn !== "undefined") && !isNaN(savegame.axisAutobuyerOn)) axisAutobuyerOn = savegame.axisAutobuyerOn;
+  if ((typeof savegame.axisAutobuyerUpgrades !== "undefined") && !isNaN(savegame.axisAutobuyerUpgrades)) axisAutobuyerUpgrades = savegame.axisAutobuyerUpgrades;
+  if ((typeof savegame.enhancers !=="undefined") && !isNaN(savegame.enhancers)) enhancers = savegame.enhancers;
+  if ((typeof savegame.unspentEnhancers !=="undefined") && !isNaN(savegame.unspentEnhancers)) unspentEnhancers = savegame.unspentEnhancers;
+  if ((typeof savegame.enhancerCost !=="undefined") && !isNaN(savegame.enhancerCost)) enhancerCost = savegame.enhancerCost;
+  if ((typeof savegame.ownedEnhancers !=="undefined") && !isNaN(savegame.ownedEnhancers)) ownedEnhancers = savegame.ownedEnhancers;
 }
 function wipeSave() {
   exoticmatter = 0; // InfOperator         // All variables start empty and are updated automatically
