@@ -428,6 +428,13 @@ window.setInterval(function(){                                                  
     offlineSpeedup = 1
     document.getElementById("offlineSpeedupDisplay").innerHTML = ""
   }
+  if (isNaN(exoticmatter)) {
+    exoticmatter=0
+    exoticmatterPerSec=0
+    ZAxisEffect=0
+    Enhancer11Effect=0
+    Enhancer12Effect=0
+  }
   exoticmatterPerSec=(XAxisEffect*(XAxis+freeXAxis)+ZAxisEffect*(ZAxis+freeZAxis)+Math.log10(WAxisEffect)*(WAxis+freeWAxis)+TAxisEffect*(TAxis+freeTAxis)+tributeBoostOne+Enhancer11Effect*ownedEnhancers.OneOne+Enhancer12Effect*ownedEnhancers.OneTwo+Enhancer13Effect*ownedEnhancers.OneThree+Enhancer14Effect*ownedEnhancers.OneFour+10*ownedEnhancers.FourTwo+tributeBoostSix*YAxis)*(SAxisEffect**(SAxis+freeSAxis))*1.1**ownedEnhancers.FourOne+Math.log10(offlineSpeedup)
   incrementExoticMatter(exoticmatterPerSec-1.30103);
   axisCostDivisor = VAxisEffect*(VAxis+freeVAxis)
