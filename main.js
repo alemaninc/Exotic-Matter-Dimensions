@@ -131,6 +131,7 @@ var TAxisEffect = 0; // InfOperator
 var SAxisCost = 0; // InfOperator
 var SAxisEffect = 1;
 var axisScalingStart = 10
+var axisSuperscalingStart = 200
 var totalAxis = 0;
 var axisUnlocked = 0;
 var timePlayed = 0;
@@ -138,6 +139,8 @@ var timeThisTributeReset = 0;
 var fastestTributeReset = 9e15;
 var timeThisWormholeReset = 0;
 var fastestWormholeReset = 9e15;
+var progressbarvalue = 0;
+var progressbartooltip = ""
 var tributes = -100; // InfOperator
 var tributeMultiplier = 0; // InfOperator
 var tributeExponent = 1; // InfOperator
@@ -171,8 +174,8 @@ const tributeUpgradeTwo = {
 }
 const tributeUpgradeThree = {
   purchased: 0,
-  cost: [6.698971,14.20412,1e300,1e300,1e300,1e300,1e300], // 5 M, 160 T, ?, ?, ?, ?
-  costtooltip: [infFormat(6.698971)+" tributes",infFormat(14.20412)+" tributes","Infinite tributes","Infinite tributes","Infinite tributes","Infinite tributes","Maxed!"]
+  cost: [6.698971,14.20412,32,36,60.30103,64.398941,1e300], // 5 M, 160 T, 100 No, 1e36, 2e60, 2.5e64
+  costtooltip: [infFormat(6.698971)+" tributes",infFormat(14.20412)+" tributes",infFormat(32)+" tributes",infFormat(36)+" tributes",infFormat(60.30103)+" tributes",infFormat(64.398941)+" tributes","Maxed!"]
 }
 var axisAutobuyerOn = false
 var axisAutobuyerUpgrades = 0;
@@ -205,6 +208,50 @@ var Enhancer11Effect = 0; // InfOperator
 var Enhancer12Effect = 3; // InfOperator
 var Enhancer13Effect = 0; // InfOperator
 var Enhancer14Effect = 3; // InfOperator
+var DarkMatterUnlocked = false
+var darkmatter = 0; // InfOperator
+var baseDarkMatterGain = 0; // InfOperator
+var darkmatterPerSec = 0; // InfOperator
+var darkXAxis = 0;
+var darkYAxis = 0;
+var darkZAxis = 0;
+var darkWAxis = 0;
+var darkVAxis = 0;
+var darkUAxis = 0;
+var darkTAxis = 0;
+var darkSAxis = 0;
+var darkfreeXAxis = 0;
+var darkfreeYAxis = 0;
+var darkfreeZAxis = 0;
+var darkfreeWAxis = 0;
+var darkfreeVAxis = 0;
+var darkfreeUAxis = 0;
+var darkfreeTAxis = 0;
+var darkfreeSAxis = 0;
+var darkaxisCostDivisor = 0; // InfOperator
+var darkaxisCostExponent = 1;
+var darkXAxisCost = 0; // InfOperator
+var darkXAxisEffect = 0; // InfOperator
+var darkYAxisCost = 0; // InfOperator
+var darkYAxisEffect = 0; // InfOperator
+var darkZAxisCost = 0; // InfOperator
+var darkZAxisEffect = 0; // InfOperator
+var darkWAxisCost = 0; // InfOperator
+var darkWAxisEffect = 0; // InfOperator
+var darkVAxisCost = 0; // InfOperator
+var darkVAxisEffect = 0; 
+var darkUAxisCost = 0; // InfOperator
+var darkUAxisEffect = 0; // InfOperator
+var darkTAxisCost = 0; // InfOperator
+var darkTAxisEffect = 0; // InfOperator
+var darkSAxisCost = 0; // InfOperator
+var darkSAxisEffect = 0; // InfOperator
+var darkaxisScalingStart = 10
+var darkaxisSuperscalingStart = 200
+var totaldarkAxis = 0;
+var darkMatterFreeAxis = 0.25;
+var axioms = 0;
+var axiomRequirement = 0;
 
 document.getElementById("notationButton").innerHTML = notation
 document.getElementById("toggleAutosave").innerHTML = autosaveIsOn;
@@ -269,14 +316,14 @@ function buySAxis() {
   }
 }
 function updateAxisCosts() {
-  XAxisCost = (1+Math.log10(5+0.05*Math.max(0,XAxis-axisScalingStart)**3)*XAxis-tributeBoostFive*XAxis-axisCostDivisor)*axisCostExponent
-  YAxisCost = (2*1.07**Math.max(0,YAxis-axisScalingStart)+0.113623*YAxis+0.062469*YAxis**2-axisCostDivisor)*axisCostExponent
-  ZAxisCost = (4+ZAxis**(1.379654224+0.002*Math.max(0,ZAxis-axisScalingStart)**2)-axisCostDivisor)*axisCostExponent
-  WAxisCost = (5.875+(WAxis+2.5*1.03**Math.max(0,WAxis-axisScalingStart)-2)**2/2-axisCostDivisor)*axisCostExponent
-  VAxisCost = (20+4.5*VAxis+0.5*VAxis**2+0.01*Math.max(0,VAxis-axisScalingStart)**5-axisCostDivisor)*axisCostExponent
-  UAxisCost = ((35+10*UAxis+UAxis**2)*1.002**Math.max(0,UAxis-axisScalingStart)**2-axisCostDivisor)*axisCostExponent
-  TAxisCost = (50+(9+1.1**Math.max(0,TAxis-axisScalingStart))*TAxis-axisCostDivisor)*axisCostExponent
-  SAxisCost = (120*1.5**SAxis*1.05**Math.max(0,SAxis-axisScalingStart)**2-axisCostDivisor)*axisCostExponent
+  XAxisCost = (1+Math.log10(5+0.05*Math.max(0,XAxis-axisScalingStart)**3)**Math.max(1,XAxis/axisSuperscalingStart)*XAxis-tributeBoostFive*XAxis-axisCostDivisor)*axisCostExponent
+  YAxisCost = (2*1.07**Math.max(0,YAxis-axisScalingStart)+0.113623*YAxis+0.062469*YAxis**(2**Math.max(YAxis/axisSuperscalingStart,1))-axisCostDivisor)*axisCostExponent
+  ZAxisCost = (4+ZAxis**(1.379654224+0.002*Math.max(0,ZAxis-axisScalingStart)**2)*1.001**Math.max(ZAxis-axisSuperscalingStart,0)**2-axisCostDivisor)*axisCostExponent
+  WAxisCost = (5.875+(WAxis+2.5*1.03**Math.max(0,WAxis-axisScalingStart)-2)**(2**Math.max(WAxis/axisSuperscalingStart,1))/2-axisCostDivisor)*axisCostExponent
+  VAxisCost = (20+4.5*VAxis+0.5*VAxis**2+0.01*Math.max(0,VAxis-axisScalingStart)**(5*Math.max(VAxis/axisSuperscalingStart,1))-axisCostDivisor)*axisCostExponent
+  UAxisCost = (35+10*UAxis+UAxis**(2*Math.max(UAxis/axisSuperscalingStart,1))*1.002**Math.max(0,UAxis-axisScalingStart)**2-axisCostDivisor)*axisCostExponent
+  TAxisCost = (50+(9+1.1**Math.max(0,TAxis-axisScalingStart))*TAxis**Math.max(TAxis/axisSuperscalingStart,1)-axisCostDivisor)*axisCostExponent
+  SAxisCost = (120*1.5**SAxis*1.05**Math.max(0,SAxis-axisScalingStart)**(2**Math.max(SAxis/axisSuperscalingStart,1))-axisCostDivisor)*axisCostExponent
 }
 function tributeReset() {
   if (pendingTributes>tributes) {
@@ -418,6 +465,78 @@ function respecEnhancers() {
   unspentEnhancers=enhancers
   forceTributeReset()
 }
+function updateDarkAxisCosts() {
+  darkXAxisCost = (1+darkXAxis**Math.max(1,darkXAxis/darkaxisScalingStart)**0.7-darkaxisCostDivisor)*darkaxisCostExponent
+  darkYAxisCost = (2+(darkYAxis+darkYAxis**(1+Math.max(1,darkYAxis/darkaxisScalingStart)))*2-darkaxisCostDivisor)*darkaxisCostExponent
+  darkZAxisCost = (4+2*darkZAxis**2*1.01**Math.max(0,darkZAxis-darkaxisScalingStart)**1.5-darkaxisCostDivisor)*darkaxisCostExponent
+  darkWAxisCost = (8*1.375**darkWAxis**0.813352889*1.01**Math.max(0,darkWAxis-darkaxisScalingStart)**2-darkaxisCostDivisor)*darkaxisCostExponent
+  darkVAxisCost = (16+darkVAxis*5+darkVAxis**2*2+darkVAxis**(2+Math.max(1,darkVAxis/darkaxisScalingStart))-darkaxisCostDivisor)*darkaxisCostExponent
+  darkUAxisCost = (16+16*(0.25+Math.max(1,darkUAxis/darkaxisScalingStart))**darkUAxis-darkaxisCostDivisor)*darkaxisCostExponent
+  darkTAxisCost = (64*1.1**Math.max(0,darkTAxis-darkaxisScalingStart)+20*darkTAxis-darkaxisCostDivisor)*darkaxisCostExponent
+  darkSAxisCost = (127+(darkSAxis+1)**(3+Math.max(0,darkSAxis-darkaxisScalingStart))-darkaxisCostDivisor)*darkaxisCostExponent
+}
+function buyDarkXAxis() {
+  if (darkmatter>darkXAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkXAxisCost)
+    darkXAxis++
+  }
+}
+function buyDarkYAxis() {
+  if (darkmatter>darkYAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkYAxisCost)
+    darkYAxis++
+  }
+}
+function buyDarkZAxis() {
+  if (darkmatter>darkZAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkZAxisCost)
+    darkZAxis++
+  }
+}
+function buyDarkWAxis() {
+  if (darkmatter>darkWAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkWAxisCost)
+    darkWAxis++
+  }
+}
+function buyDarkVAxis() {
+  if (darkmatter>darkVAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkVAxisCost)
+    darkVAxis++
+  }
+}
+function buyDarkUAxis() {
+  if (darkmatter>darkUAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkUAxisCost)
+    darkUAxis++
+  }
+}
+function buyDarkTAxis() {
+  if (darkmatter>darkTAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkTAxisCost)
+    darkTAxis++
+  }
+}
+function buyDarkSAxis() {
+  if (darkmatter>darkSAxisCost) {
+    darkmatter=infSubtract(darkmatter,darkSAxisCost)
+    darkSAxis++
+  }
+}
+function gainAxiom() {
+  if (totaldarkAxis >= axiomRequirement) {
+    darkmatter=0
+    darkXAxis=0
+    darkYAxis=0
+    darkZAxis=0
+    darkWAxis=0
+    darkVAxis=0
+    darkUAxis=0
+    darkTAxis=0
+    darkSAxis=0
+    axioms++
+  }
+}
 
 window.setInterval(function(){                                                                     // The game loop, which consists of functions that run automatically. Frame rate is 20fps
   if ((offlineTime > 0) && (baseOfflineSpeedup > 1.1)) {
@@ -430,31 +549,35 @@ window.setInterval(function(){                                                  
   }
   if (isNaN(exoticmatter)) {
     exoticmatter=0
+    totalexoticmatter=0
+    exoticmatterThisTributeReset=0
+    exoticmatterThisWormholeReset=0
     exoticmatterPerSec=0
     ZAxisEffect=0
     Enhancer11Effect=0
     Enhancer12Effect=0
   }
-  exoticmatterPerSec=(XAxisEffect*(XAxis+freeXAxis)+ZAxisEffect*(ZAxis+freeZAxis)+Math.log10(WAxisEffect)*(WAxis+freeWAxis)+TAxisEffect*(TAxis+freeTAxis)+tributeBoostOne+Enhancer11Effect*ownedEnhancers.OneOne+Enhancer12Effect*ownedEnhancers.OneTwo+Enhancer13Effect*ownedEnhancers.OneThree+Enhancer14Effect*ownedEnhancers.OneFour+10*ownedEnhancers.FourTwo+tributeBoostSix*YAxis)*(SAxisEffect**(SAxis+freeSAxis))*1.1**ownedEnhancers.FourOne+Math.log10(offlineSpeedup)
+  exoticmatterPerSec=(XAxisEffect*(XAxis+freeXAxis)+ZAxisEffect*(ZAxis+freeZAxis)+Math.log10(WAxisEffect)*(WAxis+freeWAxis)+TAxisEffect*(TAxis+freeTAxis)+tributeBoostOne+Enhancer11Effect*ownedEnhancers.OneOne+Enhancer12Effect*ownedEnhancers.OneTwo+Enhancer13Effect*ownedEnhancers.OneThree+Enhancer14Effect*ownedEnhancers.OneFour+10*ownedEnhancers.FourTwo+tributeBoostSix*(YAxis+freeYAxis))*(SAxisEffect**(SAxis+freeSAxis))*1.1**ownedEnhancers.FourOne+Math.log10(offlineSpeedup)
   incrementExoticMatter(exoticmatterPerSec-1.30103);
   axisCostDivisor = VAxisEffect*(VAxis+freeVAxis)
   axisCostExponent = 1
   axisScalingStart = 10+tributeBoostSeven
-  freeXAxis = Math.min(2*XAxis,2*ownedEnhancers.TwoOne)
-  XAxisEffect = Math.log10(2+(YAxis+freeYAxis)*YAxisEffect);
-  freeYAxis = Math.min(2*YAxis,2*ownedEnhancers.TwoTwo)
-  YAxisEffect = 0.125*(1+tributeBoostTwo/100);
-  freeZAxis = Math.min(2*ZAxis,2*ownedEnhancers.TwoThree)
+  axisSuperscalingStart
+  freeXAxis = Math.min(2*XAxis,2*ownedEnhancers.TwoOne+(darkXAxis*darkMatterFreeAxis))
+  XAxisEffect = infAdd(0.3010299957,Math.log10(Math.max(1e-100,YAxis+freeYAxis))+YAxisEffect);
+  freeYAxis = Math.min(2*YAxis,2*ownedEnhancers.TwoTwo+(darkYAxis*darkMatterFreeAxis))
+  YAxisEffect = -0.903089987+Math.log10(1+tributeBoostTwo/100);
+  freeZAxis = Math.min(2*ZAxis,2*ownedEnhancers.TwoThree+(darkZAxis*darkMatterFreeAxis))
   ZAxisEffect = (Math.log10(Math.log10(Math.max(exoticmatter,0)+1)+1)+1)**(Math.log10(Math.log10(Math.max(exoticmatter,0)+1)+1)+1)**2-1
-  freeWAxis = Math.min(2*WAxis,2*ownedEnhancers.TwoFour)
+  freeWAxis = Math.min(2*WAxis,2*ownedEnhancers.TwoFour+(darkWAxis*darkMatterFreeAxis))
   WAxisEffect = Math.log10(timeThisTributeReset/10+100)*tributeBoostThree
-  freeVAxis = Math.min(2*VAxis,0)
-  VAxisEffect = 0.3010299957
-  freeUAxis = Math.min(2*UAxis,0)
-  UAxisEffect = 0.07918124605
-  freeTAxis = Math.min(2*TAxis,0)
+  freeVAxis = Math.min(2*VAxis,(darkVAxis*darkMatterFreeAxis))
+  VAxisEffect = 0.3010299957*(1+tributeBoostEight/100)*(1+(darkVAxis+darkfreeVAxis)*darkVAxisEffect/100)
+  freeUAxis = Math.min(2*UAxis,(darkUAxis*darkMatterFreeAxis))
+  UAxisEffect = 0.07918124605*(1+(darkWAxis+darkfreeWAxis)*darkWAxisEffect/100)
+  freeTAxis = Math.min(2*TAxis,(darkTAxis*darkMatterFreeAxis))
   TAxisEffect = Math.log10(totalAxis+1)**(1+Math.log10(totalAxis+1))/5
-  freeSAxis = Math.min(2*SAxis,0)
+  freeSAxis = Math.min(2*SAxis,(darkSAxis*darkMatterFreeAxis))
   SAxisEffect = 1.025
   updateAxisCosts()
   totalAxis = XAxis+YAxis+ZAxis+WAxis+VAxis+UAxis+TAxis+SAxis
@@ -567,6 +690,7 @@ window.setInterval(function(){                                                  
     document.getElementById("tributeResetButton").style.visibility="visible"
     document.getElementById("tributeResetButton").className = "tributeResetButton"
   }
+  ProgressBar()
   timePlayed+=0.05*offlineSpeedup
   timeThisTributeReset+=0.05*offlineSpeedup
   timeThisWormholeReset+=0.05*offlineSpeedup
@@ -588,7 +712,7 @@ window.setInterval(function(){                                                  
   document.getElementById("XAxisEffect").innerHTML = infFormat(XAxisEffect,true);
   document.getElementById("XAxisCost").innerHTML = infFormat(XAxisCost,false);
   document.getElementById("XAxisAmount").innerHTML = (freeXAxis > 0) ? XAxis+" + "+normFormat(freeXAxis) : XAxis;
-  document.getElementById("YAxisEffect").innerHTML = normFormat(YAxisEffect);
+  document.getElementById("YAxisEffect").innerHTML = infFormat(YAxisEffect,true);
   document.getElementById("YAxisCost").innerHTML = infFormat(YAxisCost,false);
   document.getElementById("YAxisAmount").innerHTML = (freeYAxis > 0) ? YAxis+" + "+normFormat(freeYAxis) : YAxis;
   document.getElementById("ZAxisEffect").innerHTML = infFormat(ZAxisEffect,true);
@@ -622,13 +746,13 @@ window.setInterval(function(){                                                  
   document.getElementById("TributeBoostThree").innerHTML = normFormat(tributeBoostThree)
   tributeBoostFour=(Math.max(tributes-5.7,8)**(2/3)-4)*((tributeUpgradeThree.purchased>1)?1:0)
   document.getElementById("TributeBoostFour").innerHTML = infFormat(tributeBoostFour,true)
-  tributeBoostFive=(Math.max(tributes,10)**0.30103-2)*0.1*((tributeUpgradeThree.purchased>2)?1:0)
+  tributeBoostFive=(Math.max(tributes,10)**0.60206-4)*0.1*((tributeUpgradeThree.purchased>2)?1:0)
   document.getElementById("TributeBoostFive").innerHTML = infFormat(tributeBoostFive,true)
-  tributeBoostSix=Math.max(tributes-13,0)**0.8*0.2*((tributeUpgradeThree.purchased>3)?1:0)
+  tributeBoostSix=Math.max(Math.min(tributes,32*Math.max(tributes,0)**(1/6))-34,0)**0.8*0.2*((tributeUpgradeThree.purchased>3)?1:0)
   document.getElementById("TributeBoostSix").innerHTML = infFormat(tributeBoostSix,true)
-  tributeBoostSeven=Math.log10(Math.max(tributes-15,1)**1.67)*((tributeUpgradeThree.purchased>4)?1:0)
+  tributeBoostSeven=Math.log10(Math.max(tributes-50,1)**2.33)*((tributeUpgradeThree.purchased>4)?1:0)
   document.getElementById("TributeBoostSeven").innerHTML = normFormat(tributeBoostSeven)
-  tributeBoostEight=Math.max(tributes-20,0)**0.85*20*((tributeUpgradeThree.purchased>5)?1:0)
+  tributeBoostEight=Math.max(tributes-61,0)**1.1*130*((tributeUpgradeThree.purchased>5)?1:0)
   document.getElementById("TributeBoostEight").innerHTML = normFormat(tributeBoostEight)
   if (tributeUpgradeThree.purchased>0) {
     document.getElementById("TributeBoostThreeDisplay").style.visibility="visible"
@@ -727,7 +851,7 @@ window.setInterval(function(){                                                  
   } else {
     document.getElementById("TributeUpgradeTwoButton").style="display:inline-block"
   }
-  if (tributeUpgradeThree.purchased == 2) {
+  if (tributeUpgradeThree.purchased == 6) {
     document.getElementById("TributeUpgradeThreeButton").style="display:none"
   } else {
     document.getElementById("TributeUpgradeThreeButton").style="display:inline-block"
@@ -856,19 +980,130 @@ window.setInterval(function(){                                                  
   document.getElementById("Enhancer13Effect").innerHTML = infFormat(Enhancer13Effect,true)
   Enhancer14Effect = 3/(1+timeThisTributeReset/1000)*(3**ownedEnhancers.ThreeFour)
   document.getElementById("Enhancer14Effect").innerHTML = infFormat(Enhancer14Effect,true)
+  if ((tributes > 27) && (DarkMatterUnlocked == false)) {
+    DarkMatterUnlocked=true
+  }
+  if (DarkMatterUnlocked == true) {
+    document.getElementById("DarkMatterButton").style.visibility="visible"
+    darkmatter=infAdd(darkmatter,darkmatterPerSec-1.30103)
+  } else {
+    document.getElementById("DarkMatterButton").style.visibility="hidden"
+  }
+  baseDarkMatterGain=Math.max(tributes-26,1)**0.5-1
+  darkmatterPerSec=(baseDarkMatterGain+darkXAxisEffect*(darkXAxis+darkfreeXAxis)+darkZAxisEffect*(darkZAxis+darkfreeZAxis)+darkUAxisEffect*(darkUAxis+darkfreeUAxis)+darkTAxisEffect*(darkTAxis+darkfreeTAxis)+axioms)*darkSAxisEffect**(darkSAxis+darkfreeSAxis)+Math.log10(offlineSpeedup)
+  darkaxisCostDivisor = darkYAxisEffect*(darkYAxis+darkfreeYAxis)
+  darkaxisCostExponent = 1
+  darkaxisScalingStart = 10
+  darkaxisSuperscalingStart = 200
+  darkfreeXAxis = Math.min(2*darkXAxis,0)
+  darkXAxisEffect = 0.47712125472*(1+Math.floor((7+axioms)/8)*0.1)
+  darkfreeYAxis = Math.min(2*darkYAxis,0)
+  darkYAxisEffect = 0.60206*(1+Math.floor((6+axioms)/8)*0.1)
+  darkfreeZAxis = Math.min(2*darkZAxis,0)
+  darkZAxisEffect = Math.max(exoticmatter/500-1,0)**0.25*(1+Math.floor((5+axioms)/8)*0.1)
+  darkfreeWAxis = Math.min(2*darkWAxis,0)
+  darkWAxisEffect = 10*(1+Math.floor((4+axioms)/8)*0.1)
+  darkfreeVAxis = Math.min(2*darkVAxis,0)
+  darkVAxisEffect = 10*(1+Math.floor((3+axioms)/8)*0.1)
+  darkfreeUAxis = Math.min(2*darkUAxis,0)
+  darkUAxisEffect = 0.008600171762*(1+Math.floor((2+axioms)/8)*0.1)
+  darkfreeTAxis = Math.min(2*darkTAxis,0)
+  darkTAxisEffect = Math.log10(1+timeThisTributeReset/1000)**0.5*(1+Math.floor((1+axioms)/8)*0.1)
+  darkfreeSAxis = Math.min(2*darkSAxis,0)
+  darkSAxisEffect = 1+0.01*(1+Math.floor(axioms/8)*0.1)
+  updateDarkAxisCosts()
+  totaldarkAxis = darkXAxis+darkYAxis+darkZAxis+darkWAxis+darkVAxis+darkUAxis+darkTAxis+darkSAxis
+  document.getElementById("darkMatterDisplay").innerHTML = infFormat(darkmatter,false);
+  document.getElementById("darkMatterPerSec").innerHTML = infFormat(darkmatterPerSec,false)
+  document.getElementById("baseDarkMatterGain").innerHTML = infFormat(baseDarkMatterGain,true)
+  document.getElementById("darkMatterFreeAxis").innerHTML = normFormat(1/darkMatterFreeAxis)
+  document.getElementById("DarkXAxisEffect").innerHTML = infFormat(darkXAxisEffect,true);
+  document.getElementById("DarkXAxisCost").innerHTML = infFormat(darkXAxisCost,false);
+  document.getElementById("DarkXAxisAmount").innerHTML = (darkfreeXAxis > 0) ? darkXAxis+" + "+normFormat(darkfreeXAxis) : darkXAxis;
+  document.getElementById("DarkYAxisEffect").innerHTML = infFormat(darkYAxisEffect,true);
+  document.getElementById("DarkYAxisCost").innerHTML = infFormat(darkYAxisCost,false);
+  document.getElementById("DarkYAxisAmount").innerHTML = (darkfreeYAxis > 0) ? darkYAxis+" + "+normFormat(darkfreeYAxis) : darkYAxis;
+  document.getElementById("DarkZAxisEffect").innerHTML = infFormat(darkZAxisEffect,true);
+  document.getElementById("DarkZAxisCost").innerHTML = infFormat(darkZAxisCost,false);
+  document.getElementById("DarkZAxisAmount").innerHTML = (darkfreeZAxis > 0) ? darkZAxis+" + "+normFormat(darkfreeZAxis) : darkZAxis;
+  document.getElementById("DarkWAxisEffect").innerHTML = normFormat(darkWAxisEffect);
+  document.getElementById("DarkWAxisCost").innerHTML = infFormat(darkWAxisCost,false);
+  document.getElementById("DarkWAxisAmount").innerHTML = (darkfreeWAxis > 0) ? darkWAxis+" + "+normFormat(darkfreeWAxis) : darkWAxis;
+  document.getElementById("DarkVAxisEffect").innerHTML = normFormat(darkVAxisEffect);
+  document.getElementById("DarkVAxisCost").innerHTML = infFormat(darkVAxisCost,false);
+  document.getElementById("DarkVAxisAmount").innerHTML = (darkfreeVAxis > 0) ? darkVAxis+" + "+normFormat(darkfreeVAxis) : darkVAxis;
+  document.getElementById("DarkUAxisEffect").innerHTML = infFormat(darkUAxisEffect,true);
+  document.getElementById("DarkUAxisCost").innerHTML = infFormat(darkUAxisCost,false);
+  document.getElementById("DarkUAxisAmount").innerHTML = (darkfreeUAxis > 0) ? darkUAxis+" + "+normFormat(darkfreeUAxis) : darkUAxis;
+  document.getElementById("DarkTAxisEffect").innerHTML = infFormat(darkTAxisEffect,true);
+  document.getElementById("DarkTAxisCost").innerHTML = infFormat(darkTAxisCost,false);
+  document.getElementById("DarkTAxisAmount").innerHTML = (darkfreeTAxis > 0) ? darkTAxis+" + "+normFormat(darkfreeTAxis) : darkTAxis;
+  document.getElementById("DarkSAxisEffect").innerHTML = Math.floor(darkSAxisEffect*10000)/10000;
+  document.getElementById("DarkSAxisCost").innerHTML = infFormat(darkSAxisCost,false);
+  document.getElementById("DarkSAxisAmount").innerHTML = (darkfreeSAxis > 0) ? darkSAxis+" + "+normFormat(darkfreeSAxis) : darkSAxis;
+  if (darkmatter < darkXAxisCost) {
+    document.getElementById("DarkXAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkXAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkYAxisCost) {
+    document.getElementById("DarkYAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkYAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkZAxisCost) {
+    document.getElementById("DarkZAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkZAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkWAxisCost) {
+    document.getElementById("DarkWAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkWAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkVAxisCost) {
+    document.getElementById("DarkVAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkVAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkUAxisCost) {
+    document.getElementById("DarkUAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkUAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkTAxisCost) {
+    document.getElementById("DarkTAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkTAxisButton").className = "darkaxisbutton";
+  }
+  if (darkmatter < darkSAxisCost) {
+    document.getElementById("DarkSAxisButton").className = "lockedaxisbutton";
+  } else {
+    document.getElementById("DarkSAxisButton").className = "darkaxisbutton";
+  }
+  axiomRequirement=Math.floor(24+2*axioms)
+  if (totaldarkAxis >= axiomRequirement) {
+    document.getElementById("axiomButton").className = "axiombutton"
+  } else {
+    document.getElementById("axiomButton").className = "lockedaxiombutton"
+  }
+  document.getElementById("axiomDisplay").innerHTML = axioms
+  document.getElementById("nextAxiomAxis").innerHTML = "XYZWVUTS".substr(axioms%8,1)
+  document.getElementById("axiomProgress").innerHTML = totaldarkAxis
+  document.getElementById("axiomRequirement").innerHTML = axiomRequirement
 }, 50);
 
 function ProgressBar() {
-  if (fastestTributeReset > 1e12) {
-    progressbarvalue = Math.max(exoticatter,0)/25
-    progressbartooltip = "Progress to Tributes: "+progressbarvalue*100+"% (Need "+infFormat(25)+" exotic matter"
-  } else if (tributeUpgradesUnlocked == false) {
-    progressbarvalue = 10**(3-tributes)
-    progressbartooltip = "Progress to Tribute Upgrades: "+progressbarvalue*100+"% (Need "+infFormat(3)+" tributes"
+  if ((fastestTributeReset > 1e12) && (exoticmatter<25)) {
+    progressbarvalue = Math.max(exoticmatter,0)/25
+    progressbartooltip = "Progress to Tributes: "+progressbarvalue*100+"% (Need "+infFormat(25)+" exotic matter)"
+  } else if (DarkMatterUnlocked == false) {
+    progressbarvalue = Math.max(tributes,0)/27
+    progressbartooltip = "Progress to Dark Matter: "+progressbarvalue*100+"% (Need "+infFormat(27)+" tributes)"
   } else {
-    progressbarvalue = 1
     progressbartooltip = "All features unlocked!"
   }
+  document.getElementById("progress").innerHTML = progressbartooltip
 }
 function toggleNotation() {
   if (notation == "Mixed scientific") {
@@ -883,7 +1118,8 @@ function toggleNotation() {
 function save() {
   var save = {
     exoticmatter: exoticmatter,
-    exoticmatterPerSec: exoticmatterPerSec,
+    exoticmatterThisTributeReset: exoticmatterThisTributeReset,
+    exoticmatterThisWormholeReset: exoticmatterThisWormholeReset,
     XAxis: XAxis,
     YAxis: YAxis,
     ZAxis: ZAxis,
@@ -909,14 +1145,26 @@ function save() {
     enhancers: enhancers,
     unspentEnhancers: unspentEnhancers,
     enhancerCost: enhancerCost,
-    ownedEnhancers: ownedEnhancers
+    ownedEnhancers: ownedEnhancers,
+    darkmatter: darkmatter,
+    darkXAxis: darkXAxis,
+    darkYAxis: darkYAxis,
+    darkZAxis: darkZAxis,
+    darkWAxis: darkWAxis,
+    darkVAxis: darkVAxis,
+    darkUAxis: darkUAxis,
+    darkTAxis: darkTAxis,
+    darkSAxis: darkSAxis,
+    axioms: axioms
   }
   localStorage.setItem("save",JSON.stringify(save)); 
 }
 function load() {
   var savegame = JSON.parse(localStorage.getItem("save"));
   if ((typeof savegame.exoticmatter !== "undefined") && !isNaN(savegame.exoticmatter)) exoticmatter = savegame.exoticmatter;
-  if ((typeof savegame.exoticmatterPerSec !== "undefined") && !isNaN(savegame.exoticmatterPerSec)) exoticmatterPerSec = savegame.exoticmatterPerSec;
+  if ((typeof savegame.totalexoticmatter !== "undefined") && !isNaN(savegame.totalexoticmatter)) totalexoticmatter = savegame.totalexoticmatter;
+  if ((typeof savegame.exoticmatterThisTributeReset !== "undefined") && !isNaN(savegame.exoticmatterThisTributeReset)) exoticmatterThisTributeReset = savegame.exoticmatterThisTributeReset;
+  if ((typeof savegame.exoticmatterThisWormholeReset !== "undefined") && !isNaN(savegame.exoticmatterThisWormholeReset)) exoticmatterThisWormholeReset = savegame.exoticmatterThisWormholeReset;
   if ((typeof savegame.XAxis !== "undefined") && !isNaN(savegame.XAxis)) XAxis = savegame.XAxis;
   if ((typeof savegame.YAxis !== "undefined") && !isNaN(savegame.YAxis)) YAxis = savegame.YAxis;
   if ((typeof savegame.ZAxis !== "undefined") && !isNaN(savegame.ZAxis)) ZAxis = savegame.ZAxis;
@@ -934,7 +1182,7 @@ function load() {
   if ((typeof savegame.notation !== "undefined") && !isNaN(savegame.notation)) notation = savegame.notation;
   if ((typeof savegame.autosaveIsOn !== "undefined") && !isNaN(savegame.autosaveIsOn)) autosaveIsOn = savegame.autosaveIsOn;
   if ((typeof savegame.timeLeft !== "undefined") && !isNaN(savegame.timeLeft)) baseOfflineSpeedup = 1+(Number(new Date())-savegame.timeLeft)/30000
-  offlineTime = 30
+  if ((typeof savegame.timeLeft !== "undefined") && !isNaN(savegame.timeLeft)) offlineTime = 30
   if ((typeof savegame.tributeUpgradeOneBought !=="undefined") && !isNaN(savegame.tributeUpgradeOneBought)) tributeUpgradeOne.purchased = savegame.tributeUpgradeOneBought;
   if ((typeof savegame.tributeUpgradeTwoBought !=="undefined") && !isNaN(savegame.tributeUpgradeTwoBought)) tributeUpgradeTwo.purchased = savegame.tributeUpgradeTwoBought;
   if ((typeof savegame.tributeUpgradeThreeBought !=="undefined") && !isNaN(savegame.tributeUpgradeThreeBought)) tributeUpgradeThree.purchased = savegame.tributeUpgradeThreeBought;
@@ -943,39 +1191,63 @@ function load() {
   if ((typeof savegame.enhancers !=="undefined") && !isNaN(savegame.enhancers)) enhancers = savegame.enhancers;
   if ((typeof savegame.unspentEnhancers !=="undefined") && !isNaN(savegame.unspentEnhancers)) unspentEnhancers = savegame.unspentEnhancers;
   if ((typeof savegame.enhancerCost !=="undefined") && !isNaN(savegame.enhancerCost)) enhancerCost = savegame.enhancerCost;
-  if ((typeof savegame.ownedEnhancers !=="undefined") && !isNaN(savegame.ownedEnhancers)) ownedEnhancers = savegame.ownedEnhancers;
+  if (typeof savegame.ownedEnhancers !=="undefined") ownedEnhancers = savegame.ownedEnhancers;
+  if ((typeof savegame.darkmatter !== "undefined") && !isNaN(savegame.darkmatter)) darkmatter = savegame.darkmatter;
+  if ((typeof savegame.darkXAxis !== "undefined") && !isNaN(savegame.darkXAxis)) darkXAxis = savegame.darkXAxis;
+  if ((typeof savegame.darkYAxis !== "undefined") && !isNaN(savegame.darkYAxis)) darkYAxis = savegame.darkYAxis;
+  if ((typeof savegame.darkZAxis !== "undefined") && !isNaN(savegame.darkZAxis)) darkZAxis = savegame.darkZAxis;
+  if ((typeof savegame.darkWAxis !== "undefined") && !isNaN(savegame.darkWAxis)) darkWAxis = savegame.darkWAxis;
+  if ((typeof savegame.darkVAxis !== "undefined") && !isNaN(savegame.darkVAxis)) darkVAxis = savegame.darkVAxis;
+  if ((typeof savegame.darkUAxis !== "undefined") && !isNaN(savegame.darkUAxis)) darkUAxis = savegame.darkUAxis;
+  if ((typeof savegame.darkTAxis !== "undefined") && !isNaN(savegame.darkTAxis)) darkTAxis = savegame.darkTAxis;
+  if ((typeof savegame.darkSAxis !== "undefined") && !isNaN(savegame.darkSAxis)) darkSAxis = savegame.darkSAxis;
+  if ((typeof savegame.axioms !== "undefined") && !isNaN(savegame.axioms)) axioms = savegame.axioms;
 }
 function wipeSave() {
-  exoticmatter = 0; // InfOperator         // All variables start empty and are updated automatically
-  exoticmatterPerSec = 0; // InfOperator
-  XAxis = 0;
-  YAxis = 0;
-  ZAxis = 0;
-  WAxis = 0;
-  VAxis = 0;
-  UAxis = 0;
-  TAxis = 0;
-  SAxis = 0;
-  XAxisCost = 0; // InfOperator
-  XAxisEffect = 2;
-  YAxisCost = 0; // InfOperator
-  YAxisEffect = 0.125;
-  ZAxisCost = 0; // InfOperator
-  ZAxisEffect = 1;
-  WAxisCost = 0; // InfOperator
-  WAxisEffect = 1;
-  axisUnlocked = 0;
-  timePlayed = 0;
-  timeThisTributeReset = 0;
-  fastestTributeReset = 9e15;
-  timeThisWormholeReset = 0;
-  fastestWormholeReset = 9e15;
-  tributes = -100;
-  notation = "Mixed scientific"
-  autosaveIsOn = "On"
-  tributeUpgradeOne.purchased = 0
-  enhancers = 0
-  unspentEnhancers = 0
+  while (exoticmatter > 1) {                      // This is due to errors with the game ticking during the reset, resulting in some exotic matter being left behind
+    exoticmatter = 0;
+    totalexoticmatter = 0;
+    exoticmatterThisTributeReset = 0;
+    exoticmatterThisWormholeReset = 0;
+    exoticmatterPerSec = 0;
+    XAxis = 0;
+    YAxis = 0;
+    ZAxis = 0;
+    WAxis = 0;
+    VAxis = 0;
+    UAxis = 0;
+    TAxis = 0;
+    SAxis = 0;
+    axisUnlocked = 0;
+    timePlayed = 0;
+    timeThisTributeReset = 0;
+    fastestTributeReset = 9e15;
+    timeThisWormholeReset = 0;
+    fastestWormholeReset = 9e15;
+    tributes = -100;
+    notation = "Mixed scientific"
+    autosaveIsOn = "On"
+    tributeUpgradeOne.purchased = 0
+    tributeUpgradeTwo.purchased = 0
+    axisAutobuyerUpgrades = 0
+    axisAutobuyerOn = false
+    tributeUpgradeThree.purchased = 0
+    respecEnhancers()
+    enhancers = 0
+    unspentEnhancers = 0
+    enhancerCost = 3.30103
+    darkMatterUnlocked = false
+    darkmatter = 0
+    darkXAxis = 0
+    darkYAxis = 0
+    darkZAxis = 0
+    darkWAxis = 0
+    darkVAxis = 0
+    darkUAxis = 0
+    darkTAxis = 0
+    darkSAxis = 0
+    exoticmatter = 0
+  }
 }
 function toggleAutosave() {
   if (autosaveIsOn == "On") {
