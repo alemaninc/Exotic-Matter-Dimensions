@@ -164,3 +164,31 @@ body {
   padding: 2px;
   border-radius: 10px;
 }
+.darkaxisbutton {
+  background-color: #990099;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  height: 125px;
+}
+.darkmattertext {
+  color: #990099;
+  font-size: 18px
+}
+.axiombutton {
+  background-color: #990099;
+  color: #ffffff;
+  padding: 4px;
+  border-radius: 6px;
+  width: 400px;
+  height: 100px
+}
+.lockedaxiombutton {
+  background-color: #999999;
+  color: #000000;
+  padding: 4px;
+  border-radius: 6px;
+  width: 700px;
+  height: 100px
+}
