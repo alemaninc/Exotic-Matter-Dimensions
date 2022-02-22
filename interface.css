@@ -5,9 +5,8 @@ body {
   font-family:verdana;
 }
 .toptable {
-  border: 1px solid black;
-  border-color: #190033;
-  width: 33%;
+  width: 33vw;
+  table-layout: fixed;
 }
 .axisbutton {
   background-color: #009999;
@@ -24,6 +23,20 @@ body {
   border-radius: 10px;
   width: 200px;
   height: 125px;
+}
+.progressbar {
+  height: 10px;
+  width: 96vw
+}
+.td40 {
+  width: 40vw;
+  border: 1px solid #00ff00;
+  border-collapse: collapse
+}
+.td25 {
+  width: 25vw;
+  border: 1px solid #00ff00;
+  border-collapse: collapse
 }
 .optionsbutton {
   background-color: #cccccc;
@@ -43,7 +56,12 @@ body {
   width: 175px;
   height: 150px;
 }
-.mainbigtab{
+.navigationtier3 {
+  background-color: #331933;
+  margin-left:0vw;
+  margin-right:0vw;
+}
+.mainbigtab {
   background-color: #000000;
   color: #0000ff;
   font-size: 20px;
@@ -189,6 +207,18 @@ body {
   color: #000000;
   padding: 4px;
   border-radius: 6px;
-  width: 700px;
+  width: 400px;
   height: 100px
+}
+.globalnavigation {
+  text-align: center;
+  width: 100vw;
+}
+.energytext {
+  color: #00ffff;
+  font-size: 18px
+}
+.energydivision {
+  height: 14vh;
+  width: 45vw
 }
