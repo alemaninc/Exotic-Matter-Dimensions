@@ -7,23 +7,18 @@
       Exotic Matter Dimensions
     </title>
   </head>
-  <body onload="load()">
-    <table id="toptable">
-      <colgroup>
-        <col style="width: 33%;">
-        <col style="width: 33%;">
-        <col style="width: 33%;">
-      </colgroup>
+  <body onload="load('normal')">
+    <table>
       <tr>
-        <td><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
+        <td class="toptable"><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
         <p>You are getting <span class="matterlayertext" id="exoticmatterPerSec">0</span> exotic matter per second</p>
         <p id="tributeDisplay">You have <span class="tributelayertext" id="currentTributes">0</span> tributes</p></td>
-        <td><span id="offlineSpeedupDisplay"></span></td>
-        <td><button id="tributeResetButton" onClick="tributeReset()" class="tributeResetButton">Reset to gain <span style="color:#ffcc33; font-size:18px" id="pendingTributes">0</span> tributes<br><span style="font-size:8px" id="tributeExoticMatterRequirement"></span></button>
+        <td class="toptable"><span id="offlineSpeedupDisplay"></span></td>
+        <td class="toptable"><button id="tributeResetButton" onClick="tributeReset()" class="tributeResetButton">Reset to gain <span style="color:#ffcc33; font-size:18px" id="pendingTributes">0</span> tributes<br><span style="font-size:8px" id="tributeExoticMatterRequirement"></span></button>
         </td>
       </tr>
     </table>
-    <div class="navigation">
+    <div class="navigation globalnavigation" align="center">
       <button id="mainbigtab" onClick="openTab('Main')" class="mainbigtab">Main</button>
       <button id="optionsbigtab" onClick="openTab('Options')" class="bigtab">Options</button>
       <button id="statisticsbigtab" onClick="openTab('Statistics')" class="bigtab">Statistics</button>
@@ -42,33 +37,50 @@
         <td><button class="axisbutton" onClick="buyTAxis()" id="TAxisButton">T Axis (<span id="TAxisAmount">0</span>)<br>Exotic matter gain is <span id="TAxisEffect">1</span>x faster (based on total axis)<br>Cost: <span id="TAxisCost">1e50</span></button></td>
         <td><button class="axisbutton" onClick="buySAxis()" id="SAxisButton">S Axis (<span id="SAxisAmount">0</span>)<br>Exotic matter gain is raised to the power of <span id="SAxisEffect">1</span><br>Cost: <span id="SAxisCost">1e120</span></button></td>
       </tr></table>
+      <progress class="progressbar" id="progressBar" value="0" min="0" max="0"></progress>
       <span id="progress">Loading game...</span>
     </div>
     <div class="tab" id="Options" style="display:none">
-      <table><tr>
-        <td><button class="optionsbutton" onClick="toggleNotation()">Notation: <span id="notationButton"></span></button></td>
-        <td><button class="optionsbutton" onClick="save()">Save</button></td>
-        <td><button class="optionsbutton" onClick="toggleAutosave()">Autosave: <span id="toggleAutosave"></span></button></td>
-        <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>                         <!-- Save is wiped twice due to errors with ticks during the reset -->
-      </tr></table>
-    </div>
-    <div class="tab" id="Statistics" style="display:none">
-      <div class="statisticsNavigation">
-        <button onClick="openStatisticsTab('Main Statistics')">Statistics</button>
-        <button onClick="openStatisticsTab('Changelog')">Changelog</button>
+      <div class="optionsNavigation globalnavigation" align="center">
+        <button onClick="openOptionsTab('tabOptions')">Options</button>
+        <button onClick="openOptionsTab('Changelog')">Changelog</button>
+        <button onClick="openOptionsTab('How to play')">How to play</button>
       </div>
-      <div class="statisticsTab" id="Main Statistics">
-        <p>You have played for <span id="timePlayed">0 seconds</span><br>You have made a total of <span id="totalExoticMatter">0</span> exotic matter<p>
-        <p id="tributeStatistics">You have spent <span id="timeThisTributeReset">0 seconds</span> in this Tribute reset<br>Your fastest Tribute reset is <span id="fastestTributeReset">100 years</span><br>You have made <span id="exoticMatterThisTributeReset">0</span> exotic matter this tribute reset</p>
-        <p id="wormholeStatistics">You have spent <span id="timeThisWormholeReset">0 seconds</span> in this Wormhole reset<br>Your fastest Wormhole reset is <span id="fastestWormholeReset">100 years</span><br>You have made <span id="exoticMatterThisWormholeReset">0</span> exotic matter this wormhole reset</p>
+      <div class="optionsTab" id="tabOptions">
+        <table><tr>
+          <td><button class="optionsbutton" onClick="toggleNotation()">Notation: <span id="notationButton"></span></button></td>
+          <td><button class="optionsbutton" onClick="save()">Save</button></td>
+          <td><button class="optionsbutton" onClick="toggleAutosave()">Autosave: <span id="toggleAutosave"></span></button></td>
+          <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>
+          <td><button class="optionsbutton" onClick="toggleOfflineSpeedupLength()">Offline speedup length: <span id="offlineSpeedupLength"></span></button></td>
+        </tr><tr>
+          <td><button class="optionsbutton" onClick="load('import')">Import save (DOES NOT WORK YET)</button></td>
+          <td><button class="optionsbutton" onClick="exportSave()">Export save</button></td>
+        </tr></table>
       </div>
-      <div class="statisticsTab" id="Changelog" style="display:none">
+      <div class="optionsTab" id="Changelog" style="display:none">
         <h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
+        <h1>v1α "Bugs Out, Bugs In" (<span style="color:#ff0000; text-shadow:0 0 5px #ff0000,0 0 20px #ff0000,0 0 45px #ff0000">22/2/22</span>)</h1>
+        - CONTENT: Added Energy<br>
+        - CONTENT: Rebalanced some values in tributes<br>
+        - CONTENT: Gaining an axiom now does a tribute reset<br>
+        - CONTENT: Named the updates<br>
+        - CONTENT: Added a "How to play" section<br>
+        - CONTENT: Added a "Hidden Statistics" section<br>
+        - CONTENT: Added a "Stat Breakdown" section<br>
+        - BALANCE: Strengthened some Tribute Boosts, but increased some upgrades and unlock requirements<br>
+        - INTERFACE: Tab buttons are now center-aligned rather than left-aligned<br>
+        - INTERFACE: Added 4 new notations<br>
+        - INTERFACE: Moved changelog from Statistics to Options<br>
+        - QOL: Added export save (import does not currently work)<br>
+        - QOL: Wiping your save now requires a confirmation<br>
+        - BUGFIX: Fixed a bug that made exotic matter per second way too high in the first tick, allowing players to skip progression<br>
+        - BUGFIX: Fixed tribute reset button shaking<br>
+        - BUGFIX: Fixed exotic matter not resetting properly on tribute reset
         <h1>v0.2 (29/01/2022)</h1>
         - Added Dark Matter<br>
         - Added Axioms<br>
         - Finished Tribute Upgrades<br>
-        - Added a progress section<br>
         Current endgame: 1e65 tributes
         <h1>v0.1.1 (11/01/2022)</h1>
         - Added a code snippet that automatically fixes the game if for some reason your exotic matter becomes "NaN".
@@ -86,12 +98,113 @@
         Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts<br><br>
         Note: Dates use the British/International dating system (DD/MM/YYYY).
       </div>
+      <div class="optionsTab" id="How to play" style="display:none">
+        <div class="navigationtier3 globalnavigation">
+          <button id="HTPBExoticMatter" onClick="openHTP('HTPDExoticMatter')">Exotic Matter</button>
+          <button id="HTPBTributes" onClick="openHTP('HTPDTributes')">Tributes</button>
+          <button id="HTPBEnhancers" onClick="openHTP('HTPDEnhancers')">Enhancers</button>
+          <button id="HTPBDarkMatter" onClick="openHTP('HTPDDarkMatter')">Dark Matter</button>
+          <button id="HTPBEnergy" onClick="openHTP('HTPDEnergy')">Energy</button>
+        </div>
+        <div class="htpTab" id="HTPDExoticMatter"><h3>Exotic Matter</h3><p>At the start of the game, wait for your exotic matter to go up and then buy axis. There isn't much more to the game at this stage.</p></div>
+        <div class="htpTab" id="HTPDTributes" style="display:none"><h3>Tributes</h3><p>When you reach <span id="HTPTributeReq">undefined</span> exotic matter, you will unlock the option to reset your progress in exchange for Tributes. Tributes give you boosts depending on how many you have, and they can also be spent on upgrades.</p><p>However, tributes are a static prestige layer, meaning that the more you have, the more exotic matter you need to reach to get more.</p></div>
+        <div class="htpTab" id="HTPDEnhancers" style="display:none"><h3>Enhancers</h3><p>Enhancers are a feature where you can buy upgrades with Enhancers, which increase in cost when you buy one.</p><p>Depending on how many Enhancers you have, you can only pick Enhancers from one row, not the whole board.</p></div>
+        <div class="htpTab" id="HTPDDarkMatter" style="display:none"><h3>Dark Matter</h3><p>Dark Matter is a new type of matter. It is generated by dark axis instead of normal axis, and for every 4 dark axis bought you get a normal axis.</p><p>If you get enough dark axis, you can reset your dark matter to gain an Axiom, which boosts dark matter and a specific dark axis.</p></div>
+        <div class="htpTab" id="HTPDEnergy" style="display:none"><h3>Energy</h3><p>In Energy there are six types of energy, each boosting a different resource. Energy increases exponentially until it reaches its respective resource, at what point it begins increasing slower but the resource is boosted.</p></div>
+      </div>
+    </div>
+    <div class="tab" id="Statistics" style="display:none">
+      <div class="statisticsNavigation globalnavigation" align="center">
+        <button onClick="openStatisticsTab('Main Statistics')">Statistics</button>
+        <button onClick="openStatisticsTab('Hidden Statistics')">Hidden Statistics</button>
+        <button onClick="openStatisticsTab('Stat Breakdown')">Stat Breakdown</button>
+      </div>
+      <div class="statisticsTab" id="Main Statistics">
+        <p>You have played for <span id="timePlayed">0 seconds</span><br>You have made a total of <span id="totalExoticMatter">0</span> exotic matter<p>
+        <p id="tributeStatistics">You have spent <span id="timeThisTributeReset">0 seconds</span> in this Tribute reset<br>Your fastest Tribute reset is <span id="fastestTributeReset">100 years</span><br>You have made <span id="exoticMatterThisTributeReset">0</span> exotic matter this tribute reset</p>
+        <p id="wormholeStatistics">You have spent <span id="timeThisWormholeReset">0 seconds</span> in this Wormhole reset<br>Your fastest Wormhole reset is <span id="fastestWormholeReset">100 years</span><br>You have made <span id="exoticMatterThisWormholeReset">0</span> exotic matter this wormhole reset</p>
+      </div>
+      <div class="statisticsTab" id="Hidden Statistics" style="display:none">
+        <table class="hiddenstattable" style="border-spacing: 0">
+          <tr id="hiddenstatrowAxisCostDivisor"><td class="td40">Axis Cost Divisor</td><td class="td40" id="hiddenstatAxisCostDivisor">undefined</td></tr>
+          <tr id="hiddenstatrowAxisCostExponent"><td class="td40">Axis Cost Exponent</td><td class="td40"><span id="hiddenstatAxisCostExponent">undefined</span></td></tr>
+          <tr id="hiddenstatrowAxisScalingStart"><td class="td40">Axis Scaling Start</td><td class="td40" id="hiddenstatAxisScalingStart">undefined</td></tr>
+          <tr id="hiddenstatrowAxisSuperscalingStart"><td class="td40">Axis Superscaling Start</td><td class="td40" id="hiddenstatAxisSuperscalingStart">undefined</td></tr>
+          <tr id="hiddenstatrowTotalAxis"><td class="td40">Total Axis</td><td class="td40" id="hiddenstatTotalAxis">undefined</td></tr>
+          <tr id="hiddenstatrowProgressValue"><td class="td40">Progress Value</td><td class="td40" id="hiddenstatProgressValue">undefined</td></tr>
+          <tr id="hiddenstatrowTributeResets"><td class="td40">Tribute Resets</td><td class="td40" id="hiddenstatTributeResets">undefined</td></tr>
+          <tr id="hiddenstatrowTributeMultiplier"><td class="td40">Tribute Multiplier</td><td class="td40" id="hiddenstatTributeMultiplier">undefined</td></tr>
+          <tr id="hiddenstatrowTributeExponent"><td class="td40">Tribute Exponent</td><td class="td40" id="hiddenstatTributeExponent">undefined</td></tr>
+          <tr id="hiddenstatrowAxisAutobuyerUpgrades"><td class="td40">Axis Autobuyer Upgrades</td><td class="td40" id="hiddenstatAxisAutobuyerUpgrades">undefined</td></tr>
+          <tr id="hiddenstatrowDarkAxisCostDivisor"><td class="td40">Dark Axis Cost Divisor</td><td class="td40" id="hiddenstatDarkAxisCostDivisor">undefined</td></tr>
+          <tr id="hiddenstatrowDarkAxisCostExponent"><td class="td40">Dark Axis Cost Exponent</td><td class="td40"><span id="hiddenstatDarkAxisCostExponent">undefined</span></td></tr>
+          <tr id="hiddenstatrowDarkAxisScalingStart"><td class="td40">Dark Axis Scaling Start</td><td class="td40"><span id="hiddenstatDarkAxisScalingStart">undefined</span></td></tr>
+          <tr id="hiddenstatrowDarkAxisSuperscalingStart"><td class="td40">Dark Axis Superscaling Start</td><td class="td40" id="hiddenstatDarkAxisSuperscalingStart">undefined</td></tr>
+          <tr id="hiddenstatrowTotalDarkAxis"><td class="td40">Total Dark Axis</td><td class="td40" id="hiddenstatTotalDarkAxis">undefined</span></td></tr>
+        </table>
+        <p>More statistics appear the further you progress!</p>
+      </div>
+      <div class="statisticsTab" id="Stat Breakdown" style="display:none">
+        <div class="navigationtier3 globalnavigation" align="center">
+          <button id="SSBBDarkMatter" onClick="openSSB('SSBDDarkMatter')">Dark Matter</button>           <!-- 3 -->
+          <button id="SSBBExoticMatter" onClick="openSSB('SSBDExoticMatter')">Exotic Matter</button>     <!-- 1 -->
+          <button id="SSBBTributes" onClick="openSSB('SSBDTributes')">Tributes</button>                  <!-- 2 -->
+        </div>
+        <div class="ssbTab" id="SSBDExoticMatter">
+          <table style="border-spacing:0">
+            <tr id="StatBreakdown1RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+            <tr id="StatBreakdown1RBaseGain"><td class="td40">Base Gain</td><td class="td25">1</td><td class="td25">1</td></tr>
+            <tr id="StatBreakdown1RXAxis"><td class="td40">X Axis</td><td class="td25" id="StatBreakdown1XAxis">undefined</td><td class="td25" id="StatBreakdown1XAxisT">undefined</td></tr>
+            <tr id="StatBreakdown1RZAxis"><td class="td40">Z Axis</td><td class="td25" id="StatBreakdown1ZAxis">undefined</td><td class="td25" id="StatBreakdown1ZAxisT">undefined</td></tr>
+            <tr id="StatBreakdown1RWAxis"><td class="td40">W Axis</td><td class="td25" id="StatBreakdown1WAxis">undefined</td><td class="td25" id="StatBreakdown1WAxisT">undefined</td></tr>
+            <tr id="StatBreakdown1RTAxis"><td class="td40">T Axis</td><td class="td25" id="StatBreakdown1TAxis">undefined</td><td class="td25" id="StatBreakdown1TAxisT">undefined</td></tr>
+            <tr id="StatBreakdown1RTributeBoost1"><td class="td40">Tribute Boost 1</td><td class="td25" id="StatBreakdown1TributeBoost1">undefined</td><td class="td25" id="StatBreakdown1TributeBoost1T">undefined</td></tr>
+            <tr id="StatBreakdown1RTributeBoost6"><td class="td40">Tribute Boost 6</td><td class="td25" id="StatBreakdown1TributeBoost6">undefined</td><td class="td25" id="StatBreakdown1TributeBoost6T">undefined</td></tr>
+            <tr id="StatBreakdown1REnhancer11"><td class="td40">Enhancer Upgrade 11</td><td class="td25" id="StatBreakdown1Enhancer11">undefined</td><td class="td25" id="StatBreakdown1Enhancer11T">undefined</td></tr>
+            <tr id="StatBreakdown1REnhancer12"><td class="td40">Enhancer Upgrade 12</td><td class="td25" id="StatBreakdown1Enhancer12">undefined</td><td class="td25" id="StatBreakdown1Enhancer12T">undefined</td></tr>
+            <tr id="StatBreakdown1REnhancer13"><td class="td40">Enhancer Upgrade 13</td><td class="td25" id="StatBreakdown1Enhancer13">undefined</td><td class="td25" id="StatBreakdown1Enhancer13T">undefined</td></tr>
+            <tr id="StatBreakdown1REnhancer14"><td class="td40">Enhancer Upgrade 14</td><td class="td25" id="StatBreakdown1Enhancer14">undefined</td><td class="td25" id="StatBreakdown1Enhancer14T">undefined</td></tr>
+            <tr id="StatBreakdown1REnhancer42"><td class="td40">Enhancer Upgrade 42</td><td class="td25" id="StatBreakdown1Enhancer42">undefined</td><td class="td25" id="StatBreakdown1Enhancer42T">undefined</td></tr>
+            <tr id="StatBreakdown1RExpandingEnergy"><td class="td40">Expanding Energy</td><td class="td25" id="StatBreakdown1ExpandingEnergy">undefined</td><td class="td25" id="StatBreakdown1ExpandingEnergyT">undefined</td></tr>
+            <tr id="StatBreakdown1RSAxis"><td class="td40">S Axis</td><td class="td25" id="StatBreakdown1SAxis">undefined</td><td class="td25" id="StatBreakdown1SAxisT">undefined</td></tr>
+            <tr id="StatBreakdown1REnhancer41"><td class="td40">Enhancer Upgrade 41</td><td class="td25" id="StatBreakdown1Enhancer41">undefined</td><td class="td25" id="StatBreakdown1Enhancer41T">undefined</td></tr>
+            <tr id="StatBreakdown1ROfflineSpeedup"><td class="td40">Offline Speedup</td><td class="td25" id="StatBreakdown1OfflineSpeedup">undefined</td><td class="td25" id="StatBreakdown1OfflineSpeedupT">undefined</td></tr>
+          </table>
+        </div>
+        <div class="ssbTab" id="SSBDTributes" style="display:none">
+          <table style="border-spacing:0">
+            <tr id="StatBreakdown2RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+            <tr id="StatBreakdown2RBaseGain"><td class="td40">Base Gain</td><td class="td25" id="StatBreakdown2BaseGain">undefined</td><td class="td25" id="StatBreakdown2BaseGainT">undefined</td></tr>
+            <tr id="StatBreakdown2RUAxis"><td class="td40">U Axis</td><td class="td25" id="StatBreakdown2UAxis">undefined</td><td class="td25" id="StatBreakdown2UAxisT">undefined</td></tr>
+            <tr id="StatBreakdown2RTributeBoost4"><td class="td40">Tribute Boost 4</td><td class="td25" id="StatBreakdown2TributeBoost4">undefined</td><td class="td25" id="StatBreakdown2TributeBoost4T">undefined</td></tr>
+            <tr id="StatBreakdown2REnhancer44"><td class="td40">Enhancer Upgrade 44</td><td class="td25" id="StatBreakdown2Enhancer44">undefined</td><td class="td25" id="StatBreakdown2Enhancer44T">undefined</td></tr>
+            <tr id="StatBreakdown2RDivineEnergy"><td class="td40">Divine Energy</td><td class="td25" id="StatBreakdown2DivineEnergy">undefined</td><td class="td25" id="StatBreakdown2DivineEnergyT">undefined</td></tr>
+            <tr id="StatBreakdown2REnhancer43"><td class="td40">Enhancer Upgrade 43</td><td class="td25" id="StatBreakdown2Enhancer43">undefined</td><td class="td25" id="StatBreakdown2Enhancer43T">undefined</td></tr>
+            <tr id="StatBreakdown2RUnspentTributes"><td class="td40">Unspent Tributes</td><td class="td25" id="StatBreakdown2UnspentTributes">undefined</td><td class="td25" id="StatBreakdown2UnspentTributesT">undefined</td></tr>
+          </table>
+        </div>
+        <div class="ssbTab" id="SSBDDarkMatter" style="display:none">
+          <table style="border-spacing:0">
+            <tr id="StatBreakdown3RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+            <tr id="StatBreakdown3RBaseGain"><td class="td40">Base Gain</td><td class="td25" id="StatBreakdown3BaseGain">undefined</td><td class="td25" id="StatBreakdown3BaseGainT">undefined</td></tr>
+            <tr id="StatBreakdown3RDarkXAxis"><td class="td40">Dark X Axis</td><td class="td25" id="StatBreakdown3DarkXAxis">undefined</td><td class="td25" id="StatBreakdown3DarkXAxisT">undefined</td></tr>
+            <tr id="StatBreakdown3RDarkZAxis"><td class="td40">Dark Z Axis</td><td class="td25" id="StatBreakdown3DarkZAxis">undefined</td><td class="td25" id="StatBreakdown3DarkZAxisT">undefined</td></tr>
+            <tr id="StatBreakdown3RDarkUAxis"><td class="td40">Dark U Axis</td><td class="td25" id="StatBreakdown3DarkUAxis">undefined</td><td class="td25" id="StatBreakdown3DarkUAxisT">undefined</td></tr>
+            <tr id="StatBreakdown3RDarkTAxis"><td class="td40">Dark T Axis</td><td class="td25" id="StatBreakdown3DarkTAxis">undefined</td><td class="td25" id="StatBreakdown3DarkTAxisT">undefined</td></tr>
+            <tr id="StatBreakdown3RAxioms"><td class="td40">Axioms</td><td class="td25" id="StatBreakdown3Axioms">undefined</td><td class="td25" id="StatBreakdown3AxiomsT">undefined</td></tr>
+            <tr id="StatBreakdown3RDarkEnergy"><td class="td40">Dark Energy</td><td class="td25" id="StatBreakdown3DarkEnergy">undefined</td><td class="td25" id="StatBreakdown3DarkEnergyT">undefined</td></tr>
+            <tr id="StatBreakdown3RDarkSAxis"><td class="td40">Dark S Axis</td><td class="td25" id="StatBreakdown3DarkSAxis">undefined</td><td class="td25" id="StatBreakdown3DarkSAxisT">undefined</td></tr>
+            <tr id="StatBreakdown3ROfflineSpeedup"><td class="td40">Offline Speedup</td><td class="td25" id="StatBreakdown3OfflineSpeedup">undefined</td><td class="td25" id="StatBreakdown3OfflineSpeedupT">undefined</td></tr>
+          </table>
+        </div>
+      </div>
     </div>
     <div class="tab" id="Tributes" style="display:none">
-      <div class="tributeNavigation">
+      <div class="tributeNavigation globalnavigation" align="center">
         <button onClick="openTributeTab('Tribute Boosts')">Tribute Boosts</button>
         <button onClick="openTributeTab('Enhancers')">Enhancers</button>
         <button onClick="openTributeTab('Dark Matter')" id="DarkMatterButton">Dark Matter</button>
+        <button onClick="openTributeTab('Energy')" id="EnergyButton">Energy</button>
       </div>
       <div class="tributeTab" id="Tribute Boosts">
         Thanks to your Tributes,
@@ -106,9 +219,9 @@
           <li id="TributeBoostEightDisplay">V Axis is <span id="TributeBoostEight" class="tributelayertext">0</span>% stronger</li>
         </ul>
         <table><tr>
-          <td><button id="TributeUpgradeOneButton" class="tributeupgradebutton" onClick="buyTributeUpgradeOne()">Unlock a new Axis<br>Cost: <span id="TributeUpgradeOneCost">X tributes</span></button></td>
-          <td><button id="TributeUpgradeTwoButton" class="tributeupgradebutton" onClick="buyTributeUpgradeTwo()"><span id="TributeUpgradeTwoTooltip">Unlock ? axis autobuyer</span><br>Cost: <span id="TributeUpgradeTwoCost">X tributes</span></button></td>
-          <td><button id="TributeUpgradeThreeButton" class="tributeupgradebutton" onClick="buyTributeUpgradeThree()">Unlock a new Tribute Boost<br>Cost: <span id="TributeUpgradeThreeCost">X tributes</span></button></td>
+          <td><button id="TributeUpgradeOneButton" class="tributeupgradebutton" onClick="buyTributeUpgradeOne()">Unlock a new Axis<br>Cost: <span id="TributeUpgradeOneCost">undefined</span> tributes</button></td>
+          <td><button id="TributeUpgradeTwoButton" class="tributeupgradebutton" onClick="buyTributeUpgradeTwo()"><span id="TributeUpgradeTwoTooltip">Unlock ? axis autobuyer</span><br>Cost: <span id="TributeUpgradeTwoCost">undefined</span> tributes</button></td>
+          <td><button id="TributeUpgradeThreeButton" class="tributeupgradebutton" onClick="buyTributeUpgradeThree()">Unlock a new Tribute Boost<br>Cost: <span id="TributeUpgradeThreeCost">undefined</span> tributes</button></td>
         </tr></table>
       </div>
       <div class="tributeTab" id="Enhancers" style="display:none">
@@ -154,7 +267,27 @@
           <td><button class="darkaxisbutton" onClick="buyDarkSAxis()" id="DarkSAxisButton">Dark S Axis (<span id="DarkSAxisAmount">0</span>)<br>Dark matter gain is raised to the power of <span id="DarkSAxisEffect">1</span><br>Cost: <span id="DarkSAxisCost">undefined</span></button></td>
         </tr></table>
         You have <span class="darkmattertext" id="axiomDisplay">0</span> axioms<br>
-        <button class="axiombutton" id="axiomButton" onClick="gainAxiom()">Reset dark matter to gain an Axiom<br>This will multiply dark matter gain will be multiplied by 10 and make <span id="nextAxiomAxis">?</span> Axis 10% stronger<br>Progress: <span id="axiomProgress">0</span>/<span id="axiomRequirement">0</span> total dark axis </button>
+        <button class="axiombutton" id="axiomButton" onClick="gainAxiom()">Reset dark matter to gain an Axiom<br>This will multiply dark matter gain by 10 and make dark <span id="nextAxiomAxis">?</span> Axis 10% stronger<br>Progress: <span id="axiomProgress">0</span>/<span id="axiomRequirement">0</span> total dark axis </button>
+      </div>
+      <div class="tributeTab" id="Energy" style="display:none">
+        <table style="width:100vw"><tr>
+          <td><div id="ExpandingEnergy" class="energydivision" style="display:block">
+            You have <span id="expandingEnergyDisplay" class="energytext">0</span> expanding energy<br>
+            It is being multiplied by <span id="expandingEnergyPerSec" class="energytext">0</span> per second (based on itself and exotic matter)<br>
+            If it is greater than your exotic matter, exotic matter gain is multiplied by <span id="expandingEnergyEffect" class="energytext">0</span>
+          </div></td>
+          <td><div id="DivineEnergy" class="energydivision" style="display:block">
+            You have <span id="divineEnergyDisplay" class="energytext">0</span> divine energy<br>
+            It is being multiplied by <span id="divineEnergyPerSec" class="energytext">0</span> per second (based on itself and tributes)<br>
+            If it is greater than your tributes, tribute gain is multiplied by <span id="divineEnergyEffect" class="energytext">0</span>
+          </div></td>
+        </tr><tr>
+          <td><div id="DarkEnergy" class="energydivision" style="display:block">
+            You have <span id="darkEnergyDisplay" class="energytext">0</span> dark energy<br>
+            It is being multiplied by <span id="darkEnergyPerSec" class="energytext">0</span> per second (based on itself and dark matter)<br>
+            If it is greater than your dark matter, dark matter gain is multiplied by <span id="darkEnergyEffect" class="energytext">0</span>
+          </div></td>
+        </tr></table>
       </div>
     </div>
     <div class="tab" id="Automation" style="display:none">
