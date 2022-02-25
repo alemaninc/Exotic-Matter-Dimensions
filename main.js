@@ -1396,6 +1396,7 @@ function toggleNotation() {
     notation = "Mixed scientific"
   } else if (notation == "Mixed scientific") {
     notation = "Scientific"
+  } else if (notation == "Scientific") {
     notation = "Engineering"
   } else {
     notation = "Alemaninc Ordinal"
