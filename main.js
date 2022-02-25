@@ -1454,7 +1454,7 @@ function load(type) {
   if (type=="normal") {
     var savegame = JSON.parse(localStorage.getItem("save"));
   } else if (type=="import") {
-    var savegame = prompt("Copy and paste your save file here:")
+    var savegame = JSON.parse(atob(prompt("Copy and paste your save file here:")))
   }
   if ((typeof savegame.exoticmatter !== "undefined") && !Number.isNaN(savegame.exoticmatter)) exoticmatter = savegame.exoticmatter;
   if ((typeof savegame.exoticmatterPerSec !== "undefined") && !Number.isNaN(savegame.exoticmatterPerSec)) exoticmatterPerSec = savegame.exoticmatterPerSec;
@@ -1508,7 +1508,7 @@ function load(type) {
 }
 function exportSave() {
   save()
-  navigator.clipboard.writeText(localStorage.getItem("save"))
+  navigator.clipboard.writeText(btoa(localStorage.getItem("save")))
   alert("Copied to clipboard")
 }
 function wipeSave() {
