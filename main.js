@@ -42,6 +42,8 @@ function infFormat(x,y) {
     : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))                   // 2.34e56 = e2.34e56
   } else if (notation=="Scientific") {
     return (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
+  } else if (notation=="Engineering") {
+    return (x<1e9) ? (10**(x%3)).toFixed(2)+"e"+(x-(x%3)).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
   } else {
     return "Notation Error!"
   }
@@ -1394,6 +1396,7 @@ function toggleNotation() {
     notation = "Mixed scientific"
   } else if (notation == "Mixed scientific") {
     notation = "Scientific"
+    notation = "Engineering"
   } else {
     notation = "Alemaninc Ordinal"
   }
