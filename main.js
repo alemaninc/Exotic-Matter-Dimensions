@@ -1,4 +1,4 @@
-// infOP III, produced by alemaninc
+// infOP III-1, produced by alemaninc
 function infAdd(x,y) {                 // Adds two infNumbers - for example, infAdd(1,0) returns 1.0414 (log(10+1)) 
   if (Math.abs(x-y)>16) {              // If the quotient of x and y is more than 1e+16, the addition is negligible
     return Math.max(x,y)
@@ -30,6 +30,8 @@ function infFormat(x,y) {
     return output
   } else if (notation=="Double Logarithm") {
     return "ee"+Math.log10(x).toFixed(3)
+  } else if (notation=="Engineering") {
+    return (x<1e9) ? (10**(x%3)).toFixed(2)+"e"+(x-(x%3)).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
   } else if (notation=="Infinity") {
     return (Math.log(x)/Math.log(1.79e308)).toFixed(6)+"∞"
   } else if (notation=="Logarithm") {
@@ -41,9 +43,7 @@ function infFormat(x,y) {
     : (x<1e33) ? "e"+(10**(Math.log10(x)%3)).toFixed(2)+" "+endings[Math.floor(Math.log10(x)/3)-1]  // 1.23e21 = e1.23 Sx
     : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))                   // 2.34e56 = e2.34e56
   } else if (notation=="Scientific") {
-    return (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
-  } else if (notation=="Engineering") {
-    return (x<1e9) ? (10**(x%3)).toFixed(2)+"e"+(x-(x%3)).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
+    return (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x)
   } else {
     return "Notation Error!"
   }
@@ -1039,7 +1039,7 @@ window.setInterval(function(){                                                  
   } else {
     document.getElementById("axisAutobuyerToggle").className = "automatortoggleoff"
   }
-  axisAutobuyerCost = 250000*1.05**Math.max(0,axisAutobuyerUpgrades-89)+10*axisAutobuyerUpgrades+Math.max(0,axisAutobuyerUpgrades-15)**2+Math.max(0,axisAutobuyerUpgrades-45)**3-249950
+  axisAutobuyerCost = Math.floor(50*1.02**axisAutobuyerUpgrades)
   document.getElementById("axisAutobuyerUpgradeCost").innerHTML = infFormat(axisAutobuyerCost,false)
   axisAutobuyerInterval=Math.max(0.001,5*0.95**axisAutobuyerUpgrades/offlineSpeedup)
   if ((tributeUpgradeTwo.purchased > 0) && (axisAutobuyerOn)) {
@@ -1389,6 +1389,8 @@ function toggleNotation() {
   if (notation == "Alemaninc Ordinal") {
     notation = "Double Logarithm"
   } else if (notation == "Double Logarithm") {
+    notation = "Engineering"
+  } else if (notation == "Engineering") {
     notation = "Infinity"
   } else if (notation == "Infinity") {
     notation = "Logarithm"
@@ -1397,9 +1399,9 @@ function toggleNotation() {
   } else if (notation == "Mixed scientific") {
     notation = "Scientific"
   } else if (notation == "Scientific") {
-    notation = "Engineering"
-  } else {
     notation = "Alemaninc Ordinal"
+  } else {
+    notation = "Scientific"
   }
 }
 function save() {
