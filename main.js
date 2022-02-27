@@ -343,6 +343,7 @@ var divineEnergyEffect = 0;    // InfNumber
 var darkEnergy = 0;            // InfNumber
 var darkEnergyPerSec = 0;      // InfNumber
 var darkEnergyEffect = 0;      // InfNumber
+var savecounter = 0; // will prevent save before load
 
 function incrementExoticMatter(x) {
   exoticmatter = infAdd(exoticmatter,x)
@@ -965,7 +966,7 @@ window.setInterval(function(){                                                  
   }
   document.getElementById("tributeExoticMatterRequirement").innerHTML = tributeExoticMatterReqText
   document.getElementById("currentTributes").innerHTML = infFormat(tributes,false);
-  if (autosaveIsOn == "On") {
+  if (autosaveIsOn == "On" && savecounter > 0) {
     save()
   }
   document.getElementById("pendingTributes").innerHTML = infFormat(infSubtract(Math.max(pendingTributes,tributes),tributes),false)
@@ -1457,6 +1458,7 @@ function save() {
   localStorage.setItem("save",JSON.stringify(save)); 
 }
 function load(type) {
+  savecounter++
   if (type=="normal") {
     var savegame = JSON.parse(localStorage.getItem("save"));
   } else if (type=="import") {
