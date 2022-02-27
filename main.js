@@ -1333,6 +1333,7 @@ window.setInterval(function(){                                                  
     divineEnergyPerSec=0
   }
   divineEnergyPerSec=Math.min(tributes*20,(0.0025*tributes/Math.log(Math.max(0,tributes)+1.001))*offlineSpeedup/100**Math.max(0,divineEnergy/tributes-1))
+  if (divineEnergyPerSec<0) divineEnergyPerSec = 0; // prevent -2000 value
   divineEnergyEffect=((divineEnergy>tributes) && (tributes>0)) ? tributes*((divineEnergy/tributes)**0.5-1)*0.25 : 0
   document.getElementById("divineEnergyDisplay").innerHTML = infFormat(divineEnergy,false)
   document.getElementById("divineEnergyPerSec").innerHTML = infFormat(divineEnergyPerSec,true)
