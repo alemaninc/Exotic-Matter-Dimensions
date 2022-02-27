@@ -343,6 +343,7 @@ var divineEnergyEffect = 0;    // InfNumber
 var darkEnergy = 0;            // InfNumber
 var darkEnergyPerSec = 0;      // InfNumber
 var darkEnergyEffect = 0;      // InfNumber
+var savecounter = 0; // will prevent save before load
 
 function incrementExoticMatter(x) {
   exoticmatter = infAdd(exoticmatter,x)
@@ -965,7 +966,7 @@ window.setInterval(function(){                                                  
   }
   document.getElementById("tributeExoticMatterRequirement").innerHTML = tributeExoticMatterReqText
   document.getElementById("currentTributes").innerHTML = infFormat(tributes,false);
-  if (autosaveIsOn == "On") {
+  if (autosaveIsOn == "On" && savecounter > 0) {
     save()
   }
   document.getElementById("pendingTributes").innerHTML = infFormat(infSubtract(Math.max(pendingTributes,tributes),tributes),false)
@@ -1332,6 +1333,7 @@ window.setInterval(function(){                                                  
     divineEnergyPerSec=0
   }
   divineEnergyPerSec=Math.min(tributes*20,(0.0025*tributes/Math.log(Math.max(0,tributes)+1.001))*offlineSpeedup/100**Math.max(0,divineEnergy/tributes-1))
+  if (divineEnergyPerSec<0) divineEnergyPerSec = 0; // prevent -2000 value
   divineEnergyEffect=((divineEnergy>tributes) && (tributes>0)) ? tributes*((divineEnergy/tributes)**0.5-1)*0.25 : 0
   document.getElementById("divineEnergyDisplay").innerHTML = infFormat(divineEnergy,false)
   document.getElementById("divineEnergyPerSec").innerHTML = infFormat(divineEnergyPerSec,true)
@@ -1350,6 +1352,7 @@ window.setInterval(function(){                                                  
     darkEnergyPerSec=0
   }
   darkEnergyPerSec=Math.min(darkmatter*20,(0.004*darkmatter/Math.log(Math.max(0,darkmatter)+1.001))*offlineSpeedup/100**Math.max(0,darkEnergy/darkmatter-1))
+  if (Number.isNaN(darkEnergyperSec)) darkEnergyPerSec=0; // it's getting NaN for whatever reason
   darkEnergyEffect=((darkEnergy>darkmatter) && (darkmatter>0)) ? darkmatter*((darkEnergy/darkmatter)**0.6-1)*0.2 : 0
   document.getElementById("darkEnergyDisplay").innerHTML = infFormat(darkEnergy,false)
   document.getElementById("darkEnergyPerSec").innerHTML = infFormat(darkEnergyPerSec,true)
@@ -1457,6 +1460,7 @@ function save() {
   localStorage.setItem("save",JSON.stringify(save)); 
 }
 function load(type) {
+  savecounter++
   if (type=="normal") {
     var savegame = JSON.parse(localStorage.getItem("save"));
   } else if (type=="import") {
