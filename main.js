@@ -1314,7 +1314,7 @@ window.setInterval(function(){                                                  
     expandingEnergy=0
     expandingEnergyPerSec=0
   }
-  expandingEnergyPerSec=Math.min(exoticmatter*20,(5+0.01*exoticmatter/Math.log(Math.max(0,exoticmatter)+1.001))*offlineSpeedup/10**Math.max(0,expandingEnergy/exoticmatter-1))
+  expandingEnergyPerSec=Math.min(exoticmatter*20,(5+0.01*exoticmatter/Math.log(Math.max(0,exoticmatter)+1.001))*offlineSpeedup/10**Math.max(0,Math.max(1,expandingEnergy)/Math.max(1,exoticmatter)-1))
   expandingEnergyEffect=((expandingEnergy>exoticmatter) && (exoticmatter>0)) ? exoticmatter*((expandingEnergy/exoticmatter)**0.4-1)*0.5 : 0
   document.getElementById("expandingEnergyDisplay").innerHTML = infFormat(expandingEnergy,false)
   document.getElementById("expandingEnergyPerSec").innerHTML = infFormat(expandingEnergyPerSec,true)
@@ -1332,7 +1332,7 @@ window.setInterval(function(){                                                  
     divineEnergy=0
     divineEnergyPerSec=0
   }
-  divineEnergyPerSec=Math.min(tributes*20,(0.0025*tributes/Math.log(Math.max(0,tributes)+1.001))*offlineSpeedup/100**Math.max(0,divineEnergy/tributes-1))
+  divineEnergyPerSec=Math.min(tributes*20,(0.0025*tributes/Math.log(Math.max(0,tributes)+1.001))*offlineSpeedup/100**Math.max(0,Math.max(1,divineEnergy)/Math.max(1,tributes)-1))
   if (divineEnergyPerSec<0) divineEnergyPerSec = 0; // prevent -2000 value
   divineEnergyEffect=((divineEnergy>tributes) && (tributes>0)) ? tributes*((divineEnergy/tributes)**0.5-1)*0.25 : 0
   document.getElementById("divineEnergyDisplay").innerHTML = infFormat(divineEnergy,false)
@@ -1351,7 +1351,7 @@ window.setInterval(function(){                                                  
     darkEnergy=0
     darkEnergyPerSec=0
   }
-  darkEnergyPerSec=Math.min(darkmatter*20,(0.004*darkmatter/Math.log(Math.max(0,darkmatter)+1.001))*offlineSpeedup/100**Math.max(0,darkEnergy/darkmatter-1))
+  darkEnergyPerSec=Math.min(darkmatter*20,(0.004*darkmatter/Math.log(Math.max(0,darkmatter)+1.001))*offlineSpeedup/100**Math.max(0,Math.max(1,darkEnergy)/Math.max(1,darkmatter)-1))
   if (Number.isNaN(darkEnergyPerSec)) darkEnergyPerSec=0; // it's getting NaN for whatever reason
   darkEnergyEffect=((darkEnergy>darkmatter) && (darkmatter>0)) ? darkmatter*((darkEnergy/darkmatter)**0.6-1)*0.2 : 0
   document.getElementById("darkEnergyDisplay").innerHTML = infFormat(darkEnergy,false)
