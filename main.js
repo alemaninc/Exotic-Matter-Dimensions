@@ -1352,6 +1352,7 @@ window.setInterval(function(){                                                  
     darkEnergyPerSec=0
   }
   darkEnergyPerSec=Math.min(darkmatter*20,(0.004*darkmatter/Math.log(Math.max(0,darkmatter)+1.001))*offlineSpeedup/100**Math.max(0,darkEnergy/darkmatter-1))
+  if (darkEnergyPerSec<0) darkEnergyPerSec=0; // also prevent negative numbers
   darkEnergyEffect=((darkEnergy>darkmatter) && (darkmatter>0)) ? darkmatter*((darkEnergy/darkmatter)**0.6-1)*0.2 : 0
   document.getElementById("darkEnergyDisplay").innerHTML = infFormat(darkEnergy,false)
   document.getElementById("darkEnergyPerSec").innerHTML = infFormat(darkEnergyPerSec,true)
