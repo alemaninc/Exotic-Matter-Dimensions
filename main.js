@@ -31,7 +31,15 @@ function infFormat(x,y) {
   } else if (notation=="Double Logarithm") {
     return "ee"+Math.log10(x).toFixed(3)
   } else if (notation=="Engineering") {
-    return (x<1e9) ? (10**(x%3)).toFixed(2)+"e"+(x-(x%3)).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
+    function preE_length(z) { // funxction to calculate length of Characters in front of floating point
+      return (10 ** (z % 3) - ((10 ** (z % 3) % 1)) % 1).toString().length
+    }
+    var t = Math.log10(x) // t only in use for (x>1e9)
+    return (x < 1e9)
+      ? (10 ** (x % 3)).toFixed((preE_length(x) == 3) ? 1 : (preE_length(x) == 2) ? 2 : 3) // dynamic float
+      + "e" + (x - (x % 3)).toLocaleString("en-US")
+      : "e" + (10 ** (t % 3)).toFixed((preE_length(t) == 3) ? 1 : (preE_length(t) == 2) ? 2 : 3) // dynamic float
+      + "e" + (t - (t % 3)).toLocaleString("en-US");
   } else if (notation=="Infinity") {
     return (Math.log(x)/Math.log(1.79e308)).toFixed(6)+"∞"
   } else if (notation=="Logarithm") {
