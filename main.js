@@ -517,20 +517,16 @@ function infDeduct(res,x) {
   g[res]=infSubtract(g[res],x)
 }
 function openStory(x) {
+  let snippets = {
+    'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+infFormat(g.stardust,false)+" atoms of <span class='stardustlayertext'>Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
+    'Dark Matter': "<p>You have just condensed 500 billion Stardust atoms into a <span class='darkmattertext'>particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
+    'Energy': "<p>Well, you have a universe<sup>"+Math.floor(g.totalexoticmatter/80)+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class='energytext'>Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
+    'Supernova': "<p>By harnessing the power of energy, you've managed to accumulate ludicrous amounts of stardust - a universe<sup>"+Math.floor(g.stardust/80)+"</sup> of it to be precise.</p><p>And yet, for some reason, you are desperate for more.</p><p>You have spent many minutes searching for a new, powerful source of energy and matter and you found it. The largest outbursts of matter are created by <span style='text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 15px #fff,0 0 20px #fff,0 0 25px #fff,0 0 30px #fff,0 0 40px #fff,0 0 50px #fff,0 0 60px #fff,0 0 80px #fff,0 0 100px #fff,0 0 120px #fff,0 0 160px #fff,0 0 200px #fff,0 0 240px #fff,0 0 300px #fff,0 0 400px #fff'>supernovas</span> - massive, galaxy-shaking explosions created by a dying star on its last day.</p><p>However, due to the sheer quantities of energy needed to trigger a Supernova, they are inherently unsustainable - you have no hope of benefitting from their power if you squander them willy-nilly.</p>"
+  }
   if (snippets[x]!==undefined) document.getElementById("storyTitle").innerHTML = x
   if (snippets[x]!==undefined) document.getElementById("storyText").innerHTML = snippets[x]
   if ((snippets[x]!==undefined)&&!(g.storySnippets.includes(x))) g.storySnippets.push(x)
   screen = 2
-}
-function updateStorySnippets() {
-  x=""
-  for (i=0;i<g.storySnippets.length;i++) {
-    name=g.storySnippets[i]
-    append="<h1>"+name+"</h1>"+snippets[name]
-    x=x+append
-  }
-  if (g.storySnippets.length==0) x="No snippets unlocked. Come back when you see one!"
-  document.getElementById("storySnippetDisplay").innerHTML = x
 }
 function buyAxis(x) {
   if ((g.exoticmatter>g[x+"AxisCost"])&&(g.axisUnlocked>axisCodes.indexOf(x))) {
@@ -1520,13 +1516,6 @@ window.setInterval(function(){                                                  
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
   document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
-  let snippets = {
-    'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+infFormat(g.stardust,false)+" atoms of <span class='stardustlayertext'>Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
-    'Dark Matter': "<p>You have just condensed 500 billion Stardust atoms into a <span class='darkmattertext'>particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
-    'Energy': "<p>Well, you have a universe<sup>"+Math.floor(g.totalexoticmatter/80)+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class='energytext'>Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
-    'Supernova': "<p>By harnessing the power of energy, you've managed to accumulate ludicrous amounts of stardust - a universe<sup>"+Math.floor(g.stardust/80)+"</sup> of it to be precise.</p><p>And yet, for some reason, you are desperate for more.</p><p>You have spent many minutes searching for a new, powerful source of energy and matter and you found it. The largest outbursts of matter are created by <span style='text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 15px #fff,0 0 20px #fff,0 0 25px #fff,0 0 30px #fff,0 0 40px #fff,0 0 50px #fff,0 0 60px #fff,0 0 80px #fff,0 0 100px #fff,0 0 120px #fff,0 0 160px #fff,0 0 200px #fff,0 0 240px #fff,0 0 300px #fff,0 0 400px #fff'>supernovas</span> - massive, galaxy-shaking explosions created by a dying star on its last day.</p><p>However, due to the sheer quantities of energy needed to trigger a Supernova, they are inherently unsustainable - you have no hope of benefitting from their power if you squander them willy-nilly.</p>"
-  }
-  updateStorySnippets()
 
   document.getElementById("hiddenstatAxisAutobuyerUpgrades").innerHTML = g.axisAutobuyerUpgrades
   toggleTableRow("hiddenstatrowAxisAutobuyerUpgrades",(g.axisAutobuyerUpgrades==0)?"hide":"show")
