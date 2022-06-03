@@ -1,4 +1,4 @@
-// infOP III-1, produced by alemaninc
+// infOP V, produced by alemaninc
 function infAdd(x,y) {                 // Adds two infNumbers - for example, infAdd(1,0) returns 1.0414 (log(10+1)) 
   if (Math.abs(x-y)>16) {              // If the quotient of x and y is more than 1e+16, the addition is negligible
     return Math.max(x,y)
@@ -7,12 +7,12 @@ function infAdd(x,y) {                 // Adds two infNumbers - for example, inf
     return z+Math.log10(10**(x-z)+10**(y-z))
   }
 }
-function infSubtract(x,y) {            // Subtracts two infNumbers - if y is greater than x an error message is output. For example, infSubtract(1,0) returns 0.9542 (log(10-1))
+function infSubtract(x,y) {            // Subtracts two infNumbers - if y is greater than x 0 is output. For example, infSubtract(1,0) returns 0.9542 (log(10-1))
   if (x-y>16) {                        // If y is less than 1/1e+16 of x, the subtraction is negligible
     return x
   } else if (x==y) {                   // If x and y are equal, 1/1e+100 is output instead of -Infinite.
     return -100
-  } else if (y>x) {                    // If a negative value would be output, 0 is output instead as the library can't support negative numbers. However, the game has controls in place to make sure negative values never occur
+  } else if (y>x) {                    // If a negative value would be infoutput, 0 is infoutput instead as the library can't support negative numbers. However, the game has controls in place to make sure negative values never occur
     return -100
   } else {
     return x+Math.log10(1-10**(y-x))
@@ -20,56 +20,65 @@ function infSubtract(x,y) {            // Subtracts two infNumbers - if y is gre
 }
 var notation="Mixed scientific"
 function infFormat(x,y) {
-  if (x<3) {
-    return (10**x).toFixed(y ? Math.max(0,Math.min(5,2-Math.floor(x))) : 0)
-  } else if (notation=="Alemaninc Ordinal") {
-    output="α"+(Math.floor(((x<10) ? 10*x : 100*(1+Math.log(x/10)*0.2)**5)-30).toLocaleString('en-US'))
-    for (i=0; i<output.length; i++) {
-      output = output.replace("0","₀").replace("1","₁").replace("2","₂").replace("3","₃").replace("4","₄").replace("5","₅").replace("6","₆").replace("7","₇").replace("8","₈").replace("9","₉")
-    }
-    return output
+  if (isNaN(x)) return "NaN"
+  if ((x<3)&&(x>-3)) return Math.round((y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)*10**x)/(y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)
+  else if ((x<-99)&&(x>-101)) return 0
+  m=(x>0)?"":"1 / "
+  x=Math.abs(x)
+  if (notation=="Alemaninc Ordinal") {
+    infoutput="α<sub>"+(Math.floor(((x<10) ? 10*x : 100*(1+Math.log(x/10)*0.2)**5)-30).toLocaleString('en-US'))+"</sub>"
+    return m+infoutput
   } else if (notation=="Double Logarithm") {
-    return "ee"+Math.log10(x).toFixed(3)
+    return m+"ee"+Math.log10(x).toFixed(5)
   } else if (notation=="Engineering") {
     function preE_length(z) { // funxction to calculate length of Characters in front of floating point
-      return (10 ** (z % 3) - ((10 ** (z % 3) % 1)) % 1).toString().length
+      z=Math.abs(z)
+      return m+(10 ** (z % 3) - ((10 ** (z % 3) % 1)) % 1).toString().length
     }
-    var t = Math.log10(x) // t only in use for (x>1e9)
-    return (x < 1e9)
+    var t = Math.log10(Math.abs(x)) // t only in use for (x>1e9)
+    return m+((Math.abs(x) < 1e9)
       ? (10 ** (x % 3)).toFixed((preE_length(x) == 3) ? 1 : (preE_length(x) == 2) ? 2 : 3) // dynamic float
       + "e" + (x - (x % 3)).toLocaleString("en-US")
-      : "e" + (10 ** (t % 3)).toFixed((preE_length(t) == 3) ? 1 : (preE_length(t) == 2) ? 2 : 3) // dynamic float
-      + "e" + (t - (t % 3)).toLocaleString("en-US");
+      : "e" + (10 ** (x % 3)).toFixed((preE_length(t) == 3) ? 1 : (preE_length(t) == 2) ? 2 : 3) // dynamic float
+      + "e" + (t - (t % 3)).toLocaleString("en-US"));
   } else if (notation=="Infinity") {
-    return (Math.log(x)/Math.log(1.79e308)).toFixed(6)+"∞"
+    infoutput=Math.log(x)/308.25471555991675
+    return m+(((infoutput>1e6)?((10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US")):infoutput.toFixed(6))+"∞")
   } else if (notation=="Logarithm") {
-    return (x<1e9) ? "e"+(Math.floor((x<100000?100:1)*x)/(x<100000?100:1)).toLocaleString('en-US') : "e"+Math.floor(100*10**(x%1))/100+"e"+Math.floor(Math.log10(x))
+    return m+((x<1e9) ? "e"+(x.toFixed((x>100000)?0:2)).toLocaleString('en-US') : "e"+Math.floor(100*10**(x%1))/100+"e"+Math.floor(Math.log10(x)))
   } else if (notation=="Mixed scientific") {
     const endings=["K","M","B","T","Qa","Qt","Sx","Sp","Oc","No"]
-    return (x<33) ? (10**(x%3)).toFixed(2)+" "+endings[Math.floor(x/3)-1]                       // 3.5 = 3.16 K
-    : (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US")                // 38462.25 = 1.77e38,462
-    : (x<1e33) ? "e"+(10**(Math.log10(x)%3)).toFixed(2)+" "+endings[Math.floor(Math.log10(x)/3)-1]  // 1.23e21 = e1.23 Sx
-    : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))                   // 2.34e56 = e2.34e56
+    return m+((x<0?"1 / ":"")+((x<33) ? (10**(x%3)).toFixed(2)+" "+endings[Math.floor(x/3)-1]                    // 3.5 = 3.16 K
+    : (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US")                                 // 38462.25 = 1.77e38,462
+    : (x<1e33) ? "e"+(10**(Math.log10(x)%3)).toFixed(2)+" "+endings[Math.floor(Math.log10(x)/3)-1]               // 1.23e21 = e1.23 Sx
+    : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))))                           // 2.34e56 = e2.34e56
   } else if (notation=="Scientific") {
-    return (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))
+    return m+((x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x)))
+  } else if (notation=="Tetration") {
+    infoutput = 0
+    while ((x>0.4342944819)&&(infoutput<5)) {
+      x=(Math.log(x*Math.log(10))/Math.log(10))
+      infoutput++
+    }
+    return m+"e ⇈ "+(infoutput+(x*Math.log(10))).toFixed(6)
   } else {
     return "Notation Error!"
   }
 }
 function normFormat(x) {               // Formats a regular number the same way infNumbers would be formatted
-  if (x>=10000) {
-    return infFormat(Math.log10(x))
-  } else if (x>=100) {
-    return Math.floor(x)
-  } else {
-    return Math.floor(x*100)/100
+  if (x==0) return 0
+  else if ((x>=10000)||(x<=0.0001)) return infFormat(Math.log10(x))
+  else if (Math.abs(x)>=100) return Math.round(x)
+  else {
+    precision=2+Math.max(0,-Math.floor(Math.log10(x)))
+    return Math.round(x*10**precision)/10**precision
   }
 }
 function twoDigits(x) {                // Formats a one-digit number as two digits. For example, twoDigits(7) returns 07. Used in timeFormat
   return (x<10) ? "0"+Math.floor(x) : Math.floor(x)
 }
 function timeFormat(x) {               // Formats an amount of seconds as a time. For example, timeFormat(73) returns 1:13 and timeFormat(90123) returns 1 day 1:02:03
-  return (x<1) ? Math.floor(x*1000)+" milliseconds" : (x<10) ? Math.floor(x*1000)/1000+" seconds" : (x<60) ? Math.floor(x)+" seconds" : (x<3600) ? Math.floor(x/60)+":"+twoDigits(Math.floor(x%60)) : (x<86400) ? Math.floor(x/3600)+":"+twoDigits(Math.floor(x/60)%60)+":"+twoDigits(Math.floor(x%60)) : Math.floor(x/86400)+" days "+Math.floor(x/3600)%24+":"+twoDigits(Math.floor(x/60)%60)+":"+twoDigits(Math.floor(x%60))
+  return (x<1) ? Math.floor(x*1000)+" milliseconds" : (x<10) ? Math.floor(x*1000)/1000+" seconds" : (x<60) ? Math.floor(x)+" seconds" : (x<3600) ? Math.floor(x/60)+":"+twoDigits(Math.floor(x%60)) : (x<86400) ? Math.floor(x/3600)+":"+twoDigits(Math.floor(x/60)%60)+":"+twoDigits(Math.floor(x%60)) : (x<1e15) ? Math.floor(x/86400)+" days "+Math.floor(x/3600)%24+":"+twoDigits(Math.floor(x/60)%60)+":"+twoDigits(Math.floor(x%60)) : normFormat(x/31556926)+" years"
 }
 
 // The following code is for Advanced infOP only.
@@ -87,8 +96,9 @@ function SuperlogSoftcap(value,start,power) {
     return value
   }
   c=(value/start)**power
+  if (c=="Infinity") c=1.79e308
   multiplier=(c<Math.exp(1)) ? 1+Math.log(c) : (c<Math.exp(Math.exp(1))) ? 2+Math.log(Math.log(c)) : (c<Math.exp(Math.exp(Math.exp(1)))) ? 3+Math.log(Math.log(Math.log(c))) : 4+Math.log(Math.log(Math.log(Math.log(c))))
-  return (multiplier=="Infinity" ? start : start*multiplier**(1/power))
+  return start*multiplier**(1/power)
 }
 function ConvergentSoftcap(value,start,end) {
   return (Math.sign(value-start)==Math.sign(start-end)) ? value : end-(end-start)/(1+(value-start)/(end-start))
@@ -105,10 +115,11 @@ function normSemiexpScaling(value,start,power) {
 function infSemiexpScaling(value,start,power) {
   return (value<start) ? value : infAdd(start*(value/start)**(power+1)-Math.log10(power+1),start*(1-1/(power+1)))
 }
-function ExponentialScaling(value,start) {
-  return (value<start) ? value : start*Math.exp(value/start-1)
+function ExponentialScaling(value,start,power) {
+  return (value<start) ? value : start*Math.exp(((value/start)**power-1)/power)
 }
 function SuperexpScaling(value,start,power) {
+    if (value<start) return value
     c=(value/start)**power
     multiplier=(c<2) ? Math.exp(c-1) : (c<3) ? Math.exp(Math.exp(c-2)) : (c<4) ? Math.exp(Math.exp(Math.exp(c-3))) : Math.exp(Math.exp(Math.exp(Math.exp(c-4))))
     return (multiplier=="Infinity" ? 1.79e308 : start*multiplier**(1/power))
@@ -118,6 +129,28 @@ function divergentScaling(value,start,end) {
 }
 function infFloor(x) {
   return (x<0)?-100:(x>16)?x:Math.log10(Math.floor(10**x))
+}
+function safeExponent(x,y) {
+  return Math.sign(x)*Math.abs(x)**y
+}
+function choosei(n,k){
+    var result = 1;
+    for(var i=1; i <= k; i++){
+        result *= (n+1-i)/i;
+    }
+    return result;
+}
+function normSimplex(x,y) {
+  return choosei(x+y-1,y)
+}
+function infSimplex(x,y) {
+  if (x<16) {
+    return Math.log10(normSimplex(10**x,y))
+  } else {
+    infOutput=x*y
+    for (i=2;i<=y;i++) infOutput-=Math.log10(i)
+    return infOutput
+  }
 }
 // End of infOP
 
@@ -129,9 +162,9 @@ function openTab(name) {
   }
   document.getElementById(name).style.display = "inline-block";  
 }
-function openTributeTab(name) {
+function openStardustTab(name) {
   var i;
-  var x = document.getElementsByClassName("tributeTab");
+  var x = document.getElementsByClassName("stardustTab");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
@@ -148,6 +181,14 @@ function openStatisticsTab(name) {
 function openOptionsTab(name) {
   var i;
   var x = document.getElementsByClassName("optionsTab");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  document.getElementById(name).style.display = "inline-block";  
+}
+function openMainTab(name) {
+  var i;
+  var x = document.getElementsByClassName("mainTab");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
@@ -176,621 +217,1120 @@ function toggleTableRow(row,type) {
     document.getElementById(row).setAttribute("hidden","hidden")
   }
 }
+function toggleGlow(tab,type) {
+  if (type) {
+    document.getElementById(tab).classList.add("glownotify")
+  } else {
+    document.getElementById(tab).classList.remove("glownotify")
+  }
+}
+function fix(x) {
+  return isNaN(x)?0:x
+}
 
 
 
 
 
-var exoticmatter = 0; // InfNumber         // All variables start empty and are updated automatically
-var exoticmatterThisTributeReset = 0; // InfNumber
-var exoticmatterThisWormholeReset = 0; // InfNumber
-var totalexoticmatter = 0; // InfNumber
-var exoticmatterPerSec = 0; // InfNumber
-var XAxis = 0;
-var YAxis = 0;
-var ZAxis = 0;
-var WAxis = 0;
-var VAxis = 0;
-var UAxis = 0;
-var TAxis = 0;
-var SAxis = 0;
-var freeXAxis = 0;
-var freeYAxis = 0;
-var freeZAxis = 0;
-var freeWAxis = 0;
-var freeVAxis = 0;
-var freeUAxis = 0;
-var freeTAxis = 0;
-var freeSAxis = 0;
-var axisCostDivisor = 0; // InfNumber
-var axisCostExponent = 1;
-var XAxisCost = 0; // InfNumber
-var XAxisEffect = 0;
-var YAxisCost = 0; // InfNumber
-var YAxisEffect = -3; // InfNumber
-var ZAxisCost = 0; // InfNumber
-var ZAxisEffect = 0; // InfNumber
-var WAxisCost = 0; // InfNumber
-var WAxisEffect = 0; // InfNumber
-var VAxisCost = 0; // InfNumber
-var VAxisEffect = 0; // InfNumber
-var UAxisCost = 0; // InfNumber
-var UAxisEffect = 0; // InfNumber
-var TAxisCost = 0; // InfNumber
-var TAxisEffect = 0; // InfNumber
-var SAxisCost = 0; // InfNumber
-var SAxisEffect = 0;
-var axisScalingStart = 10
-var axisSuperscalingStart = 200
-var totalAxis = 0;
-var axisUnlocked = 0;
-var timePlayed = 0;
-var HTPshown = 1;
-var timeThisTributeReset = 0;
-var fastestTributeReset = 9e15;
-var timeThisWormholeReset = 0;
-var fastestWormholeReset = 9e15;
-var progressbarvalue = 0;
+var g = {
+  exoticmatter: 0, // InfNumber
+  exoticmatterThisStardustReset: 0, // InfNumber
+  exoticmatterThisWormholeReset: 0, // InfNumber
+  totalexoticmatter: 0, // InfNumber
+  exoticmatterPerSec: 0, // InfNumber
+  XAxis: 0,
+  YAxis: 0,
+  ZAxis: 0,
+  WAxis: 0,
+  VAxis: 0,
+  UAxis: 0,
+  TAxis: 0,
+  SAxis: 0,
+  freeXAxis: 0,
+  freeYAxis: 0,
+  freeZAxis: 0,
+  freeWAxis: 0,
+  freeVAxis: 0,
+  freeUAxis: 0,
+  freeTAxis: 0,
+  freeSAxis: 0,
+  realXAxis: 0,
+  realYAxis: 0,
+  realZAxis: 0,
+  realWAxis: 0,
+  realVAxis: 0,
+  realUAxis: 0,
+  realTAxis: 0,
+  realSAxis: 0,
+  axisCostDivisor: 0, // InfNumber
+  axisCostExponent: 1,
+  XAxisCost: 0, // InfNumber
+  XAxisEffect: 0,
+  YAxisCost: 0, // InfNumber
+  YAxisEffect: -3, // InfNumber
+  ZAxisCost: 0, // InfNumber
+  ZAxisEffect: 0, // InfNumber
+  WAxisCost: 0, // InfNumber
+  WAxisEffect: 0, // InfNumber
+  VAxisCost: 0, // InfNumber
+  VAxisEffect: 0, // InfNumber
+  UAxisCost: 0, // InfNumber
+  UAxisEffect: 0, // InfNumber
+  TAxisCost: 0, // InfNumber
+  TAxisEffect: 0, // InfNumber
+  SAxisCost: 0, // InfNumber
+  SAxisEffect: 0,
+  axisScalingStart: 8,
+  axisSuperscalingStart: 128,
+  totalAxis: 0,
+  axisUnlocked: 0,
+  masteryPower: -100,
+  masteryPowerPerSec: -100,
+  baseMasteryPowerGain: 0, // InfNumber
+  baseMasteryPowerExponent: 0,
+  masteryRowsUnlocked: [0,0,0,0,0,0,0,0,0,0],
+  activeMasteries: [0,0,0,0,0,0,0,0,0,0],
+  Mastery11Effect: 0, // InfNumber
+  Mastery12Effect: 0, // InfNumber
+  Mastery21Effect: 0, // InfNumber
+  Mastery22Effect: 0, // InfNumber
+  Mastery31Effect: 0,
+  Mastery32Effect: 0,
+  Mastery41Effect: 0,
+  Mastery42Effect: 0, // InfNumber
+  Mastery43Effect: 0,
+  Mastery51Effect: 0,
+  Mastery52Effect: 0,
+  Mastery61Effect: 0,
+  Mastery62Effect: 0,
+  Mastery63Effect: 0,
+  Mastery71Effect: 0,
+  Mastery72Effect: 0,
+  Mastery81Effect: 0, // InfNumber
+  Mastery82Effect: 0, // InfNumber
+  Mastery83Effect: 0, // InfNumber
+  Mastery84Effect: 0, // InfNumber
+  Mastery85Effect: 0, // InfNumber
+  Mastery91Effect: 0,
+  Mastery92Effect: 0,
+  timePlayed: 0,
+  truetimePlayed: -100, // InfNumber
+  HTPshown: 1,
+  tickspeed: 0, // infNumber
+  timeThisStardustReset: 0,
+  truetimeThisStardustReset: -100, // InfNumber
+  fastestStardustReset: 9e15,
+  timeThisWormholeReset: 0,
+  truetimeThisWormholeReset: -100, // InfNUmber
+  fastestWormholeReset: 9e15,
+  storySnippets: [],
+  timeLeft: 0,
+  notation: "Mixed scientific",
+  StardustResets: 0,
+  stardust: -100, // InfNumber
+  StardustMultiplier: 0, // InfNumber
+  StardustExponent: 1,
+  pendingstardust: 0, // InfNumber
+  autosaveIsOn: "On",
+  StardustBoost1: 0, // InfNumber
+  StardustBoost2: 0,
+  StardustBoost3: 0,
+  StardustBoost4: 0,
+  StardustBoost5: 0, // InfNumber
+  StardustBoost6: 0, // InfNumber
+  StardustBoost7: 0,
+  StardustBoost8: 0,
+  stardustUpgrades: [0,0,0,0,0],
+  axisAutobuyerOn: false,
+  axisAutobuyerUpgrades: 0,
+  axisAutobuyerInterval: 5,
+  axisAutobuyerProgress: 0,
+  axisAutobuyerCost: 0, // InfNumber
+  stars: 0,
+  unspentStars: 0,
+  starCost: 3.60205999134, // InfNumber
+  starRow: [1,1,2,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8,9,10,8,9,10,9,10,10], // Which row the next star is in. For those who don't know, Stars have to be bought in a pyramid-like fashion which is laid out in this variable.
+  ownedStars: [],
+  Star11Effect: 0,
+  Star12Effect: 0,
+  Star13Effect: 0,
+  Star14Effect: 0,
+  Star71Effect: 0,
+  Star72Effect: 0,
+  Star73Effect: 0,
+  Star74Effect: 0,
+  Row9StarEffect: 0,
+  darkmatter: 0, // InfNumber
+  darkmatterPerSec: 0, // InfNumber
+  darkXAxis: 0,
+  darkYAxis: 0,
+  darkZAxis: 0,
+  darkWAxis: 0,
+  darkVAxis: 0,
+  darkUAxis: 0,
+  darkTAxis: 0,
+  darkSAxis: 0,
+  freedarkXAxis: 0,
+  freedarkYAxis: 0,
+  freedarkZAxis: 0,
+  freedarkWAxis: 0,
+  freedarkVAxis: 0,
+  freedarkUAxis: 0,
+  freedarkTAxis: 0,
+  freedarkSAxis: 0,
+  realdarkXAxis: 0,
+  realdarkYAxis: 0,
+  realdarkZAxis: 0,
+  realdarkWAxis: 0,
+  realdarkVAxis: 0,
+  realdarkUAxis: 0,
+  realdarkTAxis: 0,
+  realdarkSAxis: 0,
+  darkaxisCostDivisor: 0, // InfNumber
+  darkaxisCostExponent: 1,
+  darkXAxisCost: 0, // InfNumber
+  darkXAxisEffect: 0, // InfNumber
+  darkYAxisCost: 0, // InfNumber
+  darkYAxisEffect: 0, // InfNumber
+  darkZAxisCost: 0, // InfNumber
+  darkZAxisEffect: 0, // InfNumber
+  darkWAxisCost: 0, // InfNumber
+  darkWAxisEffect: 0, // InfNumber
+  darkVAxisCost: 0, // InfNumber
+  darkVAxisEffect: 0, 
+  darkUAxisCost: 0, // InfNumber
+  darkUAxisEffect: 0, // InfNumber
+  darkTAxisCost: 0, // InfNumber
+  darkTAxisEffect: 0, // InfNumber
+  darkSAxisCost: 0, // InfNumber
+  darkSAxisEffect: 0, // InfNumber
+  darkaxisScalingStart: 8,
+  darkaxisSuperscalingStart: 100,
+  totaldarkAxis: 0,
+  darkMatterFreeAxis: 1/3,
+  darkstars: 0,
+  darkstarScalingStart: 48,
+  darkstarRequirement: 0,
+  energyTypesUnlocked: 0,
+  darkEnergy: 0,       // InfNumber
+  darkEnergyPerSec: 0, // InfNumber
+  darkEnergyEffect: 0, // InfNumber
+  stelliferousEnergy: 0,          // InfNumber
+  stelliferousEnergyPerSec: 0,    // InfNumber
+  stelliferousEnergyEffect: 0,    // InfNumber
+  gravitationalEnergy: 0,            // InfNumber
+  gravitationalEnergyPerSec: 0,      // InfNumber
+  gravitationalEnergyEffect: 0,      // InfNumber
+  spatialEnergy: 0,            // InfNumber
+  spatialEnergyPerSec: 0,      // InfNumber
+  spatialEnergyEffect: 0,      // InfNumber
+  neuralEnergy: 0,            // InfNumber
+  neuralEnergyPerSec: 0,      // InfNumber
+  neuralEnergyEffect: 0,      // InfNumber
+  metaEnergy: 0,            // InfNumber
+  metaEnergyPerSec: 0,      // InfNumber
+  metaEnergyEffect: 0,      // InfNumber
+  energySpeedMult: 0, // InfNumber
+  energyEffectBoost: 1,
+  supernovaUnlocked: false,
+  EMSupernova: {
+    charges: 1,
+    maxCharges: 1,
+    power: 1.05,
+    upgrade1: 0,
+    upgrade2: 0
+  },
+  KnowledgeSupernova: {
+    unlocked: false,
+    charges: 1,
+    maxCharges: 1,
+    power: 1.05,
+    upgrade1: 0,
+    upgrade2: 0
+  }
+}
+var screen = 1    // 1: game      2: story
+let snippets = {
+  'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+infFormat(g.stardust,false)+" atoms of <span class='stardustlayertext'>Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
+  'Dark Matter': "<p>You have just condensed 500 billion Stardust atoms into a <span class='darkmattertext'>particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
+  'Energy': "<p>Well, you have a universe<sup>"+Math.floor(g.totalexoticmatter/80)+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class='energytext'>Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
+  'Supernova': "<p>By harnessing the power of energy, you've managed to accumulate ludicrous amounts of stardust - a universe<sup>"+Math.floor(g.stardust/80)+"</sup> of it to be precise.</p><p>And yet, for some reason, you are desperate for more.</p><p>You have spent many minutes searching for a new, powerful source of energy and matter and you found it. The largest outbursts of matter are created by <span style='text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 15px #fff,0 0 20px #fff,0 0 25px #fff,0 0 30px #fff,0 0 40px #fff,0 0 50px #fff,0 0 60px #fff,0 0 80px #fff,0 0 100px #fff,0 0 120px #fff,0 0 160px #fff,0 0 200px #fff,0 0 240px #fff,0 0 300px #fff,0 0 400px #fff'>supernovas</span> - massive, galaxy-shaking explosions created by a dying star on its last day.</p><p>However, due to the sheer quantities of energy needed to trigger a Supernova, they are inherently unsustainable - you have no hope of benefitting from their power if you squander them willy-nilly.</p>"
+}
+var axisCodes = ["X","Y","Z","W","V","U","T","S"]
+var savecounter = 0 // will prevent save before load
+var oldframetime = new Date().getTime()
+var newframetime = new Date().getTime()
+const masteryBoosts = {            // This contains the effect multipliers for individual Masteries and is updated automatically by the game loop
+  b11: 1,
+  b12: 1,
+  b21: 1,
+  b22: 1,
+  b31: 1,
+  b32: 1,
+  b41: 1,
+  b42: 1,
+  b43: 1,
+  b51: 1,
+  b52: 1,
+  b61: 1,
+  b62: 1,
+  b63: 1,
+  b71: 1,
+  b72: 1,
+  b81: 1,
+  b82: 1,
+  b83: 1,
+  b84: 1,
+  b85: 1,
+  b91: 1,
+  b92: 1
+}
+var stardustExoticMatterReq = 22 // InfNumber
+var stardustExoticMatterReqText = "";
+var progressbarvalue = 0
 var progressbartooltip = ""
-var tributeResets = 0
-var tributes = -100; // InfNumber
-var tributeMultiplier = 0; // InfNumber
-var tributeExponent = 1;
-var pendingTributes = 0; // InfNumber
-var tributeExoticMatterReq = 25; // InfNumber
-var tributeExoticMatterReqText = ""
-var autosaveIsOn = "On"
+var deltatime = 0
 var offlineSpeedupLength = 30
 var baseOfflineSpeedup = 1
 var offlineSpeedup = 1
 var offlineTime = 0
-var progressbarvalue = 0
-var tributeBoostOne = 0 // InfNumber
-var tributeBoostTwo = 0
-var tributeBoostThree = 0
-var tributeBoostFour = 0 // InfNumber
-var tributeBoostFive = 0 // InfNumber
-var tributeBoostSix = 0 // InfNumber
-var tributeBoostSeven = 0
-var tributeBoostEight = 0
-const tributeUpgradeOne = {
-  purchased: 0,
-  cost: [3,6,8,17,1e300], // 1 K, 1 M, 100 M, 100 Qa
-}
-const tributeUpgradeTwo = {
-  purchased: 0,
-  tooltip: ["Unlock X axis autobuyer","Unlock Y axis autobuyer","Unlock Z axis autobuyer","Unlock W axis autobuyer","Unlock V axis autobuyer","Unlock U axis autobuyer","Unlock T axis autobuyer","Unlock S axis autobuyer","Maxed!"],
-  cost: [3.47713,3.8451,4.30103,5,6,7.20412,8.698971,22,1e300], // 3 K, 7 K, 20 K, 100 K, 1 M, 16 M, 500 M, 10 Sx
-}
-const tributeUpgradeThree = {
-  purchased: 0,
-  cost: [6.698971,15,32,37.477121,61,80,1e300], // 5 M, 1 Qa, 100 No, 3e37, 1e61, 1e80
-}
-var axisAutobuyerOn = false
-var axisAutobuyerUpgrades = 0;
-var axisAutobuyerInterval = 5;
-var axisAutobuyerProgress = 0
-var axisAutobuyerCost = 0; // InfNumber
-var enhancers = 0
-var unspentEnhancers = 0
-var enhancerCost = 3.30103; // InfNumber
-var enhancerRow = [1,1,2,1,2,3,1,2,3,4,2,3,4,3,4,4] // Which row the next enhancer is in. For those who don't know, Enhancers have to be bought in a pyramid-like fashion which is laid out in this variable.
-var ownedEnhancers = {
-  OneOne: 0,
-  OneTwo: 0,
-  OneThree: 0,
-  OneFour: 0,
-  TwoOne: 0,
-  TwoTwo: 0,
-  TwoThree: 0,
-  TwoFour: 0,
-  ThreeOne: 0,
-  ThreeTwo: 0,
-  ThreeThree: 0,
-  ThreeFour: 0,
-  FourOne: 0,
-  FourTwo: 0,
-  FourThree: 0,
-  FourFour: 0
-}
-var Enhancer11Effect = 0; // InfNumber
-var Enhancer12Effect = 0; // InfNumber
-var Enhancer13Effect = 0; // InfNumber
-var Enhancer14Effect = 0; // InfNumber
-var DarkMatterUnlocked = false
-var darkmatter = 0; // InfNumber
-var baseDarkMatterGain = 0; // InfNumber
-var darkmatterPerSec = 0; // InfNumber
-var darkXAxis = 0;
-var darkYAxis = 0;
-var darkZAxis = 0;
-var darkWAxis = 0;
-var darkVAxis = 0;
-var darkUAxis = 0;
-var darkTAxis = 0;
-var darkSAxis = 0;
-var darkfreeXAxis = 0;
-var darkfreeYAxis = 0;
-var darkfreeZAxis = 0;
-var darkfreeWAxis = 0;
-var darkfreeVAxis = 0;
-var darkfreeUAxis = 0;
-var darkfreeTAxis = 0;
-var darkfreeSAxis = 0;
-var darkaxisCostDivisor = 0; // InfNumber
-var darkaxisCostExponent = 1;
-var darkXAxisCost = 0; // InfNumber
-var darkXAxisEffect = 0; // InfNumber
-var darkYAxisCost = 0; // InfNumber
-var darkYAxisEffect = 0; // InfNumber
-var darkZAxisCost = 0; // InfNumber
-var darkZAxisEffect = 0; // InfNumber
-var darkWAxisCost = 0; // InfNumber
-var darkWAxisEffect = 0; // InfNumber
-var darkVAxisCost = 0; // InfNumber
-var darkVAxisEffect = 0; 
-var darkUAxisCost = 0; // InfNumber
-var darkUAxisEffect = 0; // InfNumber
-var darkTAxisCost = 0; // InfNumber
-var darkTAxisEffect = 0; // InfNumber
-var darkSAxisCost = 0; // InfNumber
-var darkSAxisEffect = 0; // InfNumber
-var darkaxisScalingStart = 10
-var darkaxisSuperscalingStart = 200
-var totaldarkAxis = 0;
-var darkMatterFreeAxis = 0.25;
-var axioms = 0;
-var axiomRequirement = 0;
-var energyTypesUnlocked = 0;
-var expandingEnergy = 0;       // InfNumber
-var expandingEnergyPerSec = 0; // InfNumber
-var expandingEnergyEffect = 0; // InfNumber
-var divineEnergy = 0;          // InfNumber
-var divineEnergyPerSec = 0;    // InfNumber
-var divineEnergyEffect = 0;    // InfNumber
-var darkEnergy = 0;            // InfNumber
-var darkEnergyPerSec = 0;      // InfNumber
-var darkEnergyEffect = 0;      // InfNumber
-var savecounter = 0; // will prevent save before load
+var glowtabs = [[0,0,0],[0,0,0]]
+var stardustUpgrade1Cost = [6.3010299957,10.54406804435,14,20,1e300] // 2 M, 35 B, 100 T, 100 Qt
+var stardustUpgrade2Tooltip = ["Unlock axis autobuyer","Keep 10% of X Axis on reset","Keep 10% of Y Axis on reset","Keep 10% of Z Axis on reset","Keep 10% of W Axis on reset","Keep 10% of V Axis on reset","Keep 10% of U Axis on reset","Keep 10% of T Axis on reset","Keep 10% of S Axis on reset","Maxed!"]
+var stardustUpgrade2Cost = [1.6989700044,2,4,6,8,12,16,24,100] // 50, 100, 10 K, 1 M, 100 M, 1 T, 10 Qa, 1 Sp, 1e100
+var stardustUpgrade3Cost = [9.6989700043,15,22,70,115,308.25471556,1e300] // 5 B, 1 Qa, 10 Sx, 1e70, 1e115, 1.8e308
+var stardustUpgrade4Cost = [1.8750612634,8,16,60,115,1e300] // 75, 100 M, 10 Qa, 1e60, 1e115
+var stardustUpgrade5Cost = [11.6989700043,55,90,200,250,345.3010299957,375,1e300] // 500 B, 1e55, 1e90, 1e200, 1e250, 2e345, 1e375
+var stardustUpgrade5Tooltip = ["Unlock Dark Matter","Unlock Energy","Unlock Stelliferous Energy","Unlock Gravitational Energy","Unlock Spatial Energy","Unlock Neural Energy","Unlock Meta Energy","Maxed!"]
+var SupernovaCosts = [[0,0]]
 
 function incrementExoticMatter(x) {
-  exoticmatter = infAdd(exoticmatter,x)
-  document.getElementById("exoticmatter").innerHTML = infFormat(exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
-  document.getElementById("exoticmatterPerSec").innerHTML = infFormat(exoticmatterPerSec,true);
-  totalexoticmatter = infAdd(totalexoticmatter,x)
-  document.getElementById("totalExoticMatter").innerHTML = infFormat(totalexoticmatter,false);
-  exoticmatterThisTributeReset = infAdd(exoticmatterThisTributeReset,x)
-  document.getElementById("exoticMatterThisTributeReset").innerHTML = infFormat(exoticmatterThisTributeReset,false);
-  exoticmatterThisWormholeReset = infAdd(exoticmatterThisWormholeReset,x)
-  document.getElementById("exoticMatterThisWormholeReset").innerHTML = infFormat(exoticmatterThisWormholeReset,false);
+  if (isNaN(x)) x=-100
+  g.exoticmatter = infAdd(g.exoticmatter,x)
+  document.getElementById("exoticmatter").innerHTML = infFormat(g.exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
+  document.getElementById("exoticmatterPerSec").innerHTML = infFormat(g.exoticmatterPerSec,true);
+  g.totalexoticmatter = infAdd(g.totalexoticmatter,x)
+  document.getElementById("totalExoticMatter").innerHTML = infFormat(g.totalexoticmatter,false);
+  g.exoticmatterThisStardustReset = infAdd(g.exoticmatterThisStardustReset,x)
+  document.getElementById("exoticMatterThisStardustReset").innerHTML = infFormat(g.exoticmatterThisStardustReset,false);
+  g.exoticmatterThisWormholeReset = infAdd(g.exoticmatterThisWormholeReset,x)
+  document.getElementById("exoticMatterThisWormholeReset").innerHTML = infFormat(g.exoticmatterThisWormholeReset,false);
 }
-function buyXAxis() {
-  if (exoticmatter>XAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,XAxisCost)
-    XAxis++
+function infIncrement(res,x) {
+  g[res]=infAdd(g[res],x)
+}
+function infDeduct(res,x) {
+  g[res]=infSubtract(g[res],x)
+}
+function openStory(x) {
+  if (snippets[x]!==undefined) document.getElementById("storyTitle").innerHTML = x
+  if (snippets[x]!==undefined) document.getElementById("storyText").innerHTML = snippets[x]
+  if ((snippets[x]!==undefined)&&!(g.storySnippets.includes(x))) g.storySnippets.push(x)
+  screen = 2
+}
+function updateStorySnippets() {
+  x=""
+  for (i=0;i<g.storySnippets.length;i++) {
+    name=g.storySnippets[i]
+    append="<h1>"+name+"</h1>"+snippets[name]
+    x=x+append
+  }
+  if (g.storySnippets.length==0) x="No snippets unlocked. Come back when you see one!"
+  document.getElementById("storySnippetDisplay").innerHTML = x
+}
+function buyAxis(x) {
+  if ((g.exoticmatter>g[x+"AxisCost"])&&(g.axisUnlocked>axisCodes.indexOf(x))) {
+    infDeduct("exoticmatter",g[x+"AxisCost"])
+    g[x+"Axis"]++
   }
 }
-function buyYAxis() {
-  if (exoticmatter>YAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,YAxisCost)
-    YAxis++
-  }
-}
-function buyZAxis() {
-  if (exoticmatter>ZAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,ZAxisCost)
-    ZAxis++
-  }
-}
-function buyWAxis() {
-  if (exoticmatter>WAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,WAxisCost)
-    WAxis++
-  }
-}
-function buyVAxis() {
-  if (exoticmatter>VAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,VAxisCost)
-    VAxis++
-  }
-}
-function buyUAxis() {
-  if (exoticmatter>UAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,UAxisCost)
-    UAxis++
-  }
-}
-function buyTAxis() {
-  if (exoticmatter>TAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,TAxisCost)
-    TAxis++
-  }
-}
-function buySAxis() {
-  if (exoticmatter>SAxisCost) {
-    exoticmatter=infSubtract(exoticmatter,SAxisCost)
-    SAxis++
+
+function buyMaxAxis() {
+  for (i=0; i<8; i++) {
+    while ((g.exoticmatter>g[axisCodes[i]+"AxisCost"])&&(g.axisUnlocked>i)) {
+      buyAxis(axisCodes[i])
+      updateAxisCosts()
+    }
   }
 }
 function updateAxisCosts() {
-  XAxisCost = (1+Math.log10(5+0.05*Math.max(0,XAxis-axisScalingStart)**3)**Math.max(1,XAxis/axisSuperscalingStart)*XAxis-tributeBoostFive*XAxis-axisCostDivisor)*axisCostExponent
-  YAxisCost = (2*1.07**Math.max(0,YAxis-axisScalingStart)+0.113623*YAxis+0.062469*YAxis**(2**Math.max(YAxis/axisSuperscalingStart,1))-axisCostDivisor)*axisCostExponent
-  ZAxisCost = (4+ZAxis**(1.379654224+0.002*Math.max(0,ZAxis-axisScalingStart)**2)*1.001**Math.max(ZAxis-axisSuperscalingStart,0)**2-axisCostDivisor)*axisCostExponent
-  WAxisCost = (5.875+(WAxis+2.5*1.03**Math.max(0,WAxis-axisScalingStart)-2)**(2**Math.max(WAxis/axisSuperscalingStart,1))/2-axisCostDivisor)*axisCostExponent
-  VAxisCost = (20+4.5*VAxis+0.5*VAxis**2+0.01*Math.max(0,VAxis-axisScalingStart)**(5*Math.max(VAxis/axisSuperscalingStart,1))-axisCostDivisor)*axisCostExponent
-  UAxisCost = (35+10*UAxis+UAxis**(2*Math.max(UAxis/axisSuperscalingStart,1))*1.002**Math.max(0,UAxis-axisScalingStart)**2-axisCostDivisor)*axisCostExponent
-  TAxisCost = (50+(9+1.1**Math.max(0,TAxis-axisScalingStart))*TAxis**Math.max(TAxis/axisSuperscalingStart,1)-axisCostDivisor)*axisCostExponent
-  SAxisCost = (120*1.5**SAxis*1.05**Math.max(0,SAxis-axisScalingStart)**(2**Math.max(SAxis/axisSuperscalingStart,1))-axisCostDivisor)*axisCostExponent
+  g.XAxisCost = (0.6989700043+0.77815125038*normLinearScaling(normSemiexpScaling(g.XAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.StardustBoost5*g.XAxis-g.axisCostDivisor)*g.axisCostExponent
+  g.YAxisCost = (2+0.113623*g.YAxis+0.062469*normLinearScaling(normSemiexpScaling(g.YAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)**2-g.axisCostDivisor)*g.axisCostExponent
+  g.ZAxisCost = (6+normLinearScaling(normSemiexpScaling(g.ZAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)**1.379654224-g.axisCostDivisor)*g.axisCostExponent
+  g.WAxisCost = (7.57397000434+(normLinearScaling(normSemiexpScaling(g.WAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)+0.5)**2/2-g.axisCostDivisor)*g.axisCostExponent
+  g.VAxisCost = (20+normLinearScaling(normSemiexpScaling(g.VAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.axisCostDivisor)*g.axisCostExponent
+  g.UAxisCost = (100+normLinearScaling(normSemiexpScaling(g.UAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)**1.5-g.axisCostDivisor)*g.axisCostExponent
+  g.TAxisCost = (160+10*normLinearScaling(normSemiexpScaling(g.TAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.axisCostDivisor)*g.axisCostExponent
+  g.SAxisCost = (308.2547155599167*1.25**normLinearScaling(normSemiexpScaling(g.SAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.axisCostDivisor)*g.axisCostExponent
 }
-function debugSave() {
-  exoticmatter=0
-  totalexoticmatter=0
-  exoticmatterThisTributeReset=0
-  exoticmatterThisWormholeReset=0
-  exoticmatterPerSec=0
-  ZAxisEffect=0
-  Enhancer11Effect=0
-  Enhancer12Effect=0
+function MasteryE(x) {
+  return ((g.activeMasteries[Math.floor(x/10)-1]==(x%10))||(g.activeMasteries[Math.floor(x/10)-1]==9))?1:0        // A value of 9 signifies that the row is "mastered" and all of its Masteries are active simultaneously. No row can have more than 8 Masteries for this reason.
 }
-function statBreakdown(x) {
+function toggleMastery(x) {
+  if (!(x==g.activeMasteries[Math.floor(x/10)-1])) {
+    if ((g.activeMasteries[Math.floor(x/10)-1]!==0)&&(g.activeMasteries[Math.floor(x/10)-1]!==(x%10)&&(g.activeMasteries[Math.floor(x/10)-1]!==9))) {
+      g.baseMasteryPowerGain=0
+      g.masteryPowerPerSec=-100
+      g.masteryPower=0
+    }
+    g.activeMasteries[Math.floor(x/10)-1]=x%10
+  }
+}
+function updateMasteryBoosts() {
+  for (i=0;i<Object.keys(masteryBoosts).length;i++) {
+    x=Object.keys(masteryBoosts)[i]
+    masteryBoosts[x]=1
+    if ((["b11","b21","b31"].includes(x))&&MasteryE(41)) masteryBoosts[x]*=g.Mastery41Effect
+    if ((["b12","b22","b32"].includes(x))&&MasteryE(43)) masteryBoosts[x]*=g.Mastery43Effect
+    if ((["b11","b12"].includes(x))&&MasteryE(52)) masteryBoosts[x]*=g.Mastery52Effect
+    if ((["b81","b82","b83","b84","b85"].includes(x))&&MasteryE(91)) masteryBoosts[x]*=g.Mastery91Effect
+    if ((["b81","b82","b83","b84","b85"].includes(x))&&MasteryE(92)) masteryBoosts[x]*=g.Mastery92Effect
+    masteryBoosts[x]=fix(masteryBoosts[x])
+  }
+}
+function updateStat(x) {
   if (x==1) {
-    document.getElementById("StatBreakdown1XAxis").innerHTML = "× "+infFormat(XAxisEffect,true)+" ^ "+normFormat(XAxis+freeXAxis)
-    output=XAxisEffect*(XAxis+freeXAxis)
+    document.getElementById("StatBreakdown1XAxis").innerHTML = "× "+infFormat(g.XAxisEffect,true)+" ^ "+normFormat(g.realXAxis)
+    output=g.XAxisEffect*g.realXAxis
     document.getElementById("StatBreakdown1XAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RXAxis",((XAxis+freeXAxis>0)&&(XAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1ZAxis").innerHTML = "× "+infFormat(ZAxisEffect,true)+" ^ "+normFormat(ZAxis+freeZAxis)
-    output+=ZAxisEffect*(ZAxis+freeZAxis)
+    toggleTableRow("StatBreakdown1RXAxis",((g.realXAxis>0)&&(g.XAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown1ZAxis").innerHTML = "× "+infFormat(g.ZAxisEffect,true)+" ^ "+normFormat(g.realZAxis)
+    output+=g.ZAxisEffect*g.realZAxis
     document.getElementById("StatBreakdown1ZAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RZAxis",((ZAxis+freeZAxis>0)&&(ZAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1WAxis").innerHTML = "× "+infFormat(WAxisEffect,true)+" ^ "+normFormat(WAxis+freeWAxis)
-    output+=WAxisEffect*(WAxis+freeWAxis)
+    toggleTableRow("StatBreakdown1RZAxis",((g.realZAxis>0)&&(g.ZAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown1WAxis").innerHTML = "× "+infFormat(g.WAxisEffect,true)+" ^ "+normFormat(g.realWAxis)
+    output+=g.WAxisEffect*g.realWAxis
     document.getElementById("StatBreakdown1WAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RWAxis",((WAxis+freeWAxis>0)&&(WAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1TAxis").innerHTML = "× "+infFormat(TAxisEffect,true)+" ^ "+normFormat(TAxis+freeTAxis)
-    output+=TAxisEffect*(TAxis+freeTAxis)
+    toggleTableRow("StatBreakdown1RWAxis",((g.realWAxis>0)&&(g.WAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown1TAxis").innerHTML = "× "+infFormat(g.TAxisEffect,true)+" ^ "+normFormat(g.realTAxis)
+    output+=g.TAxisEffect*g.realTAxis
     document.getElementById("StatBreakdown1TAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RTAxis",((TAxis+freeTAxis>0)&&(TAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1TributeBoost1").innerHTML = "× "+infFormat(tributeBoostOne,true)
-    output+=tributeBoostOne
-    document.getElementById("StatBreakdown1TributeBoost1T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RTributeBoost1",(tributeBoostOne!=0)?"show":"hide")
-    document.getElementById("StatBreakdown1TributeBoost6").innerHTML = "× "+infFormat(tributeBoostSix,true)+" ^ "+normFormat(YAxis+freeYAxis)
-    output+=tributeBoostSix*(YAxis+freeYAxis)
-    document.getElementById("StatBreakdown1TributeBoost6T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RTributeBoost6",((YAxis+freeYAxis>0)&&(tributeBoostSix!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1Enhancer11").innerHTML = "× "+infFormat(Enhancer11Effect*ownedEnhancers.OneOne,true)
-    output+=Enhancer11Effect*ownedEnhancers.OneOne
-    document.getElementById("StatBreakdown1Enhancer11T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1REnhancer11",(ownedEnhancers.OneOne==0)?"hide":"show")
-    document.getElementById("StatBreakdown1Enhancer12").innerHTML = "× "+infFormat(Enhancer12Effect*ownedEnhancers.OneTwo,true)
-    output+=Enhancer12Effect*ownedEnhancers.OneTwo
-    document.getElementById("StatBreakdown1Enhancer12T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1REnhancer12",(ownedEnhancers.OneTwo==0)?"hide":"show")
-    document.getElementById("StatBreakdown1Enhancer13").innerHTML = "× "+infFormat(Enhancer13Effect*ownedEnhancers.OneThree,true)
-    output+=Enhancer13Effect*ownedEnhancers.OneThree
-    document.getElementById("StatBreakdown1Enhancer13T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1REnhancer13",(ownedEnhancers.OneThree==0)?"hide":"show")
-    document.getElementById("StatBreakdown1Enhancer14").innerHTML = "× "+infFormat(Enhancer14Effect*ownedEnhancers.OneFour,true)
-    output+=Enhancer14Effect*ownedEnhancers.OneFour
-    document.getElementById("StatBreakdown1Enhancer14T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1REnhancer14",(ownedEnhancers.OneFour==0)?"hide":"show")
-    document.getElementById("StatBreakdown1Enhancer42").innerHTML = "× "+infFormat(10*ownedEnhancers.FourTwo,true)
-    output+=10*ownedEnhancers.FourTwo
-    document.getElementById("StatBreakdown1Enhancer42T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1REnhancer42",(ownedEnhancers.FourTwo==1)?"show":"hide")
-    document.getElementById("StatBreakdown1ExpandingEnergy").innerHTML = "× "+infFormat(expandingEnergyEffect,true)
-    output+=expandingEnergyEffect
-    document.getElementById("StatBreakdown1ExpandingEnergyT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RExpandingEnergy",(expandingEnergyEffect==0)?"hide":"show")
-    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+SAxisEffect.toFixed(4)+" ^ "+normFormat(SAxis+freeSAxis)
-    output*=SAxisEffect**(SAxis+freeSAxis)
+    toggleTableRow("StatBreakdown1RTAxis",((g.realTAxis>0)&&(g.TAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown1Mastery11").innerHTML = "× "+infFormat((MasteryE(11))?g.Mastery11Effect:0,true)
+    output+=g.Mastery11Effect*MasteryE(11)
+    document.getElementById("StatBreakdown1Mastery11T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RMastery11",MasteryE(11)?"show":"hide")
+    document.getElementById("StatBreakdown1StardustBoost1").innerHTML = "× "+infFormat(g.StardustBoost1,true)
+    output+=g.StardustBoost1
+    document.getElementById("StatBreakdown1StardustBoost1T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStardustBoost1",(g.StardustBoost1!=0)?"show":"hide")
+    document.getElementById("StatBreakdown1Star11").innerHTML = "× "+infFormat(g.Star11Effect*StarE(11),true)
+    output+=g.Star11Effect*StarE(11)
+    document.getElementById("StatBreakdown1Star11T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStar11",StarE(11)?"show":"hide")
+    document.getElementById("StatBreakdown1Star12").innerHTML = "× "+infFormat(g.Star12Effect*StarE(12),true)
+    output+=g.Star12Effect*StarE(12)
+    document.getElementById("StatBreakdown1Star12T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStar12",StarE(12)?"show":"hide")
+    document.getElementById("StatBreakdown1Star13").innerHTML = "× "+infFormat(g.Star13Effect*StarE(13),true)
+    output+=g.Star13Effect*StarE(13)
+    document.getElementById("StatBreakdown1Star13T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStar13",StarE(13)?"show":"hide")
+    document.getElementById("StatBreakdown1Star14").innerHTML = "× "+infFormat(g.Star14Effect*StarE(14),true)
+    output+=g.Star14Effect*StarE(14)
+    document.getElementById("StatBreakdown1Star14T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStar14",StarE(14)?"show":"hide")
+    document.getElementById("StatBreakdown1Star42").innerHTML = "× "+infFormat(50*StarE(42),true)
+    output+=50*StarE(42)
+    document.getElementById("StatBreakdown1Star42T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStar42",StarE(42)?"show":"hide")
+    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+g.SAxisEffect.toFixed(4)+" ^ "+normFormat(g.realSAxis)
+    output*=g.SAxisEffect**(g.realSAxis)
     document.getElementById("StatBreakdown1SAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RSAxis",((SAxis+freeSAxis>0)&&(SAxisEffect!=1))?"show":"hide")
-    document.getElementById("StatBreakdown1Enhancer41").innerHTML = "^ "+(ownedEnhancers.FourOne==1?1.1:1)
-    output*=(ownedEnhancers.FourOne==1?1.1:1)
-    document.getElementById("StatBreakdown1Enhancer41T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1REnhancer41",(ownedEnhancers.FourOne==1)?"show":"hide")
+    toggleTableRow("StatBreakdown1RSAxis",((g.realSAxis>0)&&(g.SAxisEffect!=1))?"show":"hide")
+    document.getElementById("StatBreakdown1Star41").innerHTML = "^ "+(StarE(41)==1?1.1:1)
+    output*=((StarE(41)==1)?1.1:1)
+    document.getElementById("StatBreakdown1Star41T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RStar41",(StarE(41)==1)?"show":"hide")
+    document.getElementById("StatBreakdown1DarkEnergy").innerHTML = "^ "+normFormat(g.darkEnergyEffect)
+    output*=g.darkEnergyEffect
+    document.getElementById("StatBreakdown1DarkEnergyT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RDarkEnergy",(g.darkEnergyEffect==1)?"hide":"show")
     document.getElementById("StatBreakdown1OfflineSpeedup").innerHTML = "× "+normFormat(offlineSpeedup)
     output+=Math.log10(offlineSpeedup)
     document.getElementById("StatBreakdown1OfflineSpeedupT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1ROfflineSpeedup",(offlineSpeedup>1.001)?"show":"hide")
+    toggleTableRow("StatBreakdown1ROfflineSpeedup",(offlineSpeedup>1)?"show":"hide")
+    document.getElementById("StatBreakdown1Tickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
+    output+=fix(g.tickspeed)
+    document.getElementById("StatBreakdown1TickspeedT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown1RTickspeed",(g.tickspeed!==0)?"show":"hide")
+    g.exoticmatterPerSec=output
   } else if (x==2) {
-    document.getElementById("StatBreakdown2BaseGain").innerHTML = (exoticmatter<24)?0:infFormat(Math.max(0,exoticmatter-24)**0.5,false)
-    output=(exoticmatter<24)?-100:Math.max(0,exoticmatter-24)**0.5
+    document.getElementById("StatBreakdown2BaseGain").innerHTML = (g.exoticmatter<21)?0:"("+infFormat(g.exoticmatter,false)+" / "+infFormat(21)+") dilate 0.5",false
+    output=(g.exoticmatter<21)?-100:Math.max(0,(g.exoticmatter-21))**0.5
     document.getElementById("StatBreakdown2BaseGainT").innerHTML = infFormat(output,false)
-    document.getElementById("StatBreakdown2UAxis").innerHTML = "× "+infFormat(UAxisEffect,true)+" ^ "+normFormat(UAxis+freeUAxis)
-    output+=UAxisEffect*(UAxis+freeUAxis)
+    nextvl=0
+    document.getElementById("StatBreakdown2Mastery42").innerHTML = "× "+infFormat(g.Mastery42Effect*MasteryE(42),true)
+    output+=g.Mastery42Effect*MasteryE(42)
+    nextvl+=g.Mastery42Effect*MasteryE(42)
+    document.getElementById("StatBreakdown2Mastery42T").innerHTML = infFormat(output,false)
+    toggleTableRow("StatBreakdown2RMastery42",MasteryE(42)?"show":"hide")
+    document.getElementById("StatBreakdown2UAxis").innerHTML = "× "+infFormat(g.UAxisEffect,true)+" ^ "+normFormat(g.realUAxis)
+    output+=g.UAxisEffect*g.realUAxis
+    nextvl+=g.UAxisEffect*(g.realUAxis)
     document.getElementById("StatBreakdown2UAxisT").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RUAxis",((UAxis+freeUAxis>0)&&(UAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown2TributeBoost4").innerHTML = "× "+infFormat(tributeBoostFour,true)
-    output+=tributeBoostFour
-    document.getElementById("StatBreakdown2TributeBoost4T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RTributeBoost4",((UAxis+freeUAxis>0)&&(UAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown2Enhancer44").innerHTML = "× "+infFormat(ownedEnhancers.FourFour,true)
-    output+=ownedEnhancers.FourFour
-    document.getElementById("StatBreakdown2Enhancer44T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2REnhancer44",(ownedEnhancers.FourFour==1)?"show":"hide")
-    document.getElementById("StatBreakdown2DivineEnergy").innerHTML = "× "+infFormat(divineEnergyEffect,true)
-    output+=divineEnergyEffect
-    document.getElementById("StatBreakdown2DivineEnergyT").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RDivineEnergy",(divineEnergyEffect==0)?"hide":"show")
-    document.getElementById("StatBreakdown2Enhancer43").innerHTML = "^ "+((ownedEnhancers.FourThree==1)?1.1:1)
-    output*=(ownedEnhancers.FourThree==1)?1.1:1
-    document.getElementById("StatBreakdown2Enhancer43T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2REnhancer43",(ownedEnhancers.FourThree)?"show":"hide")
-    document.getElementById("StatBreakdown2UnspentTributes").innerHTML = "- "+infFormat(tributes,false)
-    output=infSubtract(output,tributes)
-    document.getElementById("StatBreakdown2UnspentTributesT").innerHTML = infFormat(output,false)
-    document.getElementById("SSBBTributes").style = (fastestTributeReset<1e12)?"display:inline-block":"display:none"
+    toggleTableRow("StatBreakdown2RUAxis",((g.realUAxis>0)&&(g.UAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown2StardustBoost4").innerHTML = "× "+infFormat(g.masteryPower,true)+" ^ "+(g.StardustBoost4>10?normFormat(g.StardustBoost4):g.StardustBoost4.toFixed(4))
+    output+=g.masteryPower*g.StardustBoost4
+    nextvl+=g.masteryPower*g.StardustBoost4
+    document.getElementById("StatBreakdown2StardustBoost4T").innerHTML = infFormat(output,false)
+    toggleTableRow("StatBreakdown2RStardustBoost4",(g.stardustUpgrades[2]>1)?"show":"hide")
+    document.getElementById("StatBreakdown2Star44").innerHTML = "× "+infFormat(5*StarE(44),true)
+    output+=5*StarE(44)
+    nextvl+=5*StarE(44)
+    document.getElementById("StatBreakdown2Star44T").innerHTML = infFormat(output,false)
+    toggleTableRow("StatBreakdown2RStar44",StarE(44)?"show":"hide")
+    g.StardustMultiplier=nextvl
+    nextvl=1
+    document.getElementById("StatBreakdown2Star43").innerHTML = "^ "+(StarE(43)?1.1:1)
+    output*=StarE(43)?1.1:1
+    nextvl*=StarE(43)?1.1:1
+    document.getElementById("StatBreakdown2Star43T").innerHTML = infFormat(output,false)
+    toggleTableRow("StatBreakdown2RStar43",StarE(43)?"show":"hide")
+    document.getElementById("StatBreakdown2StelliferousEnergy").innerHTML = "^ "+normFormat(g.stelliferousEnergyEffect)
+    output*=g.stelliferousEnergyEffect
+    nextvl*=g.stelliferousEnergyEffect
+    document.getElementById("StatBreakdown2StelliferousEnergyT").innerHTML = infFormat(output,false)
+    toggleTableRow("StatBreakdown2RStelliferousEnergy",(g.stelliferousEnergyEffect==1)?"hide":"show")
+    g.StardustExponent=nextvl
+    g.pendingstardust=output
+    document.getElementById("StatBreakdown2UnspentStardust").innerHTML = "- "+infFormat(g.stardust,false)
+    output=infSubtract(output,g.stardust)
+    document.getElementById("StatBreakdown2UnspentStardustT").innerHTML = infFormat(output,false)
+    document.getElementById("SSBBStardust").style = ((g.fastestStardustReset<1e12)||(g.exoticmatter>22))?"display:inline-block":"display:none"
   } else if (x==3) {
-    document.getElementById("StatBreakdown3BaseGain").innerHTML = infFormat(baseDarkMatterGain,true)
-    output=baseDarkMatterGain
+    document.getElementById("StatBreakdown3BaseGain").innerHTML = "((10 + "+infFormat(g.stardust,true)+" / "+infFormat(12)+") dilate 0.5 / 10)"+((g.darkstars>0)?("^ "+normFormat(1+g.darkstars/20)):"")
+    output=(infAdd(g.stardust-12,1)**0.5-1)*(1+0.05*g.darkstars)
     document.getElementById("StatBreakdown3BaseGainT").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown3DarkXAxis").innerHTML = "× "+infFormat(darkXAxisEffect,true)+" ^ "+normFormat(darkXAxis+darkfreeXAxis)
-    output+=darkXAxisEffect*(darkXAxis+darkfreeXAxis)
+    document.getElementById("baseDarkMatterGain").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown3DarkXAxis").innerHTML = "× "+infFormat(g.darkXAxisEffect,true)+" ^ "+normFormat(g.realdarkXAxis)
+    output+=g.darkXAxisEffect*g.realdarkXAxis
     document.getElementById("StatBreakdown3DarkXAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkXAxis",((darkXAxis+darkfreeXAxis>0)&&(darkXAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkZAxis").innerHTML = "× "+infFormat(darkZAxisEffect,true)+" ^ "+normFormat(darkZAxis+darkfreeZAxis)
-    output+=darkZAxisEffect*(darkZAxis+darkfreeZAxis)
+    toggleTableRow("StatBreakdown3RDarkXAxis",((g.realdarkXAxis>0)&&(g.darkXAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown3DarkZAxis").innerHTML = "× "+infFormat(g.darkZAxisEffect,true)+" ^ "+normFormat(g.realdarkZAxis)
+    output+=g.darkZAxisEffect*g.realdarkZAxis
     document.getElementById("StatBreakdown3DarkZAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkZAxis",((darkZAxis+darkfreeZAxis>0)&&(darkZAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkUAxis").innerHTML = "× "+infFormat(darkUAxisEffect,true)+" ^ ("+normFormat(darkUAxis+darkfreeUAxis)+" × "+normFormat(totaldarkAxis)+")"
-    output+=darkUAxisEffect*(darkUAxis+darkfreeUAxis)*totaldarkAxis
+    toggleTableRow("StatBreakdown3RDarkZAxis",((g.realdarkZAxis>0)&&(g.darkZAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown3DarkUAxis").innerHTML = "× "+infFormat(g.darkUAxisEffect,true)+" ^ ("+normFormat(g.realdarkUAxis)+" × "+normFormat(g.totaldarkAxis)+")"
+    output+=g.darkUAxisEffect*g.realdarkUAxis*g.totaldarkAxis
     document.getElementById("StatBreakdown3DarkUAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkUAxis",((darkUAxis+darkfreeUAxis>0)&&(darkUAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkTAxis").innerHTML = "× "+infFormat(darkTAxisEffect,true)+" ^ "+normFormat(darkTAxis+darkfreeTAxis)
-    output+=darkTAxisEffect*(darkTAxis+darkfreeTAxis)
+    toggleTableRow("StatBreakdown3RDarkUAxis",((g.realdarkUAxis>0)&&(g.darkUAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown3DarkTAxis").innerHTML = "× "+infFormat(g.darkTAxisEffect,true)+" ^ "+normFormat(g.realdarkTAxis)
+    output+=g.darkTAxisEffect*g.realdarkTAxis
     document.getElementById("StatBreakdown3DarkTAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkTAxis",((darkTAxis+darkfreeTAxis>0)&&(darkTAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3Axioms").innerHTML = "× "+infFormat(1,true)+" ^ "+normFormat(axioms)
-    output+=axioms
-    document.getElementById("StatBreakdown3AxiomsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RAxioms",(axioms>0)?"show":"hide")
-    document.getElementById("StatBreakdown3DarkEnergy").innerHTML = "× "+infFormat(darkEnergyEffect,true)
-    output+=darkEnergyEffect
-    document.getElementById("StatBreakdown3AxiomsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkEnergy",(darkEnergyEffect!=0)?"show":"hide")
-    document.getElementById("StatBreakdown3DarkSAxis").innerHTML = "^ "+darkSAxisEffect.toFixed(4)+" ^ "+normFormat(darkSAxis+darkfreeSAxis)
-    output*=darkSAxisEffect**(darkSAxis+darkfreeSAxis)
+    toggleTableRow("StatBreakdown3RDarkTAxis",((g.realdarkTAxis>0)&&(g.darkTAxisEffect!=0))?"show":"hide")
+    document.getElementById("StatBreakdown3DarkSAxis").innerHTML = "^ "+g.darkSAxisEffect.toFixed(4)+" ^ "+normFormat(g.realdarkSAxis)
+    output*=g.darkSAxisEffect**g.realdarkSAxis
     document.getElementById("StatBreakdown3DarkSAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkSAxis",((darkSAxis+darkfreeSAxis>0)&&(darkSAxisEffect!=1))?"show":"hide")
+    toggleTableRow("StatBreakdown3RDarkSAxis",((g.realdarkSAxis>0)&&(g.darkSAxisEffect!=1))?"show":"hide")
+    document.getElementById("StatBreakdown3GravitationalEnergy").innerHTML = "^ "+normFormat(g.gravitationalEnergyEffect)
+    output*=g.gravitationalEnergyEffect
+    document.getElementById("StatBreakdown3GravitationalEnergyT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown3RGravitationalEnergy",(g.gravitationalEnergyEffect==1)?"hide":"show")
     document.getElementById("StatBreakdown3OfflineSpeedup").innerHTML = "× "+normFormat(offlineSpeedup)
     output+=Math.log10(offlineSpeedup)
     document.getElementById("StatBreakdown3OfflineSpeedupT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3ROfflineSpeedup",(offlineSpeedup>1.001)?"show":"hide")
-    document.getElementById("SSBBDarkMatter").style = (DarkMatterUnlocked)?"display:inline-block":"display:none"
+    toggleTableRow("StatBreakdown3ROfflineSpeedup",(offlineSpeedup>1)?"show":"hide")
+    document.getElementById("StatBreakdown3Tickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
+    output+=g.tickspeed
+    document.getElementById("StatBreakdown3TickspeedT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown3RTickspeed",(g.tickspeed!==0)?"show":"hide")
+    g.darkmatterPerSec=output
+    document.getElementById("SSBBDarkMatter").style = (g.stardustUpgrades[4]>0)?"display:inline-block":"display:none"
+  } else if (x==4) {
+    // Power table
+    document.getElementById("StatBreakdown4BaseGain").innerHTML = infFormat(g.baseMasteryPowerGain,true)+" ^ "+((g.baseMasteryPowerExponent>100)?normFormat(g.baseMasteryPowerExponent):Math.floor(g.baseMasteryPowerExponent*1e4)/1e4)
+    output=g.baseMasteryPowerGain*g.baseMasteryPowerExponent
+    document.getElementById("StatBreakdown4BaseGainT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RBaseGain",((g.baseMasteryPowerGain>0)&&(g.baseMasteryPowerExponent>0))?"show":"hide")
+    document.getElementById("StatBreakdown4DarkWAxis").innerHTML = "× "+infFormat(g.darkWAxisEffect,true)+" ^ "+normFormat(g.realdarkWAxis)
+    output+=g.darkWAxisEffect*g.realdarkWAxis
+    document.getElementById("StatBreakdown4DarkWAxisT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RDarkWAxis",((g.darkWAxisEffect!==0)&&(g.darkWAxis>0))?"show":"hide")
+    document.getElementById("StatBreakdown4StardustBoost7").innerHTML = infFormat(g.StardustBoost7,true)+" ^ "+normFormat(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,6.02059991328,9))
+    output+=g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,6.02059991328,9))
+    document.getElementById("StatBreakdown4StardustBoost7T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RStardustBoost7",(g.StardustBoost7>0)?"show":"hide")
+    document.getElementById("StatBreakdown4Mastery81").innerHTML = "× "+infFormat(g.Mastery81Effect,true)
+    output+=g.Mastery81Effect*MasteryE(81)
+    document.getElementById("StatBreakdown4Mastery81T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RMastery81",MasteryE(81)?"show":"hide")
+    document.getElementById("StatBreakdown4Mastery82").innerHTML = "× "+infFormat(g.Mastery82Effect,true)
+    output+=g.Mastery82Effect*MasteryE(82)
+    document.getElementById("StatBreakdown4Mastery82T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RMastery82",MasteryE(82)?"show":"hide")
+    document.getElementById("StatBreakdown4Mastery83").innerHTML = "× "+infFormat(g.Mastery83Effect,true)
+    output+=g.Mastery83Effect*MasteryE(83)
+    document.getElementById("StatBreakdown4Mastery83T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RMastery83",MasteryE(83)?"show":"hide")
+    document.getElementById("StatBreakdown4Mastery84").innerHTML = "× "+infFormat(g.Mastery84Effect,true)
+    output+=g.Mastery84Effect*MasteryE(84)
+    document.getElementById("StatBreakdown4Mastery84T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RMastery84",MasteryE(84)?"show":"hide")
+    document.getElementById("StatBreakdown4NeuralEnergy").innerHTML = "^ "+normFormat(g.neuralEnergyEffect)
+    output*=g.neuralEnergyEffect
+    document.getElementById("StatBreakdown4NeuralEnergyT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RNeuralEnergy",(g.neuralEnergyEffect==1)?"hide":"show")
+    document.getElementById("StatBreakdown4OfflineSpeedup").innerHTML = "× "+normFormat(offlineSpeedup)
+    output+=Math.log10(offlineSpeedup)
+    document.getElementById("StatBreakdown4OfflineSpeedupT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4ROfflineSpeedup",(offlineSpeedup>1)?"show":"hide")
+    document.getElementById("StatBreakdown4Tickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
+    output+=g.tickspeed
+    document.getElementById("StatBreakdown4TickspeedT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown4RTickspeed",(g.tickspeed!==0)?"show":"hide")
+    g.masteryPowerPerSec=output
+    // Exponent table
+    document.getElementById("StatBreakdown4.1Base").innerHTML = "(log(10 + "+infFormat(g.exoticmatter,false)+" ^ 0.1) + 1) ^ 1.2"
+    output=(Math.log10(infAdd(g.exoticmatter/10,1))+1)**1.2
+    document.getElementById("StatBreakdown4.1BaseT").innerHTML = normFormat(output,true)
+    document.getElementById("StatBreakdown4.1Mastery85").innerHTML = "+ "+normFormat(g.Mastery85Effect)
+    output+=g.Mastery85Effect*MasteryE(85)
+    document.getElementById("StatBreakdown4.1Mastery85T").innerHTML = normFormat(output,true)
+    toggleTableRow("StatBreakdown4.1RMastery85",MasteryE(85)?"show":"hide")
+    g.baseMasteryPowerExponent=(Math.log10(infAdd(g.exoticmatter/10,1))+1)**1.2+g.Mastery85Effect*MasteryE(85)
+    document.getElementById("SSBBMasteryPower").style = (g.masteryRowsUnlocked[0]==1)?"display:inline-block":"display:none"
+  } else if (x==5) {
+    // X table
+    document.getElementById("StatBreakdown5XYAxis").innerHTML = "+ "+infFormat(g.YAxisEffect,true)+" × "+normFormat(g.realYAxis)
+    output=infAdd(0.30102999566,g.YAxisEffect+Math.log10(1e-100+g.realYAxis))
+    document.getElementById("StatBreakdown5XYAxisT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5XRYAxis",(g.YAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown5XMastery21").innerHTML = "× "+infFormat(g.Mastery21Effect*MasteryE(21),true)
+    output+=g.Mastery21Effect*MasteryE(21)
+    document.getElementById("StatBreakdown5XMastery21T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5XRMastery21",MasteryE(21)?"show":"hide")
+    g.XAxisEffect=output
+    // Y table
+    output=-1
+    document.getElementById("StatBreakdown5YStardustBoost2").innerHTML = "× "+infFormat(g.StardustBoost2,true)
+    output+=g.StardustBoost2
+    document.getElementById("StatBreakdown5YStardustBoost2T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5YRStardustBoost2",(g.StardustBoost2>0)?"show":"hide")
+    document.getElementById("StatBreakdown5YMastery22").innerHTML = "× "+infFormat(g.Mastery22Effect*MasteryE(22),true)
+    output+=g.Mastery22Effect*MasteryE(22)
+    document.getElementById("StatBreakdown5YMastery22T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5YRMastery22",MasteryE(22)?"show":"hide")
+    g.YAxisEffect=output
+    document.getElementById("SSB5YTable").style = (g.axisUnlocked>=2)?"display:inline-block":"display:none"
+    // Z table
+    output=(Math.log10(Math.log10(infAdd(fix(g.exoticmatter),1))+1)+1)**(Math.log10(Math.log10(infAdd(fix(g.exoticmatter),1))+1)+1)**1.5-1
+    document.getElementById("StatBreakdown5ZBaseEffect").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown5ZBaseEffectT").innerHTML = infFormat(output,true)
+    g.ZAxisEffect=output
+    document.getElementById("SSB5ZTable").style = (g.axisUnlocked>=3)?"display:inline-block":"display:none"
+    // W table
+    output=Math.log10(infAdd(2,g.truetimeThisStardustReset*0.67))
+    document.getElementById("StatBreakdown5WBaseEffect").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown5WBaseEffectT").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown5WStardustBoost3").innerHTML = "^ "+normFormat(1+g.StardustBoost3/100)
+    output*=1+g.StardustBoost3/100
+    document.getElementById("StatBreakdown5WStardustBoost3T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5WRStardustBoost3",(g.StardustBoost3>0)?"show":"hide")
+    g.WAxisEffect=output
+    document.getElementById("SSB5WTable").style = (g.axisUnlocked>=4)?"display:inline-block":"display:none"
+    // V table
+    output=Math.log10(3)
+    document.getElementById("StatBreakdown5VStardustBoost8").innerHTML = "^ "+normFormat(g.StardustBoost8)
+    output*=g.StardustBoost8
+    document.getElementById("StatBreakdown5VStardustBoost8T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5VRStardustBoost8",(g.StardustBoost8>1)?"show":"hide")
+    document.getElementById("StatBreakdown5VStar82").innerHTML = " ^ 5"
+    output*=StarE(82)?5:1
+    document.getElementById("StatBreakdown5VStar82T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5VRStar82",StarE(82)?"show":"hide")
+    document.getElementById("StatBreakdown5VDarkVAxis").innerHTML = " ^ (1 + "+normFormat(g.realdarkVAxis)+" × "+(g.darkVAxisEffect.toFixed(4))+")"
+    output*=1+g.realdarkVAxis*g.darkVAxisEffect
+    document.getElementById("StatBreakdown5VDarkVAxisT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5VRDarkVAxis",(g.darkVAxis>0)?"show":"hide")
+    g.VAxisEffect=output
+    document.getElementById("SSB5VTable").style = (g.axisUnlocked>=5)?"display:inline-block":"display:none"
+    // U table
+    output=Math.log10(infAdd(g.stardust,10))**2/10
+    document.getElementById("StatBreakdown5UBaseEffect").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown5UBaseEffectT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown5URBaseEffect",(g.UAxis>0)?"show":"hide")
+    g.UAxisEffect=output
+    document.getElementById("SSB5UTable").style = (g.axisUnlocked>=6)?"display:inline-block":"display:none"
+    // T table
+    output=Math.log10(g.totalAxis+1)**(Math.log10(g.totalAxis+1))/2
+    document.getElementById("StatBreakdown5TBaseEffect").innerHTML = "10 ^ (log("+normFormat(g.totalAxis)+" + 1) ^ log("+normFormat(g.totalAxis)+" + 1) / 2)"
+    document.getElementById("StatBreakdown5TBaseEffectT").innerHTML = infFormat(output,true)
+    g.TAxisEffect=output
+    document.getElementById("SSB5TTable").style = (g.axisUnlocked>=7)?"display:inline-block":"display:none"
+    // S table
+    document.getElementById("SSB5STable").style = (g.axisUnlocked>=8)?"display:inline-block":"display:none"
+    g.SAxisEffect=1.025
+  } else if (x==6) {
+    // X table
+    document.getElementById("StatBreakdown6XStar21").innerHTML = "+ "+(StarE(21)*3)
+    output=StarE(21)*3
+    document.getElementById("StatBreakdown6XStar21T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6XRStar21",StarE(21)?"show":"hide")
+    document.getElementById("StatBreakdown6XMastery51").innerHTML = "+ "+normFormat(g.Mastery51Effect*MasteryE(51))
+    output+=g.Mastery51Effect*MasteryE(51)
+    document.getElementById("StatBreakdown6XMastery51T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6XRMastery51",MasteryE(51)?"show":"hide")
+    document.getElementById("StatBreakdown6XDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkXAxis)
+    output+=g.darkMatterFreeAxis*g.darkXAxis
+    document.getElementById("StatBreakdown6XDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6XRDarkMatter",(g.darkXAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6XSpatialEnergy").innerHTML = "× "+normFormat(g.spatialEnergyEffect)
+    output*=g.spatialEnergyEffect
+    document.getElementById("StatBreakdown6XSpatialEnergyT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6XRSpatialEnergy",(g.spatialEnergyEffect==1)?"hide":"show")
+    document.getElementById("StatBreakdown6XSoftcap").innerHTML = "convergent, start "+g.XAxis+", limit "+(g.XAxis*2)
+    output=ConvergentSoftcap(output,g.XAxis,g.XAxis*2)
+    document.getElementById("StatBreakdown6XSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6XRSoftcap",(g.freeXAxis>g.XAxis)?"show":"hide")
+    g.freeXAxis=output
+    document.getElementById("SSB6XTable").style = (g.freeXAxis>0)?"display:inline-block":"display:none"
+    // Y table
+    document.getElementById("StatBreakdown6YStar22").innerHTML = "+ "+(StarE(22)*3)
+    output=StarE(22)*3
+    document.getElementById("StatBreakdown6YStar22T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6YRStar22",StarE(22)?"show":"hide")
+    document.getElementById("StatBreakdown6YDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkYAxis)
+    output+=g.darkMatterFreeAxis*g.darkYAxis
+    document.getElementById("StatBreakdown6YDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6YRDarkMatter",(g.darkYAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6YSoftcap").innerHTML = "convergent, start "+g.YAxis+", limit "+(g.YAxis*2)
+    output=ConvergentSoftcap(output,g.YAxis,g.YAxis*2)
+    document.getElementById("StatBreakdown6YSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6YRSoftcap",(g.freeYAxis>g.YAxis)?"show":"hide")
+    g.freeYAxis=output
+    document.getElementById("SSB6YTable").style = (g.freeYAxis>0)?"display:inline-block":"display:none"
+    // Z table
+    document.getElementById("StatBreakdown6ZMastery31").innerHTML = "+ "+normFormat(g.Mastery31Effect*MasteryE(31))
+    output=g.Mastery31Effect*MasteryE(31)
+    document.getElementById("StatBreakdown6ZMastery31T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6ZRMastery31",MasteryE(31)?"show":"hide")
+    document.getElementById("StatBreakdown6ZStar23").innerHTML = "+ "+(StarE(23)*3)
+    output+=StarE(23)*3
+    document.getElementById("StatBreakdown6ZStar23T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6ZRStar23",StarE(23)?"show":"hide")
+    document.getElementById("StatBreakdown6ZDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkZAxis)
+    output+=g.darkMatterFreeAxis*g.darkZAxis
+    document.getElementById("StatBreakdown6ZDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6ZRDarkMatter",(g.darkZAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6ZSoftcap").innerHTML = "convergent, start "+g.ZAxis+", limit "+(g.ZAxis*2)
+    output=ConvergentSoftcap(output,g.ZAxis,g.ZAxis*2)
+    document.getElementById("StatBreakdown6ZSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6ZRSoftcap",(g.freeZAxis>g.ZAxis)?"show":"hide")
+    g.freeZAxis=output
+    document.getElementById("SSB6ZTable").style = (g.freeZAxis>0)?"display:inline-block":"display:none"
+    // W table
+    document.getElementById("StatBreakdown6WMastery32").innerHTML = "+ "+normFormat(g.Mastery32Effect*MasteryE(32))
+    output=g.Mastery32Effect*MasteryE(32)
+    document.getElementById("StatBreakdown6WMastery32T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6WRMastery32",MasteryE(32)?"show":"hide")
+    document.getElementById("StatBreakdown6WStar24").innerHTML = "+ "+(StarE(24)*3)
+    output+=StarE(24)*3
+    document.getElementById("StatBreakdown6WStar24T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6WRStar24",StarE(24)?"show":"hide")
+    document.getElementById("StatBreakdown6WDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkWAxis)
+    output+=g.darkMatterFreeAxis*g.darkWAxis
+    document.getElementById("StatBreakdown6WDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6WRDarkMatter",(g.darkWAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6WSoftcap").innerHTML = "convergent, start "+g.WAxis+", limit "+(g.WAxis*2)
+    output=ConvergentSoftcap(output,g.WAxis,g.WAxis*2)
+    document.getElementById("StatBreakdown6WSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6WRSoftcap",(g.freeWAxis>g.WAxis)?"show":"hide")
+    g.freeWAxis=output
+    document.getElementById("SSB6WTable").style = (g.freeWAxis>0)?"display:inline-block":"display:none"
+    // V table
+    document.getElementById("StatBreakdown6VStarUpgrade61").innerHTML = "+ "+normFormat(g.Star61Effect*StarE(61))
+    output=g.Star61Effect*StarE(61)
+    document.getElementById("StatBreakdown6VStarUpgrade61T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6VRStarUpgrade61",StarE(61)?"show":"hide")
+    document.getElementById("StatBreakdown6VDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkVAxis)
+    output+=g.darkMatterFreeAxis*g.darkVAxis
+    document.getElementById("StatBreakdown6VDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6VRDarkMatter",(g.darkVAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6VSoftcap").innerHTML = "convergent, start "+g.WAxis+", limit "+(g.VAxis*2)
+    output=ConvergentSoftcap(output,g.VAxis,g.VAxis*2)
+    document.getElementById("StatBreakdown6VSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6VRSoftcap",(g.freeVAxis>g.VAxis)?"show":"hide")
+    g.freeVAxis=output
+    document.getElementById("SSB6VTable").style = (g.freeVAxis>0)?"display:inline-block":"display:none"
+    // U table
+    document.getElementById("StatBreakdown6UStarUpgrade62").innerHTML = "+ "+normFormat(g.Star62Effect*StarE(62))
+    output=g.Star62Effect*StarE(62)
+    document.getElementById("StatBreakdown6UStarUpgrade62T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6URStarUpgrade62",StarE(62)?"show":"hide")
+    document.getElementById("StatBreakdown6UDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkUAxis)
+    output+=g.darkMatterFreeAxis*g.darkUAxis
+    document.getElementById("StatBreakdown6UDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6URDarkMatter",(g.darkUAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6USoftcap").innerHTML = "convergent, start "+g.UAxis+", limit "+(g.UAxis*2)
+    output=ConvergentSoftcap(output,g.UAxis,g.UAxis*2)
+    document.getElementById("StatBreakdown6VSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6URSoftcap",(g.freeVAxis>g.VAxis)?"show":"hide")
+    g.freeUAxis=output
+    document.getElementById("SSB6UTable").style = (g.freeUAxis>0)?"display:inline-block":"display:none"
+    // T table
+    document.getElementById("StatBreakdown6TStarUpgrade63").innerHTML = "+ "+normFormat(g.Star63Effect*StarE(63))
+    output=g.Star63Effect*StarE(63)
+    document.getElementById("StatBreakdown6TStarUpgrade63T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6TRStarUpgrade63",StarE(63)?"show":"hide")
+    document.getElementById("StatBreakdown6TDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkTAxis)
+    output+=g.darkMatterFreeAxis*g.darkTAxis
+    document.getElementById("StatBreakdown6TDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6TRDarkMatter",(g.darkTAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6TSoftcap").innerHTML = "convergent, start "+g.TAxis+", limit "+(g.TAxis*2)
+    output=ConvergentSoftcap(output,g.TAxis,g.TAxis*2)
+    document.getElementById("StatBreakdown6TSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6TRSoftcap",(g.freeTAxis>g.TAxis)?"show":"hide")
+    g.freeTAxis=output
+    document.getElementById("SSB6TTable").style = (g.freeTAxis>0)?"display:inline-block":"display:none"
+    // S table
+    document.getElementById("StatBreakdown6SStarUpgrade64").innerHTML = "+ "+normFormat(StarE(64))
+    output=StarE(64)
+    document.getElementById("StatBreakdown6SStarUpgrade64T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6SRStarUpgrade64",StarE(64)?"show":"hide")
+    document.getElementById("StatBreakdown6SDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkSAxis)
+    output+=g.darkMatterFreeAxis*g.darkSAxis
+    document.getElementById("StatBreakdown6SDarkMatterT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6SRDarkMatter",(g.darkSAxis>0)?"show":"hide")
+    document.getElementById("StatBreakdown6SSoftcap").innerHTML = "convergent, start "+g.WAxis+", limit "+(g.SAxis*2)
+    output=ConvergentSoftcap(output,g.SAxis,g.SAxis*2)
+    document.getElementById("StatBreakdown6SSoftcapT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown6SRSoftcap",(g.freeSAxis>g.SAxis)?"show":"hide")
+    g.freeSAxis=output
+    document.getElementById("SSB6STable").style = (g.freeSAxis>0)?"display:inline-block":"display:none"
+    document.getElementById("SSBBFreeAxis").style = (g.freeXAxis+g.freeYAxis+g.freeZAxis+g.freeWAxis+g.freeVAxis+g.freeUAxis+g.freeTAxis+g.freeSAxis>0)?"display:inline-block":"display:none"
+  } else if (x==7) {
+    // X table
+    output=Math.log10(3)
+    document.getElementById("StatBreakdown7XDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+7)/8)/10)
+    output*=1+Math.floor((g.darkstars+7)/8)/10
+    document.getElementById("StatBreakdown7XDarkStarsT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7XRDarkStars",(g.darkstars>0)?"show":"hide")
+    document.getElementById("StatBreakdown7XMastery61").innerHTML = "^ "+normFormat(g.Mastery61Effect**MasteryE(61))
+    output*=g.Mastery61Effect**MasteryE(61)
+    document.getElementById("StatBreakdown7XMastery61T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7XRMastery61",MasteryE(61)?"show":"hide")
+    g.darkXAxisEffect=output
+    // Y table
+    output=Math.log10(4)
+    document.getElementById("StatBreakdown7YDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+6)/8)/10)
+    output*=1+Math.floor((g.darkstars+6)/8)/10
+    document.getElementById("StatBreakdown7YDarkStarsT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7YRDarkStars",(g.darkstars>0)?"show":"hide")
+    document.getElementById("StatBreakdown7YStar84").innerHTML = "^ 5"
+    output*=StarE(84)?5:1
+    document.getElementById("StatBreakdown7YStar84T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7YRStar84",StarE(84)?"show":"hide")
+    g.darkYAxisEffect=output
+    // Z table
+    output=(infAdd(g.exoticmatter/200,1)-1)**0.2/5
+    document.getElementById("StatBreakdown7ZBaseEffect").innerHTML = "(("+infFormat(g.exoticmatter,true)+" ^ 0.005 / 10 + 1) dilate 0.2) ^ 0.2"
+    document.getElementById("StatBreakdown7ZBaseEffectT").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown7ZDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+5)/8)/10)
+    output*=1+Math.floor((g.darkstars+5)/8)/10
+    document.getElementById("StatBreakdown7ZDarkStarsT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7ZRDarkStars",(g.darkstars>0)?"show":"hide")
+    document.getElementById("StatBreakdown7ZStardustBoost6").innerHTML = "^ "+normFormat(g.StardustBoost6)
+    output*=g.StardustBoost6
+    document.getElementById("StatBreakdown7ZStardustBoost6T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7ZRStardustBoost6",(g.StardustBoost6==1)?"hide":"show")
+    g.darkZAxisEffect=output
+    // W table
+    output=Math.log10(1.15)
+    document.getElementById("StatBreakdown7WDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+4)/8)/10)
+    output*=1+Math.floor((g.darkstars+4)/8)/10
+    document.getElementById("StatBreakdown7WDarkStarsT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7WRDarkStars",(g.darkstars>0)?"show":"hide")
+    g.darkWAxisEffect=output
+    // V table
+    output=10
+    document.getElementById("StatBreakdown7VDarkStars").innerHTML = "× "+normFormat(1+Math.floor((g.darkstars+3)/8)/10)
+    output*=1+Math.floor((g.darkstars+3)/8)/10
+    document.getElementById("StatBreakdown7VDarkStarsT").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown7VRDarkStars",(g.darkstars>0)?"show":"hide")
+    output/=100
+    g.darkVAxisEffect=output
+    // U table
+    output=Math.log10(1.02)
+    document.getElementById("StatBreakdown7UDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+2)/8)/10)
+    output*=1+Math.floor((g.darkstars+2)/8)/10
+    document.getElementById("StatBreakdown7UDarkStarsT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7URDarkStars",(g.darkstars>0)?"show":"hide")
+    g.darkUAxisEffect=output
+    // T table
+    output=infAdd(g.truetimeThisStardustReset-3,0)**0.5
+    document.getElementById("StatBreakdown7TBaseEffect").innerHTML = "(1 + "+infFormat(g.truetimeThisStardustReset,false)+" / 1000) dilate 0.5"
+    document.getElementById("StatBreakdown7TBaseEffectT").innerHTML = infFormat(output,true)
+    document.getElementById("StatBreakdown7TDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+1)/8)/10)
+    output*=1+Math.floor((g.darkstars+1)/8)/10
+    document.getElementById("StatBreakdown7TDarkStarsT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown7TRDarkStars",(g.darkstars>0)?"show":"hide")
+    g.darkTAxisEffect=output
+    // S table
+    output=1.01
+    document.getElementById("StatBreakdown7SDarkStars").innerHTML = "^ "+normFormat(1+Math.floor(g.darkstars/8)/10)+((g.darkstars>90)?" (softcapped to "+normFormat(LogarithmicSoftcap(1+Math.floor(g.darkstars/8)/10,10,10))+")":"")
+    output**=LogarithmicSoftcap(1+Math.floor(g.darkstars/8)/10,10,10)
+    document.getElementById("StatBreakdown7SDarkStarsT").innerHTML = normFormat(output,)
+    toggleTableRow("StatBreakdown7SRDarkStars",(g.darkstars>0)?"show":"hide")
+    g.darkSAxisEffect=output
+    document.getElementById("SSBBDarkAxisEffects").style = (g.stardustUpgrades[4]>0)?"display:inline-block":"display:none"
+  } else if (x==8) {
+    // Divisor table
+    document.getElementById("StatBreakdown8DiMastery12").innerHTML = "× "+infFormat(g.Mastery12Effect*MasteryE(12),true)
+    output=g.Mastery12Effect*MasteryE(12)
+    document.getElementById("StatBreakdown8DiMastery12T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown8DiRMastery12",MasteryE(12)?"show":"hide")
+    document.getElementById("StatBreakdown8DiVAxis").innerHTML = "× "+infFormat(g.VAxisEffect,true)+" ^ "+normFormat(g.realVAxis)
+    output+=g.VAxisEffect*g.realVAxis
+    document.getElementById("StatBreakdown8DiVAxisT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown8DiRVAxis",((g.VAxisEffect!==0)&&(g.realVAxis!==0))?"show":"hide")
+    g.axisCostDivisor=output
+    document.getElementById("SSB8DivisorTable").style = (g.axisCostDivisor==0)?"display:none":"display:inline-block"
+    // Exponent table
+    document.getElementById("StatBreakdown8ExStar81").innerHTML = "× 0.5"
+    output=StarE(81)?0.5:1
+    document.getElementById("StatBreakdown8ExStar81T").innerHTML = normFormat(output)
+    toggleTableRow("StatBreakdown8ExRStar81",StarE(81)?"show":"hide")
+    g.axisCostExponent=output
+    document.getElementById("SSBBAxisCostReduction").style = ((g.axisCostDivisor==0)&&(g.axisCostExponent==1))?"display:none":"display:inline-block"
+  } else if (x==9) {
+    // Divisor table
+    document.getElementById("StatBreakdown9DiDarkYAxis").innerHTML = "× "+infFormat(g.darkYAxisEffect,true)+" ^ "+normFormat(g.realdarkYAxis)
+    output=g.darkYAxisEffect*g.realdarkYAxis
+    document.getElementById("StatBreakdown9DiDarkYAxisT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown9DiRDarkYAxis",((g.darkYAxisEffect!==0)&&(g.realdarkYAxis!==0))?"show":"hide")
+    g.darkaxisCostDivisor=output
+    document.getElementById("SSB9DivisorTable").style = (g.darkaxisCostDivisor==0)?"display:none":"display:inline-block"
+    // Exponent table
+    document.getElementById("StatBreakdown9ExMastery62").innerHTML = "× "+normFormat(g.Mastery62Effect**MasteryE(62))
+    output=g.Mastery62Effect**MasteryE(62)
+    document.getElementById("StatBreakdown9ExMastery62T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown9ExRMastery62",MasteryE(62)?"show":"hide")
+    document.getElementById("StatBreakdown9ExStar83").innerHTML = "× 0.5"
+    output*=StarE(83)?0.5:1
+    document.getElementById("StatBreakdown9ExStar83T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown9ExRStar83",StarE(83)?"show":"hide")
+    g.darkaxisCostExponent=output
+    document.getElementById("SSB9ExponentTable").style = (g.darkaxisCostExponent==1)?"display:none":"display:inline-block"
+    document.getElementById("SSBBAxisCostReduction").style = ((g.darkaxisCostDivisor==0)&&(g.darkaxisCostExponent==1))?"display:none":"display:inline-block"
+  } else if (x==10) {
+    // Speed table
+    document.getElementById("StatBreakdown10SpMastery71").innerHTML = "× "+normFormat(g.Mastery71Effect*MasteryE(71),true)
+    output=Math.log10(g.Mastery71Effect)*MasteryE(71)
+    document.getElementById("StatBreakdown10SpMastery71T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown10SpRMastery71",MasteryE(71)?"show":"hide")
+    document.getElementById("StatBreakdown10SpMetaEnergy").innerHTML = "× "+normFormat(g.metaEnergyEffect)
+    output+=Math.log10(g.metaEnergyEffect)
+    document.getElementById("StatBreakdown10SpMetaEnergyT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown10SpRMetaEnergy",(g.metaEnergyEffect==1)?"hide":"show")
+    document.getElementById("StatBreakdown10SpTickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
+    output+=g.tickspeed
+    document.getElementById("StatBreakdown10SpTickspeedT").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown10SpRTickspeed",(g.tickspeed==0)?"hide":"show")
+    g.energySpeedMult=output
+    document.getElementById("SSB10SpeedTable").style = (g.energySpeedMult==0)?"display:none":"display:inline-block"
+    // Effect table
+    document.getElementById("StatBreakdown10EfMastery72").innerHTML = "× "+normFormat(g.Mastery72Effect**MasteryE(72))
+    output=g.Mastery72Effect**MasteryE(72)
+    document.getElementById("StatBreakdown10EfMastery72T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown10EfRMastery72",((g.darkVAxisEffect!==0)&&(g.realdarKVAxis!==0))?"show":"hide")
+    g.energyEffectBoost=output
+    document.getElementById("SSB10EffectTable").style = (g.energyEffectBoost==1)?"display:none":"display:inline-block"
+    document.getElementById("SSBBEnergy").style = ((g.energySpeedMult==0)&&(g.energyEffectBoost==1))?"display:none":"display:inline-block"
+  } else if (x==11) {
+    document.getElementById("StatBreakdown11Star71").innerHTML = "× "+normFormat(1+g.Star71Effect/100)
+    output=Math.log10(1+g.Star71Effect/100)*StarE(71)
+    document.getElementById("StatBreakdown11Star71T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown11RStar71",StarE(71)?"show":"hide")
+    document.getElementById("StatBreakdown11Star72").innerHTML = "× "+normFormat(1+g.Star72Effect/100)
+    output+=Math.log10(1+g.Star72Effect/100)*StarE(72)
+    document.getElementById("StatBreakdown11Star72T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown11RStar72",StarE(72)?"show":"hide")
+    document.getElementById("StatBreakdown11Star73").innerHTML = "× "+normFormat(1+g.Star73Effect/100)
+    output+=Math.log10(1+g.Star73Effect/100)*StarE(73)
+    document.getElementById("StatBreakdown11Star73T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown11RStar73",StarE(73)?"show":"hide")
+    document.getElementById("StatBreakdown11Star74").innerHTML = "× "+normFormat(1+g.Star74Effect/100)
+    output+=Math.log10(1+g.Star74Effect/100)*StarE(74)
+    document.getElementById("StatBreakdown11Star74T").innerHTML = infFormat(output,true)
+    toggleTableRow("StatBreakdown11RStar74",StarE(74)?"show":"hide")
+    g.tickspeed=output
+    document.getElementById("SSBBTickspeed").style = (g.tickspeed==0)?"display:none":"display:inline-block"
   }
 }
-function tributeReset() {
-  if (pendingTributes>tributes) {
-    exoticmatter=0
-    exoticmatterPerSec=0
-    XAxis=0
-    YAxis=0
-    ZAxis=0
-    WAxis=0
-    VAxis=0
-    UAxis=0
-    TAxis=0
-    SAxis=0
-    exoticmatterThisTributeReset=0
-    fastestTributeReset=Math.min(fastestTributeReset,timeThisTributeReset)
-    timeThisTributeReset=0
-    tributes=pendingTributes
-    tributeResets++
-    expandingEnergy=0
-    divineEnergy=0
-    darkEnergy=0
+function stardustReset(x) {
+  if ((g.pendingstardust>g.stardust)||(x=="force")) {
+    if (x!=="force") {
+      g.stardust=infFloor(g.pendingstardust)
+      if (g.fastestStardustReset>1e12) openStory("Stardust")
+      g.fastestStardustReset=Math.min(g.fastestStardustReset,g.timeThisStardustReset)
+      g.StardustResets++
+    }
+    g.exoticmatter=0
+    g.exoticmatterPerSec=0
+    g.XAxis=(g.stardustUpgrades[1]>=2)?Math.floor(g.XAxis/10):0
+    g.YAxis=(g.stardustUpgrades[1]>=3)?Math.floor(g.YAxis/10):0
+    g.ZAxis=(g.stardustUpgrades[1]>=4)?Math.floor(g.ZAxis/10):0
+    g.WAxis=(g.stardustUpgrades[1]>=5)?Math.floor(g.WAxis/10):0
+    g.VAxis=(g.stardustUpgrades[1]>=6)?Math.floor(g.VAxis/10):0
+    g.UAxis=(g.stardustUpgrades[1]>=7)?Math.floor(g.UAxis/10):0
+    g.TAxis=(g.stardustUpgrades[1]>=8)?Math.floor(g.TAxis/10):0
+    g.SAxis=(g.stardustUpgrades[1]>=9)?Math.floor(g.SAxis/10):0
+    g.masteryPower=-100
+    g.baseMasteryPowerGain=0
+    g.exoticmatterThisStardustReset=0
+    g.timeThisStardustReset=0
+    g.truetimeThisStardustReset=-100
+    g.darkEnergy=0
+    g.stelliferousEnergy=0
+    g.gravitationalEnergy=0
+    g.spatialEnergy=0
+    g.neuralEnergy=0
+    g.metaEnergy=0
+    g.EMSupernova.charges=g.EMSupernova.maxCharges
+    g.KnowledgeSupernova.charges=g.KnowledgeSupernova.maxCharges
   }
 }
-function forceTributeReset() {
-  exoticmatter=0
-  exoticmatterPerSec=0
-  XAxis=0
-  YAxis=0
-  ZAxis=0
-  WAxis=0
-  VAxis=0
-  UAxis=0
-  TAxis=0
-  SAxis=0
-  exoticmatterThisTributeReset=0
-  timeThisTributeReset=0
-  expandingEnergy=0
-  divineEnergy=0
-  darkEnergy=0
-}
-function buyTributeUpgradeOne() {
-  if ((tributes>=tributeUpgradeOne.cost[tributeUpgradeOne.purchased]) && (tributeUpgradeOne.purchased < 4)) {
-    tributes=infSubtract(tributes,tributeUpgradeOne.cost[tributeUpgradeOne.purchased])
-    tributeUpgradeOne.purchased++
+function buyStardustUpgrade1() {
+  if ((g.stardust>=stardustUpgrade1Cost[g.stardustUpgrades[0]]) && (g.stardustUpgrades[0] < 4)) {
+    infDeduct("stardust",stardustUpgrade1Cost[g.stardustUpgrades[0]])
+    g.stardustUpgrades[0]++
   }
 }
-function buyTributeUpgradeTwo() {
-  if ((tributes>=tributeUpgradeTwo.cost[tributeUpgradeTwo.purchased]) && (tributeUpgradeTwo.purchased < 8)) {
-    tributes=infSubtract(tributes,tributeUpgradeTwo.cost[tributeUpgradeTwo.purchased])
-    tributeUpgradeTwo.purchased++
+function buyStardustUpgrade2() {
+  if ((g.stardust>=stardustUpgrade2Cost[g.stardustUpgrades[1]]) && (g.stardustUpgrades[1] < 9)) {
+    infDeduct("stardust",stardustUpgrade2Cost[g.stardustUpgrades[1]])
+    g.stardustUpgrades[1]++
   }
 }
-function buyTributeUpgradeThree() {
-  if ((tributes>=tributeUpgradeThree.cost[tributeUpgradeThree.purchased]) && (tributeUpgradeThree.purchased < 6)) {
-    tributes=infSubtract(tributes,tributeUpgradeThree.cost[tributeUpgradeThree.purchased])
-    tributeUpgradeThree.purchased++
+function buyStardustUpgrade3() {
+  if ((g.stardust>=stardustUpgrade3Cost[g.stardustUpgrades[2]]) && (g.stardustUpgrades[2] < 6)) {
+    infDeduct("stardust",stardustUpgrade3Cost[g.stardustUpgrades[2]])
+    g.stardustUpgrades[2]++
+  }
+}
+function buyStardustUpgrade4() {
+  if ((g.stardust>=stardustUpgrade4Cost[g.stardustUpgrades[3]]) && (g.stardustUpgrades[3] < 5)) {
+    infDeduct("stardust",stardustUpgrade4Cost[g.stardustUpgrades[3]])
+    g.stardustUpgrades[3]++
+  }
+}
+function buyStardustUpgrade5() {
+  if ((g.stardust>=stardustUpgrade5Cost[g.stardustUpgrades[4]]) && (g.stardustUpgrades[4] < 7)) {
+    infDeduct("stardust",stardustUpgrade5Cost[g.stardustUpgrades[4]])
+    g.stardustUpgrades[4]++
+    if ((g.stardustUpgrades[4]==1)&&(g.fastestWormholeReset>1e12)) openStory("Dark Matter")
+    if ((g.stardustUpgrades[4]==2)&&(g.fastestWormholeReset>1e12)) openStory("Energy")
   }
 }
 function toggleAxisAutobuyer() {
-  if (axisAutobuyerOn == true) {
-    axisAutobuyerOn = false
-  } else {
-    axisAutobuyerOn = true
-  }
+  g.axisAutobuyerOn = !g.axisAutobuyerOn
 }
 function upgradeAxisAutobuyer() {
-  if ((exoticmatter>=axisAutobuyerCost) && (axisAutobuyerUpgrades < 167)) {
-    exoticmatter=infSubtract(exoticmatter,axisAutobuyerCost)
-    axisAutobuyerUpgrades++
+  while ((g.exoticmatter>=g.axisAutobuyerCost) && (g.axisAutobuyerInterval>0.1)) {
+    infDeduct("exoticmatter",g.axisAutobuyerCost)
+    g.axisAutobuyerUpgrades++
   }
 }
-function buyEnhancer() {
-  if ((tributes>=enhancerCost) && (enhancers < 16)) {
-    tributes=infSubtract(tributes,enhancerCost)
-    enhancers++
-    unspentEnhancers++
-    enhancerCost=enhancerCost*1.05+0.1359785*enhancers**1.6338
+function buyStar() {
+  if ((g.stardust>=g.starCost) && (g.stars < 40)) {
+    infDeduct("stardust",g.starCost)
+    g.stars++
+    g.unspentStars++
+    if ((g.stars==24)&&(g.fastestWormholeReset>1e12)) openStory("Supernova")
   }
 }
-function buyEnhancerUpgrade(x) {
-  if ((unspentEnhancers > 0) && (Math.floor(x/10) == enhancerRow[enhancers-unspentEnhancers])) {
-    if ((x==11) && (ownedEnhancers.OneOne == 0)) {
-      ownedEnhancers.OneOne=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==12) && (ownedEnhancers.OneTwo == 0)) {
-      ownedEnhancers.OneTwo=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==13) && (ownedEnhancers.OneThree == 0)) {
-      ownedEnhancers.OneThree=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==14) && (ownedEnhancers.OneFour == 0)) {
-      ownedEnhancers.OneFour=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==21) && (ownedEnhancers.TwoOne == 0)) {
-      ownedEnhancers.TwoOne=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==22) && (ownedEnhancers.TwoTwo == 0)) {
-      ownedEnhancers.TwoTwo=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==23) && (ownedEnhancers.TwoThree == 0)) {
-      ownedEnhancers.TwoThree=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==24) && (ownedEnhancers.TwoFour == 0)) {
-      ownedEnhancers.TwoFour=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==31) && (ownedEnhancers.ThreeOne == 0)) {
-      ownedEnhancers.ThreeOne=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==32) && (ownedEnhancers.ThreeTwo == 0)) {
-      ownedEnhancers.ThreeTwo=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==33) && (ownedEnhancers.ThreeThree == 0)) {
-      ownedEnhancers.ThreeThree=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==34) && (ownedEnhancers.ThreeFour == 0)) {
-      ownedEnhancers.ThreeFour=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==41) && (ownedEnhancers.FourOne == 0)) {
-      ownedEnhancers.FourOne=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==42) && (ownedEnhancers.FourTwo == 0)) {
-      ownedEnhancers.FourTwo=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==43) && (ownedEnhancers.FourThree == 0)) {
-      ownedEnhancers.FourThree=1
-      unspentEnhancers=unspentEnhancers-1
-    } else if ((x==44) && (ownedEnhancers.FourFour == 0)) {
-      ownedEnhancers.FourFour=1
-      unspentEnhancers=unspentEnhancers-1
+function buyStarUpgrade(x) {
+  if ((g.unspentStars > 0) && (Math.floor(x/10) == g.starRow[g.stars-g.unspentStars])) {
+    if (!(g.ownedStars.includes(x))) {
+      g.ownedStars.push(x)
+      g.unspentStars--
     }
   }
 }
-function respecEnhancers() {
-  ownedEnhancers.OneOne=0
-  ownedEnhancers.OneTwo=0
-  ownedEnhancers.OneThree=0
-  ownedEnhancers.OneFour=0
-  ownedEnhancers.TwoOne=0
-  ownedEnhancers.TwoTwo=0
-  ownedEnhancers.TwoThree=0
-  ownedEnhancers.TwoFour=0
-  ownedEnhancers.ThreeOne=0
-  ownedEnhancers.ThreeTwo=0
-  ownedEnhancers.ThreeThree=0
-  ownedEnhancers.ThreeFour=0
-  ownedEnhancers.FourOne=0
-  ownedEnhancers.FourTwo=0
-  ownedEnhancers.FourThree=0
-  ownedEnhancers.FourFour=0
-  unspentEnhancers=enhancers
-  forceTributeReset()
+function respecStars() {
+  g.ownedStars=[]
+  g.unspentStars=g.stars
+  stardustReset("force")
 }
-function updateDarkAxisCosts() {
-  darkXAxisCost = (1+darkXAxis**Math.max(1,darkXAxis/darkaxisScalingStart)**0.7-darkaxisCostDivisor)*darkaxisCostExponent
-  darkYAxisCost = (2+(darkYAxis+darkYAxis**(1+Math.max(1,darkYAxis/darkaxisScalingStart)))*2-darkaxisCostDivisor)*darkaxisCostExponent
-  darkZAxisCost = (4+2*darkZAxis**2*1.01**Math.max(0,darkZAxis-darkaxisScalingStart)**1.5-darkaxisCostDivisor)*darkaxisCostExponent
-  darkWAxisCost = (8*1.375**darkWAxis**0.813352889*1.01**Math.max(0,darkWAxis-darkaxisScalingStart)**2-darkaxisCostDivisor)*darkaxisCostExponent
-  darkVAxisCost = (16+darkVAxis*5+darkVAxis**2*2+darkVAxis**(2+Math.max(1,darkVAxis/darkaxisScalingStart))-darkaxisCostDivisor)*darkaxisCostExponent
-  darkUAxisCost = (14+14*(0.25+Math.max(1,darkUAxis/darkaxisScalingStart))**darkUAxis-darkaxisCostDivisor)*darkaxisCostExponent
-  darkTAxisCost = (36*1.1**Math.max(0,darkTAxis-darkaxisScalingStart)+20*darkTAxis-darkaxisCostDivisor)*darkaxisCostExponent
-  darkSAxisCost = (40+(darkSAxis+1)**(3+Math.max(0,darkSAxis-darkaxisScalingStart))-darkaxisCostDivisor)*darkaxisCostExponent
+function StarE(x) {
+  return g.ownedStars.includes(x)
 }
-function buyDarkXAxis() {
-  if (darkmatter>darkXAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkXAxisCost)
-    darkXAxis++
-  }
-}
-function buyDarkYAxis() {
-  if (darkmatter>darkYAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkYAxisCost)
-    darkYAxis++
-  }
-}
-function buyDarkZAxis() {
-  if (darkmatter>darkZAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkZAxisCost)
-    darkZAxis++
-  }
-}
-function buyDarkWAxis() {
-  if (darkmatter>darkWAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkWAxisCost)
-    darkWAxis++
-  }
-}
-function buyDarkVAxis() {
-  if (darkmatter>darkVAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkVAxisCost)
-    darkVAxis++
-  }
-}
-function buyDarkUAxis() {
-  if (darkmatter>darkUAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkUAxisCost)
-    darkUAxis++
-  }
-}
-function buyDarkTAxis() {
-  if (darkmatter>darkTAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkTAxisCost)
-    darkTAxis++
-  }
-}
-function buyDarkSAxis() {
-  if (darkmatter>darkSAxisCost) {
-    darkmatter=infSubtract(darkmatter,darkSAxisCost)
-    darkSAxis++
-  }
-}
-function gainAxiom() {
-  if (totaldarkAxis >= axiomRequirement) {
-    darkmatter=0
-    darkmatterPerSec=0
-    darkXAxis=0
-    darkYAxis=0
-    darkZAxis=0
-    darkWAxis=0
-    darkVAxis=0
-    darkUAxis=0
-    darkTAxis=0
-    darkSAxis=0
-    axioms++
-    if (exoticmatter > tributeExoticMatterReq) {
-      tributeReset()
-    } else {
-      forceTributeReset()
-    }
+function buyDarkAxis(x) {
+  if (g.darkmatter>g["dark"+x+"AxisCost"]) {
+    infDeduct("darkmatter",g["dark"+x+"AxisCost"])
+    g["dark"+x+"Axis"]++
   }
 }
 
+function buyMaxDarkAxis() {
+  for (i=0; i<8; i++) {
+    while (g.darkmatter>g["dark"+axisCodes[i]+"AxisCost"]) {
+      buyDarkAxis(axisCodes[i])
+      updateDarkAxisCosts()
+    }
+  }
+}
+function updateDarkAxisCosts() {
+  g.darkXAxisCost = (1+normLinearScaling(normSemiexpScaling(g.darkXAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**1.2-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkYAxisCost = (2+2*normLinearScaling(normSemiexpScaling(g.darkYAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkZAxisCost = (10+normLinearScaling(normSemiexpScaling(g.darkZAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkWAxisCost = (15+normLinearScaling(normSemiexpScaling(g.darkWAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**1.5-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkVAxisCost = (30+normLinearScaling(normSemiexpScaling(g.darkVAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**1.25-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkUAxisCost = (45+normLinearScaling(normSemiexpScaling(g.darkUAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**2-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkTAxisCost = (100+4*normLinearScaling(normSemiexpScaling(g.darkTAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  g.darkSAxisCost = (308.2547155599167*1.2**normLinearScaling(normSemiexpScaling(g.darkSAxis,g.darkaxisSuperscalingStart,5),g.darkaxisScalingStart,2)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+}
+function updateDarkStarCost() {
+  g.darkstarRequirement=24+3*g.darkstars
+  g.darkstarRequirement+=Math.floor(g.darkstars/4)*(g.darkstars%4)+4*normSimplex(Math.max(0,Math.floor(g.darkstars/4-1)),2)
+  g.darkstarRequirement*=1.05**Math.max(0,g.darkstars-g.darkstarScalingStart)                                                                               // Scaling
+  g.darkstarRequirement=Math.ceil(g.darkstarRequirement-g.Mastery63Effect*MasteryE(63))
+}
+function gainDarkStar() {
+  while (g.totaldarkAxis >= g.darkstarRequirement) {
+    g.darkmatter=0
+    g.darkmatterPerSec=0
+    g.darkXAxis=0
+    g.darkYAxis=0
+    g.darkZAxis=0
+    g.darkWAxis=0
+    g.darkVAxis=0
+    g.darkUAxis=0
+    g.darkTAxis=0
+    g.darkSAxis=0
+    g.darkstars++
+    updateDarkStarCost()
+    stardustReset((g.pendingstardust > g.stardust)?"normal":"force")
+  }
+}
+function supernova(x) {
+  if (x==1) {
+    if (g.EMSupernova.charges>0) {
+      g.EMSupernova.charges--
+      incrementExoticMatter(g.exoticmatterPerSec*g.EMSupernova.power)
+    }
+  } else if (x==2) {
+    if (g.KnowledgeSupernova.charges>0) {
+      g.KnowledgeSupernova.charges--
+      infIncrement("masteryPower",g.masteryPowerPerSec*g.KnowledgeSupernova.power)
+    }
+  }
+}
+function unlockSupernova(x) {
+  if ((x==2)&&(g.KnowledgeSupernova.unlocked==false)&&(g.masteryPower>65)) {
+    infDeduct("masteryPower",65)
+    g.KnowledgeSupernova.unlocked=true
+  }
+}
+function upgradeSupernova(x,y) {
+  let resource=["exoticmatter","masteryPower"]
+  let types=["EMSupernova","KnowledgeSupernova"]
+  if (g[resource[x]]>SupernovaCosts[x][y]) {
+    g[types[x]]["upgrade"+(y+1)]++
+    infDeduct(resource[x],SupernovaCosts[x][y])
+  }
+}
 
 
 
@@ -800,729 +1340,665 @@ window.setInterval(function(){                                                  
 
 
   // QoL section
-  if ((offlineTime > 0) && (baseOfflineSpeedup > 1+5/offlineSpeedupLength)) {
+  if ((baseOfflineSpeedup>1)&&(offlineTime>0)) {
     offlineSpeedup = baseOfflineSpeedup
-    offlineTime = offlineTime-0.05
+    offlineTime = offlineTime-deltatime
     document.getElementById("offlineSpeedupDisplay").innerHTML = "Offline speedup: "+normFormat(offlineSpeedup)+"x     Offline time left: "+normFormat(offlineTime)+"s"
   } else {
     offlineSpeedup = 1
     document.getElementById("offlineSpeedupDisplay").innerHTML = ""
   }
   document.getElementById("offlineSpeedupLength").innerHTML = offlineSpeedupLength+"s"
-  if (isNaN(exoticmatter)) {
-    debugSave()
-  }
   ProgressBar()
+  oldframetime=newframetime
+  newframetime=new Date().getTime()
+  deltatime=(newframetime-oldframetime)/1000
 
 
   // Exotic matter section
-  axisCostDivisor = VAxisEffect*(VAxis+freeVAxis)
-  axisCostExponent = 1
-  axisScalingStart = 10+tributeBoostSeven
-  axisSuperscalingStart
-  freeXAxis = Math.min(2*XAxis,2*ownedEnhancers.TwoOne+(darkXAxis*darkMatterFreeAxis))
-  XAxisEffect = infAdd(0.3010299957,Math.log10(Math.max(1e-100,YAxis+freeYAxis))+YAxisEffect);
-  freeYAxis = Math.min(2*YAxis,2*ownedEnhancers.TwoTwo+(darkYAxis*darkMatterFreeAxis))
-  YAxisEffect = -0.903089987+Math.log10(1+tributeBoostTwo/100);
-  freeZAxis = Math.min(2*ZAxis,2*ownedEnhancers.TwoThree+(darkZAxis*darkMatterFreeAxis))
-  ZAxisEffect = (Math.log10(Math.log10(Math.max(exoticmatter,0)+1)+1)+1)**(Math.log10(Math.log10(Math.max(exoticmatter,0)+1)+1)+1)**2-1
-  freeWAxis = Math.min(2*WAxis,2*ownedEnhancers.TwoFour+(darkWAxis*darkMatterFreeAxis))
-  WAxisEffect = Math.log10(Math.log10(timeThisTributeReset/10+100))+tributeBoostThree
-  freeVAxis = Math.min(2*VAxis,(darkVAxis*darkMatterFreeAxis))
-  VAxisEffect = 0.3010299957*(1+tributeBoostEight/100)*(1+(darkVAxis+darkfreeVAxis)*darkVAxisEffect/100)
-  freeUAxis = Math.min(2*UAxis,(darkUAxis*darkMatterFreeAxis))
-  UAxisEffect = 0.07918124605*(1+(darkWAxis+darkfreeWAxis)*darkWAxisEffect/100)
-  freeTAxis = Math.min(2*TAxis,(darkTAxis*darkMatterFreeAxis))
-  TAxisEffect = Math.log10(totalAxis+1)**(1+Math.log10(totalAxis+1))/5
-  freeSAxis = Math.min(2*SAxis,(darkSAxis*darkMatterFreeAxis))
-  SAxisEffect = 1.025
+  g.axisCostDivisor = g.VAxisEffect*g.realVAxis+g.Mastery12Effect*MasteryE(12)
+  g.axisScalingStart = 8
+  g.axisSuperscalingStart = 128
   updateAxisCosts()
-  totalAxis = XAxis+YAxis+ZAxis+WAxis+VAxis+UAxis+TAxis+SAxis
-  axisUnlocked = Math.min(1+Math.sign(XAxis)+Math.sign(YAxis)+Math.sign(ZAxis)+Math.sign(WAxis)+Math.sign(VAxis)+Math.sign(UAxis)+Math.sign(TAxis)+Math.sign(SAxis),4+tributeUpgradeOne.purchased)
-  document.getElementById("XAxisButton").style=(axisUnlocked<1)?"display:none":"display:inline-block"
-  document.getElementById("YAxisButton").style=(axisUnlocked<2)?"display:none":"display:inline-block"
-  document.getElementById("ZAxisButton").style=(axisUnlocked<3)?"display:none":"display:inline-block"
-  document.getElementById("WAxisButton").style=(axisUnlocked<4)?"display:none":"display:inline-block"
-  document.getElementById("VAxisButton").style=(axisUnlocked<5)?"display:none":"display:inline-block"
-  document.getElementById("UAxisButton").style=(axisUnlocked<6)?"display:none":"display:inline-block"
-  document.getElementById("TAxisButton").style=(axisUnlocked<7)?"display:none":"display:inline-block"
-  document.getElementById("SAxisButton").style=(axisUnlocked<8)?"display:none":"display:inline-block"
-  document.getElementById("XAxisButton").className=(exoticmatter<XAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("YAxisButton").className=(exoticmatter<YAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("ZAxisButton").className=(exoticmatter<ZAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("WAxisButton").className=(exoticmatter<WAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("VAxisButton").className=(exoticmatter<VAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("UAxisButton").className=(exoticmatter<UAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("TAxisButton").className=(exoticmatter<TAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("SAxisButton").className=(exoticmatter<SAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("XAxisEffect").innerHTML = infFormat(XAxisEffect,true);
-  document.getElementById("XAxisCost").innerHTML = infFormat(XAxisCost,false);
-  document.getElementById("XAxisAmount").innerHTML = (freeXAxis > 0) ? XAxis+" + "+normFormat(freeXAxis) : XAxis;
-  document.getElementById("YAxisEffect").innerHTML = infFormat(YAxisEffect,true);
-  document.getElementById("YAxisCost").innerHTML = infFormat(YAxisCost,false);
-  document.getElementById("YAxisAmount").innerHTML = (freeYAxis > 0) ? YAxis+" + "+normFormat(freeYAxis) : YAxis;
-  document.getElementById("ZAxisEffect").innerHTML = infFormat(ZAxisEffect,true);
-  document.getElementById("ZAxisCost").innerHTML = infFormat(ZAxisCost,false);
-  document.getElementById("ZAxisAmount").innerHTML = (freeZAxis > 0) ? ZAxis+" + "+normFormat(freeZAxis) : ZAxis;
-  document.getElementById("WAxisEffect").innerHTML = infFormat(WAxisEffect,true);
-  document.getElementById("WAxisCost").innerHTML = infFormat(WAxisCost,false);
-  document.getElementById("WAxisAmount").innerHTML = (freeWAxis > 0) ? WAxis+" + "+normFormat(freeWAxis) : WAxis;
-  document.getElementById("VAxisEffect").innerHTML = infFormat(VAxisEffect,true);
-  document.getElementById("VAxisCost").innerHTML = infFormat(VAxisCost,false);
-  document.getElementById("VAxisAmount").innerHTML = (freeVAxis > 0) ? VAxis+" + "+normFormat(freeVAxis) : VAxis;
-  document.getElementById("UAxisEffect").innerHTML = infFormat(UAxisEffect,true);
-  document.getElementById("UAxisCost").innerHTML = infFormat(UAxisCost,false);
-  document.getElementById("UAxisAmount").innerHTML = (freeUAxis > 0) ? UAxis+" + "+normFormat(freeUAxis) : UAxis;
-  document.getElementById("TAxisEffect").innerHTML = infFormat(TAxisEffect,true);
-  document.getElementById("TAxisCost").innerHTML = infFormat(TAxisCost,false);
-  document.getElementById("TAxisAmount").innerHTML = (freeTAxis > 0) ? TAxis+" + "+normFormat(freeTAxis) : TAxis;
-  document.getElementById("SAxisEffect").innerHTML = Math.floor(SAxisEffect*10000)/10000;
-  document.getElementById("SAxisCost").innerHTML = infFormat(SAxisCost,false);
-  document.getElementById("SAxisAmount").innerHTML = (freeSAxis > 0) ? SAxis+" + "+normFormat(freeSAxis) : SAxis;
+  g.realXAxis=g.XAxis+g.freeXAxis
+  g.realYAxis=g.YAxis+g.freeYAxis
+  g.realZAxis=g.ZAxis+g.freeZAxis
+  g.realWAxis=g.WAxis+g.freeWAxis
+  g.realVAxis=g.VAxis+g.freeVAxis
+  g.realUAxis=g.UAxis+g.freeUAxis
+  g.realTAxis=g.TAxis+g.freeTAxis
+  g.realSAxis=g.SAxis+g.freeSAxis
+  g.totalAxis = g.XAxis+g.YAxis+g.ZAxis+g.WAxis+g.VAxis+g.UAxis+g.TAxis+g.SAxis
+  g.axisUnlocked = Math.min(1+Math.sign(g.XAxis)+Math.sign(g.YAxis)+Math.sign(g.ZAxis)+Math.sign(g.WAxis)+Math.sign(g.VAxis)+Math.sign(g.UAxis)+Math.sign(g.TAxis)+Math.sign(g.SAxis),4+g.stardustUpgrades[0])
+  document.getElementById("XAxisButton").style.display=(g.axisUnlocked<1)?"none":"inline-block"
+  document.getElementById("YAxisButton").style.display=(g.axisUnlocked<2)?"none":"inline-block"
+  document.getElementById("ZAxisButton").style.display=(g.axisUnlocked<3)?"none":"inline-block"
+  document.getElementById("WAxisButton").style.display=(g.axisUnlocked<4)?"none":"inline-block"
+  document.getElementById("VAxisButton").style.display=(g.axisUnlocked<5)?"none":"inline-block"
+  document.getElementById("UAxisButton").style.display=(g.axisUnlocked<6)?"none":"inline-block"
+  document.getElementById("TAxisButton").style.display=(g.axisUnlocked<7)?"none":"inline-block"
+  document.getElementById("SAxisButton").style.display=(g.axisUnlocked<8)?"none":"inline-block"
+  document.getElementById("XAxisButton").className=(g.exoticmatter<g.XAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("YAxisButton").className=(g.exoticmatter<g.YAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("ZAxisButton").className=(g.exoticmatter<g.ZAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("WAxisButton").className=(g.exoticmatter<g.WAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("VAxisButton").className=(g.exoticmatter<g.VAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("UAxisButton").className=(g.exoticmatter<g.UAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("TAxisButton").className=(g.exoticmatter<g.TAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("SAxisButton").className=(g.exoticmatter<g.SAxisCost)?"lockedaxisbutton":"axisbutton"
+  document.getElementById("XAxisEffect").innerHTML = infFormat(g.XAxisEffect,true);
+  document.getElementById("XAxisCost").innerHTML = infFormat(g.XAxisCost,false);
+  document.getElementById("XAxisAmount").innerHTML = (g.freeXAxis > 0) ? g.XAxis+" + "+normFormat(g.freeXAxis) : g.XAxis;
+  document.getElementById("YAxisEffect").innerHTML = infFormat(g.YAxisEffect,true);
+  document.getElementById("YAxisCost").innerHTML = infFormat(g.YAxisCost,false);
+  document.getElementById("YAxisAmount").innerHTML = (g.freeYAxis > 0) ? g.YAxis+" + "+normFormat(g.freeYAxis) : g.YAxis;
+  document.getElementById("ZAxisEffect").innerHTML = infFormat(g.ZAxisEffect,true);
+  document.getElementById("ZAxisCost").innerHTML = infFormat(g.ZAxisCost,false);
+  document.getElementById("ZAxisAmount").innerHTML = (g.freeZAxis > 0) ? g.ZAxis+" + "+normFormat(g.freeZAxis) : g.ZAxis;
+  document.getElementById("WAxisEffect").innerHTML = infFormat(g.WAxisEffect,true);
+  document.getElementById("WAxisCost").innerHTML = infFormat(g.WAxisCost,false);
+  document.getElementById("WAxisAmount").innerHTML = (g.freeWAxis > 0) ? g.WAxis+" + "+normFormat(g.freeWAxis) : g.WAxis;
+  document.getElementById("VAxisEffect").innerHTML = infFormat(g.VAxisEffect,true);
+  document.getElementById("VAxisCost").innerHTML = infFormat(g.VAxisCost,false);
+  document.getElementById("VAxisAmount").innerHTML = (g.freeVAxis > 0) ? g.VAxis+" + "+normFormat(g.freeVAxis) : g.VAxis;
+  document.getElementById("UAxisEffect").innerHTML = infFormat(g.UAxisEffect,true);
+  document.getElementById("UAxisCost").innerHTML = infFormat(g.UAxisCost,false);
+  document.getElementById("UAxisAmount").innerHTML = (g.freeUAxis > 0) ? g.UAxis+" + "+normFormat(g.freeUAxis) : g.UAxis;
+  document.getElementById("TAxisEffect").innerHTML = infFormat(g.TAxisEffect,true);
+  document.getElementById("TAxisCost").innerHTML = infFormat(g.TAxisCost,false);
+  document.getElementById("TAxisAmount").innerHTML = (g.freeTAxis > 0) ? g.TAxis+" + "+normFormat(g.freeTAxis) : g.TAxis;
+  document.getElementById("SAxisEffect").innerHTML = Math.floor(g.SAxisEffect*10000)/10000;
+  document.getElementById("SAxisCost").innerHTML = infFormat(g.SAxisCost,false);
+  document.getElementById("SAxisAmount").innerHTML = (g.freeSAxis > 0) ? g.SAxis+" + "+normFormat(g.freeSAxis) : g.SAxis;
+
+
+  // Mastery section
+  if (g.masteryRowsUnlocked.includes(1)) {
+    document.getElementById("masteriesButton").style="display:inline-block"
+    g.baseMasteryPowerGain=infAdd(g.baseMasteryPowerGain,Math.log10(deltatime*offlineSpeedup)+g.tickspeed)
+  } else {
+    document.getElementById("masteriesButton").style="display:none"
+  }
+  document.getElementById("masteryPowerDisplay").innerHTML = infFormat(g.masteryPower,false)
+  document.getElementById("masteryPowerPerSec").innerHTML = infFormat(g.masteryPowerPerSec,true)
+  g.masteryRowsUnlocked[0]=(g.XAxis>0 || g.masteryRowsUnlocked[0]==1)?1:0
+  g.masteryRowsUnlocked[1]=(g.exoticmatter>6 || g.masteryRowsUnlocked[1]==1)?1:0
+  g.masteryRowsUnlocked[2]=(g.exoticmatter>17 || g.masteryRowsUnlocked[2]==1)?1:0
+  g.masteryRowsUnlocked[3]=(g.exoticmatter>22 || g.masteryRowsUnlocked[3]==1)?1:0
+  g.masteryRowsUnlocked[4]=(g.stardustUpgrades[3]>=2 || g.masteryRowsUnlocked[4]==1)?1:0
+  g.masteryRowsUnlocked[5]=(g.stardustUpgrades[3]>=3 || g.masteryRowsUnlocked[5]==1)?1:0
+  g.masteryRowsUnlocked[6]=(g.stardustUpgrades[3]>=4 || g.masteryRowsUnlocked[6]==1)?1:0
+  g.masteryRowsUnlocked[7]=(g.stardustUpgrades[3]==5 || g.masteryRowsUnlocked[7]==1)?1:0
+  g.masteryRowsUnlocked[8]=g.masteryRowsUnlocked[7]
+  if (g.stardustUpgrades[3]>0) g.activeMasteries[0]=9
+  if ((g.stardustUpgrades[3]==0)&&(g.activeMasteries[0]==9)) g.activeMasteries[0]=0
+  if (StarE(51)) g.activeMasteries[1]=9
+  if ((!StarE(51))&&(g.activeMasteries[1]==9)) g.activeMasteries[1]=0
+  if (StarE(52)) g.activeMasteries[2]=9
+  if ((!StarE(52))&&(g.activeMasteries[2]==9)) g.activeMasteries[2]=0
+  if (StarE(53)) g.activeMasteries[3]=9
+  if ((!StarE(53))&&(g.activeMasteries[3]==9)) g.activeMasteries[3]=0
+  if (StarE(54)) g.activeMasteries[4]=9
+  if ((!StarE(54))&&(g.activeMasteries[4]==9)) g.activeMasteries[4]=0
+  if (StarE(101)) g.activeMasteries[5]=9
+  if ((!StarE(101))&&(g.activeMasteries[5]==9)) g.activeMasteries[5]=0
+  if (StarE(102)) g.activeMasteries[6]=9
+  if ((!StarE(102))&&(g.activeMasteries[6]==9)) g.activeMasteries[6]=0
+  if (StarE(103)) g.activeMasteries[7]=9
+  if ((!StarE(103))&&(g.activeMasteries[7]==9)) g.activeMasteries[7]=0
+  if (StarE(104)) g.activeMasteries[8]=9
+  if ((!StarE(104))&&(g.activeMasteries[8]==9)) g.activeMasteries[8]=0
+  updateMasteryBoosts()
+  g.Mastery11Effect=infAdd(0,g.masteryPower)*0.1*masteryBoosts.b11
+  g.Mastery12Effect=infAdd(0,g.masteryPower)*0.15*masteryBoosts.b12
+  g.Mastery21Effect=infAdd(0,g.masteryPower)**0.6*0.0175*masteryBoosts.b21
+  g.Mastery22Effect=infAdd(0,g.masteryPower)**0.6*0.035*masteryBoosts.b22
+  g.Mastery31Effect=infAdd(0,g.masteryPower)**0.5*0.5*masteryBoosts.b31
+  g.Mastery32Effect=infAdd(0,g.masteryPower)**0.5*0.8*masteryBoosts.b32
+  g.Mastery41Effect=1+LogarithmicSoftcap(infAdd(0,g.masteryPower)/15,1,2)*masteryBoosts.b41
+  g.Mastery42Effect=(infAdd(g.masteryPower-1,4)**0.5-2)*masteryBoosts.b42
+  g.Mastery43Effect=1+LogarithmicSoftcap(infAdd(0,g.masteryPower)/15,1,2)*masteryBoosts.b43
+  g.Mastery51Effect=infAdd(g.masteryPower,0)**0.5*2*masteryBoosts.b51
+  g.Mastery52Effect=1+infAdd(g.masteryPower,0)**0.33*2*masteryBoosts.b52
+  g.Mastery61Effect=1+LogarithmicSoftcap(infAdd(g.masteryPower,1)**0.1-1,9,2)*masteryBoosts.b61
+  g.Mastery62Effect=1/LogarithmicSoftcap(infAdd(g.masteryPower,1)**0.04,2,1)**masteryBoosts.b62
+  g.Mastery63Effect=infAdd(g.masteryPower,0)**0.8*masteryBoosts.b63
+  g.Mastery71Effect=Math.log10(infAdd(g.masteryPower*1.25,10))**masteryBoosts.b71
+  g.Mastery72Effect=1+LogarithmicSoftcap(Math.log10(infAdd(g.masteryPower*1.25,10))**0.5-1,1,5)*masteryBoosts.b72
+  g.Mastery81Effect=infAdd(g.masteryPower,0)**0.5*g.XAxis**0.5*0.05*masteryBoosts.b81
+  g.Mastery82Effect=infAdd(g.masteryPower,0)**0.5*Math.log10(infAdd(g.exoticmatter,1))*0.25*masteryBoosts.b82
+  g.Mastery83Effect=infAdd(g.masteryPower,0)**0.5*Math.log10(infAdd(g.darkmatter,1))**0.75*0.6*masteryBoosts.b83
+  g.Mastery84Effect=infAdd(g.masteryPower,0)**0.5*Math.log10(infAdd(g.stardust,1))**0.5*0.7*masteryBoosts.b84
+  g.Mastery85Effect=Math.log10(infAdd(g.masteryPower,1))*masteryBoosts.b85
+  g.Mastery91Effect=1+Math.log10(infAdd(g.masteryPower,1))*0.1*(0.3*infAdd(g.truetimeThisStardustReset,1))*masteryBoosts.b91
+  g.Mastery92Effect=1+Math.log10(infAdd(g.masteryPower,1))*0.1/(0.3*infAdd(g.truetimeThisStardustReset,1))*masteryBoosts.b92
+  document.getElementById("Mastery11Effect").innerHTML = infFormat(g.Mastery11Effect,true)
+  document.getElementById("Mastery12Effect").innerHTML = infFormat(g.Mastery12Effect,true)
+  document.getElementById("Mastery11Button").className = (MasteryE(11)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery12Button").className = (MasteryE(12)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery21Effect").innerHTML = infFormat(g.Mastery21Effect,true)
+  document.getElementById("Mastery22Effect").innerHTML = infFormat(g.Mastery22Effect,true)
+  document.getElementById("Mastery21Button").className = (MasteryE(21)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery22Button").className = (MasteryE(22)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery31Effect").innerHTML = normFormat(g.Mastery31Effect)
+  document.getElementById("Mastery32Effect").innerHTML = normFormat(g.Mastery32Effect)
+  document.getElementById("Mastery31Button").className = (MasteryE(31)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery32Button").className = (MasteryE(32)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery41Effect").innerHTML = normFormat(100*g.Mastery41Effect-100)
+  document.getElementById("Mastery42Effect").innerHTML = infFormat(g.Mastery42Effect,true)
+  document.getElementById("Mastery43Effect").innerHTML = normFormat(100*g.Mastery43Effect-100)
+  document.getElementById("Mastery41Button").className = (MasteryE(41)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery42Button").className = (MasteryE(42)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery43Button").className = (MasteryE(43)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery51Effect").innerHTML = normFormat(g.Mastery51Effect)
+  document.getElementById("Mastery52Effect").innerHTML = normFormat(g.Mastery52Effect)
+  document.getElementById("Mastery51Button").className = (MasteryE(51)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery52Button").className = (MasteryE(52)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery61Effect").innerHTML = normFormat(100*g.Mastery61Effect-100)
+  document.getElementById("Mastery62Effect").innerHTML = g.Mastery62Effect.toFixed(4)
+  document.getElementById("Mastery63Effect").innerHTML = normFormat(g.Mastery63Effect)
+  document.getElementById("Mastery61Button").className = (MasteryE(61)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery62Button").className = (MasteryE(62)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery63Button").className = (MasteryE(63)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery71Effect").innerHTML = normFormat(g.Mastery71Effect)
+  document.getElementById("Mastery72Effect").innerHTML = normFormat(g.Mastery72Effect)
+  document.getElementById("Mastery71Button").className = (MasteryE(71)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery72Button").className = (MasteryE(72)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery81Effect").innerHTML = infFormat(g.Mastery81Effect,true)
+  document.getElementById("Mastery82Effect").innerHTML = infFormat(g.Mastery82Effect,true)
+  document.getElementById("Mastery83Effect").innerHTML = infFormat(g.Mastery83Effect,true)
+  document.getElementById("Mastery84Effect").innerHTML = infFormat(g.Mastery84Effect,true)
+  document.getElementById("Mastery85Effect").innerHTML = normFormat(g.Mastery85Effect)
+  document.getElementById("Mastery85Approx").innerHTML = "(this is currently a "+infFormat(g.baseMasteryPowerGain*g.Mastery85Effect,true)+"x boost)"
+  document.getElementById("Mastery81Button").className = (MasteryE(81)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery82Button").className = (MasteryE(82)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery83Button").className = (MasteryE(83)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery84Button").className = (MasteryE(84)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery85Button").className = (MasteryE(85)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery91Effect").innerHTML = normFormat(100*(g.Mastery91Effect-1))
+  document.getElementById("Mastery92Effect").innerHTML = normFormat(100*(g.Mastery92Effect-1))
+  document.getElementById("Mastery91Button").className = (MasteryE(91)==1)?"masterybuttonon":"masterybuttonoff"
+  document.getElementById("Mastery92Button").className = (MasteryE(92)==1)?"masterybuttonon":"masterybuttonoff"
+  for (i=2;i<=9;i++) document.getElementById("MasteryRow"+i).style = (g.masteryRowsUnlocked[i-1]==1)?"display:inline-block":"display:none"
 
 
   // Options & Display section
-  document.getElementById("hiddenstatAxisCostDivisor").innerHTML = infFormat(axisCostDivisor,true)
-  document.getElementById("hiddenstatAxisCostExponent").innerHTML = (axisCostExponent>1e-4) ? axisCostExponent.toFixed(3-Math.floor(Math.log10(axisCostExponent))) : "1 / "&normFormat(1/axisCostExponent)
-  document.getElementById("hiddenstatAxisScalingStart").innerHTML = normFormat(axisScalingStart)
-  document.getElementById("hiddenstatAxisSuperscalingStart").innerHTML = normFormat(axisSuperscalingStart)
-  document.getElementById("hiddenstatTotalAxis").innerHTML = totalAxis
-  document.getElementById("hiddenstatProgressValue").innerHTML = Math.floor(10000*progressbarvalue)/100+"%"
-  document.getElementById("hiddenstatTributeResets").innerHTML = tributeResets
-  document.getElementById("hiddenstatTributeMultiplier").innerHTML = infFormat(tributeMultiplier,true)
-  document.getElementById("hiddenstatTributeExponent").innerHTML = (tributeExponent<1e4) ? tributeExponent.toFixed(4+Math.floor(Math.log10(axisCostExponent))) : normFormat(tributeExponent)
-  document.getElementById("hiddenstatAxisAutobuyerUpgrades").innerHTML = axisAutobuyerUpgrades
-  document.getElementById("hiddenstatDarkAxisCostDivisor").innerHTML = infFormat(darkaxisCostDivisor,true)
-  document.getElementById("hiddenstatDarkAxisCostExponent").innerHTML = (darkaxisCostExponent>1e-4) ? darkaxisCostExponent.toFixed(3-Math.floor(Math.log10(darkaxisCostExponent))) : "1 / "&normFormat(1/darkaxisCostExponent)
-  document.getElementById("hiddenstatDarkAxisScalingStart").innerHTML = normFormat(darkaxisScalingStart)
-  document.getElementById("hiddenstatDarkAxisSuperscalingStart").innerHTML = normFormat(darkaxisSuperscalingStart)
-  document.getElementById("hiddenstatTotalDarkAxis").innerHTML = totaldarkAxis
-  toggleTableRow("hiddenstatrowAxisCostDivisor",(axisCostDivisor==0)?"hide":"show")
-  toggleTableRow("hiddenstatrowAxisCostExponent",(axisCostExponent==1)?"hide":"show")
-  toggleTableRow("hiddenstatrowAxisScalingStart",(Math.max(XAxis,YAxis,ZAxis,WAxis,VAxis,UAxis,TAxis,SAxis)<axisScalingStart)?"hide":"show")
-  toggleTableRow("hiddenstatrowAxisSuperscalingStart",(Math.max(XAxis,YAxis,ZAxis,WAxis,VAxis,UAxis,TAxis,SAxis)<axisSuperscalingStart)?"hide":"show")
-  toggleTableRow("hiddenstatrowTributeResets",(fastestTributeReset>1e12)?"hide":"show")
-  toggleTableRow("hiddenstatrowTributeMultiplier",(tributeMultiplier==0)?"hide":"show")
-  toggleTableRow("hiddenstatrowTributeExponent",(tributeExponent==1)?"hide":"show")
-  toggleTableRow("hiddenstatrowAxisAutobuyerUpgrades",(tributeUpgradeTwo.purchased==0)?"hide":"show")
-  toggleTableRow("hiddenstatrowDarkAxisCostDivisor",(darkaxisCostDivisor==0)?"hide":"show")
-  toggleTableRow("hiddenstatrowDarkAxisCostExponent",(darkaxisCostExponent==1)?"hide":"show")
-  toggleTableRow("hiddenstatrowDarkAxisScalingStart",(Math.max(darkXAxis,darkYAxis,darkZAxis,darkWAxis,darkVAxis,darkUAxis,darkTAxis,darkSAxis)<darkaxisScalingStart)?"hide":"show")
-  toggleTableRow("hiddenstatrowDarkAxisSuperscalingStart",(Math.max(darkXAxis,darkYAxis,darkZAxis,darkWAxis,darkVAxis,darkUAxis,darkTAxis,darkSAxis)<darkaxisSuperscalingStart)?"hide":"show")
-  toggleTableRow("hiddenstatrowTotalDarkAxis",(DarkMatterUnlocked)?"show":"hide")
-  statBreakdown(1)
-  statBreakdown(2)
-  statBreakdown(3)
+  document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
+  document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
+  document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
+  updateStorySnippets()
 
-  document.getElementById("notationButton").innerHTML = notation
-  document.getElementById("toggleAutosave").innerHTML = autosaveIsOn;
-  document.getElementById("HTPTributeReq").innerHTML = infFormat(25,false)
-  HTPshown = ((HTPshown==1) && (fastestTributeReset < 1e12)) ? 3 : HTPshown
-  HTPshown = ((HTPshown==3) && DarkMatterUnlocked) ? 4 : HTPshown
-  HTPshown = ((HTPshown==4) && (energyTypesUnlocked > 0)) ? 5 : HTPshown
-  document.getElementById("HTPBTributes").style = (HTPshown>=2) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBEnhancers").style = (HTPshown>=3) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBDarkMatter").style = (HTPshown>=4) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBEnergy").style = (HTPshown>=5) ? "display:inline-block" : "display:none"
-  if ((fastestTributeReset < 1e12) || (fastestWormholeReset < 1e12)) {
-    document.getElementById("tributesbigtab").style="display:inline-block"
-    document.getElementById("tributeDisplay").style="display:inline-block"
-    document.getElementById("tributeStatistics").style="display:inline-block"
-  } else {
-    document.getElementById("tributesbigtab").style="display:none"
-    document.getElementById("tributeDisplay").style="display:none"
-    document.getElementById("tributeStatistics").style="display:none"
+  document.getElementById("hiddenstatAxisAutobuyerUpgrades").innerHTML = g.axisAutobuyerUpgrades
+  toggleTableRow("hiddenstatrowAxisAutobuyerUpgrades",(g.axisAutobuyerUpgrades==0)?"hide":"show")
+  document.getElementById("hiddenstatAxisScalingStart").innerHTML = normFormat(g.axisScalingStart)
+  toggleTableRow("hiddenstatrowAxisScalingStart",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisScalingStart)?"show":"hide")
+  document.getElementById("hiddenstatAxisSuperscalingStart").innerHTML = normFormat(g.axisSuperscalingStart)
+  toggleTableRow("hiddenstatrowAxisSuperscalingStart",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisSuperscalingStart)?"show":"hide")
+  document.getElementById("hiddenstatDarkAxisScalingStart").innerHTML = normFormat(g.darkaxisScalingStart)
+  toggleTableRow("hiddenstatrowDarkAxisScalingStart",(Math.max(g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis)>g.darkaxisScalingStart)?"show":"hide")
+  document.getElementById("hiddenstatDarkAxisSuperscalingStart").innerHTML = normFormat(g.darkaxisSuperscalingStart)
+  toggleTableRow("hiddenstatrowDarkAxisSuperscalingStart",(Math.max(g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis)>g.darkaxisSuperscalingStart)?"show":"hide")
+  document.getElementById("hiddenstatDeltaTime").innerHTML = deltatime*1000+"ms ("+Math.round(10/deltatime)/10+"fps)"
+  document.getElementById("hiddenstatStardustExponent").innerHTML = (g.StardustExponent<1e4) ? g.StardustExponent.toFixed(4+Math.floor(Math.log10(g.axisCostExponent))) : normFormat(g.StardustExponent)
+  toggleTableRow("hiddenstatrowStardustExponent",(g.stardustExponent==1)?"hide":"show")
+  document.getElementById("hiddenstatStardustMultiplier").innerHTML = infFormat(g.StardustMultiplier,true)
+  toggleTableRow("hiddenstatrowStardustMultiplier",(g.stardustMultiplier==1)?"hide":"show")
+  document.getElementById("hiddenstatStardustResets").innerHTML = g.StardustResets
+  toggleTableRow("hiddenstatrowStardustResets",(g.fastestStardustReset>1e12)?"hide":"show")
+  document.getElementById("hiddenstatTotalAxis").innerHTML = g.totalAxis
+  document.getElementById("hiddenstatTotalDarkAxis").innerHTML = g.totaldarkAxis
+  toggleTableRow("hiddenstatrowTotalDarkAxis",(g.stardustUpgrades[4]>0)?"show":"hide")
+  notation=g.notation     // infOP doesn't work without this
+  document.getElementById("notationButton").innerHTML = g.notation
+  document.getElementById("toggleAutosave").innerHTML = g.autosaveIsOn;
+  document.getElementById("tickspeedDisplay").innerHTML = (g.tickspeed==0)?"":"Tickspeed: "+infFormat(g.tickspeed,true)+"x"
+  for (i=0;i<document.getElementsByClassName("inf").length;i++) {
+    next=document.getElementsByClassName("inf")[i]
+    document.getElementsByClassName("inf")[i].innerHTML = infFormat(next.className.split(' ').pop("inf").substr(3,100),true)
   }
-  if (fastestWormholeReset < 1e12) {
+  g.HTPshown = ((g.HTPshown==1) && (g.masteryRowsUnlocked[0] == 1)) ? 2 : g.HTPshown
+  g.HTPshown = ((g.HTPshown==2) && (g.fastestStardustReset < 1e12)) ? 4 : g.HTPshown
+  g.HTPshown = ((g.HTPshown==4) && (g.stardustUpgrades[4]>0)) ? 5 : g.HTPshown
+  g.HTPshown = ((g.HTPshown==5) && (g.energyTypesUnlocked > 0)) ? 6 : g.HTPshown
+  document.getElementById("HTPBMasteries").style = (g.HTPshown>=2) ? "display:inline-block" : "display:none"
+  document.getElementById("HTPBStardust").style = (g.HTPshown>=3) ? "display:inline-block" : "display:none"
+  document.getElementById("HTPBStars").style = (g.HTPshown>=4) ? "display:inline-block" : "display:none"
+  document.getElementById("HTPBDarkMatter").style = (g.HTPshown>=5) ? "display:inline-block" : "display:none"
+  document.getElementById("HTPBEnergy").style = (g.HTPshown>=6) ? "display:inline-block" : "display:none"
+  if ((g.fastestStardustReset < 1e12) || (g.fastestWormholeReset < 1e12)) {
+    document.getElementById("stardustbigtab").style="display:inline-block"
+    document.getElementById("stardustDisplay").style="display:inline-block"
+    document.getElementById("stardustStatistics").style="display:inline-block"
+  } else {
+    document.getElementById("stardustbigtab").style="display:none"
+    document.getElementById("stardustDisplay").style="display:none"
+    document.getElementById("stardustStatistics").style="display:none"
+  }
+  if (g.fastestWormholeReset < 1e12) {
     document.getElementById("wormholeStatistics").style.visibility="visible"
   } else {
     document.getElementById("wormholeStatistics").style.visibility="hidden"
   }
-  timePlayed+=0.05*offlineSpeedup
-  timeThisTributeReset+=0.05*offlineSpeedup
-  timeThisWormholeReset+=0.05*offlineSpeedup
-  document.getElementById("timePlayed").innerHTML = timeFormat(timePlayed);
-  document.getElementById("timeThisTributeReset").innerHTML = timeFormat(timeThisTributeReset);
-  document.getElementById("timeThisWormholeReset").innerHTML = timeFormat(timeThisWormholeReset);
-  document.getElementById("fastestTributeReset").innerHTML = timeFormat(fastestTributeReset);
-  document.getElementById("fastestWormholeReset").innerHTML = timeFormat(fastestWormholeReset);
+  g.timePlayed+=deltatime*offlineSpeedup
+  g.truetimePlayed=infAdd(g.truetimePlayed,Math.log10(deltatime*offlineSpeedup)+g.tickspeed)
+  g.timeThisStardustReset+=deltatime*offlineSpeedup
+  g.truetimeThisStardustReset=infAdd(g.truetimeThisStardustReset,Math.log10(deltatime*offlineSpeedup)+g.tickspeed)
+  g.timeThisWormholeReset+=deltatime*offlineSpeedup
+  g.timeLeft=Number(new Date())
+  document.getElementById("timePlayed").innerHTML = timeFormat(g.timePlayed);
+  document.getElementById("truetimePlayed").innerHTML = (g.truetimePlayed>300)?infFormat(g.truetimePlayed-7.49909469142)+" years":timeFormat(10**g.truetimePlayed)
+  document.getElementById("timeThisStardustReset").innerHTML = timeFormat(g.timeThisStardustReset);
+  document.getElementById("truetimeThisStardustReset").innerHTML = (g.truetimeThisStardustReset>300)?infFormat(g.truetimeThisStardustReset-7.49909469142)+" years":timeFormat(10**g.truetimeThisStardustReset)
+  document.getElementById("timeThisWormholeReset").innerHTML = timeFormat(g.timeThisWormholeReset);
+  document.getElementById("truetimeThisWormholeReset").innerHTML = (g.truetimeThisWormholeReset>300)?infFormat(g.truetimeThisWormholeReset-7.49909469142)+" years":timeFormat(10**g.truetimeThisWormholeReset)
+  document.getElementById("fastestStardustReset").innerHTML = timeFormat(g.fastestStardustReset);
+  document.getElementById("fastestWormholeReset").innerHTML = timeFormat(g.fastestWormholeReset);
+
+  glowtabs[0][0]=(((g.XAxisCost<g.exoticmatter)&&(g.axisUnlocked>0))||((g.YAxisCost<g.exoticmatter)&&(g.axisUnlocked>1))||((g.ZAxisCost<g.exoticmatter)&&(g.axisUnlocked>2))||((g.WAxisCost<g.exoticmatter)&&(g.axisUnlocked>3))||((g.VAxisCost<g.exoticmatter)&&(g.axisUnlocked>4))||((g.UAxisCost<g.exoticmatter)&&(g.axisUnlocked>5))||((g.TAxisCost<g.exoticmatter)&&(g.axisUnlocked>6))||((g.SAxisCost<g.exoticmatter)&&(g.axisUnlocked>7)))
+  glowtabs[0][1]=0
+  for (i=0; i<10; i++) if (MasteryE(10+10*i)&&g.masteryRowsUnlocked[i]&&(g.activeMasteries[i]!==9)) glowtabs[0][1]=1
+  glowtabs[0][2]=((g.EMSupernova.charges>0)||(Math.min(SupernovaCosts[0][0],SupernovaCosts[0][1])<g.exoticmatter)||(g.KnowledgeSupernova.charges>0)||(Math.min(SupernovaCosts[1][0],SupernovaCosts[1][1])<g.masteryPower))
+  glowtabs[1][0]=((stardustUpgrade1Cost[g.stardustUpgrades[0]]<g.stardust)||(stardustUpgrade2Cost[g.stardustUpgrades[1]]<g.stardust)||(stardustUpgrade3Cost[g.stardustUpgrades[2]]<g.stardust)||(stardustUpgrade4Cost[g.stardustUpgrades[3]]<g.stardust)||(stardustUpgrade5Cost[g.stardustUpgrades[4]]<g.stardust))
+  glowtabs[1][1]=(((g.unspentStars>0)||(g.stardust>g.starCost))&&(!(StarE(101)&&StarE(102)&&StarE(103)&&StarE(104))))
+  glowtabs[1][2]=((g.darkXAxisCost<g.darkmatter)||(g.darkYAxisCost<g.darkmatter)||(g.darkZAxisCost<g.darkmatter)||(g.darkWAxisCost<g.darkmatter)||(g.darkVAxisCost<g.darkmatter)||(g.darkUAxisCost<g.darkmatter)||(g.darkTAxisCost<g.darkmatter)||(g.darkSAxisCost<g.darkmatter)||(g.darkstarRequirement<g.totaldarkAxis))
+  glowtabs[2]=((g.exoticmatter>g.axisAutobuyerCost)&&(g.axisAutobuyerInterval>0.1))
+  toggleGlow("mainaxisButton",glowtabs[0][0])
+  toggleGlow("masteriesButton",glowtabs[0][1])
+  toggleGlow("supernovaButton",glowtabs[0][2])
+  toggleGlow("StardustBoostButton",glowtabs[1][0])
+  toggleGlow("StarTabButton",glowtabs[1][1])
+  toggleGlow("DarkMatterButton",glowtabs[1][2])
+  toggleGlow("mainbigtab",glowtabs[0].includes(true))
+  toggleGlow("stardustbigtab",glowtabs[1].includes(true))
+  toggleGlow("automationbigtab",glowtabs[2])
 
 
-  // Tribute section
-  if (tributeUpgradeTwo.purchased == 0) {
+  // Stardust section
+  if (g.stardustUpgrades[1] == 0) {
     document.getElementById("automationbigtab").style="display:none"
   } else {
     document.getElementById("automationbigtab").style="display:inline-block"
   }
-  if (exoticmatter<25) {
-    document.getElementById("tributeResetButton").style.visibility="hidden"
-  } else if (pendingTributes<infAdd(tributes,1)) {
-    document.getElementById("tributeResetButton").style.visibility="visible"
-    document.getElementById("tributeResetButton").className = "lockedtributeResetButton"
+  if (g.fastestStardustReset>1e12 && g.exoticmatter<22) {
+    document.getElementById("stardustResetButton").style.visibility="hidden"
+  } else if (g.pendingstardust<infAdd(g.stardust,1)) {
+    document.getElementById("stardustResetButton").style.visibility="visible"
+    document.getElementById("stardustResetButton").className = "lockedstardustResetButton"
   } else {
-    document.getElementById("tributeResetButton").style.visibility="visible"
-    document.getElementById("tributeResetButton").className = "tributeResetButton"
+    document.getElementById("stardustResetButton").style.visibility="visible"
+    document.getElementById("stardustResetButton").className = "stardustResetButton"
   }
-  tributeMultiplier=UAxisEffect*(UAxis+freeUAxis)+tributeBoostFour+ownedEnhancers.FourFour+divineEnergyEffect
-  tributeExponent=1.1**ownedEnhancers.FourThree
-  pendingTributes=infFloor((Math.max(0,exoticmatter-24)**0.5+tributeMultiplier)*tributeExponent)
-  if (pendingTributes<infAdd(tributes,0)) {
-    tributeExoticMatterReq=((infAdd(tributes,0)/tributeExponent)-tributeMultiplier)**2+24
-    tributeExoticMatterReqText="(Need "+infFormat(tributeExoticMatterReq)+" exotic matter)"
+  if (g.pendingstardust<infAdd(g.stardust,0)) {
+    stardustExoticMatterReq=((infAdd(infFloor(g.stardust),0)/g.StardustExponent)-g.StardustMultiplier)**2+21
+    stardustExoticMatterReqText="(Need "+infFormat(stardustExoticMatterReq,false)+" exotic matter)"
+  } else if ((g.pendingstardust>g.stardust)&&(g.pendingstardust<2)) {
+    stardustExoticMatterReq=((infAdd(infFloor(g.pendingstardust),0)/g.StardustExponent)-g.StardustMultiplier)**2+21
+    stardustExoticMatterReqText="(Next at "+infFormat(stardustExoticMatterReq,false)+" exotic matter)"
   } else {
-    tributeExoticMatterReqText=""
+    stardustExoticMatterReqText=""
   }
-  document.getElementById("tributeExoticMatterRequirement").innerHTML = tributeExoticMatterReqText
-  document.getElementById("currentTributes").innerHTML = infFormat(tributes,false);
-  if (autosaveIsOn == "On" && savecounter > 0) {
+  document.getElementById("stardustExoticMatterRequirement").innerHTML = stardustExoticMatterReqText
+  document.getElementById("currentStardust").innerHTML = infFormat(g.stardust,false);
+  if (g.autosaveIsOn == "On" && savecounter > 0) {
     save()
   }
-  document.getElementById("pendingTributes").innerHTML = infFormat(infSubtract(Math.max(pendingTributes,tributes),tributes),false)
-  tributeBoostOne=Math.max(0,tributes)*0.5+Math.max(0,tributes)**1.5/100
-  document.getElementById("TributeBoostOne").innerHTML = infFormat(tributeBoostOne,true)
-  tributeBoostTwo=Math.max(0,normLinearSoftcap(tributes,5,2))*20
-  document.getElementById("TributeBoostTwo").innerHTML = normFormat(tributeBoostTwo)
-  tributeBoostThree=Math.log10(Math.max(tributes,6)-5)*((tributeUpgradeThree.purchased>0)?1:0)
-  document.getElementById("TributeBoostThree").innerHTML = infFormat(tributeBoostThree,true)
-  tributeBoostFour=(Math.max(tributes-5.7,8)**(2/3)-4)*((tributeUpgradeThree.purchased>1)?1:0)
-  document.getElementById("TributeBoostFour").innerHTML = infFormat(tributeBoostFour,true)
-  tributeBoostFive=(Math.max(tributes,10)**0.60206-4)*0.1*((tributeUpgradeThree.purchased>2)?1:0)
-  document.getElementById("TributeBoostFive").innerHTML = infFormat(tributeBoostFive,true)
-  tributeBoostSix=LogarithmicSoftcap(Math.max(tributes-34,0)**0.8*0.2*((tributeUpgradeThree.purchased>3)?1:0),2,0.5)
-  document.getElementById("TributeBoostSix").innerHTML = infFormat(tributeBoostSix,true)
-  tributeBoostSeven=(1+Math.log10(Math.max(tributes-59,1)))**3*((tributeUpgradeThree.purchased>4)?1:0)
-  document.getElementById("TributeBoostSeven").innerHTML = normFormat(tributeBoostSeven)
-  tributeBoostEight=Math.max(tributes-61,0)**1.1*130*((tributeUpgradeThree.purchased>5)?1:0)
-  document.getElementById("TributeBoostEight").innerHTML = normFormat(tributeBoostEight)
-  if (tributeUpgradeThree.purchased>0) {
-    document.getElementById("TributeBoostThreeDisplay").style.visibility="visible"
-  } else {
-    document.getElementById("TributeBoostThreeDisplay").style.visibility="hidden"
+  document.getElementById("pendingStardust").innerHTML = infFormat(infSubtract(Math.max(g.pendingstardust,g.stardust),g.stardust),false)
+  g.StardustBoost1=infAdd(0,g.stardust-1)*0.5+infAdd(0,g.stardust)**1.5/10
+  document.getElementById("StardustBoost1").innerHTML = infFormat(g.StardustBoost1,true)
+  g.StardustBoost2=infAdd(0,Math.log10(normLinearSoftcap(infAdd(g.stardust,0),5,2))-1.12493873661)
+  document.getElementById("StardustBoost2").innerHTML = infFormat(infSubtract(g.StardustBoost2,0)+2,true)
+  g.StardustBoost3=normLinearSoftcap(infAdd(g.stardust-7,0)**0.7*50*((g.stardustUpgrades[2]>0)?1:0),1000,1)
+  document.getElementById("StardustBoost3").innerHTML = normFormat(g.StardustBoost3)
+  g.StardustBoost4=(infAdd(g.stardust/20,1)**0.33-1)*((g.stardustUpgrades[2]>1)?1:0)
+  document.getElementById("StardustBoost4").innerHTML = (g.StardustBoost4>10?normFormat(g.StardustBoost4):g.StardustBoost4.toFixed(4))
+  g.StardustBoost5=(infAdd(g.stardust+6,27)**(2/3)-9)*((g.stardustUpgrades[2]>2)?1:0)
+  document.getElementById("StardustBoost5").innerHTML = infFormat(g.StardustBoost5,true)
+  g.StardustBoost6=Math.log10(infAdd(g.stardust/5.6,10))**((g.stardustUpgrades[2]>3)?1:0)
+  document.getElementById("StardustBoost6").innerHTML = normFormat((g.StardustBoost6-1)*100)
+  g.StardustBoost7=Math.log10(infAdd(g.stardust,1))*0.01*((g.stardustUpgrades[2]>4)?1:0)
+  document.getElementById("StardustBoost7").innerHTML = infFormat(g.StardustBoost7,true)
+  g.StardustBoost8=(Math.log10(infAdd(g.stardust/2,100))**5/32)**((g.stardustUpgrades[2]>5)?1:0)
+  document.getElementById("StardustBoost8").innerHTML = normFormat(100*(g.StardustBoost8-1))
+  for (i=3;i<=8;i++) toggleTableRow("StardustBoost"+i+"Display",(g.stardustUpgrades[2]>(i-3))?"show":"hide")
+  document.getElementById("StardustUpgrade1Cost").innerHTML = infFormat(stardustUpgrade1Cost[g.stardustUpgrades[0]],false)
+  document.getElementById("StardustUpgrade1Button").className = (g.stardust < stardustUpgrade1Cost[g.stardustUpgrades[0]])?"lockedaxisbutton":"stardustupgradebutton"
+  document.getElementById("StardustUpgrade2Button").className = (g.stardust < stardustUpgrade2Cost[g.stardustUpgrades[1]])?"lockedaxisbutton":"stardustupgradebutton"
+  document.getElementById("StardustUpgrade2Tooltip").innerHTML = stardustUpgrade2Tooltip[g.stardustUpgrades[1]]
+  document.getElementById("StardustUpgrade2Cost").innerHTML = infFormat(stardustUpgrade2Cost[g.stardustUpgrades[1]],false)
+  document.getElementById("StardustUpgrade3Button").className = (g.stardust < stardustUpgrade3Cost[g.stardustUpgrades[2]])?"lockedaxisbutton":"stardustupgradebutton"
+  document.getElementById("StardustUpgrade3Cost").innerHTML = infFormat(stardustUpgrade3Cost[g.stardustUpgrades[2]],false)
+  document.getElementById("StardustUpgrade4Button").className = (g.stardust < stardustUpgrade4Cost[g.stardustUpgrades[3]])?"lockedaxisbutton":"stardustupgradebutton"
+  document.getElementById("StardustUpgrade4Cost").innerHTML = infFormat(stardustUpgrade4Cost[g.stardustUpgrades[3]],false)
+  document.getElementById("StardustUpgrade4Tooltip").innerHTML = (g.stardustUpgrades[3]==0)?"You can activate both first row Masteries":(g.stardustUpgrades[3]==4)?"Unlock 2 new rows of Masteries":"Unlock a new row of Masteries"
+  document.getElementById("StardustUpgrade5Button").className = (g.stardust < stardustUpgrade5Cost[g.stardustUpgrades[4]])?"lockedaxisbutton":"stardustupgradebutton"
+  document.getElementById("StardustUpgrade5Cost").innerHTML = infFormat(stardustUpgrade5Cost[g.stardustUpgrades[4]],false)
+  document.getElementById("StardustUpgrade5Tooltip").innerHTML = stardustUpgrade5Tooltip[g.stardustUpgrades[4]]
+  document.getElementById("axisAutobuyerToggle").className = (g.axisAutobuyerOn==true)?"automatortoggleon":"automatortoggleoff"
+  g.axisAutobuyerCost = Math.round(50*1.05**g.axisAutobuyerUpgrades)
+  document.getElementById("axisAutobuyerUpgradeCost").innerHTML = infFormat(g.axisAutobuyerCost,false)
+  g.axisAutobuyerInterval=Math.max(0.1,5*0.95**g.axisAutobuyerUpgrades/offlineSpeedup)
+  if ((g.stardustUpgrades[1] > 0) && (g.axisAutobuyerOn)) {
+    g.axisAutobuyerProgress+=deltatime/g.axisAutobuyerInterval
   }
-  if (tributeUpgradeThree.purchased>1) {
-    document.getElementById("TributeBoostFourDisplay").style.visibility="visible"
-  } else {
-    document.getElementById("TributeBoostFourDisplay").style.visibility="hidden"
+  if (g.axisAutobuyerProgress > 1) {
+    buyMaxAxis()
+    g.axisAutobuyerProgress%=1
   }
-  if (tributeUpgradeThree.purchased>2) {
-    document.getElementById("TributeBoostFiveDisplay").style.visibility="visible"
-  } else {
-    document.getElementById("TributeBoostFiveDisplay").style.visibility="hidden"
-  }
-  if (tributeUpgradeThree.purchased>3) {
-    document.getElementById("TributeBoostSixDisplay").style.visibility="visible"
-  } else {
-    document.getElementById("TributeBoostSixDisplay").style.visibility="hidden"
-  }
-  if (tributeUpgradeThree.purchased>4) {
-    document.getElementById("TributeBoostSevenDisplay").style.visibility="visible"
-  } else {
-    document.getElementById("TributeBoostSevenDisplay").style.visibility="hidden"
-  }
-  if (tributeUpgradeThree.purchased>5) {
-    document.getElementById("TributeBoostEightDisplay").style.visibility="visible"
-  } else {
-    document.getElementById("TributeBoostEightDisplay").style.visibility="hidden"
-  }
-  document.getElementById("TributeUpgradeOneCost").innerHTML = infFormat(tributeUpgradeOne.cost[tributeUpgradeOne.purchased],false)
-  if (tributes < tributeUpgradeOne.cost[tributeUpgradeOne.purchased]) {
-    document.getElementById("TributeUpgradeOneButton").className = "lockedaxisbutton";
-  } else {
-    document.getElementById("TributeUpgradeOneButton").className = "tributeupgradebutton";
-  }
-  if (tributes < tributeUpgradeTwo.cost[tributeUpgradeTwo.purchased]) {
-    document.getElementById("TributeUpgradeTwoButton").className = "lockedaxisbutton";
-  } else {
-    document.getElementById("TributeUpgradeTwoButton").className = "tributeupgradebutton";
-  }
-  document.getElementById("TributeUpgradeTwoTooltip").innerHTML = tributeUpgradeTwo.tooltip[tributeUpgradeTwo.purchased]
-  document.getElementById("TributeUpgradeTwoCost").innerHTML = infFormat(tributeUpgradeTwo.cost[tributeUpgradeTwo.purchased],false)
-  if (tributes < tributeUpgradeThree.cost[tributeUpgradeThree.purchased]) {
-    document.getElementById("TributeUpgradeThreeButton").className = "lockedaxisbutton";
-  } else {
-    document.getElementById("TributeUpgradeThreeButton").className = "tributeupgradebutton";
-  }
-  document.getElementById("TributeUpgradeThreeCost").innerHTML = infFormat(tributeUpgradeThree.cost[tributeUpgradeThree.purchased],false)
-  if (axisAutobuyerOn == true) {
-    document.getElementById("axisAutobuyerToggle").className = "automatortoggleon"
-  } else {
-    document.getElementById("axisAutobuyerToggle").className = "automatortoggleoff"
-  }
-  axisAutobuyerCost = Math.floor(50*1.02**axisAutobuyerUpgrades)
-  document.getElementById("axisAutobuyerUpgradeCost").innerHTML = infFormat(axisAutobuyerCost,false)
-  axisAutobuyerInterval=Math.max(0.001,5*0.95**axisAutobuyerUpgrades/offlineSpeedup)
-  if ((tributeUpgradeTwo.purchased > 0) && (axisAutobuyerOn)) {
-    axisAutobuyerProgress+=0.05/axisAutobuyerInterval
-  }
-  while (axisAutobuyerProgress > 1) {
-    if ((tributeUpgradeTwo.purchased >= 1) && (axisUnlocked >= 1)) {
-      buyXAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 2) && (axisUnlocked >= 2)) {
-      buyYAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 3) && (axisUnlocked >= 3)) {
-      buyZAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 4) && (axisUnlocked >= 4)) {
-      buyWAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 5) && (axisUnlocked >= 5)) {
-      buyVAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 6) && (axisUnlocked >= 6)) {
-      buyUAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 7) && (axisUnlocked >= 7)) {
-      buyTAxis()
-    }
-    if ((tributeUpgradeTwo.purchased >= 8) && (axisUnlocked >= 8)) {
-      buySAxis()
-    }
-    axisAutobuyerProgress--
-    updateAxisCosts()
-  }
-  document.getElementById("axisAutobuyerInterval").innerHTML = timeFormat(axisAutobuyerInterval)
-  if (tributeUpgradeOne.purchased == 4) {
-    document.getElementById("TributeUpgradeOneButton").style="display:none"
-  } else {
-    document.getElementById("TributeUpgradeOneButton").style="display:inline-block"
-  }
-  if (tributeUpgradeTwo.purchased == 8) {
-    document.getElementById("TributeUpgradeTwoButton").style="display:none"
-  } else {
-    document.getElementById("TributeUpgradeTwoButton").style="display:inline-block"
-  }
-  if (tributeUpgradeThree.purchased == 6) {
-    document.getElementById("TributeUpgradeThreeButton").style="display:none"
-  } else {
-    document.getElementById("TributeUpgradeThreeButton").style="display:inline-block"
-  }
+  document.getElementById("axisAutobuyerInterval").innerHTML = timeFormat(g.axisAutobuyerInterval)
+  document.getElementById("axisAutobuyerUpgrade").style = (g.axisAutobuyerInterval>0.1)?"display:inline-block":"display:none"
+  document.getElementById("StardustUpgrade1Button").style=(g.stardustUpgrades[0]==4)?"display:none":"display:inline-block"
+  document.getElementById("StardustUpgrade2Button").style=(g.stardustUpgrades[1]==9)?"display:none":"display:inline-block"
+  document.getElementById("StardustUpgrade3Button").style=(g.stardustUpgrades[2]==6)?"display:none":"display:inline-block"
+  document.getElementById("StardustUpgrade4Button").style=(g.stardustUpgrades[3]==5)?"display:none":"display:inline-block"
+  document.getElementById("StardustUpgrade5Button").style=(g.stardustUpgrades[4]==7)?"display:none":"display:inline-block"
 
 
-  // Enhancer section
-  document.getElementById("unspentEnhancers").innerHTML = unspentEnhancers
-  document.getElementById("enhancerCost").innerHTML = infFormat(enhancerCost,false)
-  if (ownedEnhancers.OneOne == 1) {
-    document.getElementById("Enhancer11").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 1)) {
-    document.getElementById("Enhancer11").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer11").className = "lockedenhancerbutton"
+  // Star section
+  g.starCost=(0.30102999566*(12+ExponentialScaling(SuperexpScaling(g.stars,25,2.5),10,0.5)**2))*1.5**Math.floor(g.stars/10)
+  document.getElementById("unspentStars").innerHTML = g.unspentStars
+  document.getElementById("starCost").innerHTML = infFormat(g.starCost,false)
+  for (i=0;i<40;i++) {
+    j=11+i+6*Math.floor(i/4)
+    if (StarE(j)) {
+      document.getElementById("Star"+j).className = "ownedstarbutton"+Math.floor(j/10)
+    } else if ((g.unspentStars > 0) && (g.starRow[g.stars-g.unspentStars] == Math.floor(j/10))) {
+      document.getElementById("Star"+j).className = "starbutton"
+    } else {
+      document.getElementById("Star"+j).className = "lockedstarbutton"
+    }
   }
-  if (ownedEnhancers.OneTwo == 1) {
-    document.getElementById("Enhancer12").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 1)) {
-    document.getElementById("Enhancer12").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer12").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.OneThree == 1) {
-    document.getElementById("Enhancer13").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 1)) {
-    document.getElementById("Enhancer13").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer13").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.OneFour == 1) {
-    document.getElementById("Enhancer14").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 1)) {
-    document.getElementById("Enhancer14").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer14").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.TwoOne == 1) {
-    document.getElementById("Enhancer21").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 2)) {
-    document.getElementById("Enhancer21").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer21").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.TwoTwo == 1) {
-    document.getElementById("Enhancer22").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 2)) {
-    document.getElementById("Enhancer22").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer22").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.TwoThree == 1) {
-    document.getElementById("Enhancer23").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 2)) {
-    document.getElementById("Enhancer23").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer23").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.TwoFour == 1) {
-    document.getElementById("Enhancer24").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 2)) {
-    document.getElementById("Enhancer24").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer24").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.ThreeOne == 1) {
-    document.getElementById("Enhancer31").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 3)) {
-    document.getElementById("Enhancer31").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer31").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.ThreeTwo == 1) {
-    document.getElementById("Enhancer32").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 3)) {
-    document.getElementById("Enhancer32").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer32").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.ThreeThree == 1) {
-    document.getElementById("Enhancer33").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 3)) {
-    document.getElementById("Enhancer33").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer33").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.ThreeFour == 1) {
-    document.getElementById("Enhancer34").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 3)) {
-    document.getElementById("Enhancer34").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer34").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.FourOne == 1) {
-    document.getElementById("Enhancer41").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 4)) {
-    document.getElementById("Enhancer41").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer41").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.FourTwo == 1) {
-    document.getElementById("Enhancer42").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 4)) {
-    document.getElementById("Enhancer42").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer42").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.FourThree == 1) {
-    document.getElementById("Enhancer43").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 4)) {
-    document.getElementById("Enhancer43").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer43").className = "lockedenhancerbutton"
-  }
-  if (ownedEnhancers.FourFour == 1) {
-    document.getElementById("Enhancer44").className = "ownedenhancerbutton"
-  } else if ((unspentEnhancers > 0) && (enhancerRow[enhancers-unspentEnhancers] == 4)) {
-    document.getElementById("Enhancer44").className = "enhancerbutton"
-  } else {
-    document.getElementById("Enhancer44").className = "lockedenhancerbutton"
-  }
-  Enhancer11Effect = 3*(1-1/Math.log10(Math.max(10,exoticmatter)))*(3**ownedEnhancers.ThreeOne)
-  document.getElementById("Enhancer11Effect").innerHTML = infFormat(Enhancer11Effect,true)
-  Enhancer12Effect = 3/Math.log10(Math.max(10,exoticmatter))*(3**ownedEnhancers.ThreeTwo)
-  document.getElementById("Enhancer12Effect").innerHTML = infFormat(Enhancer12Effect,true)
-  Enhancer13Effect = 3*(1-1/(1+timeThisTributeReset/1000))*(3**ownedEnhancers.ThreeThree)
-  document.getElementById("Enhancer13Effect").innerHTML = infFormat(Enhancer13Effect,true)
-  Enhancer14Effect = 3/(1+timeThisTributeReset/1000)*(3**ownedEnhancers.ThreeFour)
-  document.getElementById("Enhancer14Effect").innerHTML = infFormat(Enhancer14Effect,true)
-
+  toggleTableRow("StarRow2",(StarE(11)||StarE(12)||StarE(13)||StarE(14))?"show":"hide")
+  toggleTableRow("StarRow3",(StarE(21)||StarE(22)||StarE(23)||StarE(24))?"show":"hide")
+  toggleTableRow("StarRow4",(StarE(31)||StarE(32)||StarE(33)||StarE(34))?"show":"hide")
+  toggleTableRow("StarRow5",(StarE(41)||StarE(42)||StarE(43)||StarE(44))?"show":"hide")
+  toggleTableRow("StarRow6",(StarE(51)||StarE(52)||StarE(53)||StarE(54))?"show":"hide")
+  toggleTableRow("StarRow7",(StarE(61)||StarE(62)||StarE(63)||StarE(64))?"show":"hide")
+  toggleTableRow("StarRow8",(StarE(71)||StarE(72)||StarE(73)||StarE(74))?"show":"hide")
+  toggleTableRow("StarRow9",(StarE(81)||StarE(82)||StarE(83)||StarE(84))?"show":"hide")
+  toggleTableRow("StarRow10",(StarE(91)||StarE(92)||StarE(93)||StarE(94))?"show":"hide")
+  g.Star11Effect = 3*(1-1/Math.log10(infAdd(10,g.exoticmatter)))*(3**StarE(31))*(g.Row9StarEffect**StarE(91))
+  document.getElementById("Star11Effect").innerHTML = infFormat(g.Star11Effect,true)
+  g.Star12Effect = 3/Math.log10(infAdd(10,g.exoticmatter))*(3**StarE(32))*(g.Row9StarEffect**StarE(92))
+  document.getElementById("Star12Effect").innerHTML = infFormat(g.Star12Effect,true)
+  g.Star13Effect = 3*(1-1/(1+10**ConvergentSoftcap(g.truetimeThisStardustReset,15,16)/1000))*(3**StarE(33))*(g.Row9StarEffect**StarE(93))
+  document.getElementById("Star13Effect").innerHTML = infFormat(g.Star13Effect,true)
+  g.Star14Effect = 3/(1+10**ConvergentSoftcap(g.truetimeThisStardustReset,15,16)/1000)*(3**StarE(34))*(g.Row9StarEffect**StarE(94))
+  document.getElementById("Star14Effect").innerHTML = infFormat(g.Star14Effect,true)
+  g.Star61Effect = LogarithmicSoftcap(infAdd(g.exoticmatter/50,1)**0.6,1000,0.5)
+  document.getElementById("Star61Effect").innerHTML = normFormat(g.Star61Effect)
+  g.Star62Effect = LogarithmicSoftcap(infAdd(g.exoticmatter/50,1)**0.6,1000,0.5)
+  document.getElementById("Star62Effect").innerHTML = normFormat(g.Star62Effect)
+  g.Star63Effect = LogarithmicSoftcap(infAdd(g.exoticmatter/50,1)**0.6,1000,0.5)
+  document.getElementById("Star63Effect").innerHTML = normFormat(g.Star63Effect)
+  g.Star71Effect = 22.5*Math.log10(infAdd(g.masteryPower/Math.sqrt(10),1))
+  document.getElementById("Star71Effect").innerHTML = normFormat(g.Star71Effect)
+  g.Star72Effect = 1.5*Math.log10(infAdd(fix(g.exoticmatter),1))**2
+  document.getElementById("Star72Effect").innerHTML = normFormat(g.Star72Effect)
+  g.Star73Effect = 8*Math.log10(infAdd(g.stardust,1))
+  document.getElementById("Star73Effect").innerHTML = normFormat(g.Star73Effect)
+  g.Star74Effect = 7.5*g.truetimeThisStardustReset
+  document.getElementById("Star74Effect").innerHTML = normFormat(g.Star74Effect)
+  g.Row9StarEffect = 1+infAdd(g.exoticmatter,1)**0.75/10
+  for (i=1;i<5;i++) document.getElementById("Star9"+i+"Effect").innerHTML = normFormat(g.Row9StarEffect)
 
   // Dark Matter section
-  if ((tributes > 27) && (DarkMatterUnlocked == false)) {
-    DarkMatterUnlocked=true
-  }
-  if (DarkMatterUnlocked == true) {
-    document.getElementById("DarkMatterButton").style="display:inline-block"
-    darkmatter=infAdd(darkmatter,darkmatterPerSec-1.30103)
-  } else {
-    document.getElementById("DarkMatterButton").style="display:none"
-  }
-  if (isNaN(darkmatter)) {
-    darkmatter=0
-    darkmatterPerSec=0
-  }
-  baseDarkMatterGain=Math.max(tributes-26,1)**0.5-1
-  darkmatterPerSec=(baseDarkMatterGain+darkXAxisEffect*(darkXAxis+darkfreeXAxis)+darkZAxisEffect*(darkZAxis+darkfreeZAxis)+darkUAxisEffect*(darkUAxis+darkfreeUAxis)*totaldarkAxis+darkTAxisEffect*(darkTAxis+darkfreeTAxis)+axioms+darkEnergyEffect)
-  *darkSAxisEffect**(darkSAxis+darkfreeSAxis)+Math.log10(offlineSpeedup)
-  darkaxisCostDivisor = darkYAxisEffect*(darkYAxis+darkfreeYAxis)
-  darkaxisCostExponent = 1
-  darkaxisScalingStart = 10
-  darkaxisSuperscalingStart = 200
-  darkfreeXAxis = Math.min(2*darkXAxis,0)
-  darkXAxisEffect = 0.47712125472*(1+Math.floor((7+axioms)/8)*0.1)
-  darkfreeYAxis = Math.min(2*darkYAxis,0)
-  darkYAxisEffect = 0.60206*(1+Math.floor((6+axioms)/8)*0.1)
-  darkfreeZAxis = Math.min(2*darkZAxis,0)
-  darkZAxisEffect = Math.max(exoticmatter/500-1,0)**0.25*(1+Math.floor((5+axioms)/8)*0.1)
-  darkfreeWAxis = Math.min(2*darkWAxis,0)
-  darkWAxisEffect = 10*(1+Math.floor((4+axioms)/8)*0.1)
-  darkfreeVAxis = Math.min(2*darkVAxis,0)
-  darkVAxisEffect = 10*(1+Math.floor((3+axioms)/8)*0.1)
-  darkfreeUAxis = Math.min(2*darkUAxis,0)
-  darkUAxisEffect = 0.008600171762*(1+Math.floor((2+axioms)/8)*0.1)
-  darkfreeTAxis = Math.min(2*darkTAxis,0)
-  darkTAxisEffect = Math.log10(1+timeThisTributeReset/1000)**0.5*(1+Math.floor((1+axioms)/8)*0.1)
-  darkfreeSAxis = Math.min(2*darkSAxis,0)
-  darkSAxisEffect = 1+0.01*(1+Math.floor(axioms/8)*0.1)
+  document.getElementById("DarkMatterButton").style=(g.stardustUpgrades[4]>0)?"display:inline-block":"display:none"
+  g.darkaxisScalingStart = 8
+  g.darkaxisSuperscalingStart = 64
+  g.darkMatterFreeAxis=(1+g.darkstars/100)/3
   updateDarkAxisCosts()
-  totaldarkAxis = darkXAxis+darkYAxis+darkZAxis+darkWAxis+darkVAxis+darkUAxis+darkTAxis+darkSAxis
-  document.getElementById("darkMatterDisplay").innerHTML = infFormat(darkmatter,false);
-  document.getElementById("darkMatterPerSec").innerHTML = infFormat(darkmatterPerSec,false)
-  document.getElementById("baseDarkMatterGain").innerHTML = infFormat(baseDarkMatterGain,true)
-  document.getElementById("darkMatterFreeAxis").innerHTML = normFormat(1/darkMatterFreeAxis)
-  document.getElementById("DarkXAxisEffect").innerHTML = infFormat(darkXAxisEffect,true);
-  document.getElementById("DarkXAxisCost").innerHTML = infFormat(darkXAxisCost,false);
-  document.getElementById("DarkXAxisAmount").innerHTML = (darkfreeXAxis > 0) ? darkXAxis+" + "+normFormat(darkfreeXAxis) : darkXAxis;
-  document.getElementById("DarkYAxisEffect").innerHTML = infFormat(darkYAxisEffect,true);
-  document.getElementById("DarkYAxisCost").innerHTML = infFormat(darkYAxisCost,false);
-  document.getElementById("DarkYAxisAmount").innerHTML = (darkfreeYAxis > 0) ? darkYAxis+" + "+normFormat(darkfreeYAxis) : darkYAxis;
-  document.getElementById("DarkZAxisEffect").innerHTML = infFormat(darkZAxisEffect,true);
-  document.getElementById("DarkZAxisCost").innerHTML = infFormat(darkZAxisCost,false);
-  document.getElementById("DarkZAxisAmount").innerHTML = (darkfreeZAxis > 0) ? darkZAxis+" + "+normFormat(darkfreeZAxis) : darkZAxis;
-  document.getElementById("DarkWAxisEffect").innerHTML = normFormat(darkWAxisEffect);
-  document.getElementById("DarkWAxisCost").innerHTML = infFormat(darkWAxisCost,false);
-  document.getElementById("DarkWAxisAmount").innerHTML = (darkfreeWAxis > 0) ? darkWAxis+" + "+normFormat(darkfreeWAxis) : darkWAxis;
-  document.getElementById("DarkVAxisEffect").innerHTML = normFormat(darkVAxisEffect);
-  document.getElementById("DarkVAxisCost").innerHTML = infFormat(darkVAxisCost,false);
-  document.getElementById("DarkVAxisAmount").innerHTML = (darkfreeVAxis > 0) ? darkVAxis+" + "+normFormat(darkfreeVAxis) : darkVAxis;
-  document.getElementById("DarkUAxisEffect").innerHTML = infFormat(darkUAxisEffect,true);
-  document.getElementById("DarkUAxisCost").innerHTML = infFormat(darkUAxisCost,false);
-  document.getElementById("DarkUAxisAmount").innerHTML = (darkfreeUAxis > 0) ? darkUAxis+" + "+normFormat(darkfreeUAxis) : darkUAxis;
-  document.getElementById("DarkTAxisEffect").innerHTML = infFormat(darkTAxisEffect,true);
-  document.getElementById("DarkTAxisCost").innerHTML = infFormat(darkTAxisCost,false);
-  document.getElementById("DarkTAxisAmount").innerHTML = (darkfreeTAxis > 0) ? darkTAxis+" + "+normFormat(darkfreeTAxis) : darkTAxis;
-  document.getElementById("DarkSAxisEffect").innerHTML = Math.floor(darkSAxisEffect*10000)/10000;
-  document.getElementById("DarkSAxisCost").innerHTML = infFormat(darkSAxisCost,false);
-  document.getElementById("DarkSAxisAmount").innerHTML = (darkfreeSAxis > 0) ? darkSAxis+" + "+normFormat(darkfreeSAxis) : darkSAxis;
-  document.getElementById("DarkXAxisButton").className=(darkmatter<darkXAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkYAxisButton").className=(darkmatter<darkYAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkZAxisButton").className=(darkmatter<darkZAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkWAxisButton").className=(darkmatter<darkWAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkVAxisButton").className=(darkmatter<darkVAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkUAxisButton").className=(darkmatter<darkUAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkTAxisButton").className=(darkmatter<darkTAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkSAxisButton").className=(darkmatter<darkSAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  axiomRequirement=24+12*Math.floor(axioms/8)+4*Math.floor(axioms/8)**2+(2+Math.floor(axioms/8))*(axioms%8)
-  document.getElementById("axiomButton").className = (totaldarkAxis>=axiomRequirement)?"axiombutton":"lockedaxiombutton"
-  document.getElementById("axiomDisplay").innerHTML = axioms
-  document.getElementById("nextAxiomAxis").innerHTML = "XYZWVUTS".substr(axioms%8,1)
-  document.getElementById("axiomProgress").innerHTML = totaldarkAxis
-  document.getElementById("axiomRequirement").innerHTML = axiomRequirement
+  g.totaldarkAxis = g.darkXAxis+g.darkYAxis+g.darkZAxis+g.darkWAxis+g.darkVAxis+g.darkUAxis+g.darkTAxis+g.darkSAxis
+  g.realdarkXAxis=g.darkXAxis+g.freedarkXAxis
+  g.realdarkYAxis=g.darkYAxis+g.freedarkYAxis
+  g.realdarkZAxis=g.darkZAxis+g.freedarkZAxis
+  g.realdarkWAxis=g.darkWAxis+g.freedarkWAxis
+  g.realdarkVAxis=g.darkVAxis+g.freedarkVAxis
+  g.realdarkUAxis=g.darkUAxis+g.freedarkUAxis
+  g.realdarkTAxis=g.darkTAxis+g.freedarkTAxis
+  g.realdarkSAxis=g.darkSAxis+g.freedarkSAxis
+  document.getElementById("darkMatterDisplay").innerHTML = infFormat(g.darkmatter,false);
+  document.getElementById("darkMatterPerSec").innerHTML = infFormat(g.darkmatterPerSec,false)
+  document.getElementById("darkMatterFreeAxis1").innerHTML = normFormat(Math.max(1,1/g.darkMatterFreeAxis))
+  document.getElementById("darkMatterFreeAxis2").innerHTML = normFormat(Math.max(1,g.darkMatterFreeAxis))
+  document.getElementById("DarkXAxisEffect").innerHTML = infFormat(g.darkXAxisEffect,true);
+  document.getElementById("DarkXAxisCost").innerHTML = infFormat(g.darkXAxisCost,false);
+  document.getElementById("DarkXAxisAmount").innerHTML = (g.freedarkXAxis > 0) ? g.darkXAxis+" + "+normFormat(g.freedarkXAxis) : g.darkXAxis;
+  document.getElementById("DarkYAxisEffect").innerHTML = infFormat(g.darkYAxisEffect,true);
+  document.getElementById("DarkYAxisCost").innerHTML = infFormat(g.darkYAxisCost,false);
+  document.getElementById("DarkYAxisAmount").innerHTML = (g.freedarkYAxis > 0) ? g.darkYAxis+" + "+normFormat(g.freedarkYAxis) : g.darkYAxis;
+  document.getElementById("DarkZAxisEffect").innerHTML = infFormat(g.darkZAxisEffect,true);
+  document.getElementById("DarkZAxisCost").innerHTML = infFormat(g.darkZAxisCost,false);
+  document.getElementById("DarkZAxisAmount").innerHTML = (g.freedarkZAxis > 0) ? g.darkZAxis+" + "+normFormat(g.freedarkZAxis) : g.darkZAxis;
+  document.getElementById("DarkWAxisEffect").innerHTML = infFormat(g.darkWAxisEffect,true);
+  document.getElementById("DarkWAxisCost").innerHTML = infFormat(g.darkWAxisCost,false);
+  document.getElementById("DarkWAxisAmount").innerHTML = (g.freedarkWAxis > 0) ? g.darkWAxis+" + "+normFormat(g.freedarkWAxis) : g.darkWAxis;
+  document.getElementById("DarkVAxisEffect").innerHTML = normFormat(g.darkVAxisEffect*100);
+  document.getElementById("DarkVAxisCost").innerHTML = infFormat(g.darkVAxisCost,false);
+  document.getElementById("DarkVAxisAmount").innerHTML = (g.freedarkVAxis > 0) ? g.darkVAxis+" + "+normFormat(g.freedarkVAxis) : g.darkVAxis;
+  document.getElementById("DarkUAxisEffect").innerHTML = infFormat(g.darkUAxisEffect,true);
+  document.getElementById("DarkUAxisCost").innerHTML = infFormat(g.darkUAxisCost,false);
+  document.getElementById("DarkUAxisAmount").innerHTML = (g.freedarkUAxis > 0) ? g.darkUAxis+" + "+normFormat(g.freedarkUAxis) : g.darkUAxis;
+  document.getElementById("DarkTAxisEffect").innerHTML = infFormat(g.darkTAxisEffect,true);
+  document.getElementById("DarkTAxisCost").innerHTML = infFormat(g.darkTAxisCost,false);
+  document.getElementById("DarkTAxisAmount").innerHTML = (g.freedarkTAxis > 0) ? g.darkTAxis+" + "+normFormat(g.freedarkTAxis) : g.darkTAxis;
+  document.getElementById("DarkSAxisEffect").innerHTML = Math.floor(g.darkSAxisEffect*10000)/10000;
+  document.getElementById("DarkSAxisCost").innerHTML = infFormat(g.darkSAxisCost,false);
+  document.getElementById("DarkSAxisAmount").innerHTML = (g.freedarkSAxis > 0) ? g.darkSAxis+" + "+normFormat(g.freedarkSAxis) : g.darkSAxis;
+  document.getElementById("DarkXAxisButton").className=(g.darkmatter<g.darkXAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkYAxisButton").className=(g.darkmatter<g.darkYAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkZAxisButton").className=(g.darkmatter<g.darkZAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkWAxisButton").className=(g.darkmatter<g.darkWAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkVAxisButton").className=(g.darkmatter<g.darkVAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkUAxisButton").className=(g.darkmatter<g.darkUAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkTAxisButton").className=(g.darkmatter<g.darkTAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  document.getElementById("DarkSAxisButton").className=(g.darkmatter<g.darkSAxisCost)?"lockedaxisbutton":"darkaxisbutton"
+  g.darkstarScalingStart=48
+  updateDarkStarCost()
+  document.getElementById("darkstarButton").className = (g.totaldarkAxis>=g.darkstarRequirement)?"darkstarbutton":"lockeddarkstarbutton"
+  document.getElementById("darkstarDisplay").innerHTML = g.darkstars
+  document.getElementById("nextDarkStarAxis").innerHTML = axisCodes[g.darkstars%8]
+  document.getElementById("darkstarProgress").innerHTML = g.totaldarkAxis
+  document.getElementById("darkstarRequirement").innerHTML = normFormat(g.darkstarRequirement)
 
 
   // Energy section
-  if ((exoticmatter > 2400) && (energyTypesUnlocked == 0)) {
-    energyTypesUnlocked=1
-  }
-  if (energyTypesUnlocked>0) {
+  g.energyTypesUnlocked=Math.max(0,Math.min(6,g.stardustUpgrades[4]-1))
+  if (g.energyTypesUnlocked>0) {
     document.getElementById("EnergyButton").style="display:inline-block"
-    expandingEnergy+=expandingEnergyPerSec/20
+    g.darkEnergy+=g.darkEnergyPerSec*deltatime
   } else {
     document.getElementById("EnergyButton").style="display:none"
   }
-  if (isNaN(expandingEnergy)) {
-    expandingEnergy=0
-    expandingEnergyPerSec=0
+  if (isNaN(g.darkEnergy)) {
+    g.darkEnergy=0
+    g.darkEnergyPerSec=0
   }
-  expandingEnergyPerSec=Math.min(exoticmatter*20,(5+0.01*exoticmatter/Math.log(Math.max(0,exoticmatter)+1.001))*offlineSpeedup/10**Math.max(0,Math.max(1,expandingEnergy)/Math.max(1,exoticmatter)-1))
-  expandingEnergyEffect=((expandingEnergy>exoticmatter) && (exoticmatter>0)) ? exoticmatter*((expandingEnergy/exoticmatter)**0.4-1)*0.5 : 0
-  document.getElementById("expandingEnergyDisplay").innerHTML = infFormat(expandingEnergy,false)
-  document.getElementById("expandingEnergyPerSec").innerHTML = infFormat(expandingEnergyPerSec,true)
-  document.getElementById("expandingEnergyEffect").innerHTML = infFormat(expandingEnergyEffect,true)
-  if ((exoticmatter > 4000) && (energyTypesUnlocked == 1)) {
-    energyTypesUnlocked=2
-  }
-  if (energyTypesUnlocked>1) {
-    document.getElementById("DivineEnergy").style.visibility="visible"
-    divineEnergy+=divineEnergyPerSec/20
+  g.darkEnergyPerSec=Math.log10(infAdd(g.exoticmatter,1))*0.9+g.energySpeedMult-Math.log10(200)
+  g.darkEnergyPerSec=10**ConvergentSoftcap(g.darkEnergyPerSec,275,300)*offlineSpeedup
+  g.darkEnergyEffect=((g.darkEnergy>g.exoticmatter) && (g.exoticmatter>0)) ? 1+Math.log10(g.darkEnergy/g.exoticmatter)*g.energyEffectBoost/3 : 1
+  document.getElementById("darkEnergyDisplay").innerHTML = infFormat(g.darkEnergy,false)
+  document.getElementById("darkEnergyPerSec").innerHTML = infFormat(g.darkEnergyPerSec,true)
+  document.getElementById("darkEnergyEffect").innerHTML = g.darkEnergyEffect.toFixed(4)
+  if (g.energyTypesUnlocked>1) {
+    document.getElementById("StelliferousEnergy").style.visibility="visible"
+    g.stelliferousEnergy+=g.stelliferousEnergyPerSec*deltatime
   } else {
-    document.getElementById("DivineEnergy").style.visibility="hidden"
+    document.getElementById("StelliferousEnergy").style.visibility="hidden"
   }
-  if (isNaN(divineEnergy)) {
-    divineEnergy=0
-    divineEnergyPerSec=0
+  if (isNaN(g.stelliferousEnergy)) {
+    g.stelliferousEnergy=0
+    g.stelliferousEnergyPerSec=0
   }
-  divineEnergyPerSec=Math.min(tributes*20,(0.0025*tributes/Math.log(Math.max(0,tributes)+1.001))*offlineSpeedup/100**Math.max(0,Math.max(1,divineEnergy)/Math.max(1,tributes)-1))
-  if (divineEnergyPerSec<0) divineEnergyPerSec = 0; // prevent -2000 value
-  divineEnergyEffect=((divineEnergy>tributes) && (tributes>0)) ? tributes*((divineEnergy/tributes)**0.5-1)*0.25 : 0
-  document.getElementById("divineEnergyDisplay").innerHTML = infFormat(divineEnergy,false)
-  document.getElementById("divineEnergyPerSec").innerHTML = infFormat(divineEnergyPerSec,true)
-  document.getElementById("divineEnergyEffect").innerHTML = infFormat(divineEnergyEffect,true)
-  if ((exoticmatter > 5600) && (energyTypesUnlocked == 2)) {
-    energyTypesUnlocked=3
-  }
-  if (energyTypesUnlocked>2) {
-    document.getElementById("DarkEnergy").style.visibility="visible"
-    darkEnergy+=darkEnergyPerSec/20
+  g.stelliferousEnergyPerSec=Math.log10(infAdd(g.stardust,1))*0.9+g.energySpeedMult-Math.log10(350)
+  g.stelliferousEnergyPerSec=10**ConvergentSoftcap(g.stelliferousEnergyPerSec,275,300)*offlineSpeedup
+  g.stelliferousEnergyEffect=((g.stelliferousEnergy>g.stardust) && (g.stardust>0)) ? 1+Math.log10(g.stelliferousEnergy/g.stardust)*g.energyEffectBoost/3 : 1
+  document.getElementById("stelliferousEnergyDisplay").innerHTML = infFormat(g.stelliferousEnergy,false)
+  document.getElementById("stelliferousEnergyPerSec").innerHTML = infFormat(g.stelliferousEnergyPerSec,true)
+  document.getElementById("stelliferousEnergyEffect").innerHTML = g.stelliferousEnergyEffect.toFixed(4)
+  if (g.energyTypesUnlocked>2) {
+    document.getElementById("GravitationalEnergy").style.visibility="visible"
+    g.gravitationalEnergy+=g.gravitationalEnergyPerSec*deltatime
   } else {
-    document.getElementById("DarkEnergy").style.visibility="hidden"
+    document.getElementById("GravitationalEnergy").style.visibility="hidden"
   }
-  if (isNaN(darkEnergy)) {
-    darkEnergy=0
-    darkEnergyPerSec=0
+  if (isNaN(g.gravitationalEnergy)) {
+    g.gravitationalEnergy=0
+    g.gravitationalEnergyPerSec=0
   }
-  darkEnergyPerSec=Math.min(darkmatter*20,(0.004*darkmatter/Math.log(Math.max(0,darkmatter)+1.001))*offlineSpeedup/100**Math.max(0,Math.max(1,darkEnergy)/Math.max(1,darkmatter)-1))
-  if (Number.isNaN(darkEnergyPerSec)) darkEnergyPerSec=0; // it's getting NaN for whatever reason
-  darkEnergyEffect=((darkEnergy>darkmatter) && (darkmatter>0)) ? darkmatter*((darkEnergy/darkmatter)**0.6-1)*0.2 : 0
-  document.getElementById("darkEnergyDisplay").innerHTML = infFormat(darkEnergy,false)
-  document.getElementById("darkEnergyPerSec").innerHTML = infFormat(darkEnergyPerSec,true)
-  document.getElementById("darkEnergyEffect").innerHTML = infFormat(darkEnergyEffect,true)
+  g.gravitationalEnergyPerSec=Math.log10(infAdd(g.darkmatter,1))*0.9+g.energySpeedMult-Math.log10(500)
+  g.gravitationalEnergyPerSec=10**ConvergentSoftcap(g.gravitationalEnergyPerSec,275,300)*offlineSpeedup
+  g.gravitationalEnergyEffect=((g.gravitationalEnergy>g.darkmatter) && (g.darkmatter>0)) ? 1+Math.log10(g.gravitationalEnergy/g.darkmatter)*g.energyEffectBoost/3 : 1
+  document.getElementById("gravitationalEnergyDisplay").innerHTML = infFormat(g.gravitationalEnergy,false)
+  document.getElementById("gravitationalEnergyPerSec").innerHTML = infFormat(g.gravitationalEnergyPerSec,true)
+  document.getElementById("gravitationalEnergyEffect").innerHTML = g.gravitationalEnergyEffect.toFixed(4)
+  if (g.energyTypesUnlocked>3) {
+    document.getElementById("SpatialEnergy").style.visibility="visible"
+    g.spatialEnergy+=g.spatialEnergyPerSec*deltatime
+  } else {
+    document.getElementById("SpatialEnergy").style.visibility="hidden"
+  }
+  if (isNaN(g.spatialEnergy)) {
+    g.spatialEnergy=0
+    g.spatialEnergyPerSec=0
+  }
+  g.spatialEnergyPerSec=Math.log10(infAdd(g.XAxis,1))*0.9+g.energySpeedMult-Math.log10(5e4)
+  g.spatialEnergyPerSec=10**ConvergentSoftcap(g.spatialEnergyPerSec,275,300)*offlineSpeedup
+  g.spatialEnergyEffect=((g.spatialEnergy>Math.log10(Math.max(g.XAxis,2))) && (g.XAxis>1)) ? 1+Math.log10(g.spatialEnergy/Math.log10(g.XAxis))*g.energyEffectBoost*2 : 1
+  document.getElementById("spatialEnergyDisplay").innerHTML = infFormat(g.spatialEnergy,true)
+  document.getElementById("spatialEnergyPerSec").innerHTML = infFormat(g.spatialEnergyPerSec,true)
+  document.getElementById("spatialEnergyEffect").innerHTML = g.spatialEnergyEffect.toFixed(4)
+  if (g.energyTypesUnlocked>4) {
+    document.getElementById("NeuralEnergy").style.visibility="visible"
+    g.neuralEnergy+=g.neuralEnergyPerSec*deltatime
+  } else {
+    document.getElementById("NeuralEnergy").style.visibility="hidden"
+  }
+  if (isNaN(g.neuralEnergy)) {
+    g.neuralEnergy=0
+    g.neuralEnergyPerSec=0
+  }
+  g.neuralEnergyPerSec=Math.log10(infAdd(g.masteryPower,1))*0.9+g.energySpeedMult-Math.log10(250)
+  g.neuralEnergyPerSec=10**ConvergentSoftcap(g.neuralEnergyPerSec,275,300)*offlineSpeedup
+  g.neuralEnergyEffect=((g.neuralEnergy>g.masteryPower) && (g.masteryPower>0)) ? 1+Math.log10(g.neuralEnergy/g.masteryPower)*g.energyEffectBoost/3 : 1
+  document.getElementById("neuralEnergyDisplay").innerHTML = infFormat(g.neuralEnergy,false)
+  document.getElementById("neuralEnergyPerSec").innerHTML = infFormat(g.neuralEnergyPerSec,true)
+  document.getElementById("neuralEnergyEffect").innerHTML = g.neuralEnergyEffect.toFixed(4)
+  if (g.energyTypesUnlocked>5) {
+    document.getElementById("MetaEnergy").style.visibility="visible"
+    g.metaEnergy+=g.metaEnergyPerSec*deltatime
+  } else {
+    document.getElementById("MetaEnergy").style.visibility="hidden"
+  }
+  if (isNaN(g.metaEnergy)) {
+    g.metaEnergy=0
+    g.metaEnergyPerSec=0
+  }
+  g.metaEnergyPerSec=Math.log10(infAdd(g.darkEnergy,1))+Math.log10(infAdd(g.stelliferousEnergy,1))+Math.log10(infAdd(g.gravitationalEnergy,1))+Math.log10(infAdd(g.spatialEnergy,1))+Math.log10(infAdd(g.neuralEnergy,1))+Math.log10(infAdd(g.metaEnergy,1))
+  g.metaEnergyPerSec=g.metaEnergyPerSec*0.1+g.energySpeedMult-Math.log10(25)
+  g.metaEnergyPerSec=10**ConvergentSoftcap(g.metaEnergyPerSec,275,300)*offlineSpeedup
+  g.metaEnergyEffect=1+Math.log10(infAdd(g.metaEnergy,1))*g.energyEffectBoost/3
+  document.getElementById("metaEnergyDisplay").innerHTML = infFormat(g.metaEnergy,false)
+  document.getElementById("metaEnergyPerSec").innerHTML = infFormat(g.metaEnergyPerSec,true)
+  document.getElementById("metaEnergyEffect").innerHTML = g.metaEnergyEffect.toFixed(4)
 
 
-  // Incrementer section - this comes last because otherwise ressets don't work properly
-  exoticmatterPerSec=(XAxisEffect*(XAxis+freeXAxis)+ZAxisEffect*(ZAxis+freeZAxis)+WAxisEffect*(WAxis+freeWAxis)+TAxisEffect*(TAxis+freeTAxis)+tributeBoostOne+tributeBoostSix*(YAxis+freeYAxis)+Enhancer11Effect*ownedEnhancers.OneOne+Enhancer12Effect*ownedEnhancers.OneTwo+Enhancer13Effect*ownedEnhancers.OneThree+Enhancer14Effect*ownedEnhancers.OneFour+10*ownedEnhancers.FourTwo+expandingEnergyEffect)
-  *(SAxisEffect**(SAxis+freeSAxis))*1.1**ownedEnhancers.FourOne+Math.log10(offlineSpeedup)
-  incrementExoticMatter(exoticmatterPerSec-1.30103);
+  // Supernova section
+  if (g.stars>=24) g.supernovaUnlocked = true
+  document.getElementById("supernovaButton").style.display = (g.supernovaUnlocked)?"inline-block":"none"
+
+  document.getElementById("EMSupernovaCharges").innerHTML = g.EMSupernova.charges+" / "+g.EMSupernova.maxCharges
+  fillpercentage = 100*g.EMSupernova.charges/g.EMSupernova.maxCharges
+  document.getElementById("EMSupernovaCharges").style = "width:130px;height:130px;border-radius:20px;background-image:linear-gradient(0deg,#00ff00 0%,#00ff00 "+fillpercentage+"%,#999999 0%,#999999)"
+  g.EMSupernova.maxCharges=1+g.EMSupernova.upgrade1
+  g.EMSupernova.power=1.05+0.01*g.EMSupernova.upgrade2
+  SupernovaCosts[0] = [50000*2**normSimplex(g.EMSupernova.upgrade1,2),25000*Math.floor(2**g.EMSupernova.upgrade2**1.3)]
+  document.getElementById("EMSupernovaReward").innerHTML = infFormat(g.exoticmatterPerSec*g.EMSupernova.power,false)
+  for (i=1;i<3;i++) document.getElementById("EMSupernovaCost"+i).innerHTML = infFormat(SupernovaCosts[0][i-1],false)
+
+  document.getElementById("Supernova2Locked").style.display = (g.KnowledgeSupernova.unlocked)?"none":"inline-block"
+  document.getElementById("Supernova2Unlocked").style.display = (g.KnowledgeSupernova.unlocked)?"inline-block":"none"
+  document.getElementById("UnlockSupernova2").innerHTML = "Unlock this Supernova for "+infFormat(65,false)+" mastery power"
+  document.getElementById("KnowledgeSupernovaCharges").innerHTML = g.KnowledgeSupernova.charges+" / "+g.KnowledgeSupernova.maxCharges
+  fillpercentage = 100*g.KnowledgeSupernova.charges/g.KnowledgeSupernova.maxCharges
+  document.getElementById("KnowledgeSupernovaCharges").style = "width:130px;height:130px;border-radius:20px;background-image:linear-gradient(0deg,#ff0099 0%,#ff0099 "+fillpercentage+"%,#999999 0%,#999999)"
+  g.KnowledgeSupernova.maxCharges=1+g.KnowledgeSupernova.upgrade1
+  g.KnowledgeSupernova.power=1.05+0.01*g.KnowledgeSupernova.upgrade2
+  SupernovaCosts[1] = [Math.floor(75*1.1**normSimplex(g.KnowledgeSupernova.upgrade1,3)),Math.floor(70*1.1**g.KnowledgeSupernova.upgrade2**2)]
+  document.getElementById("KnowledgeSupernovaReward").innerHTML = infFormat(g.masteryPower*g.KnowledgeSupernova.power,false)
+  for (i=1;i<3;i++) document.getElementById("KnowledgeSupernovaCost"+i).innerHTML = infFormat(SupernovaCosts[1][i-1],false)
+
+
+  // Incrementer section - this comes last because otherwise resets don't work properly
+  for (i=1; i<=11; i++) {
+    updateStat(i)
+  }
+  incrementExoticMatter(g.exoticmatterPerSec+Math.log10(deltatime))
+  if (g.masteryRowsUnlocked[0]==1) g.masteryPower=infAdd(g.masteryPower,g.masteryPowerPerSec+Math.log10(deltatime))
+  if (g.stardustUpgrades[4]>0) g.darkmatter=infAdd(g.darkmatter,g.darkmatterPerSec+Math.log10(deltatime))
+
+  for (i=0; i<g.length; i++) {
+    fixable=Object.keys(g)[i]
+    if (isNaN(fixable)) Object.keys(g)[i] = fixable
+  }
 }, 50);
 
 function ProgressBar() {
-  if ((fastestTributeReset > 1e12) && (exoticmatter<25)) {
-    progressbarvalue = Math.max(exoticmatter,0)/25
-    progressbartooltip = "Progress to Tributes: (Need "+infFormat(25)+" exotic matter)"
-  } else if (DarkMatterUnlocked == false) {
-    progressbarvalue = Math.max(tributes,0)/27
-    progressbartooltip = "Progress to Dark Matter (Need "+infFormat(27)+" tributes)"
-  } else if (energyTypesUnlocked == 0) {
-    progressbarvalue = Math.max(exoticmatter,0)/2400
-    progressbartooltip = "Progress to Energy (Need "+infFormat(2400)+" exotic matter)"
-  } else if (energyTypesUnlocked == 1) {
-    progressbarvalue = Math.max(exoticmatter,0)/4000
-    progressbartooltip = "Progress to Divine Energy (Need "+infFormat(4000)+" exotic matter)"
-  } else if (energyTypesUnlocked == 2) {
-    progressbarvalue = Math.max(exoticmatter,0)/5950
-    progressbartooltip = "Progress to Dark Energy (Need "+infFormat(5950)+" exotic matter)"
+  if (g.masteryRowsUnlocked[0]==0) {
+    progressbarvalue = 10**Math.min(g.exoticmatter-g.XAxisCost,0)
+    g.progressbartooltip = "Progress to Masteries: "+normFormat(progressbarvalue*100)+"% (Need an X Axis)"
+  } else if (g.masteryRowsUnlocked[1]==0) {
+    progressbarvalue = 10**Math.min(g.exoticmatter-6,0)
+    g.progressbartooltip = "Progress to the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(6)+" exotic matter)"
+  } else if (g.masteryRowsUnlocked[2]==0) {
+    progressbarvalue = Math.max(0,g.exoticmatter)/17
+    g.progressbartooltip = "Progress to the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(17)+" exotic matter)"
+  } else if (g.masteryRowsUnlocked[3]==0) {
+    progressbarvalue = Math.max(0,g.exoticmatter)/22
+    g.progressbartooltip = "Progress to Stardust and the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(22)+" exotic matter)"
+  } else if (g.stardustUpgrades[5] < 2) {
+    progressbarvalue = 0
+    g.progressbartooltip = "No new aspects detected. "+"Perhaps you need something else.".bold().fontcolor("#00ffff")
+  } else if (g.supernovaUnlocked == false) {
+    progressbarvalue = g.stars/40
+    g.progressbartooltip = "Progress to Supernova: "+normFormat(progressbarvalue*100)+"% (Need 40 stars)"
   } else {
     progressbarvalue = 1
-    progressbartooltip = "All features unlocked!"
+    g.progressbartooltip = "All features unlocked!"
   }
-  document.getElementById("progress").innerHTML = progressbartooltip
-  document.getElementById("progressBar").value = progressbarvalue
+  document.getElementById("progress").innerHTML = g.progressbartooltip
+  document.getElementById("progressBar").value = fix(progressbarvalue)
 }
 function toggleNotation() {
-  if (notation == "Alemaninc Ordinal") {
-    notation = "Double Logarithm"
-  } else if (notation == "Double Logarithm") {
-    notation = "Engineering"
-  } else if (notation == "Engineering") {
-    notation = "Infinity"
-  } else if (notation == "Infinity") {
-    notation = "Logarithm"
-  } else if (notation == "Logarithm") {
-    notation = "Mixed scientific"
-  } else if (notation == "Mixed scientific") {
-    notation = "Scientific"
-  } else if (notation == "Scientific") {
-    notation = "Alemaninc Ordinal"
-  } else {
-    notation = "Scientific"
-  }
+  options=["Alemaninc Ordinal","Double Logarithm","Engineering","Infinity","Logarithm","Mixed scientific","Scientific","Tetration"]
+  next=options[(options.indexOf(g.notation)+1)%options.length]
+  g.notation=(typeof next == "string")?next:"Scientific"
 }
 function save() {
-  var save = {
-    exoticmatter: exoticmatter,
-    exoticmatterPerSec: exoticmatterPerSec,
-    exoticmatterThisTributeReset: exoticmatterThisTributeReset,
-    exoticmatterThisWormholeReset: exoticmatterThisWormholeReset,
-    XAxis: XAxis,
-    YAxis: YAxis,
-    ZAxis: ZAxis,
-    WAxis: WAxis,
-    VAxis: VAxis,
-    UAxis: UAxis,
-    TAxis: TAxis,
-    SAxis: SAxis,
-    timePlayed: timePlayed,
-    HTPshown: HTPshown,
-    timeThisTributeReset: timeThisTributeReset,
-    fastestTributeReset: fastestTributeReset,
-    timeThisWormholeReset: timeThisWormholeReset,
-    fastestWormholeReset: fastestWormholeReset,
-    tributeResets: tributeResets,
-    tributes: tributes,
-    notation: notation,
-    autosaveIsOn: autosaveIsOn,
-    offlineSpeedupLength: offlineSpeedupLength,
-    timeLeft: Number(new Date()),
-    tributeUpgradeOneBought: tributeUpgradeOne.purchased,
-    tributeUpgradeTwoBought: tributeUpgradeTwo.purchased,
-    tributeUpgradeThreeBought: tributeUpgradeThree.purchased,
-    axisAutobuyerOn: axisAutobuyerOn,
-    axisAutobuyerUpgrades: axisAutobuyerUpgrades,
-    enhancers: enhancers,
-    unspentEnhancers: unspentEnhancers,
-    enhancerCost: enhancerCost,
-    ownedEnhancers: ownedEnhancers,
-    darkmatter: darkmatter,
-    darkXAxis: darkXAxis,
-    darkYAxis: darkYAxis,
-    darkZAxis: darkZAxis,
-    darkWAxis: darkWAxis,
-    darkVAxis: darkVAxis,
-    darkUAxis: darkUAxis,
-    darkTAxis: darkTAxis,
-    darkSAxis: darkSAxis,
-    axioms: axioms,
-    energyTypesUnlocked: energyTypesUnlocked,
-    expandingEnergy: expandingEnergy,
-    divineEnergy: divineEnergy,
-    darkEnergy: darkEnergy
-  }
-  localStorage.setItem("save",JSON.stringify(save)); 
+  localStorage.setItem("save",JSON.stringify(g)); 
 }
 function load(type) {
-  savecounter++
   if (type=="normal") {
     var savegame = JSON.parse(localStorage.getItem("save"));
   } else if (type=="import") {
     var savegame = JSON.parse(atob(prompt("Copy and paste your save file here:")))
   }
-  if ((typeof savegame.exoticmatter !== "undefined") && !Number.isNaN(savegame.exoticmatter)) exoticmatter = savegame.exoticmatter;
-  if ((typeof savegame.exoticmatterPerSec !== "undefined") && !Number.isNaN(savegame.exoticmatterPerSec)) exoticmatterPerSec = savegame.exoticmatterPerSec;
-  if ((typeof savegame.totalexoticmatter !== "undefined") && !Number.isNaN(savegame.totalexoticmatter)) totalexoticmatter = savegame.totalexoticmatter;
-  if ((typeof savegame.exoticmatterThisTributeReset !== "undefined") && !Number.isNaN(savegame.exoticmatterThisTributeReset)) exoticmatterThisTributeReset = savegame.exoticmatterThisTributeReset;
-  if ((typeof savegame.exoticmatterThisWormholeReset !== "undefined") && !Number.isNaN(savegame.exoticmatterThisWormholeReset)) exoticmatterThisWormholeReset = savegame.exoticmatterThisWormholeReset;
-  if ((typeof savegame.XAxis !== "undefined") && !Number.isNaN(savegame.XAxis)) XAxis = savegame.XAxis;
-  if ((typeof savegame.YAxis !== "undefined") && !Number.isNaN(savegame.YAxis)) YAxis = savegame.YAxis;
-  if ((typeof savegame.ZAxis !== "undefined") && !Number.isNaN(savegame.ZAxis)) ZAxis = savegame.ZAxis;
-  if ((typeof savegame.WAxis !== "undefined") && !Number.isNaN(savegame.WAxis)) WAxis = savegame.WAxis;
-  if ((typeof savegame.VAxis !== "undefined") && !Number.isNaN(savegame.VAxis)) VAxis = savegame.VAxis;
-  if ((typeof savegame.UAxis !== "undefined") && !Number.isNaN(savegame.UAxis)) UAxis = savegame.UAxis;
-  if ((typeof savegame.TAxis !== "undefined") && !Number.isNaN(savegame.TAxis)) TAxis = savegame.TAxis;
-  if ((typeof savegame.SAxis !== "undefined") && !Number.isNaN(savegame.SAxis)) SAxis = savegame.SAxis;
-  if ((typeof savegame.timePlayed !== "undefined") && !Number.isNaN(savegame.timePlayed)) timePlayed = savegame.timePlayed;
-  if ((typeof savegame.HTPshown !== "undefined") && !Number.isNaN(savegame.HTPshown)) HTPshown = savegame.HTPshown;
-  if ((typeof savegame.timeThisTributeReset !== "undefined") && !Number.isNaN(savegame.timeThisTributeReset)) timeThisTributeReset = savegame.timeThisTributeReset;
-  if ((typeof savegame.fastestTributeReset !== "undefined") && !Number.isNaN(savegame.fastestTributeReset)) fastestTributeReset = savegame.fastestTributeReset;
-  if ((typeof savegame.timeThisWormholeReset !== "undefined") && !Number.isNaN(savegame.timeThisWormholeReset)) timeThisWormholeReset = savegame.timeThisWormholeReset;
-  if ((typeof savegame.fastestWormholeReset !== "undefined") && !Number.isNaN(savegame.fastestWormholeReset)) fastestWormholeReset = savegame.fastestWormholeReset;
-  if ((typeof savegame.tributeResets !== "undefined") && !Number.isNaN(savegame.tributeResets)) tributeResets = savegame.tributeResets;
-  if ((typeof savegame.tributes !== "undefined") && !Number.isNaN(savegame.tributes)) tributes = savegame.tributes; 
-  if (typeof savegame.notation !== "undefined") notation = savegame.notation;
-  if (typeof savegame.autosaveIsOn !== "undefined") autosaveIsOn = savegame.autosaveIsOn;
-  if ((typeof savegame.offlineSpeedupLength !== "undefined") && !Number.isNaN(savegame.offlineSpeedupLength)) offlineSpeedupLength = savegame.offlineSpeedupLength
-  if ((typeof savegame.offlineSpeedupLength !== "undefined") && !Number.isNaN(savegame.offlineSpeedupLength)) offlineTime = savegame.offlineSpeedupLength
-  if ((typeof savegame.timeLeft !== "undefined") && !Number.isNaN(savegame.timeLeft)) baseOfflineSpeedup = 1+(Number(new Date())-savegame.timeLeft)/(offlineSpeedupLength*1000)
-  if ((typeof savegame.tributeUpgradeOneBought !=="undefined") && !Number.isNaN(savegame.tributeUpgradeOneBought)) tributeUpgradeOne.purchased = savegame.tributeUpgradeOneBought;
-  if ((typeof savegame.tributeUpgradeTwoBought !=="undefined") && !Number.isNaN(savegame.tributeUpgradeTwoBought)) tributeUpgradeTwo.purchased = savegame.tributeUpgradeTwoBought;
-  if ((typeof savegame.tributeUpgradeThreeBought !=="undefined") && !Number.isNaN(savegame.tributeUpgradeThreeBought)) tributeUpgradeThree.purchased = savegame.tributeUpgradeThreeBought;
-  if ((typeof savegame.axisAutobuyerOn !== "undefined") && !Number.isNaN(savegame.axisAutobuyerOn)) axisAutobuyerOn = savegame.axisAutobuyerOn;
-  if ((typeof savegame.axisAutobuyerUpgrades !== "undefined") && !Number.isNaN(savegame.axisAutobuyerUpgrades)) axisAutobuyerUpgrades = savegame.axisAutobuyerUpgrades;
-  if ((typeof savegame.enhancers !=="undefined") && !Number.isNaN(savegame.enhancers)) enhancers = savegame.enhancers;
-  if ((typeof savegame.unspentEnhancers !=="undefined") && !isNaN(savegame.unspentEnhancers)) unspentEnhancers = savegame.unspentEnhancers;
-  if ((typeof savegame.enhancerCost !=="undefined") && !Number.isNaN(savegame.enhancerCost)) enhancerCost = savegame.enhancerCost;
-  if (typeof savegame.ownedEnhancers !=="undefined") ownedEnhancers = savegame.ownedEnhancers;
-  if ((typeof savegame.darkmatter !== "undefined") && !Number.isNaN(savegame.darkmatter)) darkmatter = savegame.darkmatter;
-  if ((typeof savegame.darkXAxis !== "undefined") && !Number.isNaN(savegame.darkXAxis)) darkXAxis = savegame.darkXAxis;
-  if ((typeof savegame.darkYAxis !== "undefined") && !Number.isNaN(savegame.darkYAxis)) darkYAxis = savegame.darkYAxis;
-  if ((typeof savegame.darkZAxis !== "undefined") && !Number.isNaN(savegame.darkZAxis)) darkZAxis = savegame.darkZAxis;
-  if ((typeof savegame.darkWAxis !== "undefined") && !Number.isNaN(savegame.darkWAxis)) darkWAxis = savegame.darkWAxis;
-  if ((typeof savegame.darkVAxis !== "undefined") && !Number.isNaN(savegame.darkVAxis)) darkVAxis = savegame.darkVAxis;
-  if ((typeof savegame.darkUAxis !== "undefined") && !Number.isNaN(savegame.darkUAxis)) darkUAxis = savegame.darkUAxis;
-  if ((typeof savegame.darkTAxis !== "undefined") && !Number.isNaN(savegame.darkTAxis)) darkTAxis = savegame.darkTAxis;
-  if ((typeof savegame.darkSAxis !== "undefined") && !Number.isNaN(savegame.darkSAxis)) darkSAxis = savegame.darkSAxis;
-  if ((typeof savegame.axioms !== "undefined") && !Number.isNaN(savegame.axioms)) axioms = savegame.axioms;
-  if ((typeof savegame.energyTypesUnlocked !== "undefined") && !Number.isNaN(savegame.energyTypesUnlocked)) energyTypesUnlocked = savegame.energyTypesUnlocked;
-  if ((typeof savegame.expandingEnergy !== "undefined") && !Number.isNaN(savegame.expandingEnergy)) expandingEnergy = savegame.expandingEnergy;
-  if ((typeof savegame.divineEnergy !== "undefined") && !Number.isNaN(savegame.divineEnergy)) divineEnergy = savegame.divineEnergy;
-  if ((typeof savegame.darkEnergy !== "undefined") && !Number.isNaN(savegame.darkEnergy)) darkEnergy = savegame.darkEnergy;
+  if ((typeof savegame == "object") && (savegame !== null)) {
+    vars=Object.keys(g)
+    for (i=0; i<vars.length; i++) {
+      if (savegame[vars[i]] !== undefined) g[vars[i]] = savegame[vars[i]]
+    }
+    var timeSpentOffline = Number(new Date())-g.timeLeft
+    if (timeSpentOffline>1000) {
+      offlineTime=offlineSpeedupLength
+      baseOfflineSpeedup=1+(timeSpentOffline/offlineSpeedupLength/1000)
+    }
+  }
+  if (g.Mastery21Effect == undefined) g.Mastery21Effect = 0
+  if (g.Mastery22Effect == undefined) g.Mastery22Effect = 0
+  if (g.Mastery31Effect == undefined) g.Mastery21Effect = 0
+  if (g.Mastery32Effect == undefined) g.Mastery22Effect = 0
+  if (g.baseMasteryPowerExponent == undefined) g.baseMasteryPowerExponent = 0
+  savecounter++
 }
 function exportSave() {
   save()
@@ -1533,93 +2009,53 @@ function wipeSave() {
   let numa = Math.floor(50*3**Math.random())
   let numb = Math.floor(50*3**Math.random())
   let answer = numa*numb
-  let confirm = prompt("To confirm that you want to wipe your save, answer this question: What is "+numa+" × "+numb+"?")
+  let confirm = prompt("To confirm that you want to wipe your save, answer this question: What is "+numa+"× "+numb+"?")
   if (confirm==answer) {
-    exoticmatter = 0;
-    totalexoticmatter = 0;
-    exoticmatterThisTributeReset = 0;
-    exoticmatterThisWormholeReset = 0;
-    exoticmatterPerSec = 0;
-    XAxis = 0;
-    YAxis = 0;
-    ZAxis = 0;
-    WAxis = 0;
-    VAxis = 0;
-    UAxis = 0;
-    TAxis = 0;
-    SAxis = 0;
-    XAxisEffect=0
-    YAxisEffect=-3
-    ZAxisEffect=0
-    WAxisEffect=0
-    VAxisEffect=0
-    UAxisEffect=0
-    TAxisEffect=0
-    SAxisEffect=0
-    axisUnlocked = 0;
-    timePlayed = 0;
-    HTPshown = 1;
-    timeThisTributeReset = 0;
-    fastestTributeReset = 9e15;
-    timeThisWormholeReset = 0;
-    fastestWormholeReset = 9e15;
-    tributeResets = 0
-    tributes = -100;
-    notation = "Mixed scientific"
-    autosaveIsOn = "On"
-    tributeUpgradeOne.purchased = 0
-    tributeUpgradeTwo.purchased = 0
-    axisAutobuyerUpgrades = 0
-    axisAutobuyerOn = false
-    tributeUpgradeThree.purchased = 0
-    respecEnhancers()
-    enhancers = 0
-    unspentEnhancers = 0
-    enhancerCost = 3.30103
-    Enhancer11Effect=0
-    Enhancer12Effect=0
-    Enhancer13Effect=0
-    Enhancer14Effect=0
-    DarkMatterUnlocked = false
-    darkmatter = 0
-    darkXAxis = 0
-    darkYAxis = 0
-    darkZAxis = 0
-    darkWAxis = 0
-    darkVAxis = 0
-    darkUAxis = 0
-    darkTAxis = 0
-    darkSAxis = 0
-    axioms = 0
-    energyTypesUnlocked = 0
-    expandingEnergy = 0
-    divineEnergy = 0
-    darkEnergy = 0
+    g.autosaveIsOn="Off"
+    localStorage.removeItem("save")
+    location.reload()
   } else {
     alert("Incorrect answer, wiping did not proceed.")
   }
 }
 function toggleOfflineSpeedupLength() {
-  if (offlineSpeedupLength==1) {
-    offlineSpeedupLength=5
-  } else if (offlineSpeedupLength==5) {
-    offlineSpeedupLength=10
-  } else if (offlineSpeedupLength==10) {
-    offlineSpeedupLength=30
-  } else if (offlineSpeedupLength==30) {
-    offlineSpeedupLength=60
-  } else if (offlineSpeedupLength==60) {
-    offlineSpeedupLength=300
-  } else if (offlineSpeedupLength==300) {
-    offlineSpeedupLength=3600
+  if (g.offlineSpeedupLength==1) {
+    g.offlineSpeedupLength=5
+  } else if (g.offlineSpeedupLength==5) {
+    g.offlineSpeedupLength=10
+  } else if (g.offlineSpeedupLength==10) {
+    g.offlineSpeedupLength=30
+  } else if (g.offlineSpeedupLength==30) {
+    g.offlineSpeedupLength=60
+  } else if (g.offlineSpeedupLength==60) {
+    g.offlineSpeedupLength=300
+  } else if (g.offlineSpeedupLength==300) {
+    g.offlineSpeedupLength=3600
   } else {
-    offlineSpeedupLength=1
+    g.offlineSpeedupLength=1
   }
 }
 function toggleAutosave() {
-  if (autosaveIsOn == "On") {
-    autosaveIsOn = "Off"
-  } else if (autosaveIsOn =="Off") {
-    autosaveIsOn = "On"
+  if (g.autosaveIsOn == "On") {
+    g.autosaveIsOn = "Off"
+  } else if (g.autosaveIsOn =="Off") {
+    g.autosaveIsOn = "On"
   }
+}
+function skipgame() {
+  stardustReset("force")
+  g.darkstars=0
+  g.darkmatter=0
+  g.darkXAxis=0
+  g.darkYAxis=0
+  g.darkZAxis=0
+  g.darkWAxis=0
+  g.darkVAxis=0
+  g.darkUAxis=0
+  g.darkTAxis=0
+  g.darkSAxis=0
+  g.fastestStardustReset=10
+  g.stardust=55
+  g.stars=0
+  respecStars()
 }
