@@ -1542,7 +1542,7 @@ window.setInterval(function(){                                                  
   toggleTableRow("hiddenstatrowTotalDarkAxis",(g.stardustUpgrades[4]>0)?"show":"hide")
   notation=g.notation     // infOP doesn't work without this
   document.getElementById("notationButton").innerHTML = g.notation
-  document.getElementById("toggleAutosave").innerHTML = g.autosaveIsOn?"On":"Off;
+  document.getElementById("toggleAutosave").innerHTML = g.autosaveIsOn?"On":"Off";
   document.getElementById("darkstarBulkButton").style.display = (g.storySnippets.includes("Dark Matter"))?"inline-block":"none"
   document.getElementById("darkstarBulk").innerHTML = (g.darkstarBulk)?"On":"Off"
   document.getElementById("tickspeedDisplay").innerHTML = (g.tickspeed==0)?"":"Tickspeed: "+infFormat(g.tickspeed,true)+"x"
