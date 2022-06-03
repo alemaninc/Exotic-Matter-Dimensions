@@ -2042,20 +2042,3 @@ function toggleAutosave() {
     g.autosaveIsOn = "On"
   }
 }
-function skipgame() {
-  stardustReset("force")
-  g.darkstars=0
-  g.darkmatter=0
-  g.darkXAxis=0
-  g.darkYAxis=0
-  g.darkZAxis=0
-  g.darkWAxis=0
-  g.darkVAxis=0
-  g.darkUAxis=0
-  g.darkTAxis=0
-  g.darkSAxis=0
-  g.fastestStardustReset=10
-  g.stardust=55
-  g.stars=0
-  respecStars()
-}
