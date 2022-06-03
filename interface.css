@@ -102,8 +102,17 @@ button {
   border-color: #0000ff;
   width: 150px;
 }
-.bigtab{
-  background-color: #cccccc;
+.optionsbigtab{
+  background-color: #999999;
+  color: #000000;
+  font-size: 20px;
+  border: 2px solid white;
+  border-radius: 4px;
+  border-color: #000000;
+  width: 150px;
+}
+.statisticsbigtab{
+  background-color: #99ff99;
   color: #000000;
   font-size: 20px;
   border: 2px solid white;
