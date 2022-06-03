@@ -1613,7 +1613,7 @@ window.setInterval(function(){                                                  
   }
   if (g.fastestStardustReset>1e12 && g.exoticmatter<22) {
     document.getElementById("stardustResetButton").style.visibility="hidden"
-  } else if (g.pendingstardust<infAdd(g.stardust,1)) {
+  } else if (g.pendingstardust<infAdd(g.stardust,0)) {
     document.getElementById("stardustResetButton").style.visibility="visible"
     document.getElementById("stardustResetButton").className = "lockedstardustResetButton"
   } else {
