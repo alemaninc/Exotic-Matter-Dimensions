@@ -1531,10 +1531,6 @@ window.setInterval(function(){                                                  
   document.getElementById("hiddenstatDarkAxisSuperscalingStart").innerHTML = normFormat(g.darkaxisSuperscalingStart)
   toggleTableRow("hiddenstatrowDarkAxisSuperscalingStart",(Math.max(g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis)>g.darkaxisSuperscalingStart)?"show":"hide")
   document.getElementById("hiddenstatDeltaTime").innerHTML = deltatime*1000+"ms ("+Math.round(10/deltatime)/10+"fps)"
-  document.getElementById("hiddenstatStardustExponent").innerHTML = (g.StardustExponent<1e4) ? g.StardustExponent.toFixed(4+Math.floor(Math.log10(g.axisCostExponent))) : normFormat(g.StardustExponent)
-  toggleTableRow("hiddenstatrowStardustExponent",(g.stardustExponent==1)?"hide":"show")
-  document.getElementById("hiddenstatStardustMultiplier").innerHTML = infFormat(g.StardustMultiplier,true)
-  toggleTableRow("hiddenstatrowStardustMultiplier",(g.stardustMultiplier==1)?"hide":"show")
   document.getElementById("hiddenstatStardustResets").innerHTML = g.StardustResets
   toggleTableRow("hiddenstatrowStardustResets",(g.fastestStardustReset>1e12)?"hide":"show")
   document.getElementById("hiddenstatTotalAxis").innerHTML = g.totalAxis
