@@ -2038,4 +2038,3 @@ function toggleOfflineSpeedupLength() {
 function toggle(x) {
    g[x]=!g[x]
 }
-function toggle
