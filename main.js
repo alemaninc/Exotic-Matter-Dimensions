@@ -1896,7 +1896,7 @@ window.setInterval(function(){                                                  
   g.metaEnergyPerSec=Math.log10(infAdd(g.darkEnergy,1))+Math.log10(infAdd(g.stelliferousEnergy,1))+Math.log10(infAdd(g.gravitationalEnergy,1))+Math.log10(infAdd(g.spatialEnergy,1))+Math.log10(infAdd(g.neuralEnergy,1))+Math.log10(infAdd(g.metaEnergy,1))
   g.metaEnergyPerSec=g.metaEnergyPerSec*0.1+g.energySpeedMult-Math.log10(25)
   g.metaEnergyPerSec=10**ConvergentSoftcap(g.metaEnergyPerSec,275,300)*offlineSpeedup
-  g.metaEnergyEffect=1+Math.log10(infAdd(g.metaEnergy,1))*g.energyEffectBoost/3
+  g.metaEnergyEffect=1+Math.log10(infAdd(g.metaEnergy,1))*g.energyEffectBoost/3*(g.energyTypesUnlocked>5)
   document.getElementById("metaEnergyDisplay").innerHTML = infFormat(g.metaEnergy,false)
   document.getElementById("metaEnergyPerSec").innerHTML = infFormat(g.metaEnergyPerSec,true)
   document.getElementById("metaEnergyEffect").innerHTML = g.metaEnergyEffect.toFixed(4)
