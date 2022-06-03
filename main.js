@@ -1955,12 +1955,12 @@ function ProgressBar() {
   } else if (g.masteryRowsUnlocked[3]==0) {
     progressbarvalue = Math.max(0,g.exoticmatter)/22
     g.progressbartooltip = "Progress to Stardust and the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(22)+" exotic matter)"
-  } else if (g.stardustUpgrades[5] < 2) {
+  } else if (g.stardustUpgrades[4] < 2) {
     progressbarvalue = 0
     g.progressbartooltip = "No new aspects detected. "+"Perhaps you need something else.".bold().fontcolor("#00ffff")
   } else if (g.supernovaUnlocked == false) {
-    progressbarvalue = g.stars/40
-    g.progressbartooltip = "Progress to Supernova: "+normFormat(progressbarvalue*100)+"% (Need 40 stars)"
+    progressbarvalue = g.stars/24
+    g.progressbartooltip = "Progress to Supernova: "+normFormat(progressbarvalue*100)+"% (Need 24 stars)"
   } else {
     progressbarvalue = 1
     g.progressbartooltip = "All features unlocked!"
