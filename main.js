@@ -1112,7 +1112,7 @@ function updateStat(x) {
     toggleTableRow("StatBreakdown9ExRStar83",StarE(83)?"show":"hide")
     g.darkaxisCostExponent=output
     document.getElementById("SSB9ExponentTable").style = (g.darkaxisCostExponent==1)?"display:none":"display:inline-block"
-    document.getElementById("SSBBAxisCostReduction").style = ((g.darkaxisCostDivisor==0)&&(g.darkaxisCostExponent==1))?"display:none":"display:inline-block"
+    document.getElementById("SSBBDarkAxisCostReduction").style = ((g.darkaxisCostDivisor==0)&&(g.darkaxisCostExponent==1))?"display:none":"display:inline-block"
   } else if (x==10) {
     // Speed table
     document.getElementById("StatBreakdown10SpMastery71").innerHTML = "× "+normFormat(g.Mastery71Effect*MasteryE(71),true)
@@ -1900,6 +1900,10 @@ window.setInterval(function(){                                                  
   document.getElementById("metaEnergyDisplay").innerHTML = infFormat(g.metaEnergy,false)
   document.getElementById("metaEnergyPerSec").innerHTML = infFormat(g.metaEnergyPerSec,true)
   document.getElementById("metaEnergyEffect").innerHTML = g.metaEnergyEffect.toFixed(4)
+  for (i=0;i<6;i++) {
+    type=["dark","stelliferous","gravitational","spatial","neural","meta"]
+    if (g.energyTypesUnlocked<i) g[type[i]+"Energy"]=0
+  }
 
 
   // Supernova section
