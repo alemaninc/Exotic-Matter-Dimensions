@@ -15,36 +15,36 @@
           <td class="toptable"><span class="small" id="offlineSpeedupDisplay"></span><br><span class="small" id="tickspeedDisplay"></span></td>
           <td class="toptable"><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
           <p>You are getting <span class="matterlayertext" id="exoticmatterPerSec">0</span> exotic matter per second</p>
-          <p id="stardustDisplay">You have <span class="stardustlayertext" id="currentStardust">0</span> stardust</p></td>
-          <td class="toptable"><button id="stardustResetButton" onClick="stardustReset('normal')" class="stardustResetButton">Reset to gain <span class="stardustlayertext" id="pendingStardust">0</span> stardust<br><span class="small" id="stardustExoticMatterRequirement"></span></button>
+          <p id="stardustDisplay">You have <span class="stardustlayertext" id="currentStardust" style="display:none">0</span> stardust</p></td>
+          <td class="toptable"><button id="stardustResetButton" onClick="stardustReset('normal')" class="stardustResetButton" style="display:none">Reset to gain <span class="stardustlayertext" id="pendingStardust">0</span> stardust<br><span class="small" id="stardustExoticMatterRequirement"></span></button>
           </td>
         </tr>
       </table>
       <div class="navigation globalnavigation" align="center">
         <button id="mainbigtab" onClick="openTab('Main')" class="mainbigtab">Main</button>
-        <button id="optionsbigtab" onClick="openTab('Options')" class="bigtab">Options</button>
-        <button id="statisticsbigtab" onClick="openTab('Statistics')" class="bigtab">Statistics</button>
-        <button id="stardustbigtab" onClick="openTab('Stardust')" class="stardustbigtab">Stardust</button>
-        <button id="automationbigtab" onClick="openTab('Automation')" class="bigtab">Automation</button>
+        <button id="optionsbigtab" onClick="openTab('Options')" class="optionsbigtab">Options</button>
+        <button id="statisticsbigtab" onClick="openTab('Statistics')" class="statisticsbigtab">Statistics</button>
+        <button id="stardustbigtab" onClick="openTab('Stardust')" class="stardustbigtab" style="display:none">Stardust</button>
+        <button id="automationbigtab" onClick="openTab('Automation')" class="optionsbigtab" style="display:none">Automation</button>
       </div>
       <div class="tab" id="Main">                                                                     <!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
         <div class="mainNavigation globalnavigation" align="center">
           <button class="tabtier2" onClick="openMainTab('tabAxis')" id="mainaxisButton">Axis</button>
-          <button class="tabtier2" onClick="openMainTab('tabMasteries')" id="masteriesButton">Masteries</button>
-          <button class="tabtier2" onClick="openMainTab('tabSupernova')" id="supernovaButton">Supernova</button>
+          <button class="tabtier2" onClick="openMainTab('tabMasteries')" id="masteriesButton" style="display:none">Masteries</button>
+          <button class="tabtier2" onClick="openMainTab('tabSupernova')" id="supernovaButton" style="display:none">Supernova</button>
         </div>
         <div class="mainTab" id="tabAxis">
           <button class="maxaxisbutton" onClick="buyMaxAxis()">Buy Max Axis</button><br>
           <table><tr>                                                                                   <!-- Axis are arranged as a table so that they are aligned -->
             <td><button class="axisbutton" onClick="buyAxis('X')" id="XAxisButton">X Axis (<span id="XAxisAmount">0</span>)<br>Exotic matter gain is <span id="XAxisEffect">2</span>x faster<br>Cost: <span id="XAxisCost">10</span></button></td>
-            <td><button class="axisbutton" onClick="buyAxis('Y')" id="YAxisButton">Y Axis (<span id="YAxisAmount">0</span>)<br>Increase X axis effect by +<span id="YAxisEffect">0.1</span>x<br>Cost: <span id="YAxisCost">100</span></button></td>
-            <td><button class="axisbutton" onClick="buyAxis('Z')" id="ZAxisButton">Z Axis (<span id="ZAxisAmount">0</span>)<br>Exotic matter gain is <span id="ZAxisEffect">1</span>x faster (based on exotic matter)<br>Cost: <span id="ZAxisCost">10 K</span></button></td>
-            <td><button class="axisbutton" onClick="buyAxis('W')" id="WAxisButton">W Axis (<span id="WAxisAmount">0</span>)<br>Exotic matter gain is <span id="WAxisEffect">1</span>x faster (based on time played)<br>Cost: <span id="WAxisCost">1 M</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('Y')" id="YAxisButton" style="display:none">Y Axis (<span id="YAxisAmount">0</span>)<br>Increase X axis effect by +<span id="YAxisEffect">0.1</span>x<br>Cost: <span id="YAxisCost">100</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('Z')" id="ZAxisButton" style="display:none">Z Axis (<span id="ZAxisAmount">0</span>)<br>Exotic matter gain is <span id="ZAxisEffect">1</span>x faster (based on exotic matter)<br>Cost: <span id="ZAxisCost">10 K</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('W')" id="WAxisButton" style="display:none">W Axis (<span id="WAxisAmount">0</span>)<br>Exotic matter gain is <span id="WAxisEffect">1</span>x faster (based on time played)<br>Cost: <span id="WAxisCost">1 M</span></button></td>
           </tr><tr>
-            <td><button class="axisbutton" onClick="buyAxis('V')" id="VAxisButton">V Axis (<span id="VAxisAmount">0</span>)<br>All axis are <span id="VAxisEffect">1</span>x cheaper<br>Cost: <span id="VAxisCost">100 Qt</span></button></td>
-            <td><button class="axisbutton" onClick="buyAxis('U')" id="UAxisButton">U Axis (<span id="UAxisAmount">0</span>)<br>Stardust gain is multiplied by <span id="UAxisEffect">1.2</span> (based on stardust)<br>Cost: <span id="UAxisCost">1e35</span></button></td>
-            <td><button class="axisbutton" onClick="buyAxis('T')" id="TAxisButton">T Axis (<span id="TAxisAmount">0</span>)<br>Exotic matter gain is <span id="TAxisEffect">1</span>x faster (based on total axis)<br>Cost: <span id="TAxisCost">1e50</span></button></td>
-            <td><button class="axisbutton" onClick="buyAxis('S')" id="SAxisButton">S Axis (<span id="SAxisAmount">0</span>)<br>Exotic matter gain is raised to the power of <span id="SAxisEffect">1</span><br>Cost: <span id="SAxisCost">1e120</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('V')" id="VAxisButton" style="display:none">V Axis (<span id="VAxisAmount">0</span>)<br>All axis are <span id="VAxisEffect">1</span>x cheaper<br>Cost: <span id="VAxisCost">100 Qt</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('U')" id="UAxisButton" style="display:none">U Axis (<span id="UAxisAmount">0</span>)<br>Stardust gain is multiplied by <span id="UAxisEffect">1.2</span> (based on stardust)<br>Cost: <span id="UAxisCost">1e35</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('T')" id="TAxisButton" style="display:none">T Axis (<span id="TAxisAmount">0</span>)<br>Exotic matter gain is <span id="TAxisEffect">1</span>x faster (based on total axis)<br>Cost: <span id="TAxisCost">1e50</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('S')" id="SAxisButton" style="display:none">S Axis (<span id="SAxisAmount">0</span>)<br>Exotic matter gain is raised to the power of <span id="SAxisEffect">1</span><br>Cost: <span id="SAxisCost">1e120</span></button></td>
           </tr></table>
           <progress class="progressbar" id="progressBar" value="0" min="0" max="0"></progress><br><span id="progress">Loading game...</span>
         </div>
