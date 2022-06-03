@@ -331,7 +331,7 @@ var g = {
   StardustMultiplier: 0, // InfNumber
   StardustExponent: 1,
   pendingstardust: 0, // InfNumber
-  autosaveIsOn: "On",
+  autosaveIsOn: true,
   StardustBoost1: 0, // InfNumber
   StardustBoost2: 0,
   StardustBoost3: 0,
@@ -411,6 +411,7 @@ var g = {
   darkstars: 0,
   darkstarScalingStart: 48,
   darkstarRequirement: 0,
+  darkstarBulk: true,
   energyTypesUnlocked: 0,
   darkEnergy: 0,       // InfNumber
   darkEnergyPerSec: 0, // InfNumber
@@ -1278,7 +1279,8 @@ function updateDarkStarCost() {
   g.darkstarRequirement=Math.ceil(g.darkstarRequirement-g.Mastery63Effect*MasteryE(63))
 }
 function gainDarkStar() {
-  while (g.totaldarkAxis >= g.darkstarRequirement) {
+  more=true
+  while ((g.totaldarkAxis >= g.darkstarRequirement)&&more) {
     g.darkmatter=0
     g.darkmatterPerSec=0
     g.darkXAxis=0
@@ -1292,6 +1294,7 @@ function gainDarkStar() {
     g.darkstars++
     updateDarkStarCost()
     stardustReset((g.pendingstardust > g.stardust)?"normal":"force")
+    more=g.darkstarBulk
   }
 }
 function supernova(x) {
@@ -1539,7 +1542,9 @@ window.setInterval(function(){                                                  
   toggleTableRow("hiddenstatrowTotalDarkAxis",(g.stardustUpgrades[4]>0)?"show":"hide")
   notation=g.notation     // infOP doesn't work without this
   document.getElementById("notationButton").innerHTML = g.notation
-  document.getElementById("toggleAutosave").innerHTML = g.autosaveIsOn;
+  document.getElementById("toggleAutosave").innerHTML = g.autosaveIsOn?"On":"Off;
+  document.getElementById("darkstarBulkButton").style.display = (g.storySnippets.includes("Dark Matter"))?"inline-block":"none"
+  document.getElementById("darkstarBulk").innerHTML = (g.darkstarBulk)?"On":"Off"
   document.getElementById("tickspeedDisplay").innerHTML = (g.tickspeed==0)?"":"Tickspeed: "+infFormat(g.tickspeed,true)+"x"
   for (i=0;i<document.getElementsByClassName("inf").length;i++) {
     next=document.getElementsByClassName("inf")[i]
@@ -1549,11 +1554,13 @@ window.setInterval(function(){                                                  
   g.HTPshown = ((g.HTPshown==2) && (g.fastestStardustReset < 1e12)) ? 4 : g.HTPshown
   g.HTPshown = ((g.HTPshown==4) && (g.stardustUpgrades[4]>0)) ? 5 : g.HTPshown
   g.HTPshown = ((g.HTPshown==5) && (g.energyTypesUnlocked > 0)) ? 6 : g.HTPshown
+  g.HTPshown = ((g.HTPshown==6) && (g.stars > 24)) ? 7 : g.HTPshown
   document.getElementById("HTPBMasteries").style = (g.HTPshown>=2) ? "display:inline-block" : "display:none"
   document.getElementById("HTPBStardust").style = (g.HTPshown>=3) ? "display:inline-block" : "display:none"
   document.getElementById("HTPBStars").style = (g.HTPshown>=4) ? "display:inline-block" : "display:none"
   document.getElementById("HTPBDarkMatter").style = (g.HTPshown>=5) ? "display:inline-block" : "display:none"
   document.getElementById("HTPBEnergy").style = (g.HTPshown>=6) ? "display:inline-block" : "display:none"
+  document.getElementById("HTPBSupernova").style = (g.HTPshown>=7) ? "display:inline-block" : "display:none"
   if ((g.fastestStardustReset < 1e12) || (g.fastestWormholeReset < 1e12)) {
     document.getElementById("stardustbigtab").style="display:inline-block"
     document.getElementById("stardustDisplay").style="display:inline-block"
@@ -1628,7 +1635,7 @@ window.setInterval(function(){                                                  
   }
   document.getElementById("stardustExoticMatterRequirement").innerHTML = stardustExoticMatterReqText
   document.getElementById("currentStardust").innerHTML = infFormat(g.stardust,false);
-  if (g.autosaveIsOn == "On" && savecounter > 0) {
+  if (g.autosaveIsOn && savecounter > 0) {
     save()
   }
   document.getElementById("pendingStardust").innerHTML = infFormat(infSubtract(Math.max(g.pendingstardust,g.stardust),g.stardust),false)
@@ -2004,7 +2011,7 @@ function wipeSave() {
   let answer = numa*numb
   let confirm = prompt("To confirm that you want to wipe your save, answer this question: What is "+numa+"× "+numb+"?")
   if (confirm==answer) {
-    g.autosaveIsOn="Off"
+    g.autosaveIsOn=false
     localStorage.removeItem("save")
     location.reload()
   } else {
@@ -2028,10 +2035,7 @@ function toggleOfflineSpeedupLength() {
     g.offlineSpeedupLength=1
   }
 }
-function toggleAutosave() {
-  if (g.autosaveIsOn == "On") {
-    g.autosaveIsOn = "Off"
-  } else if (g.autosaveIsOn =="Off") {
-    g.autosaveIsOn = "On"
-  }
+function toggle(x) {
+   g[x]=!g[x]
 }
+function toggle
