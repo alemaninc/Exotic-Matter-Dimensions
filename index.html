@@ -105,37 +105,42 @@
           <table><tr>
             <td><button class="optionsbutton" onClick="toggleNotation()">Notation: <span id="notationButton"></span></button></td>
             <td><button class="optionsbutton" onClick="save()">Save</button></td>
-            <td><button class="optionsbutton" onClick="toggleAutosave()">Autosave: <span id="toggleAutosave"></span></button></td>
+            <td><button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button></td>
             <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>
             <td><button class="optionsbutton" onClick="toggleOfflineSpeedupLength()">Offline speedup length: <span id="offlineSpeedupLength"></span></button></td>
           </tr><tr>
             <td><button class="optionsbutton" onClick="load('import')">Import save</button></td>
             <td><button class="optionsbutton" onClick="exportSave()">Export save</button></td>
+            <td><button class="optionsbutton" onClick="toggle('darkstarBulk')" id="darkstarBulkButton">Dark star bulk buy: <span id="darkstarBulk"></span></button></td>
           </tr></table>
         </div>
         <div class="optionsTab" id="Changelog" style="display:none">
           <h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
-          <h1>v1β "Popular Whining" (??/??/????)</h1>
+          <h1>v1β "Popular Whining" (2022/06/03)</h1>
           - CONTENT: Added Masteries<br>
           - CONTENT: Added 3 more Energies<br>
           - CONTENT: Added 6 more rows of Stars<br>
+          - CONTENT: Added Supernova<br>
           - BALANCE: A lot of things are now stronger but have steeper cost growth<br>
           - BALANCE: A lot of things are now weaker but have slower cost growth<br>
           - INTERFACE: Progress bar text is now on a separate line<br>
           - INTERFACE: Center-aligned exotic matter text<br>
           - QOL: Tabs now glow if you can afford something in them (this affects parent tabs too)<br>
           - QOL: Game should be less laggy on mobile devices and low end computers (added delta time)<br>
+          - QOL: Added "Buy Max Axis" and "Buy Max Dark Axis" buttons<br>
+          - QOL: Gaining dark stars (formerly Axioms) now bulk-buys as many dark stars as possible (can be disabled in Options)<br>
+          - QOL: Buying automation speed upgrades now bulk-buys<br>
           - BUGFIX: Saving should work properly now (maybe)<br>
           - STORY: Renamed nearly everything in the Tribute layer (including the layer name itself)<br>
-          x STORY: Added a story<br>
+          - STORY: Added a story<br>
           Current endgame: <span class="inf inf2.5e5"></span> exotic matter
-          <h1>v1α.2.1 "Smaller Adjustments" (07/03/2022)</h1>
+          <h1>v1α.2.1 "Smaller Adjustments" (2022/03/07)</h1>
           - QOL: Engineering Notation more readable (dynamic floating point) (by Hedrauta)<br>
           - QOL: Number shown on Tribute-Reset-Button more readable (by Hedrauta)
-          <h1>v1α.2 "Hedrautafunded?" (27/02/2022)</h1>
+          <h1>v1α.2 "Hedrautafunded?" (2022/02/27)</h1>
           - BUGFIX: Fixed people's saves getting deleted (courtesy of Hedrauta)<br>
           - BUGFIX: <i>Hopefully</i> fixed energy per second setting itself to NaN
-          <h1>v1α.1 "Crowdfunded" (25/02/2022)</h1>
+          <h1>v1α.1 "Crowdfunded" (2022/02/25)</h1>
           - BUGFIX: Fixed save import (courtesy of Hedrauta)<br>
           - INTERFACE: Added Engineering notation (courtesy of Hedrauta)<br>
           - BALANCE: Axis autobuyer is a lot cheaper
@@ -156,14 +161,14 @@
           - BUGFIX: Fixed a bug that made exotic matter per second way too high in the first tick, allowing players to skip progression<br>
           - BUGFIX: Fixed tribute reset button shaking<br>
           - BUGFIX: Fixed exotic matter not resetting properly on tribute reset
-          <h1>v0.2 (29/01/2022)</h1>
+          <h1>v0.2 (2022/01/29)</h1>
           - Added Dark Matter<br>
           - Added Axioms<br>
           - Finished Tribute Upgrades<br>
           Current endgame: 1e65 tributes
-          <h1>v0.1.1 (11/01/2022)</h1>
+          <h1>v0.1.1 (2022/01/11)</h1>
           - Added a code snippet that automatically fixes the game if for some reason your exotic matter becomes "NaN".
-          <h1>v0.1 (11/01/2022)</h1>
+          <h1>v0.1 (2022/01/11)</h1>
           - Added Tribute Upgrades<br>
           - Added Stars<br>
           - Added V, U, T, S Axis<br>
@@ -173,9 +178,9 @@
           - Made W Axis effect slightly stronger (added 15 minutes to the timer)<br>
           Unfortunately, saves did not transfer to this version and caused a NaN error.<br>
           Current endgame: 1e23 (100 Sx) tributes
-          <h1>v0 (05/01/2022)</h1>
+          <h1>v0 (2022/01/05)</h1>
           Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts<br><br>
-          Note: Dates use the British/International dating system (DD/MM/YYYY).
+          Note: Dates use the International dating system of YYYY/MM/DD.
         </div>
         <div class="optionsTab" id="How to play" style="display:none">
           <div class="navigationtier3 globalnavigation">
@@ -185,6 +190,7 @@
             <button class="tabtier3" id="HTPBStars" onClick="openHTP('HTPDStars')">Stars</button>
             <button class="tabtier3" id="HTPBDarkMatter" onClick="openHTP('HTPDDarkMatter')">Dark Matter</button>
             <button class="tabtier3" id="HTPBEnergy" onClick="openHTP('HTPDEnergy')">Energy</button>
+            <button class="tabtier3" id="HTPBSupernova" onClick="openHTP('HTPDSupernova')">Supernova</button>
           </div>
           <div class="htpTab" id="HTPDExoticMatter"><h3>Exotic Matter</h3><p>At the start of the game, wait for your exotic matter to go up and then buy axis. There isn't much more to this feature - however, if you feel that progress is slowing down, you should probably check your Mastery setup - some Masteries become more or less efficient as you progress, but the ones in the first row should be toggled often!</p></div>
           <div class="htpTab" id="HTPDMasteries" style="display:none"><h3>Masteries</h3><p>In Masteries, you can pick one of two upgrades in each row. These upgrades grow in power based on your Mastery Power, which increases over time based on your exotic matter.</p><p>You can switch these Masteries at any time, but this will reset your Mastery Power back to 0 and it will take time to build back up.</p><p>Initially you only have one row of Masteries unlocked, but you will unlock more as you progress.</p><p>Masteries persist through all soft resets, but Mastery Power does not.</p></div>
@@ -192,6 +198,7 @@
           <div class="htpTab" id="HTPDStars" style="display:none"><h3>Stars</h3><p>Stars are a feature where you can buy upgrades with Stars, which increase in cost when you buy one.</p><p>Depending on how many Stars you have, you can only pick Stars from one row, not the whole board.</p></div>
           <div class="htpTab" id="HTPDDarkMatter" style="display:none"><h3>Dark Matter</h3><p>Dark Matter is a new type of matter. It is generated by dark axis instead of normal axis, and for every 4 dark axis bought you get a normal axis.</p><p>If you get enough dark axis, you can reset your dark matter to gain an Axiom, which boosts dark matter and a specific dark axis.</p></div>
           <div class="htpTab" id="HTPDEnergy" style="display:none"><h3>Energy</h3><p>In Energy there are six types of energy, each boosting a different resource. Energy increases exponentially until it reaches its respective resource, at what point the resource is boosted.</p></div>
+          <div class="htpTab" id="HTPDSupernova" style="display:none"><h3>Supernova</h3><p>A Supernova is a powerful boost that can be activated during a run, granting a large quantity of a resource but not affecting its production.</p><p>They are only replenished when doing a reset, so their use should be planned wisely.</p></div>
         </div>
       </div>
       <div class="tab" id="Statistics" style="display:none">
@@ -547,7 +554,8 @@
             <td><button id="StardustUpgrade3Button" class="stardustupgradebutton" onClick="buyStardustUpgrade3()">Unlock a new Stardust Boost<br>Cost: <span id="StardustUpgrade3Cost">undefined</span> stardust</button></td>
             <td><button id="StardustUpgrade4Button" class="stardustupgradebutton" onClick="buyStardustUpgrade4()"><span id="StardustUpgrade4Tooltip">Unlock something somewhere</span><br>Cost: <span id="StardustUpgrade4Cost">undefined</span> stardust</button></td>
             <td><button id="StardustUpgrade5Button" class="stardustupgradebutton" onClick="buyStardustUpgrade5()"><span id="StardustUpgrade5Tooltip">Unlock something somewhere</span><br>Cost: <span id="StardustUpgrade5Cost">undefined</span> stardust</button></td>
-          </tr></table>
+          </tr></table><br>
+          <button class="starbuybutton" onClick="stardustReset('force')">Reset with no reward (may be useful if you get stuck)</button>
         </div>
         <div class="stardustTab" id="Stars" style="display:none">
           <div>
