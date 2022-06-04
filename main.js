@@ -1220,6 +1220,7 @@ function upgradeAxisAutobuyer() {
   while ((g.exoticmatter>=g.axisAutobuyerCost) && (g.axisAutobuyerInterval>0.1)) {
     infDeduct("exoticmatter",g.axisAutobuyerCost)
     g.axisAutobuyerUpgrades++
+    g.axisAutobuyerCost = Math.round(50*1.05**g.axisAutobuyerUpgrades)
   }
 }
 function buyStar() {
