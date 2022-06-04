@@ -1994,11 +1994,6 @@ function load(type) {
       baseOfflineSpeedup=1+(timeSpentOffline/offlineSpeedupLength/1000)
     }
   }
-  if (g.Mastery21Effect == undefined) g.Mastery21Effect = 0
-  if (g.Mastery22Effect == undefined) g.Mastery22Effect = 0
-  if (g.Mastery31Effect == undefined) g.Mastery21Effect = 0
-  if (g.Mastery32Effect == undefined) g.Mastery22Effect = 0
-  if (g.baseMasteryPowerExponent == undefined) g.baseMasteryPowerExponent = 0
   savecounter++
 }
 function exportSave() {
