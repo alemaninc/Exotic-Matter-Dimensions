@@ -2018,5 +2018,5 @@ function toggle(x) {
    g[x]=!g[x]
 }
 function multitoggle(variable,options) {
-  g[variable]=options[(indexOf(g[variable])+1)%options.length]
+  g[variable]=options[(options.indexOf(g[variable])+1)%options.length]
 }
