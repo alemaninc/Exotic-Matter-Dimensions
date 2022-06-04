@@ -1522,7 +1522,7 @@ window.setInterval(function(){                                                  
   if (g.colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #00ffff;background-color: #003333;font-size: 15px;font-family:verdana;text-align: center;"
   if (g.colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #ff00ff;background-color: #330033;font-size: 15px;font-family:verdana;text-align: center;"
   if (g.colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ffff00;background-color: #333300;font-size: 15px;font-family:verdana;text-align: center;"
-  document.getElementById("colortheme").style.display = g.colortheme
+  document.getElementById("colortheme").innerHTML = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
   document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
