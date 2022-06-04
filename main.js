@@ -1980,7 +1980,7 @@ function load(type) {
   } else if (type=="import") {
     var savegame = JSON.parse(atob(prompt("Copy and paste your save file here:")))
   }
-  if ((typeof savegame == "object") && (savegame !== null)) {
+  if ((typeof savegame == "object") && (savegame !== null) && (savegame.stardust !== undefined)) {
     vars=Object.keys(g)
     for (i=0; i<vars.length; i++) {
       if (savegame[vars[i]] !== undefined) g[vars[i]] = savegame[vars[i]]
