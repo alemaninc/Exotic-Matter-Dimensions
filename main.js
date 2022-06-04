@@ -317,6 +317,7 @@ var g = {
   truetimePlayed: -100, // InfNumber
   HTPshown: 1,
   tickspeed: 0, // infNumber
+  colortheme: "Default",
   timeThisStardustReset: 0,
   truetimeThisStardustReset: -100, // InfNumber
   fastestStardustReset: 9e15,
@@ -1516,6 +1517,13 @@ window.setInterval(function(){                                                  
 
 
   // Options & Display section
+  if (colortheme == "Default") document.getElementById("bodytheme").style = "color: #3399ff;background-color: #190033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (colortheme == "Red") document.getElementById("bodytheme").style = "color: #ff0000;background-color: #330000;font-size: 15px;font-family:verdana;text-align: center;"
+  if (colortheme == "Green") document.getElementById("bodytheme").style = "color: #00ff00;background-color: #003300;font-size: 15px;font-family:verdana;text-align: center;"
+  if (colortheme == "Blue") document.getElementById("bodytheme").style = "color: #0000ff;background-color: #000033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #00ffff;background-color: #003333;font-size: 15px;font-family:verdana;text-align: center;"
+  if (colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #ff00ff;background-color: #330033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ffff00;background-color: #333300;font-size: 15px;font-family:verdana;text-align: center;"
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
   document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
@@ -1964,11 +1972,6 @@ function ProgressBar() {
   document.getElementById("progress").innerHTML = g.progressbartooltip
   document.getElementById("progressBar").value = fix(progressbarvalue)
 }
-function toggleNotation() {
-  options=["Alemaninc Ordinal","Double Logarithm","Engineering","Infinity","Logarithm","Mixed scientific","Scientific","Tetration"]
-  next=options[(options.indexOf(g.notation)+1)%options.length]
-  g.notation=(typeof next == "string")?next:"Scientific"
-}
 function save() {
   localStorage.setItem("save",JSON.stringify(g)); 
 }
@@ -2014,23 +2017,9 @@ function wipeSave() {
     alert("Incorrect answer, wiping did not proceed.")
   }
 }
-function toggleOfflineSpeedupLength() {
-  if (g.offlineSpeedupLength==1) {
-    g.offlineSpeedupLength=5
-  } else if (g.offlineSpeedupLength==5) {
-    g.offlineSpeedupLength=10
-  } else if (g.offlineSpeedupLength==10) {
-    g.offlineSpeedupLength=30
-  } else if (g.offlineSpeedupLength==30) {
-    g.offlineSpeedupLength=60
-  } else if (g.offlineSpeedupLength==60) {
-    g.offlineSpeedupLength=300
-  } else if (g.offlineSpeedupLength==300) {
-    g.offlineSpeedupLength=3600
-  } else {
-    g.offlineSpeedupLength=1
-  }
-}
 function toggle(x) {
    g[x]=!g[x]
+}
+function multitoggle(var,options) {
+  g[var]=options[(indexOf(g[var])+1)%options.length]
 }
