@@ -1153,12 +1153,9 @@ function updateStat(x) {
 }
 function stardustReset(x) {
   if ((g.pendingstardust>g.stardust)||(x=="force")) {
-    if (x!=="force") {
-      g.stardust=infFloor(g.pendingstardust)
-      if (g.fastestStardustReset>1e12) openStory("Stardust")
-      g.fastestStardustReset=Math.min(g.fastestStardustReset,g.timeThisStardustReset)
-      g.StardustResets++
-    }
+    g.stardust=infFloor(g.pendingstardust)
+    g.fastestStardustReset=Math.min(g.fastestStardustReset,g.timeThisStardustReset)
+    g.StardustResets++
     g.exoticmatter=0
     g.exoticmatterPerSec=0
     g.XAxis=(g.stardustUpgrades[1]>=2)?Math.floor(g.XAxis/10):0
@@ -1212,8 +1209,6 @@ function buyStardustUpgrade5() {
   if ((g.stardust>=stardustUpgrade5Cost[g.stardustUpgrades[4]]) && (g.stardustUpgrades[4] < 7)) {
     infDeduct("stardust",stardustUpgrade5Cost[g.stardustUpgrades[4]])
     g.stardustUpgrades[4]++
-    if ((g.stardustUpgrades[4]==1)&&(g.fastestWormholeReset>1e12)) openStory("Dark Matter")
-    if ((g.stardustUpgrades[4]==2)&&(g.fastestWormholeReset>1e12)) openStory("Energy")
   }
 }
 function upgradeAxisAutobuyer() {
@@ -1228,7 +1223,6 @@ function buyStar() {
     infDeduct("stardust",g.starCost)
     g.stars++
     g.unspentStars++
-    if ((g.stars==24)&&(g.fastestWormholeReset>1e12)) openStory("Supernova")
   }
 }
 function buyStarUpgrade(x) {
@@ -1527,6 +1521,10 @@ window.setInterval(function(){                                                  
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
   document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
+  if ((g.stardust>0)&&!g.storySnippets.includes("Stardust")) openStory("Stardust")
+  if ((g.stardustUpgrades[4]>0)&&!g.storySnippets.includes("Dark Matter")) openStory("Dark Matter")
+  if ((g.stardustUpgrades[4]>1)&&!g.storySnippets.includes("Energy")) openStory("Energy")
+  if ((g.stars>=24)&&!g.storySnippets.includes("Supernova")) openStory("Supernova")
 
   document.getElementById("hiddenstatAxisAutobuyerUpgrades").innerHTML = g.axisAutobuyerUpgrades
   toggleTableRow("hiddenstatrowAxisAutobuyerUpgrades",(g.axisAutobuyerUpgrades==0)?"hide":"show")
