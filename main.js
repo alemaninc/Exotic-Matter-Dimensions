@@ -1084,6 +1084,7 @@ function updateStat(x) {
     document.getElementById("StatBreakdown8ExStar81T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown8ExRStar81",StarE(81)?"show":"hide")
     g.axisCostExponent=output
+    document.getElementById("SSB8ExponentTable").style = (g.axisCostExponent==1)?"display:none":"display:inline-block"
     document.getElementById("SSBBAxisCostReduction").style = ((g.axisCostDivisor==0)&&(g.axisCostExponent==1))?"display:none":"display:inline-block"
   } else if (x==9) {
     // Divisor table
