@@ -8,7 +8,7 @@
       Exotic Matter Dimensions
     </title>
   </head>
-  <body onload="load('normal')">
+  <body onload="load('normal')" id="bodytheme">
     <div id="game">
       <table>
         <tr>
@@ -103,14 +103,15 @@
         </div>
         <div class="optionsTab" id="tabOptions">
           <table><tr>
-            <td><button class="optionsbutton" onClick="toggleNotation()">Notation: <span id="notationButton"></span></button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('notation',['Alemaninc Ordinal','Double Logarithm','Engineering','Infinity','Logarithm','Mixed scientific','Scientific','Tetration']">Notation: <span id="notationButton"></span></button></td>
             <td><button class="optionsbutton" onClick="save()">Save</button></td>
             <td><button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button></td>
             <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>
-            <td><button class="optionsbutton" onClick="toggleOfflineSpeedupLength()">Offline speedup length: <span id="offlineSpeedupLength"></span></button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('offlineSpeedupLength',[1,5,10,30,60,300,3600])">Offline speedup length: <span id="offlineSpeedupLength"></span></button></td>
           </tr><tr>
             <td><button class="optionsbutton" onClick="load('import')">Import save</button></td>
             <td><button class="optionsbutton" onClick="exportSave()">Export save</button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('colortheme',['Default','Red','Green','Blue','Cyan','Magenta','Yellow'])">Theme: <span id="colortheme"></span></button></td>
             <td><button class="optionsbutton" onClick="toggle('darkstarBulk')" id="darkstarBulkButton">Dark star bulk buy: <span id="darkstarBulk"></span></button></td>
           </tr></table>
         </div>
