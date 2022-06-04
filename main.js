@@ -22,7 +22,7 @@ var notation="Mixed scientific"
 function infFormat(x,y) {
   if (isNaN(x)) return "NaN"
   if (Math.abs(x)<3) return Math.round((y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)*10**x)/(y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)
-  if (Math.abs(x)<6) return Math.round(x).toLocaleString('en-US')
+  if (Math.abs(x)<6) return Math.round(10**x).toLocaleString('en-US')
   else if ((x<-99)&&(x>-101)) return 0
   m=(x>0)?"":"1 / "
   x=Math.abs(x)
