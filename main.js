@@ -2022,6 +2022,6 @@ function wipeSave() {
 function toggle(x) {
    g[x]=!g[x]
 }
-function multitoggle(var,options) {
-  g[var]=options[(indexOf(g[var])+1)%options.length]
+function multitoggle(variable,options) {
+  g[variable]=options[(indexOf(g[variable])+1)%options.length]
 }
