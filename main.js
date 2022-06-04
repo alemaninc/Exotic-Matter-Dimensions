@@ -1,4 +1,4 @@
-// infOP V, produced by alemaninc
+// infOP VI, produced by alemaninc
 function infAdd(x,y) {                 // Adds two infNumbers - for example, infAdd(1,0) returns 1.0414 (log(10+1)) 
   if (Math.abs(x-y)>16) {              // If the quotient of x and y is more than 1e+16, the addition is negligible
     return Math.max(x,y)
@@ -21,7 +21,8 @@ function infSubtract(x,y) {            // Subtracts two infNumbers - if y is gre
 var notation="Mixed scientific"
 function infFormat(x,y) {
   if (isNaN(x)) return "NaN"
-  if ((x<3)&&(x>-3)) return Math.round((y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)*10**x)/(y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)
+  if (abs(x)<3) return Math.round((y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)*10**x)/(y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)
+  if (abs(x)<6) return Math.round(x).toLocaleString('en-US')
   else if ((x<-99)&&(x>-101)) return 0
   m=(x>0)?"":"1 / "
   x=Math.abs(x)
@@ -67,7 +68,8 @@ function infFormat(x,y) {
 }
 function normFormat(x) {               // Formats a regular number the same way infNumbers would be formatted
   if (x==0) return 0
-  else if ((x>=10000)||(x<=0.0001)) return infFormat(Math.log10(x))
+  else if ((x>=1e6)||(x<=1e-6)) return infFormat(Math.log10(x))
+  else if (x>=1000) return Math.round(x).toLocaleString("en-US")
   else if (Math.abs(x)>=100) return Math.round(x)
   else {
     precision=2+Math.max(0,-Math.floor(Math.log10(x)))
