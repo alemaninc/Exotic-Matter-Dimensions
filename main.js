@@ -1996,7 +1996,7 @@ function load(type) {
 function exportSave() {
   save()
   navigator.clipboard.writeText(btoa(localStorage.getItem("save")))
-  alert("Copied to clipboard")
+  prompt("Your save has automatically been copied to the clipboard, but if that did not work you can copy it from here:",btoa(localStorage.getItem("save")))
 }
 function wipeSave() {
   let numa = Math.floor(50*3**Math.random())
