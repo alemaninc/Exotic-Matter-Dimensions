@@ -1216,9 +1216,6 @@ function buyStardustUpgrade5() {
     if ((g.stardustUpgrades[4]==2)&&(g.fastestWormholeReset>1e12)) openStory("Energy")
   }
 }
-function toggleAxisAutobuyer() {
-  g.axisAutobuyerOn = !g.axisAutobuyerOn
-}
 function upgradeAxisAutobuyer() {
   while ((g.exoticmatter>=g.axisAutobuyerCost) && (g.axisAutobuyerInterval>0.1)) {
     infDeduct("exoticmatter",g.axisAutobuyerCost)
