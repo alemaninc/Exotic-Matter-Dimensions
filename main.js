@@ -1517,13 +1517,14 @@ window.setInterval(function(){                                                  
 
 
   // Options & Display section
-  if (colortheme == "Default") document.getElementById("bodytheme").style = "color: #3399ff;background-color: #190033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (colortheme == "Red") document.getElementById("bodytheme").style = "color: #ff0000;background-color: #330000;font-size: 15px;font-family:verdana;text-align: center;"
-  if (colortheme == "Green") document.getElementById("bodytheme").style = "color: #00ff00;background-color: #003300;font-size: 15px;font-family:verdana;text-align: center;"
-  if (colortheme == "Blue") document.getElementById("bodytheme").style = "color: #0000ff;background-color: #000033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #00ffff;background-color: #003333;font-size: 15px;font-family:verdana;text-align: center;"
-  if (colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #ff00ff;background-color: #330033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ffff00;background-color: #333300;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Default") document.getElementById("bodytheme").style = "color: #3399ff;background-color: #190033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Red") document.getElementById("bodytheme").style = "color: #ff0000;background-color: #330000;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Green") document.getElementById("bodytheme").style = "color: #00ff00;background-color: #003300;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Blue") document.getElementById("bodytheme").style = "color: #0000ff;background-color: #000033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #00ffff;background-color: #003333;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #ff00ff;background-color: #330033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ffff00;background-color: #333300;font-size: 15px;font-family:verdana;text-align: center;"
+  document.getElementById("colortheme").style.display = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
   document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
