@@ -1155,7 +1155,7 @@ function updateStat(x) {
 }
 function stardustReset(x) {
   if ((g.pendingstardust>g.stardust)||(x=="force")) {
-    g.stardust=infFloor(g.pendingstardust)
+    g.stardust=infFloor(Math.max(g.stardust,g.pendingstardust))
     g.fastestStardustReset=Math.min(g.fastestStardustReset,g.timeThisStardustReset)
     g.StardustResets++
     g.exoticmatter=0
