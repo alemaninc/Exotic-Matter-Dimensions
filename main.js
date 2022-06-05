@@ -506,7 +506,7 @@ var SupernovaCosts = [[0,0]]
 function incrementExoticMatter(x) {
   if (isNaN(x)) x=-100
   g.exoticmatter = infAdd(g.exoticmatter,x)
-  document.getElementBy""exoticmatter").innerHTML = infFormat(g.exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
+  document.getElementById("exoticmatter").innerHTML = infFormat(g.exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
   document.getElementById("exoticmatterPerSec").innerHTML = infFormat(g.exoticmatterPerSec,true);
   g.totalexoticmatter = infAdd(g.totalexoticmatter,x)
   document.getElementById("totalExoticMatter").innerHTML = infFormat(g.totalexoticmatter,false);
