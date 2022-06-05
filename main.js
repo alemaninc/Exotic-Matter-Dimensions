@@ -328,6 +328,8 @@ var g = {
   fastestWormholeReset: 9e15,
   storySnippets: [],
   timeLeft: 0,
+  offlineSpeedupLength: 30,
+  offlineSpeedupOn: true,
   notation: "Mixed scientific",
   StardustResets: 0,
   stardust: -100, // InfNumber
@@ -488,7 +490,6 @@ var stardustExoticMatterReqText = "";
 var progressbarvalue = 0
 var progressbartooltip = ""
 var deltatime = 0
-var offlineSpeedupLength = 30
 var baseOfflineSpeedup = 1
 var offlineSpeedup = 1
 var offlineTime = 0
@@ -505,7 +506,7 @@ var SupernovaCosts = [[0,0]]
 function incrementExoticMatter(x) {
   if (isNaN(x)) x=-100
   g.exoticmatter = infAdd(g.exoticmatter,x)
-  document.getElementById("exoticmatter").innerHTML = infFormat(g.exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
+  document.getElementBy""exoticmatter").innerHTML = infFormat(g.exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
   document.getElementById("exoticmatterPerSec").innerHTML = infFormat(g.exoticmatterPerSec,true);
   g.totalexoticmatter = infAdd(g.totalexoticmatter,x)
   document.getElementById("totalExoticMatter").innerHTML = infFormat(g.totalexoticmatter,false);
@@ -1337,7 +1338,8 @@ window.setInterval(function(){                                                  
     offlineSpeedup = 1
     document.getElementById("offlineSpeedupDisplay").innerHTML = ""
   }
-  document.getElementById("offlineSpeedupLength").innerHTML = offlineSpeedupLength+"s"
+  document.getElementById("offlineSpeedupLength").innerHTML = g.offlineSpeedupLength+"s"
+  document.getElementById("offlineSpeedupOn").innerHTML = g.offlineSpeedupOn?"On":"Off"
   ProgressBar()
   oldframetime=newframetime
   newframetime=new Date().getTime()
@@ -1990,9 +1992,9 @@ function load(type) {
       if (savegame[vars[i]] !== undefined) g[vars[i]] = savegame[vars[i]]
     }
     var timeSpentOffline = Number(new Date())-g.timeLeft
-    if (timeSpentOffline>1000) {
-      offlineTime=offlineSpeedupLength
-      baseOfflineSpeedup=1+(timeSpentOffline/offlineSpeedupLength/1000)
+    if ((timeSpentOffline>1000)&&(g.offlineSpeedupOn)) {
+      offlineTime=g.offlineSpeedupLength
+      baseOfflineSpeedup=1+(timeSpentOffline/g.offlineSpeedupLength/1000)
     }
   }
   savecounter++
