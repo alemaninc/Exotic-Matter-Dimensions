@@ -1331,7 +1331,7 @@ window.setInterval(function(){                                                  
 
   // QoL section
   if ((baseOfflineSpeedup>1)&&(offlineTime>0)) {
-    offlineSpeedup = baseOfflineSpeedup
+    offlineSpeedup = 1+(baseOfflineSpeedup-1)*Math.min(deltatime/Math.max(offlineTime,0.001),1)
     offlineTime = offlineTime-deltatime
     document.getElementById("offlineSpeedupDisplay").innerHTML = "Offline speedup: "+normFormat(offlineSpeedup)+"x     Offline time left: "+normFormat(offlineTime)+"s"
   } else {
