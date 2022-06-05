@@ -585,19 +585,19 @@ function updateMasteryBoosts() {
 }
 function updateStat(x) {
   if (x==1) {
-    document.getElementById("StatBreakdown1XAxis").innerHTML = "× "+infFormat(g.XAxisEffect,true)+" ^ "+normFormat(g.realXAxis)
+    document.getElementById("StatBreakdown1XAxis").innerHTML = "× "+infFormat(g.XAxisEffect*g.realXAxis,true)+"<span class='small'> ("+infFormat(g.XAxisEffect,true)+" ^ "+normFormat(g.realXAxis)+")</span>"
     output=g.XAxisEffect*g.realXAxis
     document.getElementById("StatBreakdown1XAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RXAxis",((g.realXAxis>0)&&(g.XAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1ZAxis").innerHTML = "× "+infFormat(g.ZAxisEffect,true)+" ^ "+normFormat(g.realZAxis)
+    document.getElementById("StatBreakdown1ZAxis").innerHTML = "× "+infFormat(g.ZAxisEffect*g.realZAxis,true)+"<span class='small'> ("+infFormat(g.ZAxisEffect,true)+" ^ "+normFormat(g.realZAxis)+")</span>"
     output+=g.ZAxisEffect*g.realZAxis
     document.getElementById("StatBreakdown1ZAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RZAxis",((g.realZAxis>0)&&(g.ZAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1WAxis").innerHTML = "× "+infFormat(g.WAxisEffect,true)+" ^ "+normFormat(g.realWAxis)
+    document.getElementById("StatBreakdown1WAxis").innerHTML = "× "+infFormat(g.WAxisEffect*g.realWAxis,true)+"<span class='small'> ("+infFormat(g.WAxisEffect,true)+" ^ "+normFormat(g.realWAxis)+")</span>"
     output+=g.WAxisEffect*g.realWAxis
     document.getElementById("StatBreakdown1WAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RWAxis",((g.realWAxis>0)&&(g.WAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1TAxis").innerHTML = "× "+infFormat(g.TAxisEffect,true)+" ^ "+normFormat(g.realTAxis)
+    document.getElementById("StatBreakdown1TAxis").innerHTML = "× "+infFormat(g.TAxisEffect*g.realTAxis,true)+"<span class='small'> ("+infFormat(g.TAxisEffect,true)+" ^ "+normFormat(g.realTAxis)+")</span>"
     output+=g.TAxisEffect*g.realTAxis
     document.getElementById("StatBreakdown1TAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RTAxis",((g.realTAxis>0)&&(g.TAxisEffect!=0))?"show":"hide")
@@ -629,7 +629,7 @@ function updateStat(x) {
     output+=50*StarE(42)
     document.getElementById("StatBreakdown1Star42T").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RStar42",StarE(42)?"show":"hide")
-    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+g.SAxisEffect.toFixed(4)+" ^ "+normFormat(g.realSAxis)
+    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+normFormat(g.SAxisEffect*g.realSAxis,true)+"<span class='small'> ("+normFormat(g.SAxisEffect,true)+" ^ "+normFormat(g.realSAxis)+")</span>"
     output*=g.SAxisEffect**(g.realSAxis)
     document.getElementById("StatBreakdown1SAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RSAxis",((g.realSAxis>0)&&(g.SAxisEffect!=1))?"show":"hide")
@@ -660,12 +660,12 @@ function updateStat(x) {
     nextvl+=g.Mastery42Effect*MasteryE(42)
     document.getElementById("StatBreakdown2Mastery42T").innerHTML = infFormat(output,false)
     toggleTableRow("StatBreakdown2RMastery42",MasteryE(42)?"show":"hide")
-    document.getElementById("StatBreakdown2UAxis").innerHTML = "× "+infFormat(g.UAxisEffect,true)+" ^ "+normFormat(g.realUAxis)
+    document.getElementById("StatBreakdown2UAxis").innerHTML = "× "+infFormat(g.UAxisEffect*g.realUAxis,true)+"<span class='small'> ("+infFormat(g.UAxisEffect,true)+" ^ "+normFormat(g.realUAxis)+")</span>"
     output+=g.UAxisEffect*g.realUAxis
     nextvl+=g.UAxisEffect*(g.realUAxis)
     document.getElementById("StatBreakdown2UAxisT").innerHTML = infFormat(output,false)
     toggleTableRow("StatBreakdown2RUAxis",((g.realUAxis>0)&&(g.UAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown2StardustBoost4").innerHTML = "× "+infFormat(g.masteryPower,true)+" ^ "+(g.StardustBoost4>10?normFormat(g.StardustBoost4):g.StardustBoost4.toFixed(4))
+    document.getElementById("StatBreakdown2StardustBoost4").innerHTML = "× "+infFormat(g.masteryPower*g.StardustBoost4,true)+"<span class='small'> ("+infFormat(g.masteryPower,true)+" ^ "+(g.StardustBoost4>10?normFormat(g.StardustBoost4):g.StardustBoost4.toFixed(4))+")</span>"
     output+=g.masteryPower*g.StardustBoost4
     nextvl+=g.masteryPower*g.StardustBoost4
     document.getElementById("StatBreakdown2StardustBoost4T").innerHTML = infFormat(output,false)
@@ -692,25 +692,25 @@ function updateStat(x) {
     document.getElementById("StatBreakdown2UnspentStardust").innerHTML = "- "+infFormat(g.stardust,false)
     output=infSubtract(output,g.stardust)
     document.getElementById("StatBreakdown2UnspentStardustT").innerHTML = infFormat(output,false)
-    document.getElementById("SSBBStardust").style = ((g.fastestStardustReset<1e12)||(g.exoticmatter>22))?"display:inline-block":"display:none"
+    document.getElementById("SSBBStardust").style = g.storySnippets.includes("Stardust")?"display:inline-block":"display:none"
   } else if (x==3) {
     document.getElementById("StatBreakdown3BaseGain").innerHTML = "((10 + "+infFormat(g.stardust,true)+" / "+infFormat(12)+") dilate 0.5 / 10)"+((g.darkstars>0)?("^ "+normFormat(1+g.darkstars/20)):"")
     output=(infAdd(g.stardust-12,1)**0.5-1)*(1+0.05*g.darkstars)
     document.getElementById("StatBreakdown3BaseGainT").innerHTML = infFormat(output,true)
     document.getElementById("baseDarkMatterGain").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown3DarkXAxis").innerHTML = "× "+infFormat(g.darkXAxisEffect,true)+" ^ "+normFormat(g.realdarkXAxis)
+    document.getElementById("StatBreakdown3DarkXAxis").innerHTML = "× "+infFormat(g.darkXAxisEffect*g.realdarkXAxis,true)+"<span class='small'> ("+infFormat(g.darkXAxisEffect,true)+" ^ "+normFormat(g.realdarkXAxis)+")</span>"
     output+=g.darkXAxisEffect*g.realdarkXAxis
     document.getElementById("StatBreakdown3DarkXAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown3RDarkXAxis",((g.realdarkXAxis>0)&&(g.darkXAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkZAxis").innerHTML = "× "+infFormat(g.darkZAxisEffect,true)+" ^ "+normFormat(g.realdarkZAxis)
+    document.getElementById("StatBreakdown3DarkZAxis").innerHTML = "× "+infFormat(g.darkZAxisEffect*g.realdarkZAxis,true)+"<span class='small'> ("+infFormat(g.darkZAxisEffect,true)+" ^ "+normFormat(g.realdarkZAxis)+")</span>"
     output+=g.darkZAxisEffect*g.realdarkZAxis
     document.getElementById("StatBreakdown3DarkZAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown3RDarkZAxis",((g.realdarkZAxis>0)&&(g.darkZAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkUAxis").innerHTML = "× "+infFormat(g.darkUAxisEffect,true)+" ^ ("+normFormat(g.realdarkUAxis)+" × "+normFormat(g.totaldarkAxis)+")"
+    document.getElementById("StatBreakdown3DarkUAxis").innerHTML = "× "+infFormat(g.darkUAxisEffect*g.realdarkUAxis*g.totaldarkAxis,true)+"<span class='small'> ("+infFormat(g.darkUAxisEffect,true)+" ^ ("+normFormat(g.realdarkUAxis)+" × "+normFormat(g.totaldarkAxis)+"))</span>"
     output+=g.darkUAxisEffect*g.realdarkUAxis*g.totaldarkAxis
     document.getElementById("StatBreakdown3DarkUAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown3RDarkUAxis",((g.realdarkUAxis>0)&&(g.darkUAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkTAxis").innerHTML = "× "+infFormat(g.darkTAxisEffect,true)+" ^ "+normFormat(g.realdarkTAxis)
+    document.getElementById("StatBreakdown3DarkTAxis").innerHTML = "× "+infFormat(g.darkTAxisEffect*g.realdarkTAxis,true)+"<span class='small'> ("+infFormat(g.darkTAxisEffect,true)+" ^ "+normFormat(g.realdarkTAxis)+")</span>"
     output+=g.darkTAxisEffect*g.realdarkTAxis
     document.getElementById("StatBreakdown3DarkTAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown3RDarkTAxis",((g.realdarkTAxis>0)&&(g.darkTAxisEffect!=0))?"show":"hide")
@@ -731,19 +731,19 @@ function updateStat(x) {
     document.getElementById("StatBreakdown3TickspeedT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown3RTickspeed",(g.tickspeed!==0)?"show":"hide")
     g.darkmatterPerSec=output
-    document.getElementById("SSBBDarkMatter").style = (g.stardustUpgrades[4]>0)?"display:inline-block":"display:none"
+    document.getElementById("SSBBDarkMatter").style = g.storySnippets.includes("Dark Matter")?"display:inline-block":"display:none"
   } else if (x==4) {
     // Power table
     document.getElementById("StatBreakdown4BaseGain").innerHTML = infFormat(g.baseMasteryPowerGain,true)+" ^ "+((g.baseMasteryPowerExponent>100)?normFormat(g.baseMasteryPowerExponent):Math.floor(g.baseMasteryPowerExponent*1e4)/1e4)
     output=g.baseMasteryPowerGain*g.baseMasteryPowerExponent
     document.getElementById("StatBreakdown4BaseGainT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown4RBaseGain",((g.baseMasteryPowerGain>0)&&(g.baseMasteryPowerExponent>0))?"show":"hide")
-    document.getElementById("StatBreakdown4DarkWAxis").innerHTML = "× "+infFormat(g.darkWAxisEffect,true)+" ^ "+normFormat(g.realdarkWAxis)
+    document.getElementById("StatBreakdown4DarkWAxis").innerHTML = "× "+infFormat(g.darkWAxisEffect*g.realdarkWAxis,true)+"<span class='small'> ("+infFormat(g.darkWAxisEffect,true)+" ^ "+normFormat(g.realdarkWAxis)+")</span>"
     output+=g.darkWAxisEffect*g.realdarkWAxis
     document.getElementById("StatBreakdown4DarkWAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown4RDarkWAxis",((g.darkWAxisEffect!==0)&&(g.darkWAxis>0))?"show":"hide")
-    document.getElementById("StatBreakdown4StardustBoost7").innerHTML = infFormat(g.StardustBoost7,true)+" ^ "+normFormat(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,6.02059991328,9))
-    output+=g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,6.02059991328,9))
+    document.getElementById("StatBreakdown4StardustBoost7").innerHTML = "× "+infFormat(g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4)))+"<span class='small'>"+infFormat(g.StardustBoost7,true)+" ^ "+normFormat(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))+")</span>"
+    output+=g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))
     document.getElementById("StatBreakdown4StardustBoost7T").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown4RStardustBoost7",(g.StardustBoost7>0)?"show":"hide")
     document.getElementById("StatBreakdown4Mastery81").innerHTML = "× "+infFormat(g.Mastery81Effect,true)
@@ -787,7 +787,7 @@ function updateStat(x) {
     document.getElementById("SSBBMasteryPower").style = (g.masteryRowsUnlocked[0]==1)?"display:inline-block":"display:none"
   } else if (x==5) {
     // X table
-    document.getElementById("StatBreakdown5XYAxis").innerHTML = "+ "+infFormat(g.YAxisEffect,true)+" × "+normFormat(g.realYAxis)
+    document.getElementById("StatBreakdown5XYAxis").innerHTML = "+ "+infFormat(infAdd(0.30102999566,g.YAxisEffect+Math.log10(1e-100+g.realYAxis)),true)+"<span class='small'> ("+infFormat(g.YAxisEffect,true)+" × "+normFormat(g.realYAxis)+")</span>"
     output=infAdd(0.30102999566,g.YAxisEffect+Math.log10(1e-100+g.realYAxis))
     document.getElementById("StatBreakdown5XYAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown5XRYAxis",(g.YAxis>0)?"show":"hide")
@@ -866,7 +866,7 @@ function updateStat(x) {
     output+=g.Mastery51Effect*MasteryE(51)
     document.getElementById("StatBreakdown6XMastery51T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6XRMastery51",MasteryE(51)?"show":"hide")
-    document.getElementById("StatBreakdown6XDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkXAxis)
+    document.getElementById("StatBreakdown6XDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkXAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkXAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkXAxis
     document.getElementById("StatBreakdown6XDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6XRDarkMatter",(g.darkXAxis>0)?"show":"hide")
@@ -885,7 +885,7 @@ function updateStat(x) {
     output=StarE(22)*3
     document.getElementById("StatBreakdown6YStar22T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6YRStar22",StarE(22)?"show":"hide")
-    document.getElementById("StatBreakdown6YDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkYAxis)
+    document.getElementById("StatBreakdown6YDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkYAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkYAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkYAxis
     document.getElementById("StatBreakdown6YDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6YRDarkMatter",(g.darkYAxis>0)?"show":"hide")
@@ -904,7 +904,7 @@ function updateStat(x) {
     output+=StarE(23)*3
     document.getElementById("StatBreakdown6ZStar23T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6ZRStar23",StarE(23)?"show":"hide")
-    document.getElementById("StatBreakdown6ZDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkZAxis)
+    document.getElementById("StatBreakdown6ZDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkZAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkZAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkZAxis
     document.getElementById("StatBreakdown6ZDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6ZRDarkMatter",(g.darkZAxis>0)?"show":"hide")
@@ -923,7 +923,7 @@ function updateStat(x) {
     output+=StarE(24)*3
     document.getElementById("StatBreakdown6WStar24T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6WRStar24",StarE(24)?"show":"hide")
-    document.getElementById("StatBreakdown6WDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkWAxis)
+    document.getElementById("StatBreakdown6WDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkWAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkWAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkWAxis
     document.getElementById("StatBreakdown6WDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6WRDarkMatter",(g.darkWAxis>0)?"show":"hide")
@@ -938,7 +938,7 @@ function updateStat(x) {
     output=g.Star61Effect*StarE(61)
     document.getElementById("StatBreakdown6VStarUpgrade61T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6VRStarUpgrade61",StarE(61)?"show":"hide")
-    document.getElementById("StatBreakdown6VDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkVAxis)
+    document.getElementById("StatBreakdown6VDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkVAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkVAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkVAxis
     document.getElementById("StatBreakdown6VDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6VRDarkMatter",(g.darkVAxis>0)?"show":"hide")
@@ -953,7 +953,7 @@ function updateStat(x) {
     output=g.Star62Effect*StarE(62)
     document.getElementById("StatBreakdown6UStarUpgrade62T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6URStarUpgrade62",StarE(62)?"show":"hide")
-    document.getElementById("StatBreakdown6UDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkUAxis)
+    document.getElementById("StatBreakdown6UDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkUAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkUAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkUAxis
     document.getElementById("StatBreakdown6UDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6URDarkMatter",(g.darkUAxis>0)?"show":"hide")
@@ -968,7 +968,7 @@ function updateStat(x) {
     output=g.Star63Effect*StarE(63)
     document.getElementById("StatBreakdown6TStarUpgrade63T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6TRStarUpgrade63",StarE(63)?"show":"hide")
-    document.getElementById("StatBreakdown6TDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkTAxis)
+    document.getElementById("StatBreakdown6TDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkTAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkTAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkTAxis
     document.getElementById("StatBreakdown6TDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6TRDarkMatter",(g.darkTAxis>0)?"show":"hide")
@@ -983,7 +983,7 @@ function updateStat(x) {
     output=StarE(64)
     document.getElementById("StatBreakdown6SStarUpgrade64T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6SRStarUpgrade64",StarE(64)?"show":"hide")
-    document.getElementById("StatBreakdown6SDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkSAxis)
+    document.getElementById("StatBreakdown6SDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkSAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkSAxis)+")</span>
     output+=g.darkMatterFreeAxis*g.darkSAxis
     document.getElementById("StatBreakdown6SDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6SRDarkMatter",(g.darkSAxis>0)?"show":"hide")
@@ -993,7 +993,7 @@ function updateStat(x) {
     toggleTableRow("StatBreakdown6SRSoftcap",(g.freeSAxis>g.SAxis)?"show":"hide")
     g.freeSAxis=output
     document.getElementById("SSB6STable").style = (g.freeSAxis>0)?"display:inline-block":"display:none"
-    document.getElementById("SSBBFreeAxis").style = (g.freeXAxis+g.freeYAxis+g.freeZAxis+g.freeWAxis+g.freeVAxis+g.freeUAxis+g.freeTAxis+g.freeSAxis>0)?"display:inline-block":"display:none"
+    document.getElementById("SSBBFreeAxis").style = (g.totalAxis>0)?"display:inline-block":"display:none"
   } else if (x==7) {
     // X table
     output=Math.log10(3)
@@ -1075,7 +1075,7 @@ function updateStat(x) {
     output=g.Mastery12Effect*MasteryE(12)
     document.getElementById("StatBreakdown8DiMastery12T").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown8DiRMastery12",MasteryE(12)?"show":"hide")
-    document.getElementById("StatBreakdown8DiVAxis").innerHTML = "× "+infFormat(g.VAxisEffect,true)+" ^ "+normFormat(g.realVAxis)
+    document.getElementById("StatBreakdown8DiVAxis").innerHTML = "× "+infFormat(g.VAxisEffect*g.realVAxis)+"<span class='small'> ("+infFormat(g.VAxisEffect)+" ^ "+normFormat(g.realVAxis)+")</span>
     output+=g.VAxisEffect*g.realVAxis
     document.getElementById("StatBreakdown8DiVAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown8DiRVAxis",((g.VAxisEffect!==0)&&(g.realVAxis!==0))?"show":"hide")
@@ -1091,7 +1091,7 @@ function updateStat(x) {
     document.getElementById("SSBBAxisCostReduction").style = ((g.axisCostDivisor==0)&&(g.axisCostExponent==1))?"display:none":"display:inline-block"
   } else if (x==9) {
     // Divisor table
-    document.getElementById("StatBreakdown9DiDarkYAxis").innerHTML = "× "+infFormat(g.darkYAxisEffect,true)+" ^ "+normFormat(g.realdarkYAxis)
+    document.getElementById("StatBreakdown9DiDarkYAxis").innerHTML = "× "+infFormat(g.darkYAxisEffect*g.realdarkYAxis)+"<span class='small'> ("+infFormat(g.darkYAxisEffect)+" ^ "+normFormat(g.realdarkYAxis)+")</span>
     output=g.darkYAxisEffect*g.realdarkYAxis
     document.getElementById("StatBreakdown9DiDarkYAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown9DiRDarkYAxis",((g.darkYAxisEffect!==0)&&(g.realdarkYAxis!==0))?"show":"hide")
@@ -1129,7 +1129,7 @@ function updateStat(x) {
     document.getElementById("StatBreakdown10EfMastery72").innerHTML = "× "+normFormat(g.Mastery72Effect**MasteryE(72))
     output=g.Mastery72Effect**MasteryE(72)
     document.getElementById("StatBreakdown10EfMastery72T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown10EfRMastery72",((g.darkVAxisEffect!==0)&&(g.realdarKVAxis!==0))?"show":"hide")
+    toggleTableRow("StatBreakdown10EfRMastery72",((g.darkVAxisEffect!==0)&&(g.realdarkVAxis!==0))?"show":"hide")
     g.energyEffectBoost=output
     document.getElementById("SSB10EffectTable").style = (g.energyEffectBoost==1)?"display:none":"display:inline-block"
     document.getElementById("SSBBEnergy").style = ((g.energySpeedMult==0)&&(g.energyEffectBoost==1))?"display:none":"display:inline-block"
