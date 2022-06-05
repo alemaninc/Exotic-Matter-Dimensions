@@ -775,7 +775,7 @@ function updateStat(x) {
     toggleTableRow("StatBreakdown4RTickspeed",(g.tickspeed!==0)?"show":"hide")
     g.masteryPowerPerSec=output
     // Exponent table
-    document.getElementById("StatBreakdown4.1Base").innerHTML = "(log(10 + "+infFormat(g.exoticmatter,false)+" ^ 0.1) + 1) ^ 1.2"
+    document.getElementById("StatBreakdown4.1Base").innerHTML = "(log(log(10 + "+infFormat(g.exoticmatter,false)+" ^ 0.1)) + 1) ^ 1.2"
     output=(Math.log10(infAdd(g.exoticmatter/10,1))+1)**1.2
     document.getElementById("StatBreakdown4.1BaseT").innerHTML = normFormat(output,true)
     document.getElementById("StatBreakdown4.1Mastery85").innerHTML = "+ "+normFormat(g.Mastery85Effect)
