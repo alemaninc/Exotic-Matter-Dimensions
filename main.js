@@ -1512,13 +1512,16 @@ window.setInterval(function(){                                                  
 
 
   // Options & Display section
-  if (g.colortheme == "Default") document.getElementById("bodytheme").style = "color: #3399ff;background-color: #190033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Red") document.getElementById("bodytheme").style = "color: #ff0000;background-color: #330000;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Green") document.getElementById("bodytheme").style = "color: #00ff00;background-color: #003300;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Blue") document.getElementById("bodytheme").style = "color: #0000ff;background-color: #000033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #00ffff;background-color: #003333;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #ff00ff;background-color: #330033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ffff00;background-color: #333300;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Default") document.getElementById("bodytheme").style = "color: #39f;background-color: #190033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Red") document.getElementById("bodytheme").style = "color: #f00;background-color: #300;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Green") document.getElementById("bodytheme").style = "color: #0f0;background-color: #030;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Blue") document.getElementById("bodytheme").style = "color: #00f;background-color: #003;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #0ff;background-color: #033;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #f0f;background-color: #303;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ff0;background-color: #330;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Light Gray") document.getElementById("bodytheme").style = "color: #ccc;background-color: #666;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Dark Gray") document.getElementById("bodytheme").style = "color: #666;background-color: #333;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Black") document.getElementById("bodytheme").style = "color: #fff;background-color: #000;font-size: 15px;font-family:verdana;text-align: center;"
   document.getElementById("colortheme").innerHTML = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
