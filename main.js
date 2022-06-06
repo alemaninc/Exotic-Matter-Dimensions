@@ -866,7 +866,7 @@ function updateStat(x) {
     output+=g.Mastery51Effect*MasteryE(51)
     document.getElementById("StatBreakdown6XMastery51T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6XRMastery51",MasteryE(51)?"show":"hide")
-    document.getElementById("StatBreakdown6XDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkXAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkXAxis)+")</span>
+    document.getElementById("StatBreakdown6XDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkXAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkXAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkXAxis
     document.getElementById("StatBreakdown6XDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6XRDarkMatter",(g.darkXAxis>0)?"show":"hide")
@@ -885,7 +885,7 @@ function updateStat(x) {
     output=StarE(22)*3
     document.getElementById("StatBreakdown6YStar22T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6YRStar22",StarE(22)?"show":"hide")
-    document.getElementById("StatBreakdown6YDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkYAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkYAxis)+")</span>
+    document.getElementById("StatBreakdown6YDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkYAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkYAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkYAxis
     document.getElementById("StatBreakdown6YDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6YRDarkMatter",(g.darkYAxis>0)?"show":"hide")
@@ -904,7 +904,7 @@ function updateStat(x) {
     output+=StarE(23)*3
     document.getElementById("StatBreakdown6ZStar23T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6ZRStar23",StarE(23)?"show":"hide")
-    document.getElementById("StatBreakdown6ZDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkZAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkZAxis)+")</span>
+    document.getElementById("StatBreakdown6ZDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkZAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkZAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkZAxis
     document.getElementById("StatBreakdown6ZDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6ZRDarkMatter",(g.darkZAxis>0)?"show":"hide")
@@ -923,7 +923,7 @@ function updateStat(x) {
     output+=StarE(24)*3
     document.getElementById("StatBreakdown6WStar24T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6WRStar24",StarE(24)?"show":"hide")
-    document.getElementById("StatBreakdown6WDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkWAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkWAxis)+")</span>
+    document.getElementById("StatBreakdown6WDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkWAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkWAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkWAxis
     document.getElementById("StatBreakdown6WDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6WRDarkMatter",(g.darkWAxis>0)?"show":"hide")
@@ -938,7 +938,7 @@ function updateStat(x) {
     output=g.Star61Effect*StarE(61)
     document.getElementById("StatBreakdown6VStarUpgrade61T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6VRStarUpgrade61",StarE(61)?"show":"hide")
-    document.getElementById("StatBreakdown6VDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkVAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkVAxis)+")</span>
+    document.getElementById("StatBreakdown6VDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkVAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkVAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkVAxis
     document.getElementById("StatBreakdown6VDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6VRDarkMatter",(g.darkVAxis>0)?"show":"hide")
@@ -953,7 +953,7 @@ function updateStat(x) {
     output=g.Star62Effect*StarE(62)
     document.getElementById("StatBreakdown6UStarUpgrade62T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6URStarUpgrade62",StarE(62)?"show":"hide")
-    document.getElementById("StatBreakdown6UDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkUAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkUAxis)+")</span>
+    document.getElementById("StatBreakdown6UDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkUAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkUAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkUAxis
     document.getElementById("StatBreakdown6UDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6URDarkMatter",(g.darkUAxis>0)?"show":"hide")
@@ -968,7 +968,7 @@ function updateStat(x) {
     output=g.Star63Effect*StarE(63)
     document.getElementById("StatBreakdown6TStarUpgrade63T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6TRStarUpgrade63",StarE(63)?"show":"hide")
-    document.getElementById("StatBreakdown6TDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkTAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkTAxis)+")</span>
+    document.getElementById("StatBreakdown6TDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkTAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkTAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkTAxis
     document.getElementById("StatBreakdown6TDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6TRDarkMatter",(g.darkTAxis>0)?"show":"hide")
@@ -983,7 +983,7 @@ function updateStat(x) {
     output=StarE(64)
     document.getElementById("StatBreakdown6SStarUpgrade64T").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6SRStarUpgrade64",StarE(64)?"show":"hide")
-    document.getElementById("StatBreakdown6SDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkSAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkSAxis)+")</span>
+    document.getElementById("StatBreakdown6SDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkSAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkSAxis)+")</span>"
     output+=g.darkMatterFreeAxis*g.darkSAxis
     document.getElementById("StatBreakdown6SDarkMatterT").innerHTML = normFormat(output)
     toggleTableRow("StatBreakdown6SRDarkMatter",(g.darkSAxis>0)?"show":"hide")
@@ -1075,7 +1075,7 @@ function updateStat(x) {
     output=g.Mastery12Effect*MasteryE(12)
     document.getElementById("StatBreakdown8DiMastery12T").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown8DiRMastery12",MasteryE(12)?"show":"hide")
-    document.getElementById("StatBreakdown8DiVAxis").innerHTML = "× "+infFormat(g.VAxisEffect*g.realVAxis)+"<span class='small'> ("+infFormat(g.VAxisEffect)+" ^ "+normFormat(g.realVAxis)+")</span>
+    document.getElementById("StatBreakdown8DiVAxis").innerHTML = "× "+infFormat(g.VAxisEffect*g.realVAxis)+"<span class='small'> ("+infFormat(g.VAxisEffect)+" ^ "+normFormat(g.realVAxis)+")</span>"
     output+=g.VAxisEffect*g.realVAxis
     document.getElementById("StatBreakdown8DiVAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown8DiRVAxis",((g.VAxisEffect!==0)&&(g.realVAxis!==0))?"show":"hide")
@@ -1091,7 +1091,7 @@ function updateStat(x) {
     document.getElementById("SSBBAxisCostReduction").style = ((g.axisCostDivisor==0)&&(g.axisCostExponent==1))?"display:none":"display:inline-block"
   } else if (x==9) {
     // Divisor table
-    document.getElementById("StatBreakdown9DiDarkYAxis").innerHTML = "× "+infFormat(g.darkYAxisEffect*g.realdarkYAxis)+"<span class='small'> ("+infFormat(g.darkYAxisEffect)+" ^ "+normFormat(g.realdarkYAxis)+")</span>
+    document.getElementById("StatBreakdown9DiDarkYAxis").innerHTML = "× "+infFormat(g.darkYAxisEffect*g.realdarkYAxis)+"<span class='small'> ("+infFormat(g.darkYAxisEffect)+" ^ "+normFormat(g.realdarkYAxis)+")</span>"
     output=g.darkYAxisEffect*g.realdarkYAxis
     document.getElementById("StatBreakdown9DiDarkYAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown9DiRDarkYAxis",((g.darkYAxisEffect!==0)&&(g.realdarkYAxis!==0))?"show":"hide")
