@@ -165,32 +165,32 @@ function openTab(name) {
   document.getElementById(name).style.display = "inline-block";  
 }
 function openStardustTab(name) {
-  var i;
-  var x = document.getElementsByClassName("stardustTab");
+  let i;
+  let x = document.getElementsByClassName("stardustTab");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
   document.getElementById(name).style.display = "inline-block";  
 }
 function openStatisticsTab(name) {
-  var i;
-  var x = document.getElementsByClassName("statisticsTab");
+  let i;
+  let x = document.getElementsByClassName("statisticsTab");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
   document.getElementById(name).style.display = "inline-block";  
 }
 function openOptionsTab(name) {
-  var i;
-  var x = document.getElementsByClassName("optionsTab");
+  let i;
+  let x = document.getElementsByClassName("optionsTab");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
   document.getElementById(name).style.display = "inline-block";  
 }
 function openMainTab(name) {
-  var i;
-  var x = document.getElementsByClassName("mainTab");
+  let i;
+  let x = document.getElementsByClassName("mainTab");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
@@ -549,14 +549,24 @@ function buyMaxAxis() {
   }
 }
 function updateAxisCosts() {
-  g.XAxisCost = (0.6989700043+0.77815125038*normLinearScaling(normSemiexpScaling(g.XAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.StardustBoost5*g.XAxis-g.axisCostDivisor)*g.axisCostExponent
-  g.YAxisCost = (2+0.113623*g.YAxis+0.062469*normLinearScaling(normSemiexpScaling(g.YAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)**2-g.axisCostDivisor)*g.axisCostExponent
-  g.ZAxisCost = (6+normLinearScaling(normSemiexpScaling(g.ZAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)**1.379654224-g.axisCostDivisor)*g.axisCostExponent
-  g.WAxisCost = (7.57397000434+(normLinearScaling(normSemiexpScaling(g.WAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)+0.5)**2/2-g.axisCostDivisor)*g.axisCostExponent
-  g.VAxisCost = (20+normLinearScaling(normSemiexpScaling(g.VAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.axisCostDivisor)*g.axisCostExponent
-  g.UAxisCost = (100+normLinearScaling(normSemiexpScaling(g.UAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)**1.5-g.axisCostDivisor)*g.axisCostExponent
-  g.TAxisCost = (160+10*normLinearScaling(normSemiexpScaling(g.TAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.axisCostDivisor)*g.axisCostExponent
-  g.SAxisCost = (308.2547155599167*1.25**normLinearScaling(normSemiexpScaling(g.SAxis,g.axisSuperscalingStart,1),g.axisScalingStart,1)-g.axisCostDivisor)*g.axisCostExponent
+  for (i=0;i<8;i++) {
+    let [a,c,scale1start,scale1power,scale2start,scale2power] = [g[axisCodes[i]+"Axis"],0,g.axisScalingStart,1,g.axisSuperscalingStart,1]
+    if (i==7) scale2power*=5
+    a = normSemiexpScaling(a,scale2start,scale2power)
+    a = normLinearScaling(a,scale1start,scale1power)
+    if (i==0) c = 0.6989700043+0.77815125038*a
+    if (i==1) c = 2+0.113623*g.YAxis+0.062469*a**2
+    if (i==2) c = 6+a**1.379654224
+    if (i==3) c = 7.57397000434+(a+0.5)**2/2
+    if (i==4) c = 20+a
+    if (i==5) c = 100+a**1.5
+    if (i==6) c = 160+10*a
+    if (i==7) c = 308.2547155599167*1.25**a
+    c-=g.axisCostDivisor
+    if (i==0) c-=g.StardustBoost5*g.XAxis
+    c*=g.axisCostExponent
+    g[axisCodes[i]+"AxisCost"]=c
+  }
 }
 function MasteryE(x) {
   return ((g.activeMasteries[Math.floor(x/10)-1]==(x%10))||(g.activeMasteries[Math.floor(x/10)-1]==9))?1:0        // A value of 9 signifies that the row is "mastered" and all of its Masteries are active simultaneously. No row can have more than 8 Masteries for this reason.
@@ -1361,46 +1371,13 @@ window.setInterval(function(){                                                  
   g.realSAxis=g.SAxis+g.freeSAxis
   g.totalAxis = g.XAxis+g.YAxis+g.ZAxis+g.WAxis+g.VAxis+g.UAxis+g.TAxis+g.SAxis
   g.axisUnlocked = Math.min(1+Math.sign(g.XAxis)+Math.sign(g.YAxis)+Math.sign(g.ZAxis)+Math.sign(g.WAxis)+Math.sign(g.VAxis)+Math.sign(g.UAxis)+Math.sign(g.TAxis)+Math.sign(g.SAxis),4+g.stardustUpgrades[0])
-  document.getElementById("XAxisButton").style.display=(g.axisUnlocked<1)?"none":"inline-block"
-  document.getElementById("YAxisButton").style.display=(g.axisUnlocked<2)?"none":"inline-block"
-  document.getElementById("ZAxisButton").style.display=(g.axisUnlocked<3)?"none":"inline-block"
-  document.getElementById("WAxisButton").style.display=(g.axisUnlocked<4)?"none":"inline-block"
-  document.getElementById("VAxisButton").style.display=(g.axisUnlocked<5)?"none":"inline-block"
-  document.getElementById("UAxisButton").style.display=(g.axisUnlocked<6)?"none":"inline-block"
-  document.getElementById("TAxisButton").style.display=(g.axisUnlocked<7)?"none":"inline-block"
-  document.getElementById("SAxisButton").style.display=(g.axisUnlocked<8)?"none":"inline-block"
-  document.getElementById("XAxisButton").className=(g.exoticmatter<g.XAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("YAxisButton").className=(g.exoticmatter<g.YAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("ZAxisButton").className=(g.exoticmatter<g.ZAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("WAxisButton").className=(g.exoticmatter<g.WAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("VAxisButton").className=(g.exoticmatter<g.VAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("UAxisButton").className=(g.exoticmatter<g.UAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("TAxisButton").className=(g.exoticmatter<g.TAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("SAxisButton").className=(g.exoticmatter<g.SAxisCost)?"lockedaxisbutton":"axisbutton"
-  document.getElementById("XAxisEffect").innerHTML = infFormat(g.XAxisEffect,true);
-  document.getElementById("XAxisCost").innerHTML = infFormat(g.XAxisCost,false);
-  document.getElementById("XAxisAmount").innerHTML = (g.freeXAxis > 0) ? g.XAxis+" + "+normFormat(g.freeXAxis) : g.XAxis;
-  document.getElementById("YAxisEffect").innerHTML = infFormat(g.YAxisEffect,true);
-  document.getElementById("YAxisCost").innerHTML = infFormat(g.YAxisCost,false);
-  document.getElementById("YAxisAmount").innerHTML = (g.freeYAxis > 0) ? g.YAxis+" + "+normFormat(g.freeYAxis) : g.YAxis;
-  document.getElementById("ZAxisEffect").innerHTML = infFormat(g.ZAxisEffect,true);
-  document.getElementById("ZAxisCost").innerHTML = infFormat(g.ZAxisCost,false);
-  document.getElementById("ZAxisAmount").innerHTML = (g.freeZAxis > 0) ? g.ZAxis+" + "+normFormat(g.freeZAxis) : g.ZAxis;
-  document.getElementById("WAxisEffect").innerHTML = infFormat(g.WAxisEffect,true);
-  document.getElementById("WAxisCost").innerHTML = infFormat(g.WAxisCost,false);
-  document.getElementById("WAxisAmount").innerHTML = (g.freeWAxis > 0) ? g.WAxis+" + "+normFormat(g.freeWAxis) : g.WAxis;
-  document.getElementById("VAxisEffect").innerHTML = infFormat(g.VAxisEffect,true);
-  document.getElementById("VAxisCost").innerHTML = infFormat(g.VAxisCost,false);
-  document.getElementById("VAxisAmount").innerHTML = (g.freeVAxis > 0) ? g.VAxis+" + "+normFormat(g.freeVAxis) : g.VAxis;
-  document.getElementById("UAxisEffect").innerHTML = infFormat(g.UAxisEffect,true);
-  document.getElementById("UAxisCost").innerHTML = infFormat(g.UAxisCost,false);
-  document.getElementById("UAxisAmount").innerHTML = (g.freeUAxis > 0) ? g.UAxis+" + "+normFormat(g.freeUAxis) : g.UAxis;
-  document.getElementById("TAxisEffect").innerHTML = infFormat(g.TAxisEffect,true);
-  document.getElementById("TAxisCost").innerHTML = infFormat(g.TAxisCost,false);
-  document.getElementById("TAxisAmount").innerHTML = (g.freeTAxis > 0) ? g.TAxis+" + "+normFormat(g.freeTAxis) : g.TAxis;
-  document.getElementById("SAxisEffect").innerHTML = Math.floor(g.SAxisEffect*10000)/10000;
-  document.getElementById("SAxisCost").innerHTML = infFormat(g.SAxisCost,false);
-  document.getElementById("SAxisAmount").innerHTML = (g.freeSAxis > 0) ? g.SAxis+" + "+normFormat(g.freeSAxis) : g.SAxis;
+  for (i=0;i<8;i++) {
+    document.getElementById(axisCodes[i]+"AxisButton").style.display=(g.axisUnlocked<=i)?"none":"inline-block"
+    document.getElementById(axisCodes[i]+"AxisButton").className=(g.exoticmatter<g[axisCodes[i]+"AxisCost"])?"lockedaxisbutton":"axisbutton"
+    document.getElementById(axisCodes[i]+"AxisCost").innerHTML = infFormat(g[axisCodes[i]+"AxisCost"],false)
+    document.getElementById(axisCodes[i]+"AxisAmount").innerHTML = normFormat(g[axisCodes[i]+"Axis"])+((g["free"+axisCodes[i]+"Axis"]>0)?" + "+normFormat(g["free"+axisCodes[i]+"Axis"]):(g["free"+axisCodes[i]+"Axis"]<0)?" - "+normFormat(-g["free"+axisCodes[i]+"Axis"]):"")
+    document.getElementById(axisCodes[i]+"AxisEffect").innerHTML = (i==7)?Math.round(g.SAxisEffect*1e4)/1e4:infFormat(g[axisCodes[i]+"AxisEffect"],true)
+  }
 
 
   // Mastery section
@@ -1535,10 +1512,10 @@ window.setInterval(function(){                                                  
 
   document.getElementById("hiddenstatAxisAutobuyerUpgrades").innerHTML = g.axisAutobuyerUpgrades
   toggleTableRow("hiddenstatrowAxisAutobuyerUpgrades",(g.axisAutobuyerUpgrades==0)?"hide":"show")
-  document.getElementById("hiddenstatAxisScalingStart").innerHTML = normFormat(g.axisScalingStart)
-  toggleTableRow("hiddenstatrowAxisScalingStart",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisScalingStart)?"show":"hide")
-  document.getElementById("hiddenstatAxisSuperscalingStart").innerHTML = normFormat(g.axisSuperscalingStart)
-  toggleTableRow("hiddenstatrowAxisSuperscalingStart",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisSuperscalingStart)?"show":"hide")
+  document.getElementById("hiddenstatAxisScaling").innerHTML = "start "+normFormat(g.axisScalingStart)+", power 100%"
+  toggleTableRow("hiddenstatrowAxisScaling",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisScalingStart)?"show":"hide")
+  document.getElementById("hiddenstatAxisSuperscaling").innerHTML = "start "+normFormat(g.axisSuperscalingStart)+", power 100%"
+  toggleTableRow("hiddenstatrowAxisSuperscaling",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisSuperscalingStart)?"show":"hide")
   document.getElementById("hiddenstatDarkAxisScalingStart").innerHTML = normFormat(g.darkaxisScalingStart)
   toggleTableRow("hiddenstatrowDarkAxisScalingStart",(Math.max(g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis)>g.darkaxisScalingStart)?"show":"hide")
   document.getElementById("hiddenstatDarkAxisSuperscalingStart").innerHTML = normFormat(g.darkaxisSuperscalingStart)
@@ -1600,8 +1577,8 @@ window.setInterval(function(){                                                  
   document.getElementById("fastestWormholeReset").innerHTML = timeFormat(g.fastestWormholeReset);
 
   glowtabs[0][0]=(((g.XAxisCost<g.exoticmatter)&&(g.axisUnlocked>0))||((g.YAxisCost<g.exoticmatter)&&(g.axisUnlocked>1))||((g.ZAxisCost<g.exoticmatter)&&(g.axisUnlocked>2))||((g.WAxisCost<g.exoticmatter)&&(g.axisUnlocked>3))||((g.VAxisCost<g.exoticmatter)&&(g.axisUnlocked>4))||((g.UAxisCost<g.exoticmatter)&&(g.axisUnlocked>5))||((g.TAxisCost<g.exoticmatter)&&(g.axisUnlocked>6))||((g.SAxisCost<g.exoticmatter)&&(g.axisUnlocked>7)))
-  glowtabs[0][1]=0
-  for (i=0; i<g.masteryRowsUnlocked.length; i++) if (MasteryE(10+10*i)&&g.masteryRowsUnlocked[i]&&!MasteryE(19+10*i)) glowtabs[0][1]=1
+  glowtabs[0][1]=false
+  for (i=0; i<g.masteryRowsUnlocked.length; i++) if (MasteryE(10+10*i)&&g.masteryRowsUnlocked[i]&&!MasteryE(19+10*i)) glowtabs[0][1]=true
   glowtabs[0][2]=((g.EMSupernova.charges>0)||(Math.min(SupernovaCosts[0][0],SupernovaCosts[0][1])<g.exoticmatter)||(g.KnowledgeSupernova.charges>0)||(Math.min(SupernovaCosts[1][0],SupernovaCosts[1][1])<g.masteryPower))&&g.supernovaUnlocked
   glowtabs[1][0]=((stardustUpgrade1Cost[g.stardustUpgrades[0]]<g.stardust)||(stardustUpgrade2Cost[g.stardustUpgrades[1]]<g.stardust)||(stardustUpgrade3Cost[g.stardustUpgrades[2]]<g.stardust)||(stardustUpgrade4Cost[g.stardustUpgrades[3]]<g.stardust)||(stardustUpgrade5Cost[g.stardustUpgrades[4]]<g.stardust))
   glowtabs[1][1]=(((g.unspentStars>0)||(g.stardust>g.starCost))&&(!(StarE(101)&&StarE(102)&&StarE(103)&&StarE(104))))
@@ -1613,8 +1590,8 @@ window.setInterval(function(){                                                  
   toggleGlow("StardustBoostButton",glowtabs[1][0])
   toggleGlow("StarTabButton",glowtabs[1][1])
   toggleGlow("DarkMatterButton",glowtabs[1][2])
-  toggleGlow("mainbigtab",glowtabs[0].includes(1))
-  toggleGlow("stardustbigtab",glowtabs[1].includes(1))
+  toggleGlow("mainbigtab",glowtabs[0].includes(true))
+  toggleGlow("stardustbigtab",glowtabs[1].includes(true))
   toggleGlow("automationbigtab",glowtabs[2])
 
 
@@ -1992,7 +1969,8 @@ function load(type) {
       if (savegame[vars[i]] !== undefined) g[vars[i]] = savegame[vars[i]]
     }
     var timeSpentOffline = Number(new Date())-g.timeLeft
-    if ((timeSpentOffline>1000)&&(g.offlineSpeedupOn)) {
+    if ((timeSpentOffline>1000)&&(g.offlineSpeedupOn!=="Off")) {
+      if (g.offlineSpeedupOn=="Weakened") timeSpentOffline = normLinearSoftcap(timeSpentOffline,3.6e6,1) // Starts at 1 hour
       offlineTime=g.offlineSpeedupLength
       baseOfflineSpeedup=1+(timeSpentOffline/g.offlineSpeedupLength/1000)
     }

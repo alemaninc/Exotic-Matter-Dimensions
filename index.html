@@ -108,7 +108,7 @@
             <td><button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button></td>
             <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>
             <td><button class="optionsbutton" onClick="multitoggle('offlineSpeedupLength',[1,5,10,30,60,300,3600])">Offline speedup length: <span id="offlineSpeedupLength"></span></button></td>
-            <td><button class="optionsbutton" onClick="toggle('offlineSpeedupOn')">Offline speedup: <span id="offlineSpeedupOn"></span></button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('offlineSpeedupOn',['On','Weakened','Off'])">Offline speedup: <span id="offlineSpeedupOn"></span></button></td>
           </tr><tr>
             <td><button class="optionsbutton" onClick="load('import')">Import save</button></td>
             <td><button class="optionsbutton" onClick="exportSave()">Export save</button></td>
@@ -118,6 +118,8 @@
         </div>
         <div class="optionsTab" id="Changelog" style="display:none">
           <h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
+          <h1>v1β.6 "But I <strike>don't</strike> want to grind!" (2022/06/08)</h1>
+          - QOL: Added option to weaken offline progress beyond 1 hour
           <h1>v1β.5 "Mastery of Glitches" (2022/06/07)</h1>
           - BUGFIX: NaN should no longer occur
           <h1>v1β.4 "I give up." (2022/06/06)</h1>
@@ -235,8 +237,8 @@
         <div class="statisticsTab" id="Hidden Statistics" style="display:none">
           <table class="hiddenstattable" style="border-spacing: 0">
             <tr id="hiddenstatrowAxisAutobuyerUpgrades"><td class="td40">Axis Autobuyer Upgrades</td><td class="td40" id="hiddenstatAxisAutobuyerUpgrades">undefined</td></tr>
-            <tr id="hiddenstatrowAxisScalingStart"><td class="td40">Axis Scaling Start</td><td class="td40" id="hiddenstatAxisScalingStart">undefined</td></tr>
-            <tr id="hiddenstatrowAxisSuperscalingStart"><td class="td40">Axis Superscaling Start</td><td class="td40" id="hiddenstatAxisSuperscalingStart">undefined</td></tr>
+            <tr id="hiddenstatrowAxisScaling"><td class="td40">Axis Scaling Start</td><td class="td40" id="hiddenstatAxisScaling">undefined</td></tr>
+            <tr id="hiddenstatrowAxisSuperscaling"><td class="td40">Axis Superscaling Start</td><td class="td40" id="hiddenstatAxisSuperscaling">undefined</td></tr>
             <tr id="hiddenstatrowDarkAxisScalingStart"><td class="td40">Dark Axis Scaling Start</td><td class="td40"><span id="hiddenstatDarkAxisScalingStart">undefined</span></td></tr>
             <tr id="hiddenstatrowDarkAxisSuperscalingStart"><td class="td40">Dark Axis Superscaling Start</td><td class="td40" id="hiddenstatDarkAxisSuperscalingStart">undefined</td></tr>
             <tr id="hiddenstatrowDeltaTime"><td class="td40">Delta Time</td><td class="td40" id="hiddenstatDeltaTime">undefined</td></tr>
