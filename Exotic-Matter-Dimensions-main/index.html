@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="interface.css" />                                 <!-- Internally embeds CSS -->
+    <meta charset="utf-8"/>
+    <title>
+      Exotic Matter Dimensions
+    </title>
+  </head>
+  <body onload="load('normal')" id="bodytheme">
+    <div id="game">
+      <table>
+        <tr>
+          <td class="toptable"><span class="small" id="offlineSpeedupDisplay"></span><br><span class="small" id="tickspeedDisplay"></span></td>
+          <td class="toptable"><p>You have <span class="matterlayertext" id="exoticmatter">0</span> exotic matter</p>
+          <p>You are getting <span class="matterlayertext" id="exoticmatterPerSec">0</span> exotic matter per second</p>
+          <p id="stardustDisplay" style="display:none">You have <span class="stardustlayertext" id="currentStardust">0</span> stardust</p></td>
+          <td class="toptable"><button id="stardustResetButton" onClick="stardustReset('normal')" class="stardustResetButton" style="visibility:hidden">Reset to gain <span class="stardustlayertext" id="pendingStardust">0</span> stardust<br><span class="small" id="stardustExoticMatterRequirement"></span></button>
+          </td>
+        </tr>
+      </table>
+      <div class="navigation globalnavigation" align="center">
+        <button id="mainbigtab" onClick="openTab('Main')" class="mainbigtab">Main</button>
+        <button id="optionsbigtab" onClick="openTab('Options')" class="optionsbigtab">Options</button>
+        <button id="statisticsbigtab" onClick="openTab('Statistics')" class="statisticsbigtab">Statistics</button>
+        <button id="stardustbigtab" onClick="openTab('Stardust')" class="stardustbigtab" style="display:none">Stardust</button>
+        <button id="automationbigtab" onClick="openTab('Automation')" class="optionsbigtab" style="display:none">Automation</button>
+      </div>
+      <div class="tab" id="Main">                                                                     <!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
+        <div class="mainNavigation globalnavigation" align="center">
+          <button class="tabtier2" onClick="openMainTab('tabAxis')" id="mainaxisButton">Axis</button>
+          <button class="tabtier2" onClick="openMainTab('tabMasteries')" id="masteriesButton" style="display:none">Masteries</button>
+          <button class="tabtier2" onClick="openMainTab('tabSupernova')" id="supernovaButton" style="display:none">Supernova</button>
+        </div>
+        <div class="mainTab" id="tabAxis">
+          <button class="maxaxisbutton" onClick="buyMaxAxis()">Buy Max Axis</button><br>
+          <table><tr>                                                                                   <!-- Axis are arranged as a table so that they are aligned -->
+            <td><button class="axisbutton" onClick="buyAxis('X')" id="XAxisButton">X Axis (<span id="XAxisAmount">0</span>)<br>Exotic matter gain is <span id="XAxisEffect">2</span>x faster<br>Cost: <span id="XAxisCost">10</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('Y')" id="YAxisButton" style="display:none">Y Axis (<span id="YAxisAmount">0</span>)<br>Increase X axis effect by +<span id="YAxisEffect">0.1</span>x<br>Cost: <span id="YAxisCost">100</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('Z')" id="ZAxisButton" style="display:none">Z Axis (<span id="ZAxisAmount">0</span>)<br>Exotic matter gain is <span id="ZAxisEffect">1</span>x faster (based on exotic matter)<br>Cost: <span id="ZAxisCost">10 K</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('W')" id="WAxisButton" style="display:none">W Axis (<span id="WAxisAmount">0</span>)<br>Exotic matter gain is <span id="WAxisEffect">1</span>x faster (based on time played)<br>Cost: <span id="WAxisCost">1 M</span></button></td>
+          </tr><tr>
+            <td><button class="axisbutton" onClick="buyAxis('V')" id="VAxisButton" style="display:none">V Axis (<span id="VAxisAmount">0</span>)<br>All axis are <span id="VAxisEffect">1</span>x cheaper<br>Cost: <span id="VAxisCost">100 Qt</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('U')" id="UAxisButton" style="display:none">U Axis (<span id="UAxisAmount">0</span>)<br>Stardust gain is multiplied by <span id="UAxisEffect">1.2</span> (based on stardust)<br>Cost: <span id="UAxisCost">1e35</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('T')" id="TAxisButton" style="display:none">T Axis (<span id="TAxisAmount">0</span>)<br>Exotic matter gain is <span id="TAxisEffect">1</span>x faster (based on total axis)<br>Cost: <span id="TAxisCost">1e50</span></button></td>
+            <td><button class="axisbutton" onClick="buyAxis('S')" id="SAxisButton" style="display:none">S Axis (<span id="SAxisAmount">0</span>)<br>Exotic matter gain is raised to the power of <span id="SAxisEffect">1</span><br>Cost: <span id="SAxisCost">1e120</span></button></td>
+          </tr></table>
+          <progress class="progressbar" id="progressBar" value="0" min="0" max="0"></progress><br><span id="progress">Loading game...</span>
+        </div>
+        <div class="mainTab" id="tabMasteries" style="display:none">
+          <p>You have <span id="masteryPowerDisplay" class="masterytext">0</span> mastery power.<br>
+          You are getting <span id="masteryPowerPerSec" class="masterytext">0</span> mastery power per second.</p>
+          <table><tr><td><button class="masterybutton" id="Mastery11Button" onClick="toggleMastery(11)">Exotic matter gain is <span id="Mastery11Effect">0</span>x faster</button></td>
+          <td><button class="masterybutton" id="Mastery12Button" onClick="toggleMastery(12)">Axis are <span id="Mastery12Effect">0</span>x cheaper</button></td></tr></table><br>
+          <table id="MasteryRow2"><tr><td><button class="masterybutton" id="Mastery21Button" onClick="toggleMastery(21)">Multiply the X Axis effect by <span id="Mastery21Effect">0</span>x</button></td>
+          <td><button class="masterybutton" id="Mastery22Button" onClick="toggleMastery(22)">Multiply the Y Axis effect by <span id="Mastery22Effect">0</span>x</button></td></tr></table><br>
+          <table id="MasteryRow3"><tr><td><button class="masterybutton" id="Mastery31Button" onClick="toggleMastery(31)">Gain <span id="Mastery31Effect">0</span> free Z Axis that do not increase the cost</button></td>
+          <td><button class="masterybutton" id="Mastery32Button" onClick="toggleMastery(32)">Gain <span id="Mastery32Effect">0</span> free W Axis that do not increase the cost</button></td></tr></table><br>
+          <table id="MasteryRow4"><tr><td><button class="masterybutton" id="Mastery41Button" onClick="toggleMastery(41)">The first Mastery in the first three rows has its effect increased by <span id="Mastery41Effect">0</span>%</button></td>
+          <td><button class="masterybutton" id="Mastery42Button" onClick="toggleMastery(42)">Stardust gain is multiplied by <span id="Mastery42Effect"></button></td>
+          <td><button class="masterybutton" id="Mastery43Button" onClick="toggleMastery(43)">The second Mastery in the first three rows has its effect increased by <span id="Mastery43Effect">0</span>%</button></td></table><br>
+          <table id="MasteryRow5"><tr><td><button class="masterybutton" id="Mastery51Button" onClick="toggleMastery(51)">Gain <span id="Mastery51Effect">0</span> free X Axis</button></td>
+          <td><button class="masterybutton" id="Mastery52Button" onClick="toggleMastery(52)">The effects of first row Masteries are raised to the power of <span id="Mastery52Effect">0</span></button></td></table><br>
+          <table id="MasteryRow6"><tr><td><button class="masterybutton" id="Mastery61Button" onClick="toggleMastery(61)">Dark X Axis is <span id="Mastery61Effect">0</span>% stronger</button></td>
+          <td><button class="masterybutton" id="Mastery62Button" onClick="toggleMastery(62)">Dark axis costs are raised to the power of <span id="Mastery62Effect">0</span></button></td>
+          <td><button class="masterybutton" id="Mastery63Button" onClick="toggleMastery(63)">Reduce the dark star cost by <span id="Mastery63Effect">0</span></span></button></td></tr></table><br>
+          <table id="MasteryRow7"><tr><td><button class="masterybutton" id="Mastery71Button" onClick="toggleMastery(71)">Energy increases <span id="Mastery71Effect">0</span>x faster</button></td>
+          <td><button class="masterybutton" id="Mastery72Button" onClick="toggleMastery(72)">Energy effects are raised ^<span id="Mastery72Effect">0</span></button></td></tr></table><br>
+          <table id="MasteryRow8"><tr><td><button class="masterybutton" id="Mastery81Button" onClick="toggleMastery(81)">Mastery power gain is multiplied by <span id="Mastery81Effect">0</span> (increased by X axis)</button></td>
+          <td><button class="masterybutton" id="Mastery82Button" onClick="toggleMastery(82)">Mastery power gain is multiplied by <span id="Mastery82Effect">0</span> (increased by exotic matter)</button></td>
+          <td><button class="masterybutton" id="Mastery83Button" onClick="toggleMastery(83)">Mastery power gain is multiplied by <span id="Mastery83Effect">0</span> (increased by dark matter)</button></td>
+          <td><button class="masterybutton" id="Mastery84Button" onClick="toggleMastery(84)">Mastery power gain is multiplied by <span id="Mastery84Effect">0</span> (increased by stardust)</button></td>
+          <td><button class="masterybutton" id="Mastery85Button" onClick="toggleMastery(85)">Add <span id="Mastery85Effect">0</span> to the base mastery power gain exponent<br><span class="small" id="Mastery85Approx"></span></button></td></tr></table>
+          <table id="MasteryRow9"><tr><td><button class="masterybutton" id="Mastery91Button" onClick="toggleMastery(91)">The Masteries in the row above are <span id="Mastery91Effect">0</span>% stronger (increases over time)</button></td>
+          <td><button class="masterybutton" id="Mastery92Button" onClick="toggleMastery(92)">The Masteries in the row above are <span id="Mastery92Effect">0</span>% stronger (decreases over time)</button></td></tr></table><br>
+        </div>
+        <div class="mainTab" id="tabSupernova" style="display:none">
+          <div class="supernovadiv" id="EMSupernovaDiv">
+            <h2 class="matterlayertext">EM Supernova</h2>
+            <button onClick="supernova(1)" id="EMSupernovaCharges">X / X</button>
+            <p>Activating this Supernova will instantly give you <span class="matterlayertext" id="EMSupernovaReward">0</span> exotic matter (based on exotic matter per second)</p>
+            <button class="supernovaupg" onClick="upgradeSupernova(0,0)">Add 1 max charge to this Supernova<br>Cost: <span id="EMSupernovaCost1">0</span> exotic matter</button>
+            <button class="supernovaupg" onClick="upgradeSupernova(0,1)">Increase the reward of this Supernova<br>Cost: <span id="EMSupernovaCost2">0</span> exotic matter</button>
+          </div>
+          <div class="supernovadiv" id="KnowledgeSupernovaDiv">
+            <h2 class="masterytext">Knowledge Supernova</h2>
+            <div id="Supernova2Locked"><button onClick="unlockSupernova(2)" id="UnlockSupernova2"></button></div>
+            <div id="Supernova2Unlocked">
+              <button onClick="supernova(2)" id="KnowledgeSupernovaCharges">X / X</button>
+              <p>Activating this Supernova will instantly give you <span class="masterytext" id="KnowledgeSupernovaReward">0</span> mastery power (based on mastery power per second)</p>
+              <button class="supernovaupg" onClick="upgradeSupernova(1,0)">Add 1 max charge to this Supernova<br>Cost: <span id="KnowledgeSupernovaCost1">0</span> mastery power</button>
+              <button class="supernovaupg" onClick="upgradeSupernova(1,1)">Increase the reward of this Supernova<br>Cost: <span id="KnowledgeSupernovaCost2">0</span> mastery power</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab" id="Options" style="display:none">
+        <div class="optionsNavigation globalnavigation" align="center">
+          <button class="tabtier2" onClick="openOptionsTab('tabOptions')">Options</button>
+          <button class="tabtier2" onClick="openOptionsTab('Changelog')">Changelog</button>
+          <button class="tabtier2" onClick="openOptionsTab('How to play')">How to play</button>
+        </div>
+        <div class="optionsTab" id="tabOptions">
+          <table><tr>
+            <td><button class="optionsbutton" onClick="multitoggle('notation',['Alemaninc Ordinal','Double Logarithm','Engineering','Infinity','Logarithm','Mixed scientific','Scientific','Tetration'])">Notation: <span id="notationButton"></span></button></td>
+            <td><button class="optionsbutton" onClick="save()">Save</button></td>
+            <td><button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button></td>
+            <td><button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('offlineSpeedupLength',[1,5,10,30,60,300,3600])">Offline speedup length: <span id="offlineSpeedupLength"></span></button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('offlineSpeedupOn',['On','Weakened','Off'])">Offline speedup: <span id="offlineSpeedupOn"></span></button></td>
+          </tr><tr>
+            <td><button class="optionsbutton" onClick="load('import')">Import save</button></td>
+            <td><button class="optionsbutton" onClick="exportSave()">Export save</button></td>
+            <td><button class="optionsbutton" onClick="multitoggle('colortheme',['Default','Red','Green','Blue','Cyan','Magenta','Yellow','Light Gray','Dark Gray','Black'])">Theme: <span id="colortheme"></span></button></td>
+            <td><button class="optionsbutton" onClick="toggle('darkstarBulk')" id="darkstarBulkButton">Dark star bulk buy: <span id="darkstarBulk"></span></button></td>
+          </tr></table>
+        </div>
+        <div class="optionsTab" id="Changelog" style="display:none">
+          <h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
+          <h1>v1β.6 "But I <strike>don't</strike> want to grind!" (2022/06/08)</h1>
+          - QOL: Added option to weaken offline progress beyond 1 hour
+          <h1>v1β.5 "Mastery of Glitches" (2022/06/07)</h1>
+          - BUGFIX: NaN should no longer occur
+          <h1>v1β.4 "I give up." (2022/06/06)</h1>
+          - ANNOUNCEMENT: <b>The game will no longer display a permanent "Loading game..." screen. AleManInc will from now on do the responsible thing and test his updates locally.</b>
+          <h1>v1β.3 "The Useless Stat Breakdown" (2022/06/05)</h1>
+          - BUGFIX: Stat breakdown for mastery power formula exponent now shows the correct value<br>
+          - BUGFIX: Offline progress no longer exploitable by idling<br>
+          - INTERFACE: Horizontal scroll bar should no longer be present<br>
+          - INTERFACE: Stat breakdown has different layout for compounding boosts such as axis<br>
+          - QOL: Added an option to disable offline progress
+          <h1>v1β.2 "True Radioactive Decay" (2022/06/05)</h1>
+          - BUGFIX: Forced stardust resets no longer reduce stardust<br>
+          - INTERFACE: Added gray and black themes
+          <h1>v1β.1 "Glitches all the way down" (2022/06/04)</h1>
+          - QOL: Export save should work better now<br>
+          - BUGFIX: Saves from alpha should no longer load into beta<br>
+          - BUGFIX: Axis autobuyer upgrade no longer breaks the game
+          <h1>v1β "Popular Whining" (2022/06/03)</h1>
+          - CONTENT: Added Masteries<br>
+          - CONTENT: Added 3 more Energies<br>
+          - CONTENT: Added 6 more rows of Stars<br>
+          - CONTENT: Added Supernova<br>
+          - BALANCE: A lot of things are now stronger but have steeper cost growth<br>
+          - BALANCE: A lot of things are now weaker but have slower cost growth<br>
+          - INTERFACE: Progress bar text is now on a separate line<br>
+          - INTERFACE: Center-aligned exotic matter text<br>
+          - INTERFACE: Added option to change the color theme<br>
+          - QOL: Tabs now glow if you can afford something in them (this affects parent tabs too)<br>
+          - QOL: Game should be less laggy on mobile devices and low end computers (added delta time)<br>
+          - QOL: Added "Buy Max Axis" and "Buy Max Dark Axis" buttons<br>
+          - QOL: Gaining dark stars (formerly Axioms) now bulk-buys as many dark stars as possible (can be disabled in Options)<br>
+          - QOL: Buying automation speed upgrades now bulk-buys<br>
+          - BUGFIX: Saving should work properly now (maybe)<br>
+          - STORY: Renamed nearly everything in the Tribute layer (including the layer name itself)<br>
+          - STORY: Added a story<br>
+          Current endgame: <span class="inf inf2.5e5"></span> exotic matter
+          <h1>v1α.2.1 "Smaller Adjustments" (2022/03/07)</h1>
+          - QOL: Engineering Notation more readable (dynamic floating point) (by Hedrauta)<br>
+          - QOL: Number shown on Tribute-Reset-Button more readable (by Hedrauta)
+          <h1>v1α.2 "Hedrautafunded?" (2022/02/27)</h1>
+          - BUGFIX: Fixed people's saves getting deleted (courtesy of Hedrauta)<br>
+          - BUGFIX: <i>Hopefully</i> fixed energy per second setting itself to NaN
+          <h1>v1α.1 "Crowdfunded" (2022/02/25)</h1>
+          - BUGFIX: Fixed save import (courtesy of Hedrauta)<br>
+          - INTERFACE: Added Engineering notation (courtesy of Hedrauta)<br>
+          - BALANCE: Axis autobuyer is a lot cheaper
+          <h1>v1α "Bugs Out, Bugs In" (<span style="color:#ff0000; text-shadow:0 0 5px #ff0000,0 0 20px #ff0000,0 0 45px #ff0000">22/2/22</span>)</h1>
+          - CONTENT: Added Energy<br>
+          - CONTENT: Rebalanced some values in Tributes<br>
+          - CONTENT: Gaining an axiom now does a tribute reset<br>
+          - CONTENT: Named the updates<br>
+          - CONTENT: Added a "How to play" section<br>
+          - CONTENT: Added a "Hidden Statistics" section<br>
+          - CONTENT: Added a "Stat Breakdown" section<br>
+          - BALANCE: Strengthened some Tribute Boosts, but increased some upgrades and unlock requirements<br>
+          - INTERFACE: Tab buttons are now center-aligned rather than left-aligned<br>
+          - INTERFACE: Added 4 new notations<br>
+          - INTERFACE: Moved changelog from Statistics to Options<br>
+          - QOL: Added export save (import does not currently work)<br>
+          - QOL: Wiping your save now requires a confirmation<br>
+          - BUGFIX: Fixed a bug that made exotic matter per second way too high in the first tick, allowing players to skip progression<br>
+          - BUGFIX: Fixed tribute reset button shaking<br>
+          - BUGFIX: Fixed exotic matter not resetting properly on tribute reset
+          <h1>v0.2 (2022/01/29)</h1>
+          - Added Dark Matter<br>
+          - Added Axioms<br>
+          - Finished Tribute Upgrades<br>
+          Current endgame: 1e65 tributes
+          <h1>v0.1.1 (2022/01/11)</h1>
+          - Added a code snippet that automatically fixes the game if for some reason your exotic matter becomes "NaN".
+          <h1>v0.1 (2022/01/11)</h1>
+          - Added Tribute Upgrades<br>
+          - Added Stars<br>
+          - Added V, U, T, S Axis<br>
+          - Added automation<br>
+          - Added more statistics<br>
+          - Added offline progress<br>
+          - Made W Axis effect slightly stronger (added 15 minutes to the timer)<br>
+          Unfortunately, saves did not transfer to this version and caused a NaN error.<br>
+          Current endgame: 1e23 (100 Sx) tributes
+          <h1>v0 (2022/01/05)</h1>
+          Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts<br><br>
+          Note: Dates use the International dating system of YYYY/MM/DD.
+        </div>
+        <div class="optionsTab" id="How to play" style="display:none">
+          <div class="navigationtier3 globalnavigation">
+            <button class="tabtier3" id="HTPBExoticMatter" onClick="openHTP('HTPDExoticMatter')">Exotic Matter</button>
+            <button class="tabtier3" id="HTPBMasteries" onClick="openHTP('HTPDMasteries')">Masteries</button>
+            <button class="tabtier3" id="HTPBStardust" onClick="openHTP('HTPDStardust')">Stardust</button>
+            <button class="tabtier3" id="HTPBStars" onClick="openHTP('HTPDStars')">Stars</button>
+            <button class="tabtier3" id="HTPBDarkMatter" onClick="openHTP('HTPDDarkMatter')">Dark Matter</button>
+            <button class="tabtier3" id="HTPBEnergy" onClick="openHTP('HTPDEnergy')">Energy</button>
+            <button class="tabtier3" id="HTPBSupernova" onClick="openHTP('HTPDSupernova')">Supernova</button>
+          </div>
+          <div class="htpTab" id="HTPDExoticMatter"><h3>Exotic Matter</h3><p>At the start of the game, wait for your exotic matter to go up and then buy axis. There isn't much more to this feature - however, if you feel that progress is slowing down, you should probably check your Mastery setup - some Masteries become more or less efficient as you progress, but the ones in the first row should be toggled often!</p></div>
+          <div class="htpTab" id="HTPDMasteries" style="display:none"><h3>Masteries</h3><p>In Masteries, you can pick one of two upgrades in each row. These upgrades grow in power based on your Mastery Power, which increases over time based on your exotic matter.</p><p>You can switch these Masteries at any time, but this will reset your Mastery Power back to 0 and it will take time to build back up.</p><p>Initially you only have one row of Masteries unlocked, but you will unlock more as you progress.</p><p>Masteries persist through all soft resets, but Mastery Power does not.</p></div>
+          <div class="htpTab" id="HTPDStardust" style="display:none"><h3>Stardust</h3><p>When you reach <span class="inf inf22"></span> exotic matter, you will unlock the option to reset your progress in exchange for Stardust. Stardust gives you boosts depending on how many you have, and it can also be spent on upgrades.</p><p>However, stardust is a static prestige layer, meaning that the more you have, the more exotic matter you need to reach to get more.</p></div>
+          <div class="htpTab" id="HTPDStars" style="display:none"><h3>Stars</h3><p>Stars are a feature where you can buy upgrades with Stars, which increase in cost when you buy one.</p><p>Depending on how many Stars you have, you can only pick Stars from one row, not the whole board.</p></div>
+          <div class="htpTab" id="HTPDDarkMatter" style="display:none"><h3>Dark Matter</h3><p>Dark Matter is a new type of matter. It is generated by dark axis instead of normal axis, and for every 4 dark axis bought you get a normal axis.</p><p>If you get enough dark axis, you can reset your dark matter to gain an Axiom, which boosts dark matter and a specific dark axis.</p></div>
+          <div class="htpTab" id="HTPDEnergy" style="display:none"><h3>Energy</h3><p>In Energy there are six types of energy, each boosting a different resource. Energy increases exponentially until it reaches its respective resource, at what point the resource is boosted.</p></div>
+          <div class="htpTab" id="HTPDSupernova" style="display:none"><h3>Supernova</h3><p>A Supernova is a powerful boost that can be activated during a run, granting a large quantity of a resource but not affecting its production.</p><p>They are only replenished when doing a reset, so their use should be planned wisely.</p></div>
+        </div>
+      </div>
+      <div class="tab" id="Statistics" style="display:none">
+        <div class="statisticsNavigation globalnavigation" align="center">
+          <button class="tabtier2" onClick="openStatisticsTab('Main Statistics')">Statistics</button>
+          <button class="tabtier2" onClick="openStatisticsTab('Hidden Statistics')">Hidden Statistics</button>
+          <button class="tabtier2" onClick="openStatisticsTab('Stat Breakdown')">Stat Breakdown</button>
+        </div>
+        <div class="statisticsTab" id="Main Statistics">
+          <p>You have played for <span id="timePlayed">0 seconds</span> <span class="small"><span id="truetimePlayed">0 seconds</span> accounting for tickspeed</span><br>You have made a total of <span id="totalExoticMatter">0</span> exotic matter<p>
+          <p id="stardustStatistics">You have spent <span id="timeThisStardustReset">0 seconds</span> in this Stardust reset <span class="small"><span id="truetimeThisStardustReset">0 seconds</span> accounting for tickspeed</span><br>Your fastest Stardust reset is <span id="fastestStardustReset">100 years</span><br>You have made <span id="exoticMatterThisStardustReset">0</span> exotic matter this stardust reset</p>
+          <p id="wormholeStatistics">You have spent <span id="timeThisWormholeReset">0 seconds</span> in this Wormhole reset <span class="small"><span id="truetimeThisWormholeReset">0 seconds</span> accounting for tickspeed</span><br>Your fastest Wormhole reset is <span id="fastestWormholeReset">100 years</span><br>You have made <span id="exoticMatterThisWormholeReset">0</span> exotic matter this wormhole reset</p>
+        </div>
+        <div class="statisticsTab" id="Hidden Statistics" style="display:none">
+          <table class="hiddenstattable" style="border-spacing: 0">
+            <tr id="hiddenstatrowAxisAutobuyerUpgrades"><td class="td40">Axis Autobuyer Upgrades</td><td class="td40" id="hiddenstatAxisAutobuyerUpgrades">undefined</td></tr>
+            <tr id="hiddenstatrowAxisScaling"><td class="td40">Axis Scaling Start</td><td class="td40" id="hiddenstatAxisScaling">undefined</td></tr>
+            <tr id="hiddenstatrowAxisSuperscaling"><td class="td40">Axis Superscaling Start</td><td class="td40" id="hiddenstatAxisSuperscaling">undefined</td></tr>
+            <tr id="hiddenstatrowDarkAxisScalingStart"><td class="td40">Dark Axis Scaling Start</td><td class="td40"><span id="hiddenstatDarkAxisScalingStart">undefined</span></td></tr>
+            <tr id="hiddenstatrowDarkAxisSuperscalingStart"><td class="td40">Dark Axis Superscaling Start</td><td class="td40" id="hiddenstatDarkAxisSuperscalingStart">undefined</td></tr>
+            <tr id="hiddenstatrowDeltaTime"><td class="td40">Delta Time</td><td class="td40" id="hiddenstatDeltaTime">undefined</td></tr>
+            <tr id="hiddenstatrowStardustResets"><td class="td40">Stardust Resets</td><td class="td40" id="hiddenstatStardustResets">undefined</td></tr>
+            <tr id="hiddenstatrowTotalAxis"><td class="td40">Total Axis</td><td class="td40" id="hiddenstatTotalAxis">undefined</td></tr>
+            <tr id="hiddenstatrowTotalDarkAxis"><td class="td40">Total Dark Axis</td><td class="td40" id="hiddenstatTotalDarkAxis">undefined</span></td></tr>
+          </table>
+          <p>More statistics appear the further you progress!</p>
+        </div>
+        <div class="statisticsTab" id="Stat Breakdown" style="display:none">
+          <div class="navigationtier3 globalnavigation" align="center">
+            <button class="tabtier3" id="SSBBAxisCostReduction" onClick="openSSB('SSBDAxisCostReduction')">Axis Cost Reduction</button>                 <!-- 8 -->
+            <button class="tabtier3" id="SSBBAxisEffects" onClick="openSSB('SSBDAxisEffects')">Axis Effects</button>                                    <!-- 5 -->
+            <button class="tabtier3" id="SSBBDarkAxisCostReduction" onClick="openSSB('SSBDDarkAxisCostReduction')">DarkAxisCostReduction</button>       <!-- 9 -->
+            <button class="tabtier3" id="SSBBDarkAxisEffects" onClick="openSSB('SSBDDarkAxisEffects')">Dark Axis Effects</button>                       <!-- 7 -->
+            <button class="tabtier3" id="SSBBDarkMatter" onClick="openSSB('SSBDDarkMatter')">Dark Matter</button>                                       <!-- 3 -->
+            <button class="tabtier3" id="SSBBEnergy" onClick="openSSB('SSBDEnergy')">Energy</button>                                                    <!-- 10 -->
+            <button class="tabtier3" id="SSBBExoticMatter" onClick="openSSB('SSBDExoticMatter')">Exotic Matter</button>                                 <!-- 1 -->
+            <button class="tabtier3" id="SSBBFreeAxis" onClick="openSSB('SSBDFreeAxis')">Free Axis</button>                                             <!-- 6 -->
+            <button class="tabtier3" id="SSBBMasteryPower" onClick="openSSB('SSBDMasteryPower')">Mastery Power</button>                                 <!-- 4 -->
+            <button class="tabtier3" id="SSBBStardust" onClick="openSSB('SSBDStardust')">Stardust</button>                                              <!-- 2 -->
+            <button class="tabtier3" id="SSBBTickspeed" onClick="openSSB('SSBDTickspeed')">Tickspeed</button>                                           <!-- 11 -->
+          </div>
+          <div class="ssbTab" id="SSBDExoticMatter">
+            <table style="border-spacing:0">
+              <tr id="StatBreakdown1RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+              <tr id="StatBreakdown1RBaseGain"><td class="td40">Base Gain</td><td class="td25">1</td><td class="td25">1</td></tr>
+              <tr id="StatBreakdown1RXAxis"><td class="td40">X Axis</td><td class="td25" id="StatBreakdown1XAxis">undefined</td><td class="td25" id="StatBreakdown1XAxisT">undefined</td></tr>
+              <tr id="StatBreakdown1RZAxis"><td class="td40">Z Axis</td><td class="td25" id="StatBreakdown1ZAxis">undefined</td><td class="td25" id="StatBreakdown1ZAxisT">undefined</td></tr>
+              <tr id="StatBreakdown1RWAxis"><td class="td40">W Axis</td><td class="td25" id="StatBreakdown1WAxis">undefined</td><td class="td25" id="StatBreakdown1WAxisT">undefined</td></tr>
+              <tr id="StatBreakdown1RTAxis"><td class="td40">T Axis</td><td class="td25" id="StatBreakdown1TAxis">undefined</td><td class="td25" id="StatBreakdown1TAxisT">undefined</td></tr>
+              <tr id="StatBreakdown1RMastery11"><td class="td40">Mastery 11</td><td class="td25" id="StatBreakdown1Mastery11">undefined</td><td class="td25" id="StatBreakdown1Mastery11T">undefined</td></tr>
+              <tr id="StatBreakdown1RStardustBoost1"><td class="td40">Stardust Boost 1</td><td class="td25" id="StatBreakdown1StardustBoost1">undefined</td><td class="td25" id="StatBreakdown1StardustBoost1T">undefined</td></tr>
+              <tr id="StatBreakdown1RStar11"><td class="td40">Star Upgrade 11</td><td class="td25" id="StatBreakdown1Star11">undefined</td><td class="td25" id="StatBreakdown1Star11T">undefined</td></tr>
+              <tr id="StatBreakdown1RStar12"><td class="td40">Star Upgrade 12</td><td class="td25" id="StatBreakdown1Star12">undefined</td><td class="td25" id="StatBreakdown1Star12T">undefined</td></tr>
+              <tr id="StatBreakdown1RStar13"><td class="td40">Star Upgrade 13</td><td class="td25" id="StatBreakdown1Star13">undefined</td><td class="td25" id="StatBreakdown1Star13T">undefined</td></tr>
+              <tr id="StatBreakdown1RStar14"><td class="td40">Star Upgrade 14</td><td class="td25" id="StatBreakdown1Star14">undefined</td><td class="td25" id="StatBreakdown1Star14T">undefined</td></tr>
+              <tr id="StatBreakdown1RStar42"><td class="td40">Star Upgrade 42</td><td class="td25" id="StatBreakdown1Star42">undefined</td><td class="td25" id="StatBreakdown1Star42T">undefined</td></tr>
+              <tr id="StatBreakdown1RSAxis"><td class="td40">S Axis</td><td class="td25" id="StatBreakdown1SAxis">undefined</td><td class="td25" id="StatBreakdown1SAxisT">undefined</td></tr>
+              <tr id="StatBreakdown1RStar41"><td class="td40">Star Upgrade 41</td><td class="td25" id="StatBreakdown1Star41">undefined</td><td class="td25" id="StatBreakdown1Star41T">undefined</td></tr>
+              <tr id="StatBreakdown1RDarkEnergy"><td class="td40">Dark Energy</td><td class="td25" id="StatBreakdown1DarkEnergy">undefined</td><td class="td25" id="StatBreakdown1DarkEnergyT">undefined</td></tr>
+              <tr id="StatBreakdown1ROfflineSpeedup"><td class="td40">Offline Speedup</td><td class="td25" id="StatBreakdown1OfflineSpeedup">undefined</td><td class="td25" id="StatBreakdown1OfflineSpeedupT">undefined</td></tr>
+              <tr id="StatBreakdown1RTickspeed"><td class="td40">Tickspeed</td><td class="td25" id="StatBreakdown1Tickspeed">undefined</td><td class="td25" id="StatBreakdown1TickspeedT">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDStardust" style="display:none">
+            <table style="border-spacing:0">
+              <tr id="StatBreakdown2RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+              <tr id="StatBreakdown2RBaseGain"><td class="td40">Base Gain</td><td class="td25" id="StatBreakdown2BaseGain">undefined</td><td class="td25" id="StatBreakdown2BaseGainT">undefined</td></tr>
+              <tr id="StatBreakdown2RMastery42"><td class="td40">Mastery 42</td><td class="td25" id="StatBreakdown2Mastery42">undefined</td><td class="td25" id="StatBreakdown2Mastery42T">undefined</td></tr>
+              <tr id="StatBreakdown2RUAxis"><td class="td40">U Axis</td><td class="td25" id="StatBreakdown2UAxis">undefined</td><td class="td25" id="StatBreakdown2UAxisT">undefined</td></tr>
+              <tr id="StatBreakdown2RStardustBoost4"><td class="td40">Stardust Boost 4</td><td class="td25" id="StatBreakdown2StardustBoost4">undefined</td><td class="td25" id="StatBreakdown2StardustBoost4T">undefined</td></tr>
+              <tr id="StatBreakdown2RStar44"><td class="td40">Star Upgrade 44</td><td class="td25" id="StatBreakdown2Star44">undefined</td><td class="td25" id="StatBreakdown2Star44T">undefined</td></tr>
+              <tr id="StatBreakdown2RStar43"><td class="td40">Star Upgrade 43</td><td class="td25" id="StatBreakdown2Star43">undefined</td><td class="td25" id="StatBreakdown2Star43T">undefined</td></tr>
+              <tr id="StatBreakdown2RStelliferousEnergy"><td class="td40">Stelliferous Energy</td><td class="td25" id="StatBreakdown2StelliferousEnergy">undefined</td><td class="td25" id="StatBreakdown2StelliferousEnergyT">undefined</td></tr>
+              <tr id="StatBreakdown2RUnspentStardust"><td class="td40">Unspent Stardust</td><td class="td25" id="StatBreakdown2UnspentStardust">undefined</td><td class="td25" id="StatBreakdown2UnspentStardustT">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDDarkMatter" style="display:none">
+            <table style="border-spacing:0">
+              <tr id="StatBreakdown3RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+              <tr id="StatBreakdown3RBaseGain"><td class="td40">Base Gain</td><td class="td25" id="StatBreakdown3BaseGain">undefined</td><td class="td25" id="StatBreakdown3BaseGainT">undefined</td></tr>
+              <tr id="StatBreakdown3RDarkXAxis"><td class="td40">Dark X Axis</td><td class="td25" id="StatBreakdown3DarkXAxis">undefined</td><td class="td25" id="StatBreakdown3DarkXAxisT">undefined</td></tr>
+              <tr id="StatBreakdown3RDarkZAxis"><td class="td40">Dark Z Axis</td><td class="td25" id="StatBreakdown3DarkZAxis">undefined</td><td class="td25" id="StatBreakdown3DarkZAxisT">undefined</td></tr>
+              <tr id="StatBreakdown3RDarkUAxis"><td class="td40">Dark U Axis</td><td class="td25" id="StatBreakdown3DarkUAxis">undefined</td><td class="td25" id="StatBreakdown3DarkUAxisT">undefined</td></tr>
+              <tr id="StatBreakdown3RDarkTAxis"><td class="td40">Dark T Axis</td><td class="td25" id="StatBreakdown3DarkTAxis">undefined</td><td class="td25" id="StatBreakdown3DarkTAxisT">undefined</td></tr>
+              <tr id="StatBreakdown3RGravitationalEnergy"><td class="td40">Gravitational Energy</td><td class="td25" id="StatBreakdown3GravitationalEnergy">undefined</td><td class="td25" id="StatBreakdown3GravitationalEnergyT">undefined</td></tr>
+              <tr id="StatBreakdown3RDarkSAxis"><td class="td40">Dark S Axis</td><td class="td25" id="StatBreakdown3DarkSAxis">undefined</td><td class="td25" id="StatBreakdown3DarkSAxisT">undefined</td></tr>
+              <tr id="StatBreakdown3ROfflineSpeedup"><td class="td40">Offline Speedup</td><td class="td25" id="StatBreakdown3OfflineSpeedup">undefined</td><td class="td25" id="StatBreakdown3OfflineSpeedupT">undefined</td></tr>
+              <tr id="StatBreakdown3RTickspeed"><td class="td40">Tickspeed</td><td class="td25" id="StatBreakdown3Tickspeed">undefined</td><td class="td25" id="StatBreakdown3TickspeedT">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDMasteryPower" style="display:none">
+            <table style="border-spacing:0">
+              <tr><th class="td40" colspan="3"><u>Mastery Power</u></th></tr>
+              <tr id="StatBreakdown4RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+              <tr id="StatBreakdown4RBaseGain"><td class="td40">Base Gain</td><td class="td25" id="StatBreakdown4BaseGain">undefined</td><td class="td25" id="StatBreakdown4BaseGainT">undefined</td></tr>
+              <tr id="StatBreakdown4RDarkWAxis"><td class="td40">Dark W Axis</td><td class="td25" id="StatBreakdown4DarkWAxis">undefined</td><td class="td25" id="StatBreakdown4DarkWAxisT">undefined</td></tr>
+              <tr id="StatBreakdown4RStardustBoost7"><td class="td40">Stardust Boost 7</td><td class="td25" id="StatBreakdown4StardustBoost7">undefined</td><td class="td25" id="StatBreakdown4StardustBoost7T">undefined</td></tr>
+              <tr id="StatBreakdown4RMastery81"><td class="td40">Mastery 81</td><td class="td25" id="StatBreakdown4Mastery81">undefined</td><td class="td25" id="StatBreakdown4Mastery81T">undefined</td></tr>
+              <tr id="StatBreakdown4RMastery82"><td class="td40">Mastery 82</td><td class="td25" id="StatBreakdown4Mastery82">undefined</td><td class="td25" id="StatBreakdown4Mastery82T">undefined</td></tr>
+              <tr id="StatBreakdown4RMastery83"><td class="td40">Mastery 83</td><td class="td25" id="StatBreakdown4Mastery83">undefined</td><td class="td25" id="StatBreakdown4Mastery83T">undefined</td></tr>
+              <tr id="StatBreakdown4RMastery84"><td class="td40">Mastery 84</td><td class="td25" id="StatBreakdown4Mastery84">undefined</td><td class="td25" id="StatBreakdown4Mastery84T">undefined</td></tr>
+              <tr id="StatBreakdown4RNeuralEnergy"><td class="td40">Neural Energy</td><td class="td25" id="StatBreakdown4NeuralEnergy">undefined</td><td class="td25" id="StatBreakdown4NeuralEnergyT">undefined</td></tr>
+              <tr id="StatBreakdown4ROfflineSpeedup"><td class="td40">Offline Speedup</td><td class="td25" id="StatBreakdown4OfflineSpeedup">undefined</td><td class="td25" id="StatBreakdown4OfflineSpeedupT">undefined</td></tr>
+              <tr id="StatBreakdown4RTickspeed"><td class="td40">Tickspeed</td><td class="td25" id="StatBreakdown4Tickspeed">undefined</td><td class="td25" id="StatBreakdown4TickspeedT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0">
+              <tr><th class="td40" colspan="3"><u>Base Gain Exponent</u></th></tr>
+              <tr id="StatBreakdown4.1RHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown4.1RBase"><td class="td40">Base</td><td class="td25" id="StatBreakdown4.1Base">undefined</td><td class="td25" id="StatBreakdown4.1BaseT">undefined</td></tr>
+              <tr id="StatBreakdown4.1RMastery85"><td class="td40">Mastery 85</td><td class="td25" id="StatBreakdown4.1Mastery85">undefined</td><td class="td25" id="StatBreakdown4.1Mastery85T">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDAxisEffects" style="display:none">
+            <table style="border-spacing:0" id="SSB5XTable">
+              <tr><th class="td40" colspan="3"><u>X Axis</u></th></tr>
+              <tr id="StatBreakdown5XRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5XRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5XBaseEffect">2</td><td class="td25" id="StatBreakdown5XBaseEffectT">2</td></tr>
+              <tr id="StatBreakdown5XRYAxis"><td class="td40">Y Axis</td><td class="td25" id="StatBreakdown5XYAxis">undefined</td><td class="td25" id="StatBreakdown5XYAxisT">undefined</td></tr>
+              <tr id="StatBreakdown5XRMastery21"><td class="td40">Mastery 21</td><td class="td25" id="StatBreakdown5XMastery21">undefined</td><td class="td25" id="StatBreakdown5XMastery21T">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5YTable">
+              <tr><th class="td40" colspan="3"><u>Y Axis</u></th></tr>
+              <tr id="StatBreakdown5YRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5YRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5YBaseEffect">0.1</td><td class="td25" id="StatBreakdown5YBaseEffectT">0.1</td></tr>
+              <tr id="StatBreakdown5YRStardustBoost2"><td class="td40">Stardust Boost 2</td><td class="td25" id="StatBreakdown5YStardustBoost2">undefined</td><td class="td25" id="StatBreakdown5YStardustBoost2T">undefined</td></tr>
+              <tr id="StatBreakdown5YRMastery22"><td class="td40">Mastery 22</td><td class="td25" id="StatBreakdown5YMastery22">undefined</td><td class="td25" id="StatBreakdown5YMastery22T">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5ZTable">
+              <tr><th class="td40" colspan="3"><u>Z Axis</u></th></tr>
+              <tr id="StatBreakdown5ZRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5ZRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5ZBaseEffect">undefined</td><td class="td25" id="StatBreakdown5ZBaseEffectT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5WTable">
+              <tr><th class="td40" colspan="3"><u>W Axis</u></th></tr>
+              <tr id="StatBreakdown5WRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5WRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5WBaseEffect">undefined</td><td class="td25" id="StatBreakdown5WBaseEffectT">undefined</td></tr>
+              <tr id="StatBreakdown5WRStardustBoost3"><td class="td40">Stardust Boost 3</td><td class="td25" id="StatBreakdown5WStardustBoost3">undefined</td><td class="td25" id="StatBreakdown5WStardustBoost3T">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5VTable">
+              <tr><th class="td40" colspan="3"><u>V Axis</u></th></tr>
+              <tr id="StatBreakdown5VRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5VRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5VBaseEffect">3</td><td class="td25" id="StatBreakdown5VBaseEffectT">3</td></tr>
+              <tr id="StatBreakdown5VRStardustBoost8"><td class="td40">Stardust Boost 8</td><td class="td25" id="StatBreakdown5VStardustBoost8">undefined</td><td class="td25" id="StatBreakdown5VStardustBoost8T">undefined</td></tr>
+              <tr id="StatBreakdown5VRStar82"><td class="td40">Star 82</td><td class="td25" id="StatBreakdown5VStar82">undefined</td><td class="td25" id="StatBreakdown5VStar82T">undefined</td></tr>
+              <tr id="StatBreakdown5VRDarkVAxis"><td class="td40">Dark V Axis</td><td class="td25" id="StatBreakdown5VDarkVAxis">undefined</td><td class="td25" id="StatBreakdown5VDarkVAxisT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5UTable">
+              <tr><th class="td40" colspan="3"><u>U Axis</u></th></tr>
+              <tr id="StatBreakdown5URHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5URBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5UBaseEffect">undefined</td><td class="td25" id="StatBreakdown5UBaseEffectT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5TTable">
+              <tr><th class="td40" colspan="3"><u>T Axis</u></th></tr>
+              <tr id="StatBreakdown5TRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5TRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5TBaseEffect">undefined</td><td class="td25" id="StatBreakdown5TBaseEffectT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB5STable">
+              <tr><th class="td40" colspan="3"><u>S Axis</u></th></tr>
+              <tr id="StatBreakdown5SRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown5SRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown5SBaseEffect">1.025</td><td class="td25" id="StatBreakdown5SBaseEffectT">1.025</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDFreeAxis" style="display:none">
+            <table style="border-spacing:0" id="SSB6XTable">
+              <tr><th class="td40" colspan="3"><u>X Axis</u></th></tr>
+              <tr id="StatBreakdown6XRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6XRStar21"><td class="td40">Star 21</td><td class="td25" id="StatBreakdown6XStar21">undefined</td><td class="td25" id="StatBreakdown6XStar21T">undefined</td></tr>
+              <tr id="StatBreakdown6XRMastery51"><td class="td40">Mastery 51</td><td class="td25" id="StatBreakdown6XMastery51">undefined</td><td class="td25" id="StatBreakdown6XMastery51T">undefined</td></tr>
+              <tr id="StatBreakdown6XRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6XDarkMatter">undefined</td><td class="td25" id="StatBreakdown6XDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6XRSpatialEnergy"><td class="td40">Spatial Energy</td><td class="td25" id="StatBreakdown6XSpatialEnergy">undefined</td><td class="td25" id="StatBreakdown6XSpatialEnergyT">undefined</td></tr>
+              <tr id="StatBreakdown6XRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6XSoftcap">undefined</td><td class="td25" id="StatBreakdown6XSoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6YTable">
+              <tr><th class="td40" colspan="3"><u>Y Axis</u></th></tr>
+              <tr id="StatBreakdown6YRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6YRStar22"><td class="td40">Star 22</td><td class="td25" id="StatBreakdown6YStar22">undefined</td><td class="td25" id="StatBreakdown6YStar22T">undefined</td></tr>
+              <tr id="StatBreakdown6YRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6YDarkMatter">undefined</td><td class="td25" id="StatBreakdown6YDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6YRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6YSoftcap">undefined</td><td class="td25" id="StatBreakdown6YSoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6ZTable">
+              <tr><th class="td40" colspan="3"><u>Z Axis</u></th></tr>
+              <tr id="StatBreakdown6ZRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6ZRMastery31"><td class="td40">Mastery 31</td><td class="td25" id="StatBreakdown6ZMastery31">undefined</td><td class="td25" id="StatBreakdown6ZMastery31T">undefined</td></tr>
+              <tr id="StatBreakdown6ZRStar23"><td class="td40">Star 23</td><td class="td25" id="StatBreakdown6ZStar23">undefined</td><td class="td25" id="StatBreakdown6ZStar23T">undefined</td></tr>
+              <tr id="StatBreakdown6ZRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6ZDarkMatter">undefined</td><td class="td25" id="StatBreakdown6ZDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6ZRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6ZSoftcap">undefined</td><td class="td25" id="StatBreakdown6ZSoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6WTable">
+              <tr><th class="td40" colspan="3"><u>W Axis</u></th></tr>
+              <tr id="StatBreakdown6WRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6WRMastery32"><td class="td40">Mastery 32</td><td class="td25" id="StatBreakdown6WMastery32">undefined</td><td class="td25" id="StatBreakdown6WMastery32T">undefined</td></tr>
+              <tr id="StatBreakdown6WRStar24"><td class="td40">Star 24</td><td class="td25" id="StatBreakdown6WStar24">undefined</td><td class="td25" id="StatBreakdown6WStar24T">undefined</td></tr>
+              <tr id="StatBreakdown6WRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6WDarkMatter">undefined</td><td class="td25" id="StatBreakdown6WDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6WRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6WSoftcap">undefined</td><td class="td25" id="StatBreakdown6WSoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6VTable">
+              <tr><th class="td40" colspan="3"><u>V Axis</u></th></tr>
+              <tr id="StatBreakdown6VRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6VRStarUpgrade61"><td class="td40">Star Upgrade 61</td><td class="td25" id="StatBreakdown6VStarUpgrade61">undefined</td><td class="td25" id="StatBreakdown6VStarUpgrade61T">undefined</td></tr>
+              <tr id="StatBreakdown6VRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6VDarkMatter">undefined</td><td class="td25" id="StatBreakdown6VDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6VRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6VSoftcap">undefined</td><td class="td25" id="StatBreakdown6VSoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6UTable">
+              <tr><th class="td40" colspan="3"><u>U Axis</u></th></tr>
+              <tr id="StatBreakdown6URHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6URStarUpgrade62"><td class="td40">Star Upgrade 62</td><td class="td25" id="StatBreakdown6UStarUpgrade62">undefined</td><td class="td25" id="StatBreakdown6UStarUpgrade62T">undefined</td></tr>
+              <tr id="StatBreakdown6URDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6UDarkMatter">undefined</td><td class="td25" id="StatBreakdown6UDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6URSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6USoftcap">undefined</td><td class="td25" id="StatBreakdown6USoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6TTable">
+              <tr><th class="td40" colspan="3"><u>T Axis</u></th></tr>
+              <tr id="StatBreakdown6TRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6TRStarUpgrade63"><td class="td40">Star Upgrade 63</td><td class="td25" id="StatBreakdown6TStarUpgrade63">undefined</td><td class="td25" id="StatBreakdown6TStarUpgrade63T">undefined</td></tr>
+              <tr id="StatBreakdown6TRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6TDarkMatter">undefined</td><td class="td25" id="StatBreakdown6TDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6TRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6TSoftcap">undefined</td><td class="td25" id="StatBreakdown6TSoftcapT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB6STable">
+              <tr><th class="td40" colspan="3"><u>S Axis</u></th></tr>
+              <tr id="StatBreakdown6SRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown6SRStarUpgrade64"><td class="td40">Star Upgrade 64</td><td class="td25" id="StatBreakdown6SStarUpgrade64">undefined</td><td class="td25" id="StatBreakdown6SStarUpgrade64T">undefined</td></tr>
+              <tr id="StatBreakdown6SRDarkMatter"><td class="td40">Dark Matter</td><td class="td25" id="StatBreakdown6SDarkMatter">undefined</td><td class="td25" id="StatBreakdown6SDarkMatterT">undefined</td></tr>
+              <tr id="StatBreakdown6SRSoftcap"><td class="td40">Softcap (greater than normal axis)</td><td class="td25" id="StatBreakdown6SSoftcap">undefined</td><td class="td25" id="StatBreakdown6SSoftcapT">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDDarkAxisEffects" style="display:none">
+            <table style="border-spacing:0" id="SSB7XTable">
+              <tr><th class="td40" colspan="3"><u>Dark X Axis</u></th></tr>
+              <tr id="StatBreakdown7XRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7XRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7XBaseEffect">3</td><td class="td25" id="StatBreakdown7XBaseEffectT">3</td></tr>
+              <tr id="StatBreakdown7XRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7XDarkStars">undefined</td><td class="td25" id="StatBreakdown7XDarkStarsT">undefined</td></tr>
+              <tr id="StatBreakdown7XRMastery61"><td class="td40">Mastery 61</td><td class="td25" id="StatBreakdown7XMastery61">undefined</td><td class="td25" id="StatBreakdown7XMastery61T">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7YTable">
+              <tr><th class="td40" colspan="3"><u>Dark Y Axis</u></th></tr>
+              <tr id="StatBreakdown7YRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7YRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7YBaseEffect">4</td><td class="td25" id="StatBreakdown7YBaseEffectT">4</td></tr>
+              <tr id="StatBreakdown7YRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7YDarkStars">undefined</td><td class="td25" id="StatBreakdown7YDarkStarsT">undefined</td></tr>
+              <tr id="StatBreakdown7YRStar84"><td class="td40">Star 84</td><td class="td25" id="StatBreakdown7YStar84">undefined</td><td class="td25" id="StatBreakdown7YStar84T">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7ZTable">
+              <tr><th class="td40" colspan="3"><u>Dark Z Axis</u></th></tr>
+              <tr id="StatBreakdown7ZRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7ZRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7ZBaseEffect">4</td><td class="td25" id="StatBreakdown7ZBaseEffectT">undefined</td></tr>
+              <tr id="StatBreakdown7ZRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7ZDarkStars">undefined</td><td class="td25" id="StatBreakdown7ZDarkStarsT">undefined</td></tr>
+              <tr id="StatBreakdown7ZRStardustBoost6"><td class="td40">Stardust Boost 6</td><td class="td25" id="StatBreakdown7ZStardustBoost6">undefined</td><td class="td25" id="StatBreakdown7ZStardustBoost6T">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7WTable">
+              <tr><th class="td40" colspan="3"><u>Dark W Axis</u></th></tr>
+              <tr id="StatBreakdown7WRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7WRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7WBaseEffect">1.15</td><td class="td25" id="StatBreakdown7WBaseEffectT">1.15</td></tr>
+              <tr id="StatBreakdown7WRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7WDarkStars">undefined</td><td class="td25" id="StatBreakdown7WDarkStarsT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7VTable">
+              <tr><th class="td40" colspan="3"><u>Dark V Axis</u></th></tr>
+              <tr id="StatBreakdown7VRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7VRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7VBaseEffect">10</td><td class="td25" id="StatBreakdown7VBaseEffectT">10</td></tr>
+              <tr id="StatBreakdown7VRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7VDarkStars">undefined</td><td class="td25" id="StatBreakdown7VDarkStarsT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7UTable">
+              <tr><th class="td40" colspan="3"><u>Dark U Axis</u></th></tr>
+              <tr id="StatBreakdown7URHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7URBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7UBaseEffect">1.02</td><td class="td25" id="StatBreakdown7UBaseEffectT">1.02</td></tr>
+              <tr id="StatBreakdown7URDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7UDarkStars">undefined</td><td class="td25" id="StatBreakdown7UDarkStarsT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7TTable">
+              <tr><th class="td40" colspan="3"><u>Dark T Axis</u></th></tr>
+              <tr id="StatBreakdown7TRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7TRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7TBaseEffect">undefined</td><td class="td25" id="StatBreakdown7TBaseEffectT">undefined</td></tr>
+              <tr id="StatBreakdown7TRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7TDarkStars">undefined</td><td class="td25" id="StatBreakdown7TDarkStarsT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB7STable">
+              <tr><th class="td40" colspan="3"><u>Dark S Axis</u></th></tr>
+              <tr id="StatBreakdown7SRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown7SRBaseEffect"><td class="td40">Base Effect</td><td class="td25" id="StatBreakdown7SBaseEffect">1.01</td><td class="td25" id="StatBreakdown7SBaseEffectT">1.01</td></tr>
+              <tr id="StatBreakdown7SRDarkStars"><td class="td40">Dark Stars</td><td class="td25" id="StatBreakdown7SDarkStars">undefined</td><td class="td25" id="StatBreakdown7SDarkStarsT">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDAxisCostReduction" style="display:none">
+            <table style="border-spacing:0" id="SSB8DivisorTable">
+              <tr><th class="td40" colspan="3"><u>Divisor</u></th></tr>
+              <tr id="StatBreakdown8DiRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown8DiRMastery12"><td class="td40">Mastery 12</td><td class="td25" id="StatBreakdown8DiMastery12">undefined</td><td class="td25" id="StatBreakdown8DiMastery12T">undefined</td></tr>
+              <tr id="StatBreakdown8DiRVAxis"><td class="td40">V Axis</td><td class="td25" id="StatBreakdown8DiVAxis">undefined</td><td class="td25" id="StatBreakdown8DiVAxisT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB8ExponentTable">
+              <tr><th class="td40" colspan="3"><u>Exponent</u></th></tr>
+              <tr id="StatBreakdown8ExRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown8ExRStar81"><td class="td40">Star 81</td><td class="td25" id="StatBreakdown8ExStar81">undefined</td><td class="td25" id="StatBreakdown8ExStar81T">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDDarkAxisCostReduction" style="display:none">
+            <table style="border-spacing:0" id="SSB9DivisorTable">
+              <tr><th class="td40" colspan="3"><u>Divisor</u></th></tr>
+              <tr id="StatBreakdown9DiRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown9DiRDarkYAxis"><td class="td40">Dark Y Axis</td><td class="td25" id="StatBreakdown9DiDarkYAxis">undefined</td><td class="td25" id="StatBreakdown9DiDarkYAxisT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB9ExponentTable">
+              <tr><th class="td40" colspan="3"><u>Exponent</u></th></tr>
+              <tr id="StatBreakdown9ExRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown9ExRMastery62"><td class="td40">Mastery 62</td><td class="td25" id="StatBreakdown9ExMastery62">undefined</td><td class="td25" id="StatBreakdown9ExMastery62T">undefined</td></tr>
+              <tr id="StatBreakdown9ExRStar83"><td class="td40">Star 83</td><td class="td25" id="StatBreakdown9ExStar83">undefined</td><td class="td25" id="StatBreakdown9ExStar83T">undefined</td></tr>
+            </table>
+          </div>
+          <div class="ssbTab" id="SSBDEnergy" style="display:none">
+            <table style="border-spacing:0" id="SSB10SpeedTable">
+              <tr><th class="td40" colspan="3"><u>Gain Speed</u></th></tr>
+              <tr id="StatBreakdown10SpRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown10SpRMastery71"><td class="td40">Mastery 71</td><td class="td25" id="StatBreakdown10SpMastery71">undefined</td><td class="td25" id="StatBreakdown10SpMastery71T">undefined</td></tr>
+              <tr id="StatBreakdown10SpRMetaEnergy"><td class="td40">Meta Energy</td><td class="td25" id="StatBreakdown10SpMetaEnergy">undefined</td><td class="td25" id="StatBreakdown10SpMetaEnergyT">undefined</td></tr>
+              <tr id="StatBreakdown10SpRTickspeed"><td class="td40">Tickspeed</td><td class="td25" id="StatBreakdown10SpTickspeed">undefined</td><td class="td25" id="StatBreakdown10SpTickspeedT">undefined</td></tr>
+            </table><br><br><br>
+            <table style="border-spacing:0" id="SSB10EffectTable">
+              <tr><th class="td40" colspan="3"><u>Effect Multiplier</u></th></tr>
+              <tr id="StatBreakdown10EfRHeader"><th class="td40">Source</th><th class="td25">Effect</th><th class="td25">Total</th>
+              <tr id="StatBreakdown10EfRMastery72"><td class="td40">Mastery 72</td><td class="td25" id="StatBreakdown10EfMastery72">undefined</td><td class="td25" id="StatBreakdown10EfMastery72T">undefined</td></tr>
+            </table><br><br><br>
+          </div>
+          <div class="ssbTab" id="SSBDTickspeed" style="display:none">
+            <table style="border-spacing:0">
+              <tr id="StatBreakdown11RHeader"><th class="td40">Source</th><th class="td25">Multiplier</th><th class="td25">Total</th>
+              <tr id="StatBreakdown11RStar71"><td class="td40">Star 71</td><td class="td25" id="StatBreakdown11Star71">undefined</td><td class="td25" id="StatBreakdown11Star71T">undefined</td></tr>
+              <tr id="StatBreakdown11RStar72"><td class="td40">Star 72</td><td class="td25" id="StatBreakdown11Star72">undefined</td><td class="td25" id="StatBreakdown11Star72T">undefined</td></tr>
+              <tr id="StatBreakdown11RStar73"><td class="td40">Star 73</td><td class="td25" id="StatBreakdown11Star73">undefined</td><td class="td25" id="StatBreakdown11Star73T">undefined</td></tr>
+              <tr id="StatBreakdown11RStar74"><td class="td40">Star 74</td><td class="td25" id="StatBreakdown11Star74">undefined</td><td class="td25" id="StatBreakdown11Star74T">undefined</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="tab" id="Stardust" style="display:none">
+        <div class="stardustNavigation globalnavigation" align="center">
+          <button class="tabtier2" onClick="openStardustTab('Stardust Boosts')" id="StardustBoostButton">Stardust Boosts</button>
+          <button class="tabtier2" onClick="openStardustTab('Stars')" id="StarTabButton">Stars</button>
+          <button class="tabtier2" onClick="openStardustTab('Dark Matter')" id="DarkMatterButton">Dark Matter</button>
+          <button class="tabtier2" onClick="openStardustTab('Energy')" id="EnergyButton">Energy</button>
+        </div>
+        <div class="stardustTab" id="Stardust Boosts">
+          <u>Thanks to your Stardust:</u><br>
+          <table style="table-layout: fixed; width: 100vw">
+            <tr><td style="width:50vw"><span class="bigstardusttext">#1</span> Exotic matter gain is multiplied by <span id="StardustBoost1" class="stardustlayertext">1</span></td>
+            <td style="width:50vw"><span class="bigstardusttext">#2</span> Y axis is <span id="StardustBoost2" class="stardustlayertext">0</span>% stronger</td></tr>
+            <tr><td style="width:50vw" id="StardustBoost3Display"><span class="bigstardusttext">#3</span> W Axis is <span id="StardustBoost3" class="stardustlayertext">1</span>% stronger</td>
+            <td style="width:50vw" id="StardustBoost4Display"><span class="bigstardusttext">#4</span> Multiply stardust gain by (mastery power)^<span id="StardustBoost4" class="stardustlayertext">1</span></td></tr>
+            <tr><td style="width:50vw" id="StardustBoost5Display"><span class="bigstardusttext">#5</span> X Axis base price ratio is divided by <span id="StardustBoost5" class="stardustlayertext">1</td>
+            <td style="width:50vw" id="StardustBoost6Display"><span class="bigstardusttext">#6</span> Dark Z Axis is <span id="StardustBoost6" class="stardustlayertext">0</span>% stronger</td></tr>
+            <tr><td style="width:50vw" id="StardustBoost7Display"><span class="bigstardusttext">#7</span> Mastery power gain is multiplied by <span id="StardustBoost7" class="stardustlayertext">0</span>, raised to the power of sqrt(seconds this stardust reset)</td>
+            <td style="width:50vw" id="StardustBoost8Display"><span class="bigstardusttext">#8</span> V Axis is <span id="StardustBoost8" class="stardustlayertext">0</span>% stronger</td></tr>
+          </table><br>
+          <table><tr>
+            <td><button id="StardustUpgrade1Button" class="stardustupgradebutton" onClick="buyStardustUpgrade1()">Unlock a new Axis<br>Cost: <span id="StardustUpgrade1Cost">undefined</span> stardust</button></td>
+            <td><button id="StardustUpgrade2Button" class="stardustupgradebutton" onClick="buyStardustUpgrade2()"><span id="StardustUpgrade2Tooltip">Unlock something somewhere</span><br>Cost: <span id="StardustUpgrade2Cost">undefined</span> stardust</button></td>
+            <td><button id="StardustUpgrade3Button" class="stardustupgradebutton" onClick="buyStardustUpgrade3()">Unlock a new Stardust Boost<br>Cost: <span id="StardustUpgrade3Cost">undefined</span> stardust</button></td>
+            <td><button id="StardustUpgrade4Button" class="stardustupgradebutton" onClick="buyStardustUpgrade4()"><span id="StardustUpgrade4Tooltip">Unlock something somewhere</span><br>Cost: <span id="StardustUpgrade4Cost">undefined</span> stardust</button></td>
+            <td><button id="StardustUpgrade5Button" class="stardustupgradebutton" onClick="buyStardustUpgrade5()"><span id="StardustUpgrade5Tooltip">Unlock something somewhere</span><br>Cost: <span id="StardustUpgrade5Cost">undefined</span> stardust</button></td>
+          </tr></table><br>
+          <button class="starbuybutton" onClick="stardustReset('force')">Reset with no reward (may be useful if you get stuck)</button>
+        </div>
+        <div class="stardustTab" id="Stars" style="display:none">
+          <div>
+            <table><tr id="StarRow1">
+              <td><button id="Star11" class="starbutton" onClick="buyStarUpgrade(11)">Exotic matter gain is <span id="Star11Effect">1</span>x faster (increases with exotic matter)</button></td>
+              <td><button id="Star12" class="starbutton" onClick="buyStarUpgrade(12)">Exotic matter gain is <span id="Star12Effect">1 K</span>x faster (decreases with exotic matter)</button></td>
+              <td><button id="Star13" class="starbutton" onClick="buyStarUpgrade(13)">Exotic matter gain is <span id="Star13Effect">1</span>x faster (increases with time this stardust reset)</button></td>
+              <td><button id="Star14" class="starbutton" onClick="buyStarUpgrade(14)">Exotic matter gain is <span id="Star14Effect">1 K</span>x faster (decreases with time this stardust reset)</button></td>
+            </tr><tr id="StarRow2">
+              <td><button id="Star21" class="starbutton" onClick="buyStarUpgrade(21)">Gain 3 free X Axis</button></td>
+              <td><button id="Star22" class="starbutton" onClick="buyStarUpgrade(22)">Gain 3 free Y Axis</button></td>
+              <td><button id="Star23" class="starbutton" onClick="buyStarUpgrade(23)">Gain 3 free Z Axis</button></td>
+              <td><button id="Star24" class="starbutton" onClick="buyStarUpgrade(24)">Gain 3 free W Axis</button></td>
+            </tr><tr id="StarRow3">
+              <td><button id="Star31" class="starbutton" onClick="buyStarUpgrade(31)">Cube the effect of star 11 (two above this)</button></td>
+              <td><button id="Star32" class="starbutton" onClick="buyStarUpgrade(32)">Cube the effect of star 12 (two above this)</button></td>
+              <td><button id="Star33" class="starbutton" onClick="buyStarUpgrade(33)">Cube the effect of star 13 (two above this)</button></td>
+              <td><button id="Star34" class="starbutton" onClick="buyStarUpgrade(34)">Cube the effect of star 14 (two above this)</button></td>
+            </tr><tr id="StarRow4">
+              <td><button id="Star41" class="starbutton" onClick="buyStarUpgrade(41)">Raise exotic matter gain ^1.1</button></td>
+              <td><button id="Star42" class="starbutton" onClick="buyStarUpgrade(42)">Multiply exotic matter gain by <span class="inf inf50"></span></button></td>
+              <td><button id="Star43" class="starbutton" onClick="buyStarUpgrade(43)">Raise stardust gain ^1.1</button></td>
+              <td><button id="Star44" class="starbutton" onClick="buyStarUpgrade(44)">Multiply stardust gain by <span class="inf inf5"></span></button></td>
+            </tr><tr id="StarRow5">
+              <td><button id="Star51" class="starbutton" onClick="buyStarUpgrade(51)">You can activate all second row Masteries</button></td>
+              <td><button id="Star52" class="starbutton" onClick="buyStarUpgrade(52)">You can activate all third row Masteries</button></td>
+              <td><button id="Star53" class="starbutton" onClick="buyStarUpgrade(53)">You can activate all fourth row Masteries</button></td>
+              <td><button id="Star54" class="starbutton" onClick="buyStarUpgrade(54)">You can activate all fifth row Masteries</button></td>
+            </tr><tr id="StarRow6">
+              <td><button id="Star61" class="starbutton" onClick="buyStarUpgrade(61)">Gain <span id="Star61Effect">0</span> free V Axis (based on exotic matter)</button></td>
+              <td><button id="Star62" class="starbutton" onClick="buyStarUpgrade(62)">Gain <span id="Star62Effect">0</span> free U Axis (based on exotic matter)</button></td>
+              <td><button id="Star63" class="starbutton" onClick="buyStarUpgrade(63)">Gain <span id="Star63Effect">0</span> free T Axis (based on exotic matter)</button></td>
+              <td><button id="Star64" class="starbutton" onClick="buyStarUpgrade(64)">Gain 1 free S Axis</button></td>
+            </tr><tr id="StarRow7">
+              <td><button id="Star71" class="starbutton" onClick="buyStarUpgrade(71)">The game runs <span id="Star71Effect">0</span>% faster (based on mastery power)</button></td>
+              <td><button id="Star72" class="starbutton" onClick="buyStarUpgrade(72)">The game runs <span id="Star72Effect">0</span>% faster (based on exotic matter)</button></td>
+              <td><button id="Star73" class="starbutton" onClick="buyStarUpgrade(73)">The game runs <span id="Star73Effect">0</span>% faster (based on stardust)</button></td>
+              <td><button id="Star74" class="starbutton" onClick="buyStarUpgrade(74)">The game runs <span id="Star74Effect">0</span>% faster (based on time this stardust reset)</button></td>
+            </tr><tr id="StarRow8">
+              <td><button id="Star81" class="starbutton" onClick="buyStarUpgrade(81)">Normal axis costs are square rooted</button></td>
+              <td><button id="Star82" class="starbutton" onClick="buyStarUpgrade(82)">Normal V axis is 5 times stronger</button></td>
+              <td><button id="Star83" class="starbutton" onClick="buyStarUpgrade(83)">Dark axis costs are square rooted</button></td>
+              <td><button id="Star84" class="starbutton" onClick="buyStarUpgrade(84)">Dark Y axis is 5 times stronger</button></td>
+            </tr><tr id="StarRow9">
+              <td><button id="Star91" class="starbutton" onClick="buyStarUpgrade(91)">The effect of star 11 is raised to the power of <span id="Star91Effect">1</span> (based on exotic matter)</button></td>
+              <td><button id="Star92" class="starbutton" onClick="buyStarUpgrade(92)">The effect of star 12 is raised to the power of <span id="Star92Effect">1</span> (based on exotic matter)</button></td>
+              <td><button id="Star93" class="starbutton" onClick="buyStarUpgrade(93)">The effect of star 13 is raised to the power of <span id="Star93Effect">1</span> (based on exotic matter)</button></td>
+              <td><button id="Star94" class="starbutton" onClick="buyStarUpgrade(94)">The effect of star 14 is raised to the power of <span id="Star94Effect">1</span> (based on exotic matter)</button></td>
+            </tr><tr id="StarRow10">
+              <td><button id="Star101" class="starbutton" onClick="buyStarUpgrade(101)">You can activate all sixth row Masteries</button></td>
+              <td><button id="Star102" class="starbutton" onClick="buyStarUpgrade(102)">You can activate all seventh row Masteries</button></td>
+              <td><button id="Star103" class="starbutton" onClick="buyStarUpgrade(103)">You can activate all eighth row Masteries</button></td>
+              <td><button id="Star104" class="starbutton" onClick="buyStarUpgrade(104)">You can activate all ninth row Masteries</button></td>
+            </tr></table>
+          </div><div>
+            You have <span id="unspentStars" style="color: #ffffff; font-size: 18px">0</span> stars.<br>
+            <table><tr><td><button id="StarBuyButton" class="starbuybutton" onClick="buyStar()">Buy a Star<br>Cost: <span id="starCost">0</span> stardust</button></td>
+            <td><button id="StarRespecButton" class="starbuybutton" onClick="respecStars()">Respec your Stars (This forces a Stardust reset)</button></td></tr></table>
+          </div>
+        </div>
+        <div class="stardustTab" id="Dark Matter" style="display:none">
+      	  You have <span id="darkMatterDisplay" class="darkmattertext">0</span> dark matter<br>
+          You are gaining <span id="darkMatterPerSec" class="darkmattertext">0</span> dark matter per second<br>
+          Dark matter gain is multiplied by <span class="darkmattertext" id="baseDarkMatterGain">1</span>x (based on stardust)<br>
+          For every <span class="darkmattertext" id="darkMatterFreeAxis1">3</span> dark axis owned, gain <span class="darkmattertext" id="darkMatterFreeAxis2">1</span> of the corresponding normal axis for free<br>
+          <button class="maxdarkaxisbutton" onClick="buyMaxDarkAxis()">Buy Max Dark Axis</button><br>
+          <table><tr>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('X')" id="DarkXAxisButton">Dark X Axis (<span id="DarkXAxisAmount">0</span>)<br>Dark matter gain is multiplied by <span id="DarkXAxisEffect">1</span>x<br>Cost: <span id="DarkXAxisCost">undefined</span></button></td>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('Y')" id="DarkYAxisButton">Dark Y Axis (<span id="DarkYAxisAmount">0</span>)<br>All dark axis are <span id="DarkYAxisEffect">1</span>x cheaper<br>Cost: <span id="DarkYAxisCost">undefined</span></button></td>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('Z')" id="DarkZAxisButton">Dark Z Axis (<span id="DarkZAxisAmount">0</span>)<br>Dark matter gain is multiplied by <span id="DarkZAxisEffect">1</span>x (based on exotic matter)<br>Cost: <span id="DarkZAxisCost">undefined</span></button></td>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('W')" id="DarkWAxisButton">Dark W Axis (<span id="DarkWAxisAmount">0</span>)<br>Mastery power gain is multiplied by <span id="DarkWAxisEffect">0</span><br>Cost: <span id="DarkWAxisCost">undefined</span></button></td>
+          </tr><tr>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('V')" id="DarkVAxisButton">Dark V Axis (<span id="DarkVAxisAmount">0</span>)<br>Normal V Axis is <span id="DarkVAxisEffect">0</span>% stronger<br>Cost: <span id="DarkVAxisCost">undefined</span></button></td>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('U')" id="DarkUAxisButton">Dark U Axis (<span id="DarkUAxisAmount">0</span>)<br>Dark matter gain is <span id="DarkUAxisEffect">1</span>x stronger per dark axis owned<br>Cost: <span id="DarkUAxisCost">undefined</span></button></td>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('T')" id="DarkTAxisButton">Dark T Axis (<span id="DarkTAxisAmount">0</span>)<br>Dark matter gain is <span id="DarkTAxisEffect">1</span>x stronger (based on time this stardust reset)<br>Cost: <span id="DarkTAxisCost">undefined</span></button></td>
+            <td><button class="darkaxisbutton" onClick="buyDarkAxis('S')" id="DarkSAxisButton">Dark S Axis (<span id="DarkSAxisAmount">0</span>)<br>Dark matter gain is raised to the power of <span id="DarkSAxisEffect">1</span><br>Cost: <span id="DarkSAxisCost">undefined</span></button></td>
+          </tr></table>
+          <br>You have <span class="darkmattertext" id="darkstarDisplay">0</span> dark stars<br>
+          <button class="darkstarbutton" id="darkstarButton" onClick="gainDarkStar()">Reset dark matter to gain a dark star (this also stardust-resets)<br>The base gain of dark matter will become 5% stronger<br>Dark <span id="nextDarkStarAxis">?</span> Axis will become 10% stronger<br>You will gain 1% more free axis from dark matter<br>Progress: <span id="darkstarProgress">0</span>/<span id="darkstarRequirement">0</span> total dark axis </button>
+        </div>
+        <div class="stardustTab" id="Energy" style="display:none">
+          <table style="width:100vw"><tr>
+            <td><div id="DarkEnergy" class="energydivision" style="display:block">
+              You have <span id="darkEnergyDisplay" class="energytext">0</span> dark energy<br>
+              It is being multiplied by <span id="darkEnergyPerSec" class="energytext">0</span> per second (based on exotic matter)<br>
+              If it is greater than your exotic matter, exotic matter gain is raised to the power of <span id="darkEnergyEffect" class="energytext">0</span>
+            </div></td>
+            <td><div id="StelliferousEnergy" class="energydivision" style="display:block">
+              You have <span id="stelliferousEnergyDisplay" class="energytext">0</span> stelliferous energy<br>
+              It is being multiplied by <span id="stelliferousEnergyPerSec" class="energytext">0</span> per second (based on stardust)<br>
+              If it is greater than your stardust, stardust gain is raised to the power of <span id="stelliferousEnergyEffect" class="energytext">0</span>
+            </div></td>
+          </tr><tr>
+            <td><div id="GravitationalEnergy" class="energydivision" style="display:block">
+              You have <span id="gravitationalEnergyDisplay" class="energytext">0</span> gravitational energy<br>
+              It is being multiplied by <span id="gravitationalEnergyPerSec" class="energytext">0</span> per second (based on dark matter)<br>
+              If it is greater than your dark matter, dark matter gain is raised to the power of <span id="gravitationalEnergyEffect" class="energytext">0</span>
+            </div></td>
+            <td><div id="SpatialEnergy" class="energydivision" style="display:block">
+              You have <span id="spatialEnergyDisplay" class="energytext">0</span> spatial energy<br>
+              It is being multiplied by <span id="spatialEnergyPerSec" class="energytext">0</span> per second (based on X axis)<br>
+              If it is greater than your X axis, free X axis from all sources are multiplied by <span id="spatialEnergyEffect" class="energytext">0</span>
+            </div></td>
+          </tr><tr>
+            <td><div id="NeuralEnergy" class="energydivision" style="display:block">
+              You have <span id="neuralEnergyDisplay" class="energytext">0</span> neural energy<br>
+              It is being multiplied by <span id="neuralEnergyPerSec" class="energytext">0</span> per second (based on mastery power)<br>
+              If it is greater than your mastery power, mastery power gain is raised to the power of <span id="neuralEnergyEffect" class="energytext">0</span>
+            </div></td>
+            <td><div id="MetaEnergy" class="energydivision" style="display:block">
+              You have <span id="metaEnergyDisplay" class="energytext">0</span> meta energy<br>
+              It is being multiplied by <span id="metaEnergyPerSec" class="energytext">0</span> per second (based on all energies)<br>
+              Energy gain is raised to the power of <span id="metaEnergyEffect" class="energytext">0</span>
+            </div></td>
+          </tr></table>
+        </div>
+      </div>
+      <div class="tab" id="Automation" style="display:none">
+        <div class="automatordiv" id="axisAutobuyer">
+          <h3>Axis Autobuyer</h3>
+          <button class="automatortoggleon" id="axisAutobuyerToggle" onClick="toggle('axisAutobuyerOn')"></button><br>
+          Interval: <span id="axisAutobuyerInterval">X seconds</span>
+          <button class="autobuyerupgrade" id="axisAutobuyerUpgrade" onClick="upgradeAxisAutobuyer()">Reduce the interval by 5%<br>Cost: <span id="axisAutobuyerUpgradeCost">1e50</span> exotic matter</button>
+        </div>
+      </div>
+      <script type="text/javascript" src="main.js"></script>
+    </div>
+    <div id="story" style="display:none">
+      <h1 id="storyTitle">Story Screen</h1>   <!-- Rainbow text -->
+      <span id="storyText" style="font-size:18px;color:#fff">If you are seeing this text, the game is in an error state. Reload the page and inform <i>AleManInc</i> if it persists</span>
+      <button onClick="screen=1">Back to game</button>
+    </div>
+  </body>
+</html>
