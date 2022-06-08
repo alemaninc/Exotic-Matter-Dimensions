@@ -533,21 +533,6 @@ function openStory(x) {
   if ((snippets[x]!==undefined)&&!(g.storySnippets.includes(x))) g.storySnippets.push(x)
   screen = 2
 }
-function buyAxis(x) {
-  if ((g.exoticmatter>g[x+"AxisCost"])&&(g.axisUnlocked>axisCodes.indexOf(x))) {
-    infDeduct("exoticmatter",g[x+"AxisCost"])
-    g[x+"Axis"]++
-  }
-}
-
-function buyMaxAxis() {
-  for (i=0; i<8; i++) {
-    while ((g.exoticmatter>g[axisCodes[i]+"AxisCost"])&&(g.axisUnlocked>i)) {
-      buyAxis(axisCodes[i])
-      updateAxisCosts()
-    }
-  }
-}
 function updateAxisCosts() {
   for (i=0;i<8;i++) {
     let [a,c,scale1start,scale1power,scale2start,scale2power] = [g[axisCodes[i]+"Axis"],0,g.axisScalingStart,1,g.axisSuperscalingStart,1]
@@ -566,6 +551,19 @@ function updateAxisCosts() {
     if (i==0) c-=g.StardustBoost5*g.XAxis
     c*=g.axisCostExponent
     g[axisCodes[i]+"AxisCost"]=c
+  }
+}
+function buyAxis(x) {
+  if ((g.exoticmatter>g[x+"AxisCost"])&&(g.axisUnlocked>axisCodes.indexOf(x))) {
+    infDeduct("exoticmatter",g[x+"AxisCost"])
+    g[x+"Axis"]++
+    updateAxisCosts()
+  }
+}
+
+function buyMaxAxis() {
+  for (j=0; j<8; j++) {
+    while ((g.exoticmatter>g[axisCodes[j]+"AxisCost"])&&(g.axisUnlocked>j)) buyAxis(axisCodes[j])
   }
 }
 function MasteryE(x) {
@@ -1258,26 +1256,37 @@ function buyDarkAxis(x) {
   if (g.darkmatter>g["dark"+x+"AxisCost"]) {
     infDeduct("darkmatter",g["dark"+x+"AxisCost"])
     g["dark"+x+"Axis"]++
+    updateDarkAxisCosts()
   }
 }
 
 function buyMaxDarkAxis() {
-  for (i=0; i<8; i++) {
-    while (g.darkmatter>g["dark"+axisCodes[i]+"AxisCost"]) {
-      buyDarkAxis(axisCodes[i])
-      updateDarkAxisCosts()
-    }
+  for (j=0; j<8; j++) {
+    while (g.darkmatter>g["dark"+axisCodes[j]+"AxisCost"]) buyDarkAxis(axisCodes[j])
   }
 }
 function updateDarkAxisCosts() {
-  g.darkXAxisCost = (1+normLinearScaling(normSemiexpScaling(g.darkXAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**1.2-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkYAxisCost = (2+2*normLinearScaling(normSemiexpScaling(g.darkYAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkZAxisCost = (10+normLinearScaling(normSemiexpScaling(g.darkZAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkWAxisCost = (15+normLinearScaling(normSemiexpScaling(g.darkWAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**1.5-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkVAxisCost = (30+normLinearScaling(normSemiexpScaling(g.darkVAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**1.25-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkUAxisCost = (45+normLinearScaling(normSemiexpScaling(g.darkUAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)**2-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkTAxisCost = (100+4*normLinearScaling(normSemiexpScaling(g.darkTAxis,g.darkaxisSuperscalingStart,1),g.darkaxisScalingStart,1)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
-  g.darkSAxisCost = (308.2547155599167*1.2**normLinearScaling(normSemiexpScaling(g.darkSAxis,g.darkaxisSuperscalingStart,5),g.darkaxisScalingStart,2)-g.darkaxisCostDivisor)*g.darkaxisCostExponent
+  for (i=0;i<8;i++) {
+    let [a,c,scale1start,scale1power,scale2start,scale2power] = [g["dark"+axisCodes[i]+"Axis"],0,g.darkaxisScalingStart,1,g.darkaxisSuperscalingStart,1]
+    if (i==3) scale2power*=3
+    if (i==7) {
+      scale1power*=2
+      scale2power*=5
+    }
+    a = normSemiexpScaling(a,scale2start,scale2power)
+    a = normLinearScaling(a,scale1start,scale1power)
+    if (i==0) c = 1+a**1.2
+    if (i==1) c = 2+2*a
+    if (i==2) c = 10+a
+    if (i==3) c = 15+a**1.5
+    if (i==4) c = 30+a**1.25
+    if (i==5) c = 45+a**2
+    if (i==6) c = 100+4*a
+    if (i==7) c = 308.2547155599167*1.2**a
+    c-=g.darkaxisCostDivisor
+    c*=g.darkaxisCostExponent
+    g["dark"+axisCodes[i]+"AxisCost"]=c
+  }
 }
 function updateDarkStarCost() {
   g.darkstarRequirement=24+3*g.darkstars
