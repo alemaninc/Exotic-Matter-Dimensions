@@ -1919,7 +1919,7 @@ window.setInterval(function(){                                                  
   g.KnowledgeSupernova.maxCharges=1+g.KnowledgeSupernova.upgrade1
   g.KnowledgeSupernova.power=1.05+0.01*g.KnowledgeSupernova.upgrade2
   SupernovaCosts[1] = [Math.floor(75*1.1**normSimplex(g.KnowledgeSupernova.upgrade1,3)),Math.floor(70*1.1**g.KnowledgeSupernova.upgrade2**2)]
-  document.getElementById("KnowledgeSupernovaReward").innerHTML = infFormat(g.masteryPower*g.KnowledgeSupernova.power,false)
+  document.getElementById("KnowledgeSupernovaReward").innerHTML = infFormat(g.masteryPowerPerSec*g.KnowledgeSupernova.power,false)
   for (i=1;i<3;i++) document.getElementById("KnowledgeSupernovaCost"+i).innerHTML = infFormat(SupernovaCosts[1][i-1],false)
 
 
