@@ -1358,7 +1358,7 @@ window.setInterval(function(){                                                  
     document.getElementById("offlineSpeedupDisplay").innerHTML = ""
   }
   document.getElementById("offlineSpeedupLength").innerHTML = g.offlineSpeedupLength+"s"
-  document.getElementById("offlineSpeedupOn").innerHTML = g.offlineSpeedupOn?"On":"Off"
+  document.getElementById("offlineSpeedupOn").innerHTML = g.offlineSpeedupOn
   ProgressBar()
   oldframetime=newframetime
   newframetime=new Date().getTime()
