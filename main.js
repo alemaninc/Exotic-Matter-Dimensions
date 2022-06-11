@@ -1807,6 +1807,7 @@ window.setInterval(function(){                                                  
   g.darkEnergyPerSec=Math.log10(infAdd(g.exoticmatter,1))*0.9+g.energySpeedMult-Math.log10(200)
   g.darkEnergyPerSec=10**ConvergentSoftcap(g.darkEnergyPerSec,275,300)*offlineSpeedup
   g.darkEnergyEffect=((g.darkEnergy>g.exoticmatter) && (g.exoticmatter>0)) ? 1+Math.log10(g.darkEnergy/g.exoticmatter)*g.energyEffectBoost/3 : 1
+  if (g.darkEnergyEffect>4) g.darkEnergyEffect = 4+0.4*Math.log(g.darkEnergyEffect/4)
   document.getElementById("darkEnergyDisplay").innerHTML = infFormat(g.darkEnergy,false)
   document.getElementById("darkEnergyPerSec").innerHTML = infFormat(g.darkEnergyPerSec,true)
   document.getElementById("darkEnergyEffect").innerHTML = g.darkEnergyEffect.toFixed(4)
@@ -1823,6 +1824,7 @@ window.setInterval(function(){                                                  
   g.stelliferousEnergyPerSec=Math.log10(infAdd(g.stardust,1))*0.9+g.energySpeedMult-Math.log10(350)
   g.stelliferousEnergyPerSec=10**ConvergentSoftcap(g.stelliferousEnergyPerSec,275,300)*offlineSpeedup
   g.stelliferousEnergyEffect=((g.stelliferousEnergy>g.stardust) && (g.stardust>0)) ? 1+Math.log10(g.stelliferousEnergy/g.stardust)*g.energyEffectBoost/3 : 1
+  if (g.stelliferousEnergyEffect>4) g.stelliferousEnergyEffect = 4+0.4*Math.log(g.stelliferousEnergyEffect/4)
   document.getElementById("stelliferousEnergyDisplay").innerHTML = infFormat(g.stelliferousEnergy,false)
   document.getElementById("stelliferousEnergyPerSec").innerHTML = infFormat(g.stelliferousEnergyPerSec,true)
   document.getElementById("stelliferousEnergyEffect").innerHTML = g.stelliferousEnergyEffect.toFixed(4)
@@ -1839,6 +1841,7 @@ window.setInterval(function(){                                                  
   g.gravitationalEnergyPerSec=Math.log10(infAdd(g.darkmatter,1))*0.9+g.energySpeedMult-Math.log10(500)
   g.gravitationalEnergyPerSec=10**ConvergentSoftcap(g.gravitationalEnergyPerSec,275,300)*offlineSpeedup
   g.gravitationalEnergyEffect=((g.gravitationalEnergy>g.darkmatter) && (g.darkmatter>0)) ? 1+Math.log10(g.gravitationalEnergy/g.darkmatter)*g.energyEffectBoost/3 : 1
+  if (g.gravitationalEnergyEffect>4) g.gravitationalEnergyEffect = 4+0.4*Math.log(g.gravitationalEnergyEffect/4)
   document.getElementById("gravitationalEnergyDisplay").innerHTML = infFormat(g.gravitationalEnergy,false)
   document.getElementById("gravitationalEnergyPerSec").innerHTML = infFormat(g.gravitationalEnergyPerSec,true)
   document.getElementById("gravitationalEnergyEffect").innerHTML = g.gravitationalEnergyEffect.toFixed(4)
@@ -1855,6 +1858,7 @@ window.setInterval(function(){                                                  
   g.spatialEnergyPerSec=Math.log10(infAdd(g.XAxis,1))*0.9+g.energySpeedMult-Math.log10(5e4)
   g.spatialEnergyPerSec=10**ConvergentSoftcap(g.spatialEnergyPerSec,275,300)*offlineSpeedup
   g.spatialEnergyEffect=((g.spatialEnergy>Math.log10(Math.max(g.XAxis,2))) && (g.XAxis>1)) ? 1+Math.log10(g.spatialEnergy/Math.log10(g.XAxis))*g.energyEffectBoost*2 : 1
+  if (g.spatialEnergyEffect>25) g.darkEnergyEffect = 25+2.5*Math.log(g.spatialEnergyEffect/25)
   document.getElementById("spatialEnergyDisplay").innerHTML = infFormat(g.spatialEnergy,true)
   document.getElementById("spatialEnergyPerSec").innerHTML = infFormat(g.spatialEnergyPerSec,true)
   document.getElementById("spatialEnergyEffect").innerHTML = g.spatialEnergyEffect.toFixed(4)
@@ -1871,6 +1875,7 @@ window.setInterval(function(){                                                  
   g.neuralEnergyPerSec=Math.log10(infAdd(g.masteryPower,1))*0.9+g.energySpeedMult-Math.log10(250)
   g.neuralEnergyPerSec=10**ConvergentSoftcap(g.neuralEnergyPerSec,275,300)*offlineSpeedup
   g.neuralEnergyEffect=((g.neuralEnergy>g.masteryPower) && (g.masteryPower>0)) ? 1+Math.log10(g.neuralEnergy/g.masteryPower)*g.energyEffectBoost/3 : 1
+  if (g.neuralEnergyEffect>4) g.neuralEnergyEffect = 4+0.4*Math.log(g.neuralEnergyEffect/4)
   document.getElementById("neuralEnergyDisplay").innerHTML = infFormat(g.neuralEnergy,false)
   document.getElementById("neuralEnergyPerSec").innerHTML = infFormat(g.neuralEnergyPerSec,true)
   document.getElementById("neuralEnergyEffect").innerHTML = g.neuralEnergyEffect.toFixed(4)
