@@ -637,7 +637,7 @@ function updateStat(x) {
     output+=50*StarE(42)
     document.getElementById("StatBreakdown1Star42T").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RStar42",StarE(42)?"show":"hide")
-    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+normFormat(g.SAxisEffect*g.realSAxis,true)+"<span class='small'> ("+normFormat(g.SAxisEffect,true)+" ^ "+normFormat(g.realSAxis)+")</span>"
+    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+normFormat(g.SAxisEffect**g.realSAxis,true)+"<span class='small'> ("+normFormat(g.SAxisEffect,true)+" ^ "+normFormat(g.realSAxis)+")</span>"
     output*=g.SAxisEffect**(g.realSAxis)
     document.getElementById("StatBreakdown1SAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown1RSAxis",((g.realSAxis>0)&&(g.SAxisEffect!=1))?"show":"hide")
