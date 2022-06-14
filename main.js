@@ -1858,7 +1858,7 @@ window.setInterval(function(){                                                  
   g.spatialEnergyPerSec=Math.log10(infAdd(g.XAxis,1))*0.9+g.energySpeedMult-Math.log10(5e4)
   g.spatialEnergyPerSec=10**ConvergentSoftcap(g.spatialEnergyPerSec,275,300)*offlineSpeedup
   g.spatialEnergyEffect=((g.spatialEnergy>Math.log10(Math.max(g.XAxis,2))) && (g.XAxis>1)) ? 1+Math.log10(g.spatialEnergy/Math.log10(g.XAxis))*g.energyEffectBoost*2 : 1
-  if (g.spatialEnergyEffect>15) g.darkEnergyEffect = 15+1.5*Math.log(g.spatialEnergyEffect/15)
+  if (g.spatialEnergyEffect>15) g.spatialEnergyEffect = 15+1.5*Math.log(g.spatialEnergyEffect/15)
   document.getElementById("spatialEnergyDisplay").innerHTML = infFormat(g.spatialEnergy,true)
   document.getElementById("spatialEnergyPerSec").innerHTML = infFormat(g.spatialEnergyPerSec,true)
   document.getElementById("spatialEnergyEffect").innerHTML = g.spatialEnergyEffect.toFixed(4)
