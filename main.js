@@ -1500,16 +1500,16 @@ window.setInterval(function(){                                                  
 
 
   // Options & Display section
-  if (g.colortheme == "Default") let scheme = "color: #39f;background-color: #190033"
-  if (g.colortheme == "Red") let scheme = "color: #f00;background-color: #300"
-  if (g.colortheme == "Green") let scheme = "color: #0f0;background-color: #030"
-  if (g.colortheme == "Blue") let scheme = "color: #00f;background-color: #003"
-  if (g.colortheme == "Cyan") let scheme = "color: #0ff;background-color: #033"
-  if (g.colortheme == "Magenta") let scheme = "color: #f0f;background-color: #303"
-  if (g.colortheme == "Yellow") let scheme = "color: #ff0;background-color: #330"
-  if (g.colortheme == "Light Gray") let scheme = "color: #ccc;background-color: #666"
-  if (g.colortheme == "Dark Gray") let scheme = "color: #666;background-color: #333"
-  if (g.colortheme == "Black") let scheme = "color: #fff;background-color: #000"
+  if (g.colortheme == "Default") scheme = "color: #39f;background-color: #190033"
+  if (g.colortheme == "Red") scheme = "color: #f00;background-color: #300"
+  if (g.colortheme == "Green") scheme = "color: #0f0;background-color: #030"
+  if (g.colortheme == "Blue") scheme = "color: #00f;background-color: #003"
+  if (g.colortheme == "Cyan") scheme = "color: #0ff;background-color: #033"
+  if (g.colortheme == "Magenta") scheme = "color: #f0f;background-color: #303"
+  if (g.colortheme == "Yellow") scheme = "color: #ff0;background-color: #330"
+  if (g.colortheme == "Light Gray") scheme = "color: #ccc;background-color: #666"
+  if (g.colortheme == "Dark Gray") scheme = "color: #666;background-color: #333"
+  if (g.colortheme == "Black") scheme = "color: #fff;background-color: #000"
   document.getElementById("bodytheme").style = scheme+""
   document.getElementById("colortheme").innerHTML = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
