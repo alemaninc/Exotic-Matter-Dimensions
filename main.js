@@ -1500,16 +1500,17 @@ window.setInterval(function(){                                                  
 
 
   // Options & Display section
-  if (g.colortheme == "Default") document.getElementById("bodytheme").style = "color: #39f;background-color: #190033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Red") document.getElementById("bodytheme").style = "color: #f00;background-color: #300;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Green") document.getElementById("bodytheme").style = "color: #0f0;background-color: #030;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Blue") document.getElementById("bodytheme").style = "color: #00f;background-color: #003;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Cyan") document.getElementById("bodytheme").style = "color: #0ff;background-color: #033;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Magenta") document.getElementById("bodytheme").style = "color: #f0f;background-color: #303;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Yellow") document.getElementById("bodytheme").style = "color: #ff0;background-color: #330;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Light Gray") document.getElementById("bodytheme").style = "color: #ccc;background-color: #666;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Dark Gray") document.getElementById("bodytheme").style = "color: #666;background-color: #333;font-size: 15px;font-family:verdana;text-align: center;"
-  if (g.colortheme == "Black") document.getElementById("bodytheme").style = "color: #fff;background-color: #000;font-size: 15px;font-family:verdana;text-align: center;"
+  if (g.colortheme == "Default") let scheme = "color: #39f;background-color: #190033"
+  if (g.colortheme == "Red") let scheme = "color: #f00;background-color: #300"
+  if (g.colortheme == "Green") let scheme = "color: #0f0;background-color: #030"
+  if (g.colortheme == "Blue") let scheme = "color: #00f;background-color: #003"
+  if (g.colortheme == "Cyan") let scheme = "color: #0ff;background-color: #033"
+  if (g.colortheme == "Magenta") let scheme = "color: #f0f;background-color: #303"
+  if (g.colortheme == "Yellow") let scheme = "color: #ff0;background-color: #330"
+  if (g.colortheme == "Light Gray") let scheme = "color: #ccc;background-color: #666"
+  if (g.colortheme == "Dark Gray") let scheme = "color: #666;background-color: #333"
+  if (g.colortheme == "Black") let scheme = "color: #fff;background-color: #000"
+  document.getElementById("bodytheme").style = scheme+""
   document.getElementById("colortheme").innerHTML = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
