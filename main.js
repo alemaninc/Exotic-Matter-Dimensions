@@ -750,7 +750,7 @@ function updateStat(x) {
     output+=g.darkWAxisEffect*g.realdarkWAxis
     document.getElementById("StatBreakdown4DarkWAxisT").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown4RDarkWAxis",((g.darkWAxisEffect!==0)&&(g.darkWAxis>0))?"show":"hide")
-    document.getElementById("StatBreakdown4StardustBoost7").innerHTML = "× "+infFormat(g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4)))+"<span class='small'>"+infFormat(g.StardustBoost7,true)+" ^ "+normFormat(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))+")</span>"
+    document.getElementById("StatBreakdown4StardustBoost7").innerHTML = "× "+infFormat(g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4)))+"<span class='small'>("+infFormat(g.StardustBoost7,true)+" ^ "+normFormat(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))+")</span>"
     output+=g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))
     document.getElementById("StatBreakdown4StardustBoost7T").innerHTML = infFormat(output,true)
     toggleTableRow("StatBreakdown4RStardustBoost7",(g.StardustBoost7>0)?"show":"hide")
