@@ -227,7 +227,10 @@ function toggleGlow(tab,type) {
   }
 }
 function fix(x) {
-  return (typeof x == "number")?x:0
+  if (isNaN(x)) return 0
+  if (x==null) return 0
+  if (x==undefined) return 0
+  return x
 }
 
 
