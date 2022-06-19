@@ -485,6 +485,19 @@ const masteryBoosts = {            // This contains the effect multipliers for i
   b91: 1,
   b92: 1
 }
+if (g.colortheme == "Default") scheme = "color: #39f;background-color: #190033"
+if (g.colortheme == "Red") scheme = "color: #f00;background-color: #300"
+if (g.colortheme == "Green") scheme = "color: #0f0;background-color: #030"
+if (g.colortheme == "Blue") scheme = "color: #00f;background-color: #003"
+if (g.colortheme == "Cyan") scheme = "color: #0ff;background-color: #033"
+if (g.colortheme == "Magenta") scheme = "color: #f0f;background-color: #303"
+if (g.colortheme == "Yellow") scheme = "color: #ff0;background-color: #330"
+if (g.colortheme == "Light Gray") scheme = "color: #ccc;background-color: #666"
+if (g.colortheme == "Dark Gray") scheme = "color: #666;background-color: #333"
+if (g.colortheme == "Black") scheme = "color: #fff;background-color: #000"
+if (g.colortheme == "Auto (DarkReader)") scheme = "color: #39f;background-color: #190033"
+if (g.colortheme !== "Auto (DarkReader)") document.getElementById("bodytheme").style = scheme+";font-size: 15px;font-family:verdana;text-align:center;"
+
 var stardustExoticMatterReq = 22 // InfNumber
 var stardustExoticMatterReqText = "";
 var progressbarvalue = 0
@@ -1500,18 +1513,6 @@ window.setInterval(function(){                                                  
 
 
   // Options & Display section
-  if (g.colortheme == "Default") scheme = "color: #39f;background-color: #190033"
-  if (g.colortheme == "Red") scheme = "color: #f00;background-color: #300"
-  if (g.colortheme == "Green") scheme = "color: #0f0;background-color: #030"
-  if (g.colortheme == "Blue") scheme = "color: #00f;background-color: #003"
-  if (g.colortheme == "Cyan") scheme = "color: #0ff;background-color: #033"
-  if (g.colortheme == "Magenta") scheme = "color: #f0f;background-color: #303"
-  if (g.colortheme == "Yellow") scheme = "color: #ff0;background-color: #330"
-  if (g.colortheme == "Light Gray") scheme = "color: #ccc;background-color: #666"
-  if (g.colortheme == "Dark Gray") scheme = "color: #666;background-color: #333"
-  if (g.colortheme == "Black") scheme = "color: #fff;background-color: #000"
-  if (g.colortheme == "Auto (DarkReader)") scheme = "color: #39f;background-color: #190033"
-  if (g.colortheme !== "Auto (DarkReader)") document.getElementById("bodytheme").style = scheme+";font-size: 15px;font-family:verdana;text-align:center;"
   document.getElementById("colortheme").innerHTML = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
