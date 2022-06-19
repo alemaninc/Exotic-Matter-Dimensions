@@ -1510,7 +1510,8 @@ window.setInterval(function(){                                                  
   if (g.colortheme == "Light Gray") scheme = "color: #ccc;background-color: #666"
   if (g.colortheme == "Dark Gray") scheme = "color: #666;background-color: #333"
   if (g.colortheme == "Black") scheme = "color: #fff;background-color: #000"
-  document.getElementById("bodytheme").style = scheme+";font-size: 15px;font-family:verdana;text-align:center;"
+  if (g.colortheme == "Auto (DarkReader)" scheme = "color: #39f;background-color: #190033"
+  if (g.colortheme !== "Auto (DarkReader)" document.getElementById("bodytheme").style = scheme+";font-size: 15px;font-family:verdana;text-align:center;"
   document.getElementById("colortheme").innerHTML = g.colortheme
   document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
   document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
