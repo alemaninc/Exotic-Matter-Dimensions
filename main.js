@@ -1629,15 +1629,16 @@ function exportSave() {
   navigator.clipboard.writeText(btoa(localStorage.getItem("save")))
   prompt("Your save has automatically been copied to the clipboard, but if that did not work you can copy it from here:",btoa(localStorage.getItem("save")))
 }
+const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me"])
+function stringSimplify(x) {
+	return String(x).replace(/[^A-Za-z0-9]/g,"").toLowerCase()
+}
 function wipeSave() {
-  let numa = Math.round(50*3**Math.random())
-  let numb = Math.round(50*3**Math.random())
-  let answer = numa*numb
-  let confirm = prompt("To confirm that you want to wipe your save, answer this question: What is "+numa+" × "+numb+"?")
-  if (confirm==answer) {
-    g = Object.assign({},basesave)
-  } else if (confirm==null) {
+  let query = prompt("To confirm that you want to wipe your save, input \""+wipeSavePassword+"\".")
+  if ((typeof query) !== "string") {
 		// do nothing
+	} else if (stringSimplify(query)==stringSimplify(wipeSavePassword)) {
+    g = Object.assign({},basesave)
 	} else {
     alert("Incorrect answer, wiping did not proceed.")
   }
