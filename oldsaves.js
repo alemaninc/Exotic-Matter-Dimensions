@@ -12,7 +12,9 @@ function timeFix(x) {
 }
 function loadOldSave(savegame) {
 	g = Object.assign({},basesave)
-	if (axisCodes.map(x => savegame["dark"+x+"Axis"]).reduce((x,y)=>x+y)>=1000) {
+	if (savegame.stardustUpgrades == undefined) {
+		// alpha saves are beyond saving.
+	} else if (axisCodes.map(x => savegame["dark"+x+"Axis"]).reduce((x,y)=>x+y)>=1000) {
 		g.stardust=N("e1000")
 		g.StardustResets=30
 		timeFix(86400)

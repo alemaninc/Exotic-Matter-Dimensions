@@ -159,7 +159,7 @@ const achievementList = {
     },
     113:{
       name:"Quadratic",
-      description:function(){return "Have 9 X Axis"},
+      description:function(){return "Have 9 purchased X Axis"},
       check:function(){return g.XAxis.gte(9)},
       progress:function(){return achievement.percent(g.XAxis,9,0)},
       visibility:function(){return AchievementE(101)},
@@ -335,7 +335,7 @@ const achievementList = {
     },
     217:{
       name:"Leet",
-      description:function(){return "Have exactly 1 X axis, 3 Y axis, 3 Z axis and 7 W axis"},
+      description:function(){return "Have exactly 1 X axis, 3 Y axis, 3 Z axis and 7 W axis. Does not include free axes."},
       check:function(){return g.XAxis.eq(1)&&g.YAxis.eq(3)&&g.ZAxis.eq(3)&&g.WAxis.eq(7)},
       progress:function(){return "Not Completed!"},
       visibility:function(){return true},
@@ -366,7 +366,7 @@ const achievementList = {
     },
     303:{
       name:"Parity",
-      description:function(){return "Have exactly 1 of each normal axis"},
+      description:function(){return "Have exactly 1 of each normal axis purchased"},
       check:function(){return !axisCodes.map(x => g[x+"Axis"].eq(1)).includes(false)},
       progress:function(){return "Not Completed!"},
       visibility:function(){return AchievementE(210)},
@@ -375,7 +375,7 @@ const achievementList = {
     },
     304:{
       name:"Parity II",
-      description:function(){return "Have exactly 3 of each normal axis"},
+      description:function(){return "Have exactly 3 of each normal axis purchased"},
       check:function(){return !axisCodes.map(x => g[x+"Axis"].eq(3)).includes(false)},
       progress:function(){return "Not Completed!"},
       visibility:function(){return AchievementE(303)},
@@ -384,7 +384,7 @@ const achievementList = {
     },
     305:{
       name:"Parity III",
-      description:function(){return "Have exactly 5 of each normal axis"},
+      description:function(){return "Have exactly 5 of each normal axis purchased"},
       check:function(){return !axisCodes.map(x => g[x+"Axis"].eq(5)).includes(false)},
       progress:function(){return "Not Completed!"},
       visibility:function(){return AchievementE(304)},
