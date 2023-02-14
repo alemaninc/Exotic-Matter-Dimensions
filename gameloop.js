@@ -104,7 +104,7 @@ function updateHTML() {
     d.innerHTML("span_stardustUpgrade5Tooltip",["Unlock Dark Matter","Unlock Dark Energy","Unlock Stelliferous Energy","Unlock Gravitational Energy","Unlock Spatial Energy","Unlock Neural Energy","Unlock Meta Energy"][g.stardustUpgrades[4]])
   }
 	if (tabOpen(["Achievements"])) {
-		d.display("button_wormholeMilestones",achievement.ownedInTier(5)>=0?"inline-block":"none")
+		d.display("button_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none")
 	}
 	if (tabOpen(["Achievements","Wormhole Milestones"])) {
 		wormholeMilestoneHTML()
