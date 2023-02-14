@@ -723,9 +723,9 @@ breakdownStats.ZAxisEffect={
 				out = out.add(stardustBoost(10))
 				return out
 			},
-			constant:function(){return g.exoticmatter.max(1).mul(1e10).log10().log10().log10().add(1)},
+			constant:function(){return g.exoticmatter.add(1).mul(1e10).log10().log10().log10().add(1)},
 			func:function(){return Decimal.powerTower(10,this.constant(),this.constant(),this.exp()).mul(0.15)},
-			consttext:function(){return "(log(log(log("+g.exoticmatter.max(1).format(2)+" × "+BEformat(1e10)+"))) + 1)"},
+			consttext:function(){return "(log(log(log("+g.exoticmatter.add(1).format(2)+" × "+BEformat(1e10)+"))) + 1)"},
 			text:function(){return "10 ^ "+this.consttext()+" ^ "+this.consttext()+" ^ "+this.exp().format(3)+" × 0.15"}
 		},
 		{

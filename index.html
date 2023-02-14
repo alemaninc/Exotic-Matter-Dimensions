@@ -162,12 +162,15 @@
 					<button class="optionsbutton" onClick="multitoggle('offlineSpeedupLength',[1,5,10,30,60,300,3600])">Offline boost length: <span id="offlineSpeedupLength"></span></button>
 					<button class="optionsbutton" onClick="multitoggle('offlineSpeedupOn',['On','Weakened','Off'])">Offline boost: <span id="offlineSpeedupOn"></span></button>
 					<button class="optionsbutton" onClick="load('import')">Import save</button>
-					<button class="optionsbutton" onClick="exportSave()">Export save</button>
+					<button class="optionsbutton" onClick="openSubTab('options','tabExport');exportSave()">Export save</button>
 					<button class="optionsbutton" onClick="multitoggle('colortheme',availableThemes());theme()">Theme: <span id="colortheme"></span></button>
 					<button class="optionsbutton" onClick="toggle('darkstarBulk')" id="button_bulkDarkStar">Dark star bulk buy: <span id="darkstarBulk"></span></button>
 				</div>
 				<div class="optionsTab" id="Changelog" style="display:none">
 					<h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
+					<h1>v1.0.2 "1000 Ways to Export" (2023-02-14)</h1>
+					- INTERFACE: Added some more research descriptions<br>
+					- SAVING: Changed the way that exporting saves works
 					<h1>v1.0.1 "Even Smaller Adjustments" (2023-02-14)</h1>
 					- INTERFACE: Clarified achievement 106 "Also 10,000 hours?" and renamed it to "10.000 Hours?"<br>
 					- INTERFACE: Wormhole milestones are no longer visible until you unlock Wormhole<br>
@@ -292,6 +295,10 @@
 					Current endgame: 1e23 (100 Sx) tributes
 					<h1>v0 (2022-01-05)</h1>
 					Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts
+				</div>
+				<div class="optionsTab" id="tabExport" style="display:none">
+				This is your export string:<br>
+				<textarea id="span_export" style="height:50vh;width:50vw"></textarea>
 				</div>
 			</div>
 			<div class="tab" id="Statistics" style="display:none">
