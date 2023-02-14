@@ -1589,8 +1589,7 @@ function load(type) {
   }
   if ((typeof savegame == "object") && (savegame !== null)) {
 		if (typeof savegame.exoticmatter == "number") {
-//		loadOldSave(savegame)
-			g = basesave
+			loadOldSave(savegame)
 		} else {
 			let vars=Object.keys(g)
 			for (let i=0; i<vars.length; i++) {
