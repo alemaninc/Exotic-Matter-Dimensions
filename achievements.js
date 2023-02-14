@@ -821,7 +821,7 @@ const achievementList = {
     526:{
       name:"Big Crunch",
       description:function(){return "Buy a dark X axis without buying normal axis in the current Wormhole reset"},
-      check:function(){return g.ach526possible&&g.darkXAxis.gt(0)},
+      check:function(){return g.ach526possible&&g.darkXAxis.gt(0)&&unlocked("Hawking Radiation")},
       progress:function(){return g.ach526possible?"Still achievable":"Failed"},
       visibility:function(){return AchievementE(525)},
       reward:function(){return "+"+this.effect().format(3)+" normal and dark S axis effect (based on total normal axis)"},
@@ -860,7 +860,7 @@ const achievementList = {
     530:{
       name:"Big Bang",
       description:function(){return "Bulk buy 5,000 normal axis at once"},
-      check:function(){return true},   // checked locally by axis-buying function
+      check:function(){return unlocked("Hawking Radiation")},   // checked locally by axis-buying function, but no spoilers
       progress:function(){return achievement.percent(axisCodes.map(x => maxAffordableAxis(x)).reduce((x,y)=>x.add(y)).sub(totalAxis("normal")),5000,0)},
       visibility:function(){return true},
       reward:function(){return "Dark axis cost scaling is 1% weaker"},
