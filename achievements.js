@@ -95,8 +95,8 @@ const achievementList = {
       effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(1e5).add(10).log10().log10(),0.75,1).sqrt()}
     },
     106:{
-      name:"Also 10,000 hours?",
-      description:function(){return "Play for a total of 10.000 hours"},
+      name:"10.000 hours?",
+      description:function(){return "Play for a total of 10 hours"},
       check:function(){return g.truetimePlayed>36000},
       progress:function(){return achievement.percent(g.truetimePlayed/3600,10,0)},
       visibility:function(){return true},
