@@ -1,10 +1,36 @@
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+button, div {
+  vertical-align:top;
+  display:inline-block;
+}
+.underline {
+  text-decoration: underline
+}
+.strike {
+  text-decoration: line-through
+}
+span.xscript {
+  position: relative;
+}
+span.xscript sub {
+  position: absolute;
+  left: 0.1em;
+  bottom: -1ex;
+}
 table {
   border-collapse: collapse;
   border-spacing: 0;
   display:inline-block;
   text-align: center;
+  table-layout:fixed;
 }
-button {
+th {
+  text-decoration: underline
+}
+button,div {
   display:inline-block;
 }
 .small {
@@ -12,11 +38,19 @@ button {
   opacity: 0.67;
 }
 .toptable {
-  width: 33vw;
+  width: calc(100vw - 320px);
   table-layout: fixed;
+  text-align: left;
+}
+.resource {
+  height: 20px;
+  width: 384px;
+  font-size: 17px;
+	margin-left:5px;
+	margin-right:5px
 }
 .maxaxisbutton {
-  background-color: #009999;
+  background-color: rgba(0,153,153,0.9);
   color: #ffffff;
   padding: 10px;
   border-radius: 10px;
@@ -24,34 +58,44 @@ button {
   height: 50px;
 }
 .axisbutton {
-  background-color: #009999;
+  background-color: rgba(0,153,153,0.9);
   color: #ffffff;
   padding: 10px;
   border-radius: 10px;
   width: 200px;
   height: 125px;
+	margin:4px
 }
 .lockedaxisbutton {
-  background-color: #999999;
+  background-color: rgba(153,153,153,0.9);
   color: #000000;
   padding: 10px;
   border-radius: 10px;
   width: 200px;
   height: 125px;
+	margin:4px
 }
-.progressbar {
-  height: 10px;
-  width: 96vw
+.empoweredaxis {
+  background-color: rgba(102,0,204,0.9);
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  height: 125px;
+	margin:4px
 }
-.td40 {
-  width: 40vw;
-  border: 1px solid #00ff00;
+.tablecell {
+  border: 1px solid rgba(0,255,0,0.67);
   border-collapse: collapse
 }
-.td25 {
-  width: 25vw;
-  border: 1px solid #00ff00;
-  border-collapse: collapse
+#progress {
+	height:24px;
+	border-radius:6px;
+	color:#000000;
+	width:calc(100vw - 30px);
+	position:fixed;
+	bottom:2vh;
+	left:15px
 }
 .optionsbutton {
   background-color: #cccccc;
@@ -75,63 +119,119 @@ button {
   width: 120px;
   height: 25px;
   font-size: 13px;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 5px;
+}
+.tier2main {
+	background-color:rgba(0,0,0,0.8);
+	border-color:rgba(0,255,0,0.9);
+	color:#00ff00
+}
+.tier2options {
+	background-color:rgba(204,204,204,0.8);
+	border-color:rgba(153,153,153,0.9)
+}
+.tier2statistics {
+	background-color:rgba(0,153,0,0.8);
+	border-color:rgba(0,204,0,0.9)
+}
+.tier2achievements {
+	background-color:rgba(170,102,0,0.8);
+	border-color:rgba(102,51,0,0.9)
+}
+.tier2automation {
+	background-color:rgba(178,178,178,0.8);
+	border-color:rgba(153,153,153,0.9)
+}
+.tier2stardust {
+	background-color:rgba(102,76,51,0.8);
+	border-color:rgba(128,102,76,0.9);
+	color:#ffffff
+}
+.tier2wormhole {
+	background-color:rgba(51,76,102,0.8);
+	border-color:rgba(76,102,128,0.9);
+	color:#ffffff
 }
 .tabtier3 {
   width: 100px;
   height: 20px;
   font-size: 9px;
 }
+.htpTab {
+  width: 48vw;
+  height: 200px;
+  border-radius: 20px;
+  background-image: linear-gradient(135deg,#001933,#003366,#001933)
+}
 .navigationtier3 {
   background-color: #331933;
   margin-left:0vw;
   margin-right:0vw;
 }
-.mainbigtab {
-  background-color: #000000;
-  color: #0000ff;
-  font-size: 20px;
-  border: 2px solid white;
-  border-radius: 4px;
-  border-color: #0000ff;
-  width: 150px;
+.bigtab {
+	font-size:20px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:8px;
+	width:150px
 }
-.optionsbigtab{
-  background-color: #cccccc;
-  color: #000000;
-  font-size: 20px;
-  border: 2px solid white;
-  border-radius: 4px;
-  border-color: #000000;
-  width: 150px;
+tab {
+	width:calc(100vw - 120px)
 }
-.statisticsbigtab{
-  background-color: #99ff99;
-  color: #000000;
-  font-size: 20px;
-  border: 2px solid white;
-  border-radius: 4px;
-  border-color: #000000;
-  width: 150px;
+#button_main {
+  background-color: rgba(0,0,0,0.75);
+  color: rgba(0,255,0,0.9);
+  border-color: rgba(0,204,0,0.8);
 }
-.stardustbigtab{
-  background-image: linear-gradient(90deg, #990000, #009900, #000099);
-  color: #ffffff;
-  font-size: 20px;
-  border: 2px solid white;
-  border-radius: 4px;
+#button_options {
+	background-color: rgba(153,153,153,0.75);
+	color:rgba(0,0,0,0.9);
+	border-color:rgba(102,102,102,0.8)
+}
+#button_statistics {
+	background-color: rgba(0,153,0,0.75);
+	color:rgba(0,204,0,0.9);
+	border-color:rgba(0,153,0,0.8);
+}
+#button_achievements {
+	background-color: rgba(170,102,0,0.75);
+	color:rgba(255,153,0,0.9);
+	border-color:rgba(170,102,0,0.8)
+}
+#button_automation {
+	background-color: rgba(153,153,153,0.75);
+	color:rgba(0,0,0,0.9);
+	border-color:rgba(102,102,102,0.8)
+}
+#button_stardust {
+  background-image: url("stardustbackground.png");
+  background-size: cover;
+  color: #ff9900;
   border-color: #ff9900;
-  width: 150px;
+}
+#button_wormhole {
+  background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
+  color: #ffffff;
+	border-color:#0000ff
+}
+.invisible {
+  font-size: 30px;
+  border: none;
+  background: transparent;
 }
 .stardustResetButton{
-  background-image: linear-gradient(90deg, #990000, #009900, #000099);
-  color: #000000;
+  background-image: url("stardustbackground.png");
+  background-size: cover;
+  color: #ffffff;
   font-size: 15px;
   border-radius: 4px;
   width: 125px;
   height: 90px;
 }
-.lockedstardustResetButton{
-  background-color: #cccccc;
+.lockedStardustResetButton{
+  background-color: #999999;
   color: #000000;
   font-size: 15px;
   border-radius: 4px;
@@ -149,152 +249,115 @@ button {
 .masterybuttonoff{
   width: 225px;
   height: 150px;
-  border-radius: 30px;
+  border-radius: 18px;
   background-color: #cccccc
 }
 .masterybuttonon{
   width: 225px;
   height: 150px;
-  border-radius: 30px;
+  border-radius: 18px;
   background-color: #00ff00
 }
 .stardustlayertext{
-  animation: stardustlayertextanimation 30s infinite;
+  background: -webkit-radial-gradient(circle,#ff0,#f60);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 18px;
+}
+.darkstardustlayertext{
+  background: -webkit-radial-gradient(circle,#990,#930);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 18px;
 }
 .bigstardusttext{
-  animation: stardustlayertextanimation 30s infinite;
-  font-size: 25px;
+  color: #ff6600;
+  background: -webkit-radial-gradient(circle,#ff0,#f60);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 20px;
   font-weight: 700;
-}
-@keyframes stardustlayertextanimation {
-  0% {color: #990000;}
-  17% {color: #999900;}
-  33% {color: #009900;}
-  50% {color: #009999;}
-  67% {color: #000099;}
-  83% {color: #990099;}
-  100% {color: #990000;}
 }
 .glownotify{
   box-shadow: 0px 0px 20px 0px #ff0
 }
+.stardustboost {
+	background-color: rgba(255,102,0,0.4);
+	width:225px;
+	height:100px;
+	margin:8px;
+	color:#ffffff;
+	border-style:solid;
+	border-radius:30px;
+	border-width:2px;
+	border-color: rgba(255,255,0,0.5);
+}
 .stardustupgradebutton {
-  background-image: linear-gradient(90deg, #990000, #009900, #000099);
+  background-image: url("stardustbackground.png");
+  background-size: cover;
   color: #ffffff;
   padding: 10px;
   border-radius: 10px;
   width: 200px;
   height: 125px;
+	margin:4px;
 }
 .starbutton {
-  background-color: #cccccc;
-  color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
+	font-size:12px;
+	width:120px;
+	height:120px;
+	padding:15px;
+	border-radius:60px;
+	margin:8px;
+	position:relative;
+}
+.availablestarbutton {
+	background-color:#cccccc;
+	color: #000000;
 }
 .lockedstarbutton {
   background-color: #999999;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton1 {
   background-color: #ff6600;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton2 {
   background-color: #ff9900;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton3 {
   background-color: #ffcc00;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton4 {
   background-color: #ffff00;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton5 {
   background-color: #ccff33;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton6 {
   background-color: #99ff66;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton7 {
   background-color: #66ff99;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton8 {
   background-color: #33ffcc;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton9 {
   background-color: #00ffff;
   color: #000000;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
 }
 .ownedstarbutton10 {
-  background-image: radial-gradient(#ffffff 25%, #000000 50%, #ffffff 75%, #000000);
-  color: #808080;
-  padding: 0px;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 100px;
-  height: 100px;
-  font-weight: 900;
+  background-image: radial-gradient(#ffffff, #000000);
+  color: #000000;
 }
 .starbuybutton {
   background-color: #cccccc;
@@ -303,6 +366,7 @@ button {
   border-radius: 20px;
   width: 200px;
   height: 50px;
+	margin: 2px;
 }
 .automatordiv {
   background-color: #999999;
@@ -313,7 +377,7 @@ button {
   padding: 10px;
   border-radius: 40px;
   width: 200px;
-  height: 150px;
+  height: 350px;
 }
 .automatortoggleon {
   background-color: #00ff00;
@@ -333,6 +397,17 @@ button {
   font-size: 12px;
   padding: 2px;
   border-radius: 10px;
+  height:40px;
+  width:180px;
+}
+.texttoggle {
+	background-color:rgba(204,204,204,0.9);
+	color:#000000;
+	font-family:"Courier New";
+	font-size:12px;
+	height:18px;
+	border-radius:9px;
+	width:180px
 }
 .maxdarkaxisbutton {
   background-color: #990099;
@@ -349,6 +424,7 @@ button {
   border-radius: 10px;
   width: 200px;
   height: 125px;
+	margin:4px
 }
 .darkmattertext {
   color: #990099;
@@ -358,21 +434,21 @@ button {
   background-color: #990099;
   color: #ffffff;
   padding: 4px;
-  border-radius: 6px;
+  border-radius: 16px;
   width: 480px;
-  height: 120px
+  height: 240px;
 }
 .lockeddarkstarbutton {
   background-color: #999999;
   color: #000000;
   padding: 4px;
-  border-radius: 6px;
-  width: 400px;
-  height: 100px
+  border-radius: 16px;
+  width: 480px;
+  height: 240px
 }
 .globalnavigation {
   text-align: center;
-  width: 99vw;
+  width: 96vw;
 }
 .energytext {
   color: #00ffff;
@@ -380,17 +456,180 @@ button {
 }
 .energydivision {
   height: 115px;
-  width: 50vw
+  width: calc(50vw - 50px);
+	margin: 15px;
 }
-.supernovadiv {
-  height: 425px;
-  width: 300px;
-  padding: 25px;
-  display: inline-block;
+.wormholeResetButton{
+  background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
+  background-size: cover;
+  color: #ffffff;
+  font-size: 15px;
+  border-radius: 4px;
+  width: 125px;
+  height: 90px;
 }
-.supernovaupg {
-  height: 65px;
-  width: 245px;
-  padding: 5px;
-  display: inline-block;
+.topleveldiv {
+	left: 0px;
+	width:100vw;
+}
+#wormholeAnimation{
+  background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
+  background-size: cover;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	height:100vh;
+}
+.wormholelayertext {
+  color: #0000ff;
+  text-shadow: 0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
+  font-size: 18px;
+}
+.researchButton {
+	height:64px;
+	width:64px;
+	font-size:16px;
+  color: #3399ff;
+	border-style:groove;
+	border-width:5px;
+}
+.normalResearchButton {
+  border-color: rgba(0,204,204,0.9);
+}
+.permanentResearchButton {
+  border-color: rgba(255,255,255,0.9);
+}
+.studyResearchButton {
+  border-color: rgba(153,0,0,0.9);
+}
+.unknownResearchButton {
+  border-color: rgba(153,153,153,0.8);
+}
+#discoveryPanel {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100vw;
+  font-size: 16px;
+  background: linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
+	padding:5px;
+	z-index:3
+}
+.observation {
+  width: 180px;
+  height: 60px;
+  margin: 4px;
+  border-radius: 12px;
+  background-color: rgba(179,204,255,0.75)
+}
+.researchtext {
+  color: #66ccff;
+}
+.study {
+  height: 480px;
+  width: 400px;
+  border-style: solid;
+  border-width: 5px;
+  border-radius: 32px;
+	margin:16px
+}
+.study0 {
+	border-color: rgba(102,0,0,0.9);
+	background-color: rgba(153,0,0,0.9);
+	color: #cc0000;
+}
+.study1 {
+	border-color: rgba(102,102,0,0.9);
+	background-color: rgba(153,153,0,0.9);
+	color: #cccc00;
+}
+.study2 {
+	border-color: rgba(0,102,0,0.9);
+	background-color: rgba(0,153,0,0.9);
+	color: #00cc00;
+}
+.study3 {
+	border-color: rgba(0,102,102,0.9);
+	background-color: rgba(0,153,153,0.9);
+	color: #00cccc;
+}
+.study4 {
+  border-color: rgba(68,0,102,0.9);
+  background-color: rgba(102,0,153,0.9);
+  color: #8800cc;
+}
+.startStudyEnabled {
+  height: 48px;
+  width: 150px;
+	border-radius:8px;
+  background-color: rgba(0,0,102,0.9);
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(0,68,170,0.9);
+	color:#ffffff;
+}
+.startStudyDisabled {
+  height: 48px;
+  width: 150px;
+	border-radius:8px;
+  background-color: rgba(60,120,150,0.9);
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(0,68,170,0.9);
+}
+.stardusttextsmall {
+  background: -webkit-radial-gradient(circle,#ff0,#f60);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.wormholetextsmall {
+  color: #0000ff;
+  text-shadow: 0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
+}
+.wormholeMilestone {
+  width:230px;
+  height:140px;
+  margin:8px;
+  background-image:repeating-radial-gradient(circle,#190033,#330066 10%,#190033 20%);
+  color:rgba(255,255,255,0.9);
+  font-weight:700;
+  font-size:14px;
+	border-style:solid;
+	border-color:#0000ff;
+	border-radius:25px;
+	border-width:2px;
+}
+.wormholeMilestone h3 {
+  text-decoration:underline;
+  font-weight:800;
+  font-size:18px;
+}
+.achievementtiercontainer {
+  width:90vw;
+  border-style:solid;
+  border-width:8px;
+  border-radius:32px;
+  padding:16px;
+  text-align:center;
+  margin:30px
+}
+.achievement {
+  width:100px;
+  height:100px;
+  border-radius:10px;
+  display:inline-block;
+  text-align:center;
+  vertical-align:top;
+  border-style:solid;
+  border-width:2px;
+  margin:4px;
+}
+#achievementPanel {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 240px;
+  font-size: 16px;
+  background: linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1))
 }

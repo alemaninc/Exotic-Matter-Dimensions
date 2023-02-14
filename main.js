@@ -1,2000 +1,1624 @@
-// infOP VI, produced by alemaninc
-function infAdd(x,y) {                 // Adds two infNumbers - for example, infAdd(1,0) returns 1.0414 (log(10+1)) 
-  if (Math.abs(x-y)>16) {              // If the quotient of x and y is more than 1e+16, the addition is negligible
-    return Math.max(x,y)
-  } else {
-    z = Math.min(x,y)
-    return z+Math.log10(10**(x-z)+10**(y-z))
-  }
-}
-function infSubtract(x,y) {            // Subtracts two infNumbers - if y is greater than x 0 is output. For example, infSubtract(1,0) returns 0.9542 (log(10-1))
-  if (x-y>16) {                        // If y is less than 1/1e+16 of x, the subtraction is negligible
-    return x
-  } else if (x==y) {                   // If x and y are equal, 1/1e+100 is output instead of -Infinite.
-    return -100
-  } else if (y>x) {                    // If a negative value would be infoutput, 0 is infoutput instead as the library can't support negative numbers. However, the game has controls in place to make sure negative values never occur
-    return -100
-  } else {
-    return x+Math.log10(1-10**(y-x))
-  }
-}
-var notation="Mixed scientific"
-function infFormat(x,y) {
-  if (isNaN(x)) return "NaN"
-  if (Math.abs(x)<3) return Math.round((y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)*10**x)/(y ? 10**Math.max(0,Math.min(5,2-Math.floor(x))) : 1)
-  if (Math.abs(x)<6) return Math.round(10**x).toLocaleString('en-US')
-  else if ((x<-99)&&(x>-101)) return 0
-  m=(x>0)?"":"1 / "
-  x=Math.abs(x)
-  if (notation=="Alemaninc Ordinal") {
-    infoutput="α<sub>"+(Math.floor(((x<10) ? 10*x : 100*(1+Math.log(x/10)*0.2)**5)-30).toLocaleString('en-US'))+"</sub>"
-    return m+infoutput
-  } else if (notation=="Double Logarithm") {
-    return m+"ee"+Math.log10(x).toFixed(5)
-  } else if (notation=="Engineering") {
-    function preE_length(z) { // funxction to calculate length of Characters in front of floating point
-      z=Math.abs(z)
-      return m+(10 ** (z % 3) - ((10 ** (z % 3) % 1)) % 1).toString().length
-    }
-    var t = Math.log10(Math.abs(x)) // t only in use for (x>1e9)
-    return m+((Math.abs(x) < 1e9)
-      ? (10 ** (x % 3)).toFixed((preE_length(x) == 3) ? 1 : (preE_length(x) == 2) ? 2 : 3) // dynamic float
-      + "e" + (x - (x % 3)).toLocaleString("en-US")
-      : "e" + (10 ** (x % 3)).toFixed((preE_length(t) == 3) ? 1 : (preE_length(t) == 2) ? 2 : 3) // dynamic float
-      + "e" + (t - (t % 3)).toLocaleString("en-US"));
-  } else if (notation=="Infinity") {
-    infoutput=Math.log(x)/308.25471555991675
-    return m+(((infoutput>1e6)?((10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US")):infoutput.toFixed(6))+"∞")
-  } else if (notation=="Logarithm") {
-    return m+((x<1e9) ? "e"+(x.toFixed((x>100000)?0:2)).toLocaleString('en-US') : "e"+Math.floor(100*10**(x%1))/100+"e"+Math.floor(Math.log10(x)))
-  } else if (notation=="Mixed scientific") {
-    const endings=["K","M","B","T","Qa","Qt","Sx","Sp","Oc","No"]
-    return m+((x<0?"1 / ":"")+((x<33) ? (10**(x%3)).toFixed(2)+" "+endings[Math.floor(x/3)-1]                    // 3.5 = 3.16 K
-    : (x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US")                                 // 38462.25 = 1.77e38,462
-    : (x<1e33) ? "e"+(10**(Math.log10(x)%3)).toFixed(2)+" "+endings[Math.floor(Math.log10(x)/3)-1]               // 1.23e21 = e1.23 Sx
-    : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x))))                           // 2.34e56 = e2.34e56
-  } else if (notation=="Scientific") {
-    return m+((x<1e9) ? (10**(x%1)).toFixed(2)+"e"+Math.floor(x).toLocaleString("en-US") : "e"+(x/10**Math.floor(Math.log10(x))).toFixed(2)+"e"+Math.floor(Math.log10(x)))
-  } else if (notation=="Tetration") {
-    infoutput = 0
-    while ((x>0.4342944819)&&(infoutput<5)) {
-      x=(Math.log(x*Math.log(10))/Math.log(10))
-      infoutput++
-    }
-    return m+"e ⇈ "+(infoutput+(x*Math.log(10))).toFixed(6)
-  } else {
-    return "Notation Error!"
-  }
-}
-function normFormat(x) {               // Formats a regular number the same way infNumbers would be formatted
-  if (x==0) return 0
-  else if ((x>=1e6)||(x<=1e-6)) return infFormat(Math.log10(x))
-  else if (x>=1000) return Math.round(x).toLocaleString("en-US")
-  else if (Math.abs(x)>=100) return Math.round(x)
-  else {
-    precision=2+Math.max(0,-Math.floor(Math.log10(x)))
-    return Math.round(x*10**precision)/10**precision
-  }
-}
-function twoDigits(x) {                // Formats a one-digit number as two digits. For example, twoDigits(7) returns 07. Used in timeFormat
-  return (x<10) ? "0"+Math.floor(x) : Math.floor(x)
-}
-function timeFormat(x) {               // Formats an amount of seconds as a time. For example, timeFormat(73) returns 1:13 and timeFormat(90123) returns 1 day 1:02:03
-  return (x<1) ? Math.floor(x*1000)+" milliseconds" : (x<10) ? Math.floor(x*1000)/1000+" seconds" : (x<60) ? Math.floor(x)+" seconds" : (x<3600) ? Math.floor(x/60)+":"+twoDigits(Math.floor(x%60)) : (x<86400) ? Math.floor(x/3600)+":"+twoDigits(Math.floor(x/60)%60)+":"+twoDigits(Math.floor(x%60)) : (x<1e15) ? Math.floor(x/86400)+" days "+Math.floor(x/3600)%24+":"+twoDigits(Math.floor(x/60)%60)+":"+twoDigits(Math.floor(x%60)) : normFormat(x/31556926)+" years"
-}
-
-// The following code is for Advanced infOP only.
-function normLinearSoftcap(value,start,power) {
-  return (value<start) ? value : start*(1+(power+1)*(value/start-1))**(1/(power+1))
-}
-function infLinearSoftcap(value,start,power) {
-  return (value<start) ? value : start+infAdd(0,Math.log10(power+1)+infSubtract(value-start,0))/(power+1)
-}
-function LogarithmicSoftcap(value,start,power) {
-  return (value<start) ? value : start*(1+Math.log(value/start)*power)**(1/power)
-}
-function SuperlogSoftcap(value,start,power) {
-  if (value<start) {
-    return value
-  }
-  c=(value/start)**power
-  if (c=="Infinity") c=1.79e308
-  multiplier=(c<Math.exp(1)) ? 1+Math.log(c) : (c<Math.exp(Math.exp(1))) ? 2+Math.log(Math.log(c)) : (c<Math.exp(Math.exp(Math.exp(1)))) ? 3+Math.log(Math.log(Math.log(c))) : 4+Math.log(Math.log(Math.log(Math.log(c))))
-  return start*multiplier**(1/power)
-}
-function ConvergentSoftcap(value,start,end) {
-  return (Math.sign(value-start)==Math.sign(start-end)) ? value : end-(end-start)/(1+(value-start)/(end-start))
-}
-function normLinearScaling(value,start,power) {
-  return (value<start) ? value : start/(power+1)*(power+(value/start)**(power+1))
-}
-function infLinearScaling(value,start,power) {
-  return (value<start) ? value : start-Math.log10(power+1)+infAdd(Math.log10(power),(value-start)*(power+1))
-}
-function normSemiexpScaling(value,start,power) {
-  return (value<start) ? value : 10**(Math.log10(start)*(Math.log(value)/Math.log(start))**(power+1)-Math.log10(power+1))+start*(1-1/(power+1))
-}
-function infSemiexpScaling(value,start,power) {
-  return (value<start) ? value : infAdd(start*(value/start)**(power+1)-Math.log10(power+1),start*(1-1/(power+1)))
-}
-function ExponentialScaling(value,start,power) {
-  return (value<start) ? value : start*Math.exp(((value/start)**power-1)/power)
-}
-function SuperexpScaling(value,start,power) {
-    if (value<start) return value
-    c=(value/start)**power
-    multiplier=(c<2) ? Math.exp(c-1) : (c<3) ? Math.exp(Math.exp(c-2)) : (c<4) ? Math.exp(Math.exp(Math.exp(c-3))) : Math.exp(Math.exp(Math.exp(Math.exp(c-4))))
-    return (multiplier=="Infinity" ? 1.79e308 : start*multiplier**(1/power))
-}
-function divergentScaling(value,start,end) {
-  return (value>=end) ? 1e300 : ((value<start) ? value : start+(end-start)*((end-start)/(end-value)-1))
-}
-function infFloor(x) {
-  return (x<0)?-100:(x>16)?x:Math.log10(Math.floor(10**x))
-}
-function safeExponent(x,y) {
-  return Math.sign(x)*Math.abs(x)**y
-}
-function choosei(n,k){
-    var result = 1;
-    for(var i=1; i <= k; i++){
-        result *= (n+1-i)/i;
-    }
-    return result;
-}
-function normSimplex(x,y) {
-  return choosei(x+y-1,y)
-}
-function infSimplex(x,y) {
-  if (x<16) {
-    return Math.log10(normSimplex(10**x,y))
-  } else {
-    infOutput=x*y
-    for (i=2;i<=y;i++) infOutput-=Math.log10(i)
-    return infOutput
-  }
-}
-// End of infOP
-
-function openTab(name) {
-  var i;
-  var x = document.getElementsByClassName("tab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function openStardustTab(name) {
-  let i;
-  let x = document.getElementsByClassName("stardustTab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function openStatisticsTab(name) {
-  let i;
-  let x = document.getElementsByClassName("statisticsTab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function openOptionsTab(name) {
-  let i;
-  let x = document.getElementsByClassName("optionsTab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function openMainTab(name) {
-  let i;
-  let x = document.getElementsByClassName("mainTab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function openHTP(name) {
-  var i;
-  var x = document.getElementsByClassName("htpTab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function openSSB(name) {
-  var i;
-  var x = document.getElementsByClassName("ssbTab");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(name).style.display = "inline-block";  
-}
-function toggleTableRow(row,type) {
-  if (type=="show") {
-    document.getElementById(row).removeAttribute("hidden")
-  } else {
-    document.getElementById(row).setAttribute("hidden","hidden")
-  }
-}
-function toggleGlow(tab,type) {
-  if (type) {
-    document.getElementById(tab).classList.add("glownotify")
-  } else {
-    document.getElementById(tab).classList.remove("glownotify")
-  }
-}
-function fix(x) {
-  if (isNaN(x)) return 0
-  if (x==null) return 0
-  if (x==undefined) return 0
-  return x
-}
-
-
-
-
-
-var g = {
-  exoticmatter: 0, // InfNumber
-  exoticmatterThisStardustReset: 0, // InfNumber
-  exoticmatterThisWormholeReset: 0, // InfNumber
-  totalexoticmatter: 0, // InfNumber
-  exoticmatterPerSec: 0, // InfNumber
-  XAxis: 0,
-  YAxis: 0,
-  ZAxis: 0,
-  WAxis: 0,
-  VAxis: 0,
-  UAxis: 0,
-  TAxis: 0,
-  SAxis: 0,
-  freeXAxis: 0,
-  freeYAxis: 0,
-  freeZAxis: 0,
-  freeWAxis: 0,
-  freeVAxis: 0,
-  freeUAxis: 0,
-  freeTAxis: 0,
-  freeSAxis: 0,
-  realXAxis: 0,
-  realYAxis: 0,
-  realZAxis: 0,
-  realWAxis: 0,
-  realVAxis: 0,
-  realUAxis: 0,
-  realTAxis: 0,
-  realSAxis: 0,
-  axisCostDivisor: 0, // InfNumber
-  axisCostExponent: 1,
-  XAxisCost: 0, // InfNumber
-  XAxisEffect: 0,
-  YAxisCost: 0, // InfNumber
-  YAxisEffect: -3, // InfNumber
-  ZAxisCost: 0, // InfNumber
-  ZAxisEffect: 0, // InfNumber
-  WAxisCost: 0, // InfNumber
-  WAxisEffect: 0, // InfNumber
-  VAxisCost: 0, // InfNumber
-  VAxisEffect: 0, // InfNumber
-  UAxisCost: 0, // InfNumber
-  UAxisEffect: 0, // InfNumber
-  TAxisCost: 0, // InfNumber
-  TAxisEffect: 0, // InfNumber
-  SAxisCost: 0, // InfNumber
-  SAxisEffect: 0,
-  axisScalingStart: 8,
-  axisSuperscalingStart: 128,
-  totalAxis: 0,
-  axisUnlocked: 0,
-  masteryPower: -100,
-  masteryPowerPerSec: -100,
-  baseMasteryPowerGain: 0, // InfNumber
-  baseMasteryPowerExponent: 0,
-  masteryRowsUnlocked: [0,0,0,0,0,0,0,0,0,0],
-  activeMasteries: [0,0,0,0,0,0,0,0,0,0],
-  Mastery11Effect: 0, // InfNumber
-  Mastery12Effect: 0, // InfNumber
-  Mastery21Effect: 0, // InfNumber
-  Mastery22Effect: 0, // InfNumber
-  Mastery31Effect: 0,
-  Mastery32Effect: 0,
-  Mastery41Effect: 0,
-  Mastery42Effect: 0, // InfNumber
-  Mastery43Effect: 0,
-  Mastery51Effect: 0,
-  Mastery52Effect: 0,
-  Mastery61Effect: 0,
-  Mastery62Effect: 0,
-  Mastery63Effect: 0,
-  Mastery71Effect: 0,
-  Mastery72Effect: 0,
-  Mastery81Effect: 0, // InfNumber
-  Mastery82Effect: 0, // InfNumber
-  Mastery83Effect: 0, // InfNumber
-  Mastery84Effect: 0, // InfNumber
-  Mastery85Effect: 0, // InfNumber
-  Mastery91Effect: 0,
-  Mastery92Effect: 0,
+"use strict"
+const basesave = {
+  exoticmatter: N(0),
+  exoticmatterThisStardustReset: N(0),
+  exoticmatterThisWormholeReset: N(0),
+	exoticmatterThisSpacetimeReset: N(0),
+  totalexoticmatter: N(0),
+  XAxis: N(0),
+  YAxis: N(0),
+  ZAxis: N(0),
+  WAxis: N(0),
+  VAxis: N(0),
+  UAxis: N(0),
+  TAxis: N(0),
+  SAxis: N(0),
+  masteryPower: N(0),
+  baseMasteryPowerGain: N(1),
+  activeMasteries: [null,0,0,0,0,0,0,0,0,0,0],
   timePlayed: 0,
-  truetimePlayed: -100, // InfNumber
-  HTPshown: 1,
-  tickspeed: 0, // infNumber
+  truetimePlayed: N(0),
+  HTPshown: ["Exotic Matter"],
+  featuresUnlocked: [],
   colortheme: "Default",
   timeThisStardustReset: 0,
-  truetimeThisStardustReset: -100, // InfNumber
-  fastestStardustReset: 9e15,
+  truetimeThisStardustReset: N(0),
+  fastestStardustReset: N(9e15),
   timeThisWormholeReset: 0,
-  truetimeThisWormholeReset: -100, // InfNUmber
-  fastestWormholeReset: 9e15,
+  truetimeThisWormholeReset: N(0),
+  fastestWormholeReset: N(9e15),
+	timeThisSpacetimeReset: 0,
+	truetimeThisSpacetimeReset: N(0),
+	fastestSpacetimeReset: N(9e15),
   storySnippets: [],
   timeLeft: 0,
   offlineSpeedupLength: 30,
-  offlineSpeedupOn: true,
+  offlineSpeedupOn: "On",
   notation: "Mixed scientific",
+  ownedAchievements: [],
   StardustResets: 0,
-  stardust: -100, // InfNumber
-  StardustMultiplier: 0, // InfNumber
-  StardustExponent: 1,
-  pendingstardust: 0, // InfNumber
+  stardust: N(0),
   autosaveIsOn: true,
-  StardustBoost1: 0, // InfNumber
-  StardustBoost2: 0,
-  StardustBoost3: 0,
-  StardustBoost4: 0,
-  StardustBoost5: 0, // InfNumber
-  StardustBoost6: 0, // InfNumber
-  StardustBoost7: 0,
-  StardustBoost8: 0,
   stardustUpgrades: [0,0,0,0,0],
   axisAutobuyerOn: false,
   axisAutobuyerUpgrades: 0,
-  axisAutobuyerInterval: 5,
-  axisAutobuyerProgress: 0,
-  axisAutobuyerCost: 0, // InfNumber
+  axisAutobuyerCaps:["u","u","u","u","u","u","u","u","u","u","u","u"],
   stars: 0,
-  unspentStars: 0,
-  starCost: 3.60205999134, // InfNumber
-  starRow: [1,1,2,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8,9,10,8,9,10,9,10,10], // Which row the next star is in. For those who don't know, Stars have to be bought in a pyramid-like fashion which is laid out in this variable.
   ownedStars: [],
-  Star11Effect: 0,
-  Star12Effect: 0,
-  Star13Effect: 0,
-  Star14Effect: 0,
-  Star71Effect: 0,
-  Star72Effect: 0,
-  Star73Effect: 0,
-  Star74Effect: 0,
-  Row9StarEffect: 0,
-  darkmatter: 0, // InfNumber
-  darkmatterPerSec: 0, // InfNumber
-  darkXAxis: 0,
-  darkYAxis: 0,
-  darkZAxis: 0,
-  darkWAxis: 0,
-  darkVAxis: 0,
-  darkUAxis: 0,
-  darkTAxis: 0,
-  darkSAxis: 0,
-  freedarkXAxis: 0,
-  freedarkYAxis: 0,
-  freedarkZAxis: 0,
-  freedarkWAxis: 0,
-  freedarkVAxis: 0,
-  freedarkUAxis: 0,
-  freedarkTAxis: 0,
-  freedarkSAxis: 0,
-  realdarkXAxis: 0,
-  realdarkYAxis: 0,
-  realdarkZAxis: 0,
-  realdarkWAxis: 0,
-  realdarkVAxis: 0,
-  realdarkUAxis: 0,
-  realdarkTAxis: 0,
-  realdarkSAxis: 0,
-  darkaxisCostDivisor: 0, // InfNumber
-  darkaxisCostExponent: 1,
-  darkXAxisCost: 0, // InfNumber
-  darkXAxisEffect: 0, // InfNumber
-  darkYAxisCost: 0, // InfNumber
-  darkYAxisEffect: 0, // InfNumber
-  darkZAxisCost: 0, // InfNumber
-  darkZAxisEffect: 0, // InfNumber
-  darkWAxisCost: 0, // InfNumber
-  darkWAxisEffect: 0, // InfNumber
-  darkVAxisCost: 0, // InfNumber
-  darkVAxisEffect: 0, 
-  darkUAxisCost: 0, // InfNumber
-  darkUAxisEffect: 0, // InfNumber
-  darkTAxisCost: 0, // InfNumber
-  darkTAxisEffect: 0, // InfNumber
-  darkSAxisCost: 0, // InfNumber
-  darkSAxisEffect: 0, // InfNumber
-  darkaxisScalingStart: 8,
-  darkaxisSuperscalingStart: 100,
-  totaldarkAxis: 0,
-  darkMatterFreeAxis: 1/3,
-  darkstars: 0,
-  darkstarScalingStart: 48,
-  darkstarRequirement: 0,
+  darkmatter: N(0),
+  darkXAxis: N(0),
+  darkYAxis: N(0),
+  darkZAxis: N(0),
+  darkWAxis: N(0),
+  darkVAxis: N(0),
+  darkUAxis: N(0),
+  darkTAxis: N(0),
+  darkSAxis: N(0),
+  darkstars: N(0),
   darkstarBulk: true,
-  energyTypesUnlocked: 0,
-  darkEnergy: 0,       // InfNumber
-  darkEnergyPerSec: 0, // InfNumber
-  darkEnergyEffect: 0, // InfNumber
-  stelliferousEnergy: 0,          // InfNumber
-  stelliferousEnergyPerSec: 0,    // InfNumber
-  stelliferousEnergyEffect: 0,    // InfNumber
-  gravitationalEnergy: 0,            // InfNumber
-  gravitationalEnergyPerSec: 0,      // InfNumber
-  gravitationalEnergyEffect: 0,      // InfNumber
-  spatialEnergy: 0,            // InfNumber
-  spatialEnergyPerSec: 0,      // InfNumber
-  spatialEnergyEffect: 0,      // InfNumber
-  neuralEnergy: 0,            // InfNumber
-  neuralEnergyPerSec: 0,      // InfNumber
-  neuralEnergyEffect: 0,      // InfNumber
-  metaEnergy: 0,            // InfNumber
-  metaEnergyPerSec: 0,      // InfNumber
-  metaEnergyEffect: 0,      // InfNumber
-  energySpeedMult: 0, // InfNumber
-  energyEffectBoost: 1,
-  supernovaUnlocked: false,
-  EMSupernova: {
-    charges: 1,
-    maxCharges: 1,
-    power: 1.05,
-    upgrade1: 0,
-    upgrade2: 0
-  },
-  KnowledgeSupernova: {
-    unlocked: false,
-    charges: 1,
-    maxCharges: 1,
-    power: 1.05,
-    upgrade1: 0,
-    upgrade2: 0
-  }
+  darkEnergy: N(1),
+  stelliferousEnergy: N(1),
+  gravitationalEnergy: N(1),
+  spatialEnergy: N(1),
+  neuralEnergy: N(1),
+  metaEnergy: N(1),
+  hawkingradiation: N(0),
+  WormholeResets: 0,
+  ach505Progress: N(0),
+  shiningBrightTonight: true,
+  ach519possible: true,
+  ach524possible: true,
+  ach525possible: true,
+  ach526possible: true,
+  darkAxisAutobuyerOn: false,
+  darkAxisAutobuyerUpgrades: 0,
+  darkAxisAutobuyerCaps:["u","u","u","u","u","u","u","u","u","u","u","u","u"],  // 13th item = dark stars
+  stardustUpgradeAutobuyerOn: false,
+  stardustUpgradeAutobuyerUpgrades: 0,
+  starAutobuyerOn: false,
+  starAutobuyerUpgrades: 0,
+  starAutobuyerCap: "u",
+  starAllocatorOn: false,
+	starAllocatorBuild: [],
+	wormholeAutomatorOn: false,
+	wormholeAutomatorMode: "amount",
+	wormholeAutomatorValue: "1",
+	stardustAutomatorOn: false,
+	stardustAutomatorMode: "amount",
+	stardustAutomatorValue: "1",
+  ownedResearch: [],
+  permanentResearch: [],
+  researchVisibility:["r1_3","r1_8","r1_13"],
+	researchRespec: false,
+  totalDiscoveries: N(0),
+  spentDiscoveries: N(0),
+  permanentSpentDiscoveries: N(0),
+  observations: [N(0),N(0),N(0),N(0)],
+  knowledge: N(0),
+  activeStudy: 0,
+  studyCompletions: [null,0,0,0,0,0,0,0,0,0,0,0,0,0],
 }
+var g = Object.assign({},basesave) // "game"
+var timeSinceGameOpened = 0                 // "halted" achievements were being awarded randomly on load
 var screen = 1    // 1: game      2: story
-var axisCodes = ["X","Y","Z","W","V","U","T","S"]
+const axisCodes = ["X","Y","Z","W","V","U","T","S"]
+const masteryCodes = [11,12,21,22,31,32,41,42,43,51,52,61,62,63,71,72,81,82,83,84,85,91,92,101,102,103]
+// Returns the sub-group of a mastery within a row
+function masterySubGroup(id) {
+	if (id==42) return 2
+	return 1
+}
+const totalMasteryRows = Math.floor(masteryCodes.reduce((x,y) => Math.max(x,y))/10)
+function fixMasteryArrays() {
+  let masteryArrays = ["activeMasteries"]
+  for (let i=0;i<masteryArrays.length;i++) while (g[masteryArrays[i]].length<=totalMasteryRows) g[masteryArrays[i]].push(0)
+}
+fixMasteryArrays()
 var savecounter = 0 // will prevent save before load
 var oldframetime = new Date().getTime()
 var newframetime = new Date().getTime()
-const masteryBoosts = {            // This contains the effect multipliers for individual Masteries and is updated automatically by the game loop
-  b11: 1,
-  b12: 1,
-  b21: 1,
-  b22: 1,
-  b31: 1,
-  b32: 1,
-  b41: 1,
-  b42: 1,
-  b43: 1,
-  b51: 1,
-  b52: 1,
-  b61: 1,
-  b62: 1,
-  b63: 1,
-  b71: 1,
-  b72: 1,
-  b81: 1,
-  b82: 1,
-  b83: 1,
-  b84: 1,
-  b85: 1,
-  b91: 1,
-  b92: 1
+const stardustExoticMatterReq = N(1e25)
+var axisAutobuyerProgress = 0
+var energyTypes = ["dark","stelliferous","gravitational","spatial","neural","meta"]
+var energyResources = ["Exotic matter gain","Stardust gain","Dark matter gain","Free X axis","Mastery power gain","Energy gain"]
+var energyDeterminers = ["exotic matter","stardust","dark matter","X axis","mastery power","all energies"]
+var energyHyper = [3,3,3,2,3,3]
+function HRDarkAxisReq() {
+	if (g.activeStudy==0) return N(1000)
+	return N(studies[g.activeStudy].goal())
 }
-if (g.colortheme == "Default") scheme = "color: #39f;background-color: #190033"
-if (g.colortheme == "Red") scheme = "color: #f00;background-color: #300"
-if (g.colortheme == "Green") scheme = "color: #0f0;background-color: #030"
-if (g.colortheme == "Blue") scheme = "color: #00f;background-color: #003"
-if (g.colortheme == "Cyan") scheme = "color: #0ff;background-color: #033"
-if (g.colortheme == "Magenta") scheme = "color: #f0f;background-color: #303"
-if (g.colortheme == "Yellow") scheme = "color: #ff0;background-color: #330"
-if (g.colortheme == "Light Gray") scheme = "color: #ccc;background-color: #666"
-if (g.colortheme == "Dark Gray") scheme = "color: #666;background-color: #333"
-if (g.colortheme == "Black") scheme = "color: #fff;background-color: #000"
-if (g.colortheme == "Auto (DarkReader)") scheme = "color: #39f;background-color: #190033"
-if (g.colortheme !== "Auto (DarkReader)") document.getElementById("bodytheme").style = scheme+";font-size: 15px;font-family:verdana;text-align:center;"
-
-var stardustExoticMatterReq = 22 // InfNumber
-var stardustExoticMatterReqText = "";
-var progressbarvalue = 0
-var progressbartooltip = ""
+var wormholeAnimationActive = false
+var wormholeAnimationStart = 0
+var darkAxisAutobuyerProgress = 0
+var stardustUpgradeAutobuyerProgress = 0
+var starAutobuyerProgress = 0
 var deltatime = 0
-var baseOfflineSpeedup = 1
-var offlineSpeedup = 1
-var offlineTime = 0
-var glowtabs = [[0,0,0],[0,0,0]]
-var stardustUpgrade1Cost = [6.3010299957,10.54406804435,14,20,1e300] // 2 M, 35 B, 100 T, 100 Qt
+var lagAchievementTicks = 0
+var fpsAchievementTicks = 0
+var themeAchievementCount = 0
+function tabGlow(tab) {
+	if (tab=="Axis") {
+		if (autobuyerMeta.interval("axis")==0.1&&g.axisAutobuyerOn) return false
+		for (let i=0;i<8;i++) if (g.exoticmatter.gt(axisCost(axisCodes[i]))&&(axisUnlocked()>i)) return true
+	}
+	if (tab=="Masteries") for (let i=1;i<=totalMasteryRows;i++) if (MasteryE(10*i)&&masteryRowsUnlocked(i)&&!masteredRow(i)) return true
+	if (tab=="Stardust Boosts") for (let i=1;i<6;i++) if (stardustUpgradeCost(i).lt(g.stardust)&&g.stardustUpgrades[i-1]<stardustUpgradeCap(i)) return true
+	if (tab=="Stars") return ((unspentStars()>0)||(g.stardust.gt(starCost())))&&g.ownedStars.length<40
+	if (tab=="Dark Matter") {
+		if (autobuyerMeta.interval("darkAxis")==0.1&&g.darkAxisAutobuyerOn) return false
+		for (let i=0;i<8;i++) if (g.darkmatter.gt(darkAxisCost(axisCodes[i]))) return true
+		return totalAxis("dark").gte(darkStarReq())
+	}
+	if (tab=="Automation") {
+		let data = Object.entries(autobuyers)
+		for (let i=0;i<data.length;i++) if (data[i][1].unlockReq()&&g[data[i][0]+"AutobuyerUpgrades"]!==autobuyerMeta.cap(data[i][0])&&g[data[i][1].resource].gt(autobuyerMeta.cost(data[i][0]))) return true
+	}
+	if (tab=="Research") for (let i=0;i<4;i++) if (g[observationResources[i]].gt(observationCost(i+1))) return true
+	return false
+}
+const formattags = {
+  i: document.querySelectorAll('[data-i]'),     // innerHTML
+  d: document.querySelectorAll('[data-d]'),     // display
+  v: document.querySelectorAll('[data-v]'),     // visibility
+  c: document.querySelectorAll('[data-c]'),     // class
+  s: document.querySelectorAll('[data-s]')      // src
+}
+// Takes an array consisting of a tab ID and parent tab IDs and determines if a tab is open or not. Used to only update HTML which is currently being viewed.
+function tabOpen(array) {
+  if (d.element("game").style.display == "none") return false
+  for (let i=0;i<array.length;i++) if (d.element(array[i]).style.display == "none") return false
+  return true
+}
+
 var stardustUpgrade2Tooltip = ["Unlock axis autobuyer","Keep 10% of X Axis on reset","Keep 10% of Y Axis on reset","Keep 10% of Z Axis on reset","Keep 10% of W Axis on reset","Keep 10% of V Axis on reset","Keep 10% of U Axis on reset","Keep 10% of T Axis on reset","Keep 10% of S Axis on reset","Maxed!"]
-var stardustUpgrade2Cost = [1.6989700044,2,4,6,8,12,16,24,100] // 50, 100, 10 K, 1 M, 100 M, 1 T, 10 Qa, 1 Sp, 1e100
-var stardustUpgrade3Cost = [9.6989700043,15,22,70,115,308.25471556,1e300] // 5 B, 1 Qa, 10 Sx, 1e70, 1e115, 1.8e308
-var stardustUpgrade4Cost = [1.8750612634,8,16,60,115,1e300] // 75, 100 M, 10 Qa, 1e60, 1e115
-var stardustUpgrade5Cost = [11.6989700043,55,90,200,250,345.3010299957,375,1e300] // 500 B, 1e55, 1e90, 1e200, 1e250, 2e345, 1e375
 var stardustUpgrade5Tooltip = ["Unlock Dark Matter","Unlock Energy","Unlock Stelliferous Energy","Unlock Gravitational Energy","Unlock Spatial Energy","Unlock Neural Energy","Unlock Meta Energy","Maxed!"]
-var SupernovaCosts = [[0,0]]
+function stardustUpgradeCap(x) {
+	if (x==1) return 4
+	if (x==2) return 9
+	if (x==3) return achievement.ownedInTier(5)>=11?10:6
+	if (x==4) return 5
+	if (x==5) return 7
+}
+function stardustUpgradeCost(x) {
+  let cost = [[1.5e6,4.5e10,1e14,1e20,c.maxvalue],
+              [50,100,1e4,1e6,1e8,1e12,1e16,1e24,1e100,c.maxvalue],
+              [3.3333e9,1.5e16,1e43,1e75,1e140,c.inf,"ee4","ee5","ee6","ee7",c.maxvalue],
+              [125,2e7,5e18,1e60,1e115,c.maxvalue],
+              [5e11,1e60,1e96,1e175,2.2222e222,1e270,c.inf,c.maxvalue]][x-1][g.stardustUpgrades[x-1]]
+  if (achievement.ownedInTier(5) >= 9) cost = N(cost).dilate(wormholeMilestone9Effect())
+	if (AchievementE(520)&&g.stardustUpgrades[x-1]==0) cost = cost.sqrt()
+	if (AchievementE(519)) cost = cost.div(2**g.stars)
+  return N(cost)
+}
+function axisEmpowerment(axis) {                                       // percentage of an axis which is empowered
+  let output = N(0)
+  if (axis=="Y"&&stat("YAxisEffect").gt(1)) output = output.add(realAxis("Y").mul(studies[1].reward(1).div(100)))
+  return output.min(eval(g[axis+"Axis"]))
+}
+function unempoweredAxis(axis) {
+  return realAxis(axis).sub(axisEmpowerment(axis))
+}
+function fullStudyName(x) {
+  return "Study "+roman(x)+": "+studies[x].name
+}
+function studyRewardHTML(studyNum,rewardNum,precision,completions) {
+	if (completions == undefined) completions = g.studyCompletions[studyNum]
+	if (completions == 4) return BEformat(studies[studyNum].reward(rewardNum,4),precision)
+	return BEformat(studies[studyNum].reward(rewardNum,completions),precision)+" → "+BEformat(studies[studyNum].reward(rewardNum,completions+1),precision)
+}
+const studies = {
+  1: {
+    name: "Autonomy",
+    description: function() {
+      return "You can't enter the Main, Stardust or Automation tabs, but everything inside them still works normally."
+    },
+    research: "r5_7",
+    goal: function() {
+      return g.studyCompletions[1]==4?c.maxvalue:research.r5_7.constant()
+    },
+    reward: function(num,comp) {
+			if (comp == undefined) comp = g.studyCompletions[1]
+      if (num==1) return N([0,0.2,0.33,0.42,0.5][comp])
+      if (num==2) return Decimal.convergentSoftcap(achievement.owned()**((5+comp)/6)/4,comp*5,comp*10)
+      if (num==3) return N([1,4,20,125,1000][comp])
+    },
+    reward_desc: function() {
+      return ["Empower "+studyRewardHTML(1,1,1)+"% of your Y axis",
+       	      "Keep an additional "+studyRewardHTML(1,2,2)+"% of each axis on Stardust reset (based on achievements)",
+              "Multiply hawking radiation gain by "+studyRewardHTML(1,3,0)].join("<br><br>")
+    }
+  },
+  2: {
+    name: "Big Bang Theory",
+    description: function() {
+      return "Star costs increase much faster and stars must be purchased in a different order, but each unspent star acts as a free dark star"
+    },
+    research: "r5_9",
+    goal: function() {
+      return [N(800),N(950),N(1100),N(1e100),c.maxvalue][g.studyCompletions[2]]
+    },
+    reward: function(num,comp) {
+			if (comp == undefined) comp = g.studyCompletions[2]
+      if (num==1) return N([0,9,16,21,25][comp])
+      if (num==2) return N([1,1.07,1.12,1.16,1.20][comp])
+      if (num==3) return N([0,0.25,0.45,0.6,0.75][comp])
+    },
+    reward_desc: function() {
+      return ["The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
+              "Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,2),
+              "Each unspent star acts as "+studyRewardHTML(2,3,1)+" free dark stars. Allocated stars count as half of this value. Does not work in Study II."].join("<br><br>")
+    }
+  }
+}
+function researchPower(row,col) {
+  let out = N(1)
+  if (achievement.ownedInTier(5)>=21&&row==1) out = out.mul(achievement.owned()/1000+1)
+  if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(achievement.owned()/500+1)
+  if (ResearchE("r8_11")&&row==1) out = out.mul(researchEffect(8,11).mul(g.stars).div(100).add(1))
+  return out
+}
+function researchEffect(row,col) {
+  return research["r"+row+"_"+col].effect(researchPower(row,col))
+}
+
+function availableThemes() {
+	let out = ["Default","Red","Green","Blue","Cyan","Magenta","Yellow","Light Gray","Dark Gray","Black"]
+	if (AchievementE("s16")) out.push("Wormhole")
+	return out
+}
+function theme() {
+  let scheme = "color: #39f;background: #190033"           // Default theme
+  if (g.colortheme == "Red") scheme = "color: #f00;background: #300"
+  if (g.colortheme == "Green") scheme = "color: #0f0;background: #030"
+  if (g.colortheme == "Blue") scheme = "color: #00f;background: #003"
+  if (g.colortheme == "Cyan") scheme = "color: #0ff;background: #033"
+  if (g.colortheme == "Magenta") scheme = "color: #f0f;background: #303"
+  if (g.colortheme == "Yellow") scheme = "color: #ff0;background: #330"
+  if (g.colortheme == "Light Gray") scheme = "color: #ccc;background: #666"
+  if (g.colortheme == "Dark Gray") scheme = "color: #666;background: #333"
+  if (g.colortheme == "Black") scheme = "color: #fff;background: #000"
+	if (g.colortheme == "Wormhole") scheme = "color: #39f;background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%); background-size: cover"
+	
+  document.getElementsByTagName("body")[0].style = scheme+";min-height:100vh;font-size: 15px;font-family:verdana;text-align:center;"
+	if (g.colortheme == "Default") themeAchievementCount++
+	addAchievement("s16")
+}
+theme()
 
 function incrementExoticMatter(x) {
-  if (isNaN(x)) x=-100
-  g.exoticmatter = infAdd(g.exoticmatter,x)
-  document.getElementById("exoticmatter").innerHTML = infFormat(g.exoticmatter,false);            // Replaces the green 0 with the amount of exotic matter the player has
-  document.getElementById("exoticmatterPerSec").innerHTML = infFormat(g.exoticmatterPerSec,true);
-  g.totalexoticmatter = infAdd(g.totalexoticmatter,x)
-  document.getElementById("totalExoticMatter").innerHTML = infFormat(g.totalexoticmatter,false);
-  g.exoticmatterThisStardustReset = infAdd(g.exoticmatterThisStardustReset,x)
-  document.getElementById("exoticMatterThisStardustReset").innerHTML = infFormat(g.exoticmatterThisStardustReset,false);
-  g.exoticmatterThisWormholeReset = infAdd(g.exoticmatterThisWormholeReset,x)
-  document.getElementById("exoticMatterThisWormholeReset").innerHTML = infFormat(g.exoticmatterThisWormholeReset,false);
+  x=x.fix(0)
+  let emtypes = ["exoticmatter","totalexoticmatter","exoticmatterThisStardustReset","exoticmatterThisWormholeReset","exoticmatterThisSpacetimeReset"]
+  for (let i=0;i<emtypes.length;i++) g[emtypes[i]]=g[emtypes[i]].add(x)
 }
-function infIncrement(res,x) {
-  g[res]=infAdd(g[res],x)
+function unlockFeature(x,condition) {
+  if (!g.featuresUnlocked.includes(x)&&eval(condition)) {
+    g.featuresUnlocked.push(x)
+    openStory(x)
+  }
+  generateAchievementsTab()
 }
-function infDeduct(res,x) {
-  g[res]=infSubtract(g[res],x)
+function unlocked(x) {
+  return g.featuresUnlocked.includes(x)
 }
 function openStory(x) {
   let snippets = {
-    'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+infFormat(g.stardust,false)+" atoms of <span class='stardustlayertext'>Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
+    'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+BEformat(g.stardust)+" atoms of <span class='stardustlayertext'>Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
     'Dark Matter': "<p>You have just condensed 500 billion Stardust atoms into a <span class='darkmattertext'>particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
-    'Energy': "<p>Well, you have a universe<sup>"+Math.floor(g.totalexoticmatter/80)+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class='energytext'>Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
-    'Supernova': "<p>By harnessing the power of energy, you've managed to accumulate ludicrous amounts of stardust - a universe<sup>"+Math.floor(g.stardust/80)+"</sup> of it to be precise.</p><p>And yet, for some reason, you are desperate for more.</p><p>You have spent many minutes searching for a new, powerful source of energy and matter and you found it. The largest outbursts of matter are created by <span style='text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 15px #fff,0 0 20px #fff,0 0 25px #fff,0 0 30px #fff,0 0 40px #fff,0 0 50px #fff,0 0 60px #fff,0 0 80px #fff,0 0 100px #fff,0 0 120px #fff,0 0 160px #fff,0 0 200px #fff,0 0 240px #fff,0 0 300px #fff,0 0 400px #fff'>supernovas</span> - massive, galaxy-shaking explosions created by a dying star on its last day.</p><p>However, due to the sheer quantities of energy needed to trigger a Supernova, they are inherently unsustainable - you have no hope of benefitting from their power if you squander them willy-nilly.</p>"
+    'Energy': "<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log(1e80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class='energytext'>Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
+    'Black hole': "<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of science'.</p>",
+    'Hawking Radiation': "<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class='wormholelayertext'>Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class='researchtext'>research</span>?</p>",
+		'Studies': "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"in which stars don't form easily":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you enlightenment.</p>"
   }
-  if (snippets[x]!==undefined) document.getElementById("storyTitle").innerHTML = x
-  if (snippets[x]!==undefined) document.getElementById("storyText").innerHTML = snippets[x]
-  if ((snippets[x]!==undefined)&&!(g.storySnippets.includes(x))) g.storySnippets.push(x)
-  screen = 2
+  if (snippets[x]!==undefined) {
+    d.innerHTML("storyTitle",x)
+    d.innerHTML("storyText",snippets[x])
+    if (!g.storySnippets.includes(x)) g.storySnippets.push(x)
+    d.display("game","none")
+    d.display("story","inline-block")
+  }
 }
-function updateAxisCosts() {
-  for (i=0;i<8;i++) {
-    let [a,c,scale1start,scale1power,scale2start,scale2power] = [g[axisCodes[i]+"Axis"],0,g.axisScalingStart,1,g.axisSuperscalingStart,1]
-    if (i==7) scale2power*=5
-    a = normSemiexpScaling(a,scale2start,scale2power)
-    a = normLinearScaling(a,scale1start,scale1power)
-    if (i==0) c = 0.6989700043+0.77815125038*a
-    if (i==1) c = 2+0.113623*g.YAxis+0.062469*a**2
-    if (i==2) c = 6+a**1.379654224
-    if (i==3) c = 7.57397000434+(a+0.5)**2/2
-    if (i==4) c = 20+a
-    if (i==5) c = 100+a**1.5
-    if (i==6) c = 160+10*a
-    if (i==7) c = 308.2547155599167*1.25**a
-    c-=g.axisCostDivisor
-    if (i==0) c-=g.StardustBoost5*g.XAxis
-    c*=g.axisCostExponent
-    g[axisCodes[i]+"AxisCost"]=c
+function axisArray(type) {
+  if (type=="normal") return [g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis]
+  if (type=="dark") return [g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis]
+}
+function axisScaling(type,tier,x) {
+  let out
+  if (type=="normal") {
+    if (tier=="normal") {
+      if (x=="start") {
+        out = N(8)
+      }
+      if (x=="power") {
+        out = N(1)
+        if (AchievementE(502)) out = out.mul(0.95)
+      }
+    }
+    if (tier=="super") {
+      if (x=="start") {
+        out = N(256)
+      }
+      if (x=="power") {
+        out = N(1)
+      }
+    }
   }
+  if (type=="dark") {
+    if (tier=="normal") {
+      if (x=="start") {
+        out = N(8)
+      }
+      if (x=="power") {
+        out = N(1)
+        if (AchievementE(530)) out = out.mul(0.99)
+        if (AchievementE(503)) out = out.mul(0.95)
+      }
+    }
+    if (tier=="super") {
+      if (x=="start") {
+        out = N(256)
+      }
+      if (x=="power") {
+        out = N(1)
+      }
+    }
+  }
+  return out
+}
+function realAxisCostDivisor(type) {
+  let output = stat("axisCostDivisor")
+  if (type=="X") output=output.mul(stardustBoost(5).pow(g.XAxis))
+  if (type=="Y"&&AchievementE(312)) output=output.mul(stardustBoost(5).pow(g.YAxis.mul(0.04)))
+  return output
+}
+function realAxisCostExponent(type) {
+  let output = stat("axisCostExponent")
+	if (type=="S"&&ResearchE("r3_5")) output = output.mul(researchEffect(3,5))
+  return output
+}
+function realAxisScalePower(type,tier,letter) {
+  let output=axisScaling(type,tier,"power")
+  if ([type,tier,letter].toString()==["normal","super","S"].toString()) output=output.mul(5)
+  if ([type,tier,letter].toString()==["dark","super","W"].toString()) output=output.mul(3)
+  if ([type,tier,letter].toString()==["dark","normal","S"].toString()) output=output.mul(2)
+  if ([type,tier,letter].toString()==["dark","super","S"].toString()) output=output.mul(5)
+  return output
+}
+function axisCost(type,axis) {
+  axis = (axis == undefined)?g[type+"Axis"]:N(axis)
+  let cost = null
+  let scale1start = axisScaling("normal","normal","start")
+  let scale1power = realAxisScalePower("normal","normal",type)
+  let scale2start = axisScaling("normal","super","start")
+  let scale2power = realAxisScalePower("normal","super",type)
+  axis = Decimal.semiexpScaling(axis,scale2start,scale2power)
+  axis = Decimal.linearScaling(axis,scale1start,scale1power)
+  if (type=="X") cost = N(6).pow(axis).mul(5)
+  if (type=="Y") cost = N(1.5).pow(axis.simplex(2)).mul(100)
+  if (type=="Z") cost = N(10).pow(axis.pow(1.379654224)).mul(1e6)
+  if (type=="W") cost = N(10).pow(axis.simplex(2)).mul(5e7)
+  if (type=="V") cost = N(10).pow(axis).mul(1e20)
+  if (type=="U") cost = N(10).pow(axis.pow(1.5)).mul(1e100)
+  if (type=="T") cost = N(1e10).pow(axis).mul(1e180)
+  if (type=="S") cost = N("2^1024").pow(N(1.25).pow(axis))
+  cost = cost.div(realAxisCostDivisor(type))
+  cost = cost.pow(realAxisCostExponent(type))
+  return cost
+}
+function maxAffordableAxis(type) {
+	if (axisCost(type).gte(g.exoticmatter)) return g[type+"Axis"]
+  let effective_EM = g.exoticmatter.root(realAxisCostExponent(type)).mul(realAxisCostDivisor(type))
+  let axis       // prevent "lexical declaration cannot appear in single-statement context"
+  if (type=="X") axis = effective_EM.lte(5)?N(-1):effective_EM.div(5).log(6)
+  if (type=="Y") axis = effective_EM.lte(100)?N(-1):effective_EM.div(100).log(1.5).mul(2).add(0.25).sqrt().sub(0.5)
+  if (type=="Z") axis = effective_EM.lte(1e6)?N(-1):effective_EM.log10().sub(6).pow(0.7248191884897692)
+  if (type=="W") axis = effective_EM.lte(5e7)?N(-1):effective_EM.div(5e7).log10().mul(2).add(0.25).sqrt().sub(0.5)
+  if (type=="V") axis = effective_EM.lte(1e20)?N(-1):effective_EM.log10().sub(20)
+  if (type=="U") axis = effective_EM.lte(1e100)?N(-1):effective_EM.log10().sub(100).pow(2/3)
+  if (type=="T") axis = effective_EM.lte(1e180)?N(-1):effective_EM.log10().sub(180).div(10)
+  if (type=="S") axis = effective_EM.lte(c.inf)?N(-1):effective_EM.log(2).div(1024).log(1.25)
+  axis = Decimal.linearSoftcap(axis,axisScaling("normal","normal","start"),realAxisScalePower("normal","normal",type))
+  axis = Decimal.semilogSoftcap(axis,axisScaling("normal","super","start"),realAxisScalePower("normal","super",type))
+  return axis.floor().add(1)
 }
 function buyAxis(x) {
-  if ((g.exoticmatter>g[x+"AxisCost"])&&(g.axisUnlocked>axisCodes.indexOf(x))) {
-    infDeduct("exoticmatter",g[x+"AxisCost"])
-    g[x+"Axis"]++
-    updateAxisCosts()
+  if ((g.exoticmatter.gte(axisCost(x)))&&(axisUnlocked()>axisCodes.indexOf(x))) {
+    o.sub("exoticmatter",axisCost(x))
+    o.add(x+"Axis",1)
   }
+  for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
+  if (g.SAxis.gt(0)) g.ach525possible=false
+  if (axisCodes.map(x => g[x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
 }
 
-function buyMaxAxis() {
-  for (j=0; j<8; j++) {
-    while ((g.exoticmatter>g[axisCodes[j]+"AxisCost"])&&(g.axisUnlocked>j)) buyAxis(axisCodes[j])
+function buyMaxAxis(caps) {
+  let totalBefore = totalAxis("normal")
+  for (let j=0; j<axisUnlocked(); j++) {
+    let amount = caps[j]=="u"?maxAffordableAxis(axisCodes[j]):Decimal.min(maxAffordableAxis(axisCodes[j]),N(caps[j]))
+    if (amount=="NA") continue
+    if (amount.lte(g[axisCodes[j]+"Axis"])) continue
+    if (axisCost(axisCodes[j],amount.sub(1)).lt(g.exoticmatter)) o.sub("exoticmatter",axisCost(axisCodes[j],amount.sub(1)))
+    g[axisCodes[j]+"Axis"]=amount
   }
+  for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
+  if (g.SAxis.gt(0)) g.ach525possible=false
+  if (axisCodes.map(x => g[x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
+  if (totalAxis("normal").sub(totalBefore).gte(5000)) addAchievement(530)
+}
+var empoweredAxisBought = 0
+function buyEmpoweredAxis() {
+	empoweredAxisBought++
+	for (let i=0;i<5;i++) if (empoweredAxisBought>=10**i) addAchievement("s"+(18+i))
+}
+function realAxis(x) {
+  return g[x+"Axis"].add(stat("free"+x+"Axis"))
+}
+function axisSoftcapStart() {
+	let out = N(1)
+	return Decimal.convergentSoftcap(out,axisSoftcapLimit().mul(0.75),axisSoftcapLimit())
+}
+function axisSoftcapLimit() {
+	let out = N(2)
+	return out
+}
+function axisUnlocked() {
+  return Math.min(1+g.XAxis.sign+g.YAxis.sign+g.ZAxis.sign+g.WAxis.sign+g.VAxis.sign+g.UAxis.sign+g.TAxis.sign+g.SAxis.sign,4+g.stardustUpgrades[0])
+}
+function totalAxis(type) {
+  return axisArray(type).reduce((x,y) => x.add(y))
+}
+function deltaBaseMasteryPowerGain(time) {
+  let out = stat("tickspeed")
+  if (ResearchE("r6_5")) out = out.mul(researchEffect(6,5).mul(achievement.owned()).add(1))
+  return out
+}
+
+function masteryRowsUnlocked(x) {
+	if (x==1) return (g.XAxis.gt(0) || g.StardustResets>0 || g.WormholeResets>0)?1:0
+	if (x==2) return (g.ZAxis.gt(0) || g.StardustResets>0 || g.WormholeResets>0)?1:0
+	if (x==3) return (totalAxis("normal").gte(40) || g.StardustResets>0 || g.WormholeResets>0)?1:0
+	if (x==4) return (g.exoticmatterThisSpacetimeReset.gte(stardustExoticMatterReq) || g.StardustResets>0 || g.WormholeResets>0)?2:totalAxis("normal").gte(50)?1:0
+	if (x==5) return g.stardustUpgrades[3]>=2?1:0
+	if (x==6) return g.stardustUpgrades[3]>=3?1:0
+	if (x==7) return g.stardustUpgrades[3]>=4?1:0
+	if ([8,9].includes(x)) return g.stardustUpgrades[3]>=5?1:0
+	if (x==10) return AchievementE(524)?1:0
 }
 function MasteryE(x) {
-  return ((g.activeMasteries[Math.floor(x/10)-1]==(x%10))||(g.activeMasteries[Math.floor(x/10)-1]==9))?1:0        // A value of 9 signifies that the row is "mastered" and all of its Masteries are active simultaneously. No row can have more than 8 Masteries for this reason.
+  let row = Math.floor(x/10)
+  return ((g.activeMasteries[row]==(x%10))||masteredRow(row))?1:0
+}
+function masteredRow(x) {
+  if (g.activeMasteries[x]==0) return false
+  if (x==1) return g.stardustUpgrades[3]>0
+  if (x<=9) return StarE([51,52,53,54,101,102,103,104][x-2])
 }
 function toggleMastery(x) {
-  if (!(x==g.activeMasteries[Math.floor(x/10)-1])) {
-    if ((g.activeMasteries[Math.floor(x/10)-1]!==0)&&(g.activeMasteries[Math.floor(x/10)-1]!==(x%10)&&(g.activeMasteries[Math.floor(x/10)-1]!==9))) {
-      g.baseMasteryPowerGain=0
-      g.masteryPowerPerSec=-100
-      g.masteryPower=0
+  let row = Math.floor(x/10)
+  if (!(x==g.activeMasteries[row])) {
+    if ((![0,x%10].includes(g.activeMasteries[row]))&&(!masteredRow(row))) {
+      g.baseMasteryPowerGain=N(1)
+      g.masteryPower=N(1)
     }
-    g.activeMasteries[Math.floor(x/10)-1]=x%10
+    g.activeMasteries[row]=x%10
   }
+  g.ach524possible=g.ach524possible&&achievement.get(524).active()
 }
-function updateMasteryBoosts() {
-  for (i=0;i<Object.keys(masteryBoosts).length;i++) {
-    x=Object.keys(masteryBoosts)[i]
-    masteryBoosts[x]=1
-    if ((["b11","b21","b31"].includes(x))&&MasteryE(41)) masteryBoosts[x]*=g.Mastery41Effect
-    if ((["b12","b22","b32"].includes(x))&&MasteryE(43)) masteryBoosts[x]*=g.Mastery43Effect
-    if ((["b11","b12"].includes(x))&&MasteryE(52)) masteryBoosts[x]*=g.Mastery52Effect
-    if ((["b81","b82","b83","b84","b85"].includes(x))&&MasteryE(91)) masteryBoosts[x]*=g.Mastery91Effect
-    if ((["b81","b82","b83","b84","b85"].includes(x))&&MasteryE(92)) masteryBoosts[x]*=g.Mastery92Effect
-    masteryBoosts[x]=fix(masteryBoosts[x])
+function masteryEffect(x) {
+  if (x==11) return g.masteryPower.add(1).pow(masteryBoost(11).mul(0.1))
+  if (x==12) return g.masteryPower.add(1).pow(masteryBoost(12).mul(0.15))
+  if (x==21) return g.masteryPower.add(1).dilate(0.6).pow(masteryBoost(21).mul(0.0175))
+  if (x==22) return g.masteryPower.add(1).dilate(0.6).pow(masteryBoost(22).mul(0.035))
+  if ([31,32].includes(x)) return g.masteryPower.add(1).log10().pow(0.5).mul(0.75).mul(masteryBoost(x))
+  if ([41,43].includes(x)) return Decimal.logarithmicSoftcap(g.masteryPower.add(1).log10().div(15),1,2).mul(masteryBoost(x)).add(1)
+  if (x==42) return g.masteryPower.add(1e4).dilate(0.5).div(100).pow(masteryBoost(42))
+  if (x==51) return g.masteryPower.add(1).log10().pow(0.6).mul(2.5).mul(masteryBoost(51))
+  if (x==52) return g.masteryPower.add(1).log10().pow(0.4).mul(2.5).mul(masteryBoost(51)).add(1)
+  if (x==61) return Decimal.logarithmicSoftcap(g.masteryPower.add(10).log10().pow(0.1).sub(1),9,2).mul(masteryBoost(61)).add(1)
+  if (x==62) return Decimal.logarithmicSoftcap(g.masteryPower.add(10).log10().pow(0.04),2,1).pow(masteryBoost(62).neg())
+  if (x==63) return g.masteryPower.add(1).log10().pow(0.8).mul(masteryBoost(63))
+  if (x==71) return g.masteryPower.pow(1.25).add(1e10).log10().log10().pow(masteryBoost(71))
+  if (x==72) return Decimal.logarithmicSoftcap(g.masteryPower.pow(1.25).add(1e10).log10().log10().pow(0.5).sub(1),1,5).mul(masteryBoost(72)).add(1)
+  if ([81,82,83,84].includes(x)) {
+    let output = Decimal.product(g.masteryPower.add(1).log10().pow(0.5),[0.03,0.1,0.2,0.24][x-81],masteryBoost(x))
+    if (x==81) output = output.mul(g.XAxis.pow(0.4))
+    if (x==82) output = output.mul(g.exoticmatter.add(10).log10().log10())
+    if (x==83) output = output.mul(g.darkmatter.add(10).log10().log10().pow(0.75))
+    if (x==84) output = output.mul(g.stardust.add(10).log10().log10().pow(0.5))
+    return Decimal.logarithmicSoftcap(output,100,1).pow10()
   }
+  if (x==85) return Decimal.product(g.masteryPower.add(10).log10().log10(),masteryBoost(85),0.2
+	)
+  if (x==91) return g.masteryPower.add(10).log10().log10().mul(0.1).mul(Decimal.mul(0.3,g.truetimeThisStardustReset.add(10).log10())).mul(masteryBoost(91)).add(1)
+  if (x==92) return g.masteryPower.add(10).log10().log10().mul(0.1).div(Decimal.mul(0.3,g.truetimeThisStardustReset.add(10).log10())).mul(masteryBoost(92)).add(1)
+  if (x==101) return Decimal.logarithmicSoftcap(g.masteryPower.add(1).log10().add(1).pow(masteryBoost(101).div(2)),75,2)
+  if (x==102) return g.masteryPower.add(1).dilate(2/3).pow(masteryBoost(102).mul(0.0175))
+  if (x==103) return g.masteryPower.add(10).dilate(0.2).sub(9)
 }
-function updateStat(x) {
-  if (x==1) {
-    document.getElementById("StatBreakdown1XAxis").innerHTML = "× "+infFormat(g.XAxisEffect*g.realXAxis,true)+"<span class='small'> ("+infFormat(g.XAxisEffect,true)+" ^ "+normFormat(g.realXAxis)+")</span>"
-    output=g.XAxisEffect*g.realXAxis
-    document.getElementById("StatBreakdown1XAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RXAxis",((g.realXAxis>0)&&(g.XAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1ZAxis").innerHTML = "× "+infFormat(g.ZAxisEffect*g.realZAxis,true)+"<span class='small'> ("+infFormat(g.ZAxisEffect,true)+" ^ "+normFormat(g.realZAxis)+")</span>"
-    output+=g.ZAxisEffect*g.realZAxis
-    document.getElementById("StatBreakdown1ZAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RZAxis",((g.realZAxis>0)&&(g.ZAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1WAxis").innerHTML = "× "+infFormat(g.WAxisEffect*g.realWAxis,true)+"<span class='small'> ("+infFormat(g.WAxisEffect,true)+" ^ "+normFormat(g.realWAxis)+")</span>"
-    output+=g.WAxisEffect*g.realWAxis
-    document.getElementById("StatBreakdown1WAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RWAxis",((g.realWAxis>0)&&(g.WAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1TAxis").innerHTML = "× "+infFormat(g.TAxisEffect*g.realTAxis,true)+"<span class='small'> ("+infFormat(g.TAxisEffect,true)+" ^ "+normFormat(g.realTAxis)+")</span>"
-    output+=g.TAxisEffect*g.realTAxis
-    document.getElementById("StatBreakdown1TAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RTAxis",((g.realTAxis>0)&&(g.TAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown1Mastery11").innerHTML = "× "+infFormat((MasteryE(11))?g.Mastery11Effect:0,true)
-    output+=g.Mastery11Effect*MasteryE(11)
-    document.getElementById("StatBreakdown1Mastery11T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RMastery11",MasteryE(11)?"show":"hide")
-    document.getElementById("StatBreakdown1StardustBoost1").innerHTML = "× "+infFormat(g.StardustBoost1,true)
-    output+=g.StardustBoost1
-    document.getElementById("StatBreakdown1StardustBoost1T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStardustBoost1",(g.StardustBoost1!=0)?"show":"hide")
-    document.getElementById("StatBreakdown1Star11").innerHTML = "× "+infFormat(g.Star11Effect*StarE(11),true)
-    output+=g.Star11Effect*StarE(11)
-    document.getElementById("StatBreakdown1Star11T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStar11",StarE(11)?"show":"hide")
-    document.getElementById("StatBreakdown1Star12").innerHTML = "× "+infFormat(g.Star12Effect*StarE(12),true)
-    output+=g.Star12Effect*StarE(12)
-    document.getElementById("StatBreakdown1Star12T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStar12",StarE(12)?"show":"hide")
-    document.getElementById("StatBreakdown1Star13").innerHTML = "× "+infFormat(g.Star13Effect*StarE(13),true)
-    output+=g.Star13Effect*StarE(13)
-    document.getElementById("StatBreakdown1Star13T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStar13",StarE(13)?"show":"hide")
-    document.getElementById("StatBreakdown1Star14").innerHTML = "× "+infFormat(g.Star14Effect*StarE(14),true)
-    output+=g.Star14Effect*StarE(14)
-    document.getElementById("StatBreakdown1Star14T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStar14",StarE(14)?"show":"hide")
-    document.getElementById("StatBreakdown1Star42").innerHTML = "× "+infFormat(50*StarE(42),true)
-    output+=50*StarE(42)
-    document.getElementById("StatBreakdown1Star42T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStar42",StarE(42)?"show":"hide")
-    document.getElementById("StatBreakdown1SAxis").innerHTML = "^ "+normFormat(g.SAxisEffect**g.realSAxis,true)+"<span class='small'> ("+normFormat(g.SAxisEffect,true)+" ^ "+normFormat(g.realSAxis)+")</span>"
-    output*=g.SAxisEffect**(g.realSAxis)
-    document.getElementById("StatBreakdown1SAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RSAxis",((g.realSAxis>0)&&(g.SAxisEffect!=1))?"show":"hide")
-    document.getElementById("StatBreakdown1Star41").innerHTML = "^ "+(StarE(41)==1?1.1:1)
-    output*=((StarE(41)==1)?1.1:1)
-    document.getElementById("StatBreakdown1Star41T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RStar41",(StarE(41)==1)?"show":"hide")
-    document.getElementById("StatBreakdown1DarkEnergy").innerHTML = "^ "+normFormat(g.darkEnergyEffect)
-    output*=g.darkEnergyEffect
-    document.getElementById("StatBreakdown1DarkEnergyT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RDarkEnergy",(g.darkEnergyEffect==1)?"hide":"show")
-    document.getElementById("StatBreakdown1OfflineSpeedup").innerHTML = "× "+normFormat(offlineSpeedup)
-    output+=Math.log10(offlineSpeedup)
-    document.getElementById("StatBreakdown1OfflineSpeedupT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1ROfflineSpeedup",(offlineSpeedup>1)?"show":"hide")
-    document.getElementById("StatBreakdown1Tickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
-    output+=g.tickspeed
-    document.getElementById("StatBreakdown1TickspeedT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown1RTickspeed",(g.tickspeed!==0)?"show":"hide")
-    g.exoticmatterPerSec=fix(output)
-  } else if (x==2) {
-    document.getElementById("StatBreakdown2BaseGain").innerHTML = (g.exoticmatter<21)?0:"("+infFormat(g.exoticmatter,false)+" / "+infFormat(21)+") dilate 0.5",false
-    output=(g.exoticmatter<21)?-100:Math.max(0,(g.exoticmatter-21))**0.5
-    document.getElementById("StatBreakdown2BaseGainT").innerHTML = infFormat(output,false)
-    nextvl=0
-    document.getElementById("StatBreakdown2Mastery42").innerHTML = "× "+infFormat(g.Mastery42Effect*MasteryE(42),true)
-    output+=g.Mastery42Effect*MasteryE(42)
-    nextvl+=g.Mastery42Effect*MasteryE(42)
-    document.getElementById("StatBreakdown2Mastery42T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RMastery42",MasteryE(42)?"show":"hide")
-    document.getElementById("StatBreakdown2UAxis").innerHTML = "× "+infFormat(g.UAxisEffect*g.realUAxis,true)+"<span class='small'> ("+infFormat(g.UAxisEffect,true)+" ^ "+normFormat(g.realUAxis)+")</span>"
-    output+=g.UAxisEffect*g.realUAxis
-    nextvl+=g.UAxisEffect*(g.realUAxis)
-    document.getElementById("StatBreakdown2UAxisT").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RUAxis",((g.realUAxis>0)&&(g.UAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown2StardustBoost4").innerHTML = "× "+infFormat(g.masteryPower*g.StardustBoost4,true)+"<span class='small'> ("+infFormat(g.masteryPower,true)+" ^ "+(g.StardustBoost4>10?normFormat(g.StardustBoost4):g.StardustBoost4.toFixed(4))+")</span>"
-    output+=g.masteryPower*g.StardustBoost4
-    nextvl+=g.masteryPower*g.StardustBoost4
-    document.getElementById("StatBreakdown2StardustBoost4T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RStardustBoost4",(g.stardustUpgrades[2]>1)?"show":"hide")
-    document.getElementById("StatBreakdown2Star44").innerHTML = "× "+infFormat(5*StarE(44),true)
-    output+=5*StarE(44)
-    nextvl+=5*StarE(44)
-    document.getElementById("StatBreakdown2Star44T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RStar44",StarE(44)?"show":"hide")
-    g.StardustMultiplier=fix(nextvl)
-    nextvl=1
-    document.getElementById("StatBreakdown2Star43").innerHTML = "^ "+(StarE(43)?1.1:1)
-    output*=StarE(43)?1.1:1
-    nextvl*=StarE(43)?1.1:1
-    document.getElementById("StatBreakdown2Star43T").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RStar43",StarE(43)?"show":"hide")
-    document.getElementById("StatBreakdown2StelliferousEnergy").innerHTML = "^ "+normFormat(g.stelliferousEnergyEffect)
-    output*=g.stelliferousEnergyEffect
-    nextvl*=g.stelliferousEnergyEffect
-    document.getElementById("StatBreakdown2StelliferousEnergyT").innerHTML = infFormat(output,false)
-    toggleTableRow("StatBreakdown2RStelliferousEnergy",(g.stelliferousEnergyEffect==1)?"hide":"show")
-    g.StardustExponent=fix(nextvl)
-    g.pendingstardust=fix(output)
-    document.getElementById("StatBreakdown2UnspentStardust").innerHTML = "- "+infFormat(g.stardust,false)
-    output=infSubtract(output,g.stardust)
-    document.getElementById("StatBreakdown2UnspentStardustT").innerHTML = infFormat(output,false)
-    document.getElementById("SSBBStardust").style = g.storySnippets.includes("Stardust")?"display:inline-block":"display:none"
-  } else if (x==3) {
-    document.getElementById("StatBreakdown3BaseGain").innerHTML = "((10 + "+infFormat(g.stardust,true)+" / "+infFormat(12)+") dilate 0.5 / 10)"+((g.darkstars>0)?("^ "+normFormat(1+g.darkstars/20)):"")
-    output=(infAdd(g.stardust-12,1)**0.5-1)*(1+0.05*g.darkstars)
-    document.getElementById("StatBreakdown3BaseGainT").innerHTML = infFormat(output,true)
-    document.getElementById("baseDarkMatterGain").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown3DarkXAxis").innerHTML = "× "+infFormat(g.darkXAxisEffect*g.realdarkXAxis,true)+"<span class='small'> ("+infFormat(g.darkXAxisEffect,true)+" ^ "+normFormat(g.realdarkXAxis)+")</span>"
-    output+=g.darkXAxisEffect*g.realdarkXAxis
-    document.getElementById("StatBreakdown3DarkXAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkXAxis",((g.realdarkXAxis>0)&&(g.darkXAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkZAxis").innerHTML = "× "+infFormat(g.darkZAxisEffect*g.realdarkZAxis,true)+"<span class='small'> ("+infFormat(g.darkZAxisEffect,true)+" ^ "+normFormat(g.realdarkZAxis)+")</span>"
-    output+=g.darkZAxisEffect*g.realdarkZAxis
-    document.getElementById("StatBreakdown3DarkZAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkZAxis",((g.realdarkZAxis>0)&&(g.darkZAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkUAxis").innerHTML = "× "+infFormat(g.darkUAxisEffect*g.realdarkUAxis*g.totaldarkAxis,true)+"<span class='small'> ("+infFormat(g.darkUAxisEffect,true)+" ^ ("+normFormat(g.realdarkUAxis)+" × "+normFormat(g.totaldarkAxis)+"))</span>"
-    output+=g.darkUAxisEffect*g.realdarkUAxis*g.totaldarkAxis
-    document.getElementById("StatBreakdown3DarkUAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkUAxis",((g.realdarkUAxis>0)&&(g.darkUAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkTAxis").innerHTML = "× "+infFormat(g.darkTAxisEffect*g.realdarkTAxis,true)+"<span class='small'> ("+infFormat(g.darkTAxisEffect,true)+" ^ "+normFormat(g.realdarkTAxis)+")</span>"
-    output+=g.darkTAxisEffect*g.realdarkTAxis
-    document.getElementById("StatBreakdown3DarkTAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkTAxis",((g.realdarkTAxis>0)&&(g.darkTAxisEffect!=0))?"show":"hide")
-    document.getElementById("StatBreakdown3DarkSAxis").innerHTML = "^ "+g.darkSAxisEffect.toFixed(4)+" ^ "+normFormat(g.realdarkSAxis)
-    output*=g.darkSAxisEffect**g.realdarkSAxis
-    document.getElementById("StatBreakdown3DarkSAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RDarkSAxis",((g.realdarkSAxis>0)&&(g.darkSAxisEffect!=1))?"show":"hide")
-    document.getElementById("StatBreakdown3GravitationalEnergy").innerHTML = "^ "+normFormat(g.gravitationalEnergyEffect)
-    output*=g.gravitationalEnergyEffect
-    document.getElementById("StatBreakdown3GravitationalEnergyT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RGravitationalEnergy",(g.gravitationalEnergyEffect==1)?"hide":"show")
-    document.getElementById("StatBreakdown3OfflineSpeedup").innerHTML = "× "+normFormat(offlineSpeedup)
-    output+=Math.log10(offlineSpeedup)
-    document.getElementById("StatBreakdown3OfflineSpeedupT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3ROfflineSpeedup",(offlineSpeedup>1)?"show":"hide")
-    document.getElementById("StatBreakdown3Tickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
-    output+=g.tickspeed
-    document.getElementById("StatBreakdown3TickspeedT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown3RTickspeed",(g.tickspeed!==0)?"show":"hide")
-    g.darkmatterPerSec=fix(output)
-    document.getElementById("SSBBDarkMatter").style = g.storySnippets.includes("Dark Matter")?"display:inline-block":"display:none"
-  } else if (x==4) {
-    // Power table
-    document.getElementById("StatBreakdown4BaseGain").innerHTML = infFormat(g.baseMasteryPowerGain,true)+" ^ "+((g.baseMasteryPowerExponent>100)?normFormat(g.baseMasteryPowerExponent):Math.floor(g.baseMasteryPowerExponent*1e4)/1e4)
-    output=g.baseMasteryPowerGain*g.baseMasteryPowerExponent
-    document.getElementById("StatBreakdown4BaseGainT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RBaseGain",((g.baseMasteryPowerGain>0)&&(g.baseMasteryPowerExponent>0))?"show":"hide")
-    document.getElementById("StatBreakdown4DarkWAxis").innerHTML = "× "+infFormat(g.darkWAxisEffect*g.realdarkWAxis,true)+"<span class='small'> ("+infFormat(g.darkWAxisEffect,true)+" ^ "+normFormat(g.realdarkWAxis)+")</span>"
-    output+=g.darkWAxisEffect*g.realdarkWAxis
-    document.getElementById("StatBreakdown4DarkWAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RDarkWAxis",((g.darkWAxisEffect!==0)&&(g.darkWAxis>0))?"show":"hide")
-    document.getElementById("StatBreakdown4StardustBoost7").innerHTML = "× "+infFormat(g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4)))+"<span class='small'>("+infFormat(g.StardustBoost7,true)+" ^ "+normFormat(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))+")</span>"
-    output+=g.StardustBoost7*(10**LogarithmicSoftcap(g.truetimeThisStardustReset/2,3,4))
-    document.getElementById("StatBreakdown4StardustBoost7T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RStardustBoost7",(g.StardustBoost7>0)?"show":"hide")
-    document.getElementById("StatBreakdown4Mastery81").innerHTML = "× "+infFormat(g.Mastery81Effect,true)
-    output+=g.Mastery81Effect*MasteryE(81)
-    document.getElementById("StatBreakdown4Mastery81T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RMastery81",MasteryE(81)?"show":"hide")
-    document.getElementById("StatBreakdown4Mastery82").innerHTML = "× "+infFormat(g.Mastery82Effect,true)
-    output+=g.Mastery82Effect*MasteryE(82)
-    document.getElementById("StatBreakdown4Mastery82T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RMastery82",MasteryE(82)?"show":"hide")
-    document.getElementById("StatBreakdown4Mastery83").innerHTML = "× "+infFormat(g.Mastery83Effect,true)
-    output+=g.Mastery83Effect*MasteryE(83)
-    document.getElementById("StatBreakdown4Mastery83T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RMastery83",MasteryE(83)?"show":"hide")
-    document.getElementById("StatBreakdown4Mastery84").innerHTML = "× "+infFormat(g.Mastery84Effect,true)
-    output+=g.Mastery84Effect*MasteryE(84)
-    document.getElementById("StatBreakdown4Mastery84T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RMastery84",MasteryE(84)?"show":"hide")
-    document.getElementById("StatBreakdown4NeuralEnergy").innerHTML = "^ "+normFormat(g.neuralEnergyEffect)
-    output*=g.neuralEnergyEffect
-    document.getElementById("StatBreakdown4NeuralEnergyT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RNeuralEnergy",(g.neuralEnergyEffect==1)?"hide":"show")
-    document.getElementById("StatBreakdown4OfflineSpeedup").innerHTML = "× "+normFormat(offlineSpeedup)
-    output+=Math.log10(offlineSpeedup)
-    document.getElementById("StatBreakdown4OfflineSpeedupT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4ROfflineSpeedup",(offlineSpeedup>1)?"show":"hide")
-    document.getElementById("StatBreakdown4Tickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
-    output+=g.tickspeed
-    document.getElementById("StatBreakdown4TickspeedT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown4RTickspeed",(g.tickspeed!==0)?"show":"hide")
-    g.masteryPowerPerSec=fix(output)
-    // Exponent table
-    document.getElementById("StatBreakdown4.1Base").innerHTML = "(log(log(10 + "+infFormat(g.exoticmatter,false)+" ^ 0.1)) + 1) ^ 1.2"
-    output=(Math.log10(infAdd(g.exoticmatter/10,1))+1)**1.2
-    document.getElementById("StatBreakdown4.1BaseT").innerHTML = normFormat(output,true)
-    document.getElementById("StatBreakdown4.1Mastery85").innerHTML = "+ "+normFormat(g.Mastery85Effect)
-    output+=g.Mastery85Effect*MasteryE(85)
-    document.getElementById("StatBreakdown4.1Mastery85T").innerHTML = normFormat(output,true)
-    toggleTableRow("StatBreakdown4.1RMastery85",MasteryE(85)?"show":"hide")
-    g.baseMasteryPowerExponent=fix(output)
-    document.getElementById("SSBBMasteryPower").style = (g.masteryRowsUnlocked[0]==1)?"display:inline-block":"display:none"
-  } else if (x==5) {
-    // X table
-    document.getElementById("StatBreakdown5XYAxis").innerHTML = "+ "+infFormat(infAdd(0.30102999566,g.YAxisEffect+Math.log10(1e-100+g.realYAxis)),true)+"<span class='small'> ("+infFormat(g.YAxisEffect,true)+" × "+normFormat(g.realYAxis)+")</span>"
-    output=infAdd(0.30102999566,g.YAxisEffect+Math.log10(1e-100+g.realYAxis))
-    document.getElementById("StatBreakdown5XYAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5XRYAxis",(g.YAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown5XMastery21").innerHTML = "× "+infFormat(g.Mastery21Effect*MasteryE(21),true)
-    output+=g.Mastery21Effect*MasteryE(21)
-    document.getElementById("StatBreakdown5XMastery21T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5XRMastery21",MasteryE(21)?"show":"hide")
-    g.XAxisEffect=fix(output)
-    // Y table
-    output=-1
-    document.getElementById("StatBreakdown5YStardustBoost2").innerHTML = "× "+infFormat(g.StardustBoost2,true)
-    output+=g.StardustBoost2
-    document.getElementById("StatBreakdown5YStardustBoost2T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5YRStardustBoost2",(g.StardustBoost2>0)?"show":"hide")
-    document.getElementById("StatBreakdown5YMastery22").innerHTML = "× "+infFormat(g.Mastery22Effect*MasteryE(22),true)
-    output+=g.Mastery22Effect*MasteryE(22)
-    document.getElementById("StatBreakdown5YMastery22T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5YRMastery22",MasteryE(22)?"show":"hide")
-    g.YAxisEffect=fix(output)
-    document.getElementById("SSB5YTable").style = (g.axisUnlocked>=2)?"display:inline-block":"display:none"
-    // Z table
-    output=(Math.log10(Math.log10(infAdd(fix(g.exoticmatter),1))+1)+1)**(Math.log10(Math.log10(infAdd(fix(g.exoticmatter),1))+1)+1)**1.5-1
-    document.getElementById("StatBreakdown5ZBaseEffect").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown5ZBaseEffectT").innerHTML = infFormat(output,true)
-    g.ZAxisEffect=fix(output)
-    document.getElementById("SSB5ZTable").style = (g.axisUnlocked>=3)?"display:inline-block":"display:none"
-    // W table
-    output=Math.log10(infAdd(2,g.truetimeThisStardustReset*0.67))
-    document.getElementById("StatBreakdown5WBaseEffect").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown5WBaseEffectT").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown5WStardustBoost3").innerHTML = "^ "+normFormat(1+g.StardustBoost3/100)
-    output*=1+g.StardustBoost3/100
-    document.getElementById("StatBreakdown5WStardustBoost3T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5WRStardustBoost3",(g.StardustBoost3>0)?"show":"hide")
-    g.WAxisEffect=fix(output)
-    document.getElementById("SSB5WTable").style = (g.axisUnlocked>=4)?"display:inline-block":"display:none"
-    // V table
-    output=Math.log10(3)
-    document.getElementById("StatBreakdown5VStardustBoost8").innerHTML = "^ "+normFormat(g.StardustBoost8)
-    output*=g.StardustBoost8
-    document.getElementById("StatBreakdown5VStardustBoost8T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5VRStardustBoost8",(g.StardustBoost8>1)?"show":"hide")
-    document.getElementById("StatBreakdown5VStar82").innerHTML = " ^ 5"
-    output*=StarE(82)?5:1
-    document.getElementById("StatBreakdown5VStar82T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5VRStar82",StarE(82)?"show":"hide")
-    document.getElementById("StatBreakdown5VDarkVAxis").innerHTML = " ^ (1 + "+normFormat(g.realdarkVAxis)+" × "+(g.darkVAxisEffect.toFixed(4))+")"
-    output*=1+g.realdarkVAxis*g.darkVAxisEffect
-    document.getElementById("StatBreakdown5VDarkVAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5VRDarkVAxis",(g.darkVAxis>0)?"show":"hide")
-    g.VAxisEffect=fix(output)
-    document.getElementById("SSB5VTable").style = (g.axisUnlocked>=5)?"display:inline-block":"display:none"
-    // U table
-    output=Math.log10(infAdd(g.stardust,10))**2/10
-    document.getElementById("StatBreakdown5UBaseEffect").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown5UBaseEffectT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown5URBaseEffect",(g.UAxis>0)?"show":"hide")
-    g.UAxisEffect=fix(output)
-    document.getElementById("SSB5UTable").style = (g.axisUnlocked>=6)?"display:inline-block":"display:none"
-    // T table
-    output=Math.log10(g.totalAxis+1)**(Math.log10(g.totalAxis+1))/2
-    document.getElementById("StatBreakdown5TBaseEffect").innerHTML = "10 ^ (log("+normFormat(g.totalAxis)+" + 1) ^ log("+normFormat(g.totalAxis)+" + 1) / 2)"
-    document.getElementById("StatBreakdown5TBaseEffectT").innerHTML = infFormat(output,true)
-    g.TAxisEffect=fix(output)
-    document.getElementById("SSB5TTable").style = (g.axisUnlocked>=7)?"display:inline-block":"display:none"
-    // S table
-    document.getElementById("SSB5STable").style = (g.axisUnlocked>=8)?"display:inline-block":"display:none"
-    g.SAxisEffect=1.025
-  } else if (x==6) {
-    // X table
-    document.getElementById("StatBreakdown6XStar21").innerHTML = "+ "+(StarE(21)*3)
-    output=StarE(21)*3
-    document.getElementById("StatBreakdown6XStar21T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6XRStar21",StarE(21)?"show":"hide")
-    document.getElementById("StatBreakdown6XMastery51").innerHTML = "+ "+normFormat(g.Mastery51Effect*MasteryE(51))
-    output+=g.Mastery51Effect*MasteryE(51)
-    document.getElementById("StatBreakdown6XMastery51T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6XRMastery51",MasteryE(51)?"show":"hide")
-    document.getElementById("StatBreakdown6XDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkXAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkXAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkXAxis
-    document.getElementById("StatBreakdown6XDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6XRDarkMatter",(g.darkXAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6XSpatialEnergy").innerHTML = "× "+normFormat(g.spatialEnergyEffect)
-    output*=g.spatialEnergyEffect
-    document.getElementById("StatBreakdown6XSpatialEnergyT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6XRSpatialEnergy",(g.spatialEnergyEffect==1)?"hide":"show")
-    document.getElementById("StatBreakdown6XSoftcap").innerHTML = "convergent, start "+g.XAxis+", limit "+(g.XAxis*2)
-    output=ConvergentSoftcap(output,g.XAxis,g.XAxis*2)
-    document.getElementById("StatBreakdown6XSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6XRSoftcap",(g.freeXAxis>g.XAxis)?"show":"hide")
-    g.freeXAxis=fix(output)
-    document.getElementById("SSB6XTable").style = (g.freeXAxis>0)?"display:inline-block":"display:none"
-    // Y table
-    document.getElementById("StatBreakdown6YStar22").innerHTML = "+ "+(StarE(22)*3)
-    output=StarE(22)*3
-    document.getElementById("StatBreakdown6YStar22T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6YRStar22",StarE(22)?"show":"hide")
-    document.getElementById("StatBreakdown6YDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkYAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkYAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkYAxis
-    document.getElementById("StatBreakdown6YDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6YRDarkMatter",(g.darkYAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6YSoftcap").innerHTML = "convergent, start "+g.YAxis+", limit "+(g.YAxis*2)
-    output=ConvergentSoftcap(output,g.YAxis,g.YAxis*2)
-    document.getElementById("StatBreakdown6YSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6YRSoftcap",(g.freeYAxis>g.YAxis)?"show":"hide")
-    g.freeYAxis=fix(output)
-    document.getElementById("SSB6YTable").style = (g.freeYAxis>0)?"display:inline-block":"display:none"
-    // Z table
-    document.getElementById("StatBreakdown6ZMastery31").innerHTML = "+ "+normFormat(g.Mastery31Effect*MasteryE(31))
-    output=g.Mastery31Effect*MasteryE(31)
-    document.getElementById("StatBreakdown6ZMastery31T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6ZRMastery31",MasteryE(31)?"show":"hide")
-    document.getElementById("StatBreakdown6ZStar23").innerHTML = "+ "+(StarE(23)*3)
-    output+=StarE(23)*3
-    document.getElementById("StatBreakdown6ZStar23T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6ZRStar23",StarE(23)?"show":"hide")
-    document.getElementById("StatBreakdown6ZDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkZAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkZAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkZAxis
-    document.getElementById("StatBreakdown6ZDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6ZRDarkMatter",(g.darkZAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6ZSoftcap").innerHTML = "convergent, start "+g.ZAxis+", limit "+(g.ZAxis*2)
-    output=ConvergentSoftcap(output,g.ZAxis,g.ZAxis*2)
-    document.getElementById("StatBreakdown6ZSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6ZRSoftcap",(g.freeZAxis>g.ZAxis)?"show":"hide")
-    g.freeZAxis=fix(output)
-    document.getElementById("SSB6ZTable").style = (g.freeZAxis>0)?"display:inline-block":"display:none"
-    // W table
-    document.getElementById("StatBreakdown6WMastery32").innerHTML = "+ "+normFormat(g.Mastery32Effect*MasteryE(32))
-    output=g.Mastery32Effect*MasteryE(32)
-    document.getElementById("StatBreakdown6WMastery32T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6WRMastery32",MasteryE(32)?"show":"hide")
-    document.getElementById("StatBreakdown6WStar24").innerHTML = "+ "+(StarE(24)*3)
-    output+=StarE(24)*3
-    document.getElementById("StatBreakdown6WStar24T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6WRStar24",StarE(24)?"show":"hide")
-    document.getElementById("StatBreakdown6WDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkWAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkWAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkWAxis
-    document.getElementById("StatBreakdown6WDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6WRDarkMatter",(g.darkWAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6WSoftcap").innerHTML = "convergent, start "+g.WAxis+", limit "+(g.WAxis*2)
-    output=ConvergentSoftcap(output,g.WAxis,g.WAxis*2)
-    document.getElementById("StatBreakdown6WSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6WRSoftcap",(g.freeWAxis>g.WAxis)?"show":"hide")
-    g.freeWAxis=fix(output)
-    document.getElementById("SSB6WTable").style = (g.freeWAxis>0)?"display:inline-block":"display:none"
-    // V table
-    document.getElementById("StatBreakdown6VStarUpgrade61").innerHTML = "+ "+normFormat(g.Star61Effect*StarE(61))
-    output=g.Star61Effect*StarE(61)
-    document.getElementById("StatBreakdown6VStarUpgrade61T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6VRStarUpgrade61",StarE(61)?"show":"hide")
-    document.getElementById("StatBreakdown6VDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkVAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkVAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkVAxis
-    document.getElementById("StatBreakdown6VDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6VRDarkMatter",(g.darkVAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6VSoftcap").innerHTML = "convergent, start "+g.WAxis+", limit "+(g.VAxis*2)
-    output=ConvergentSoftcap(output,g.VAxis,g.VAxis*2)
-    document.getElementById("StatBreakdown6VSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6VRSoftcap",(g.freeVAxis>g.VAxis)?"show":"hide")
-    g.freeVAxis=fix(output)
-    document.getElementById("SSB6VTable").style = (g.freeVAxis>0)?"display:inline-block":"display:none"
-    // U table
-    document.getElementById("StatBreakdown6UStarUpgrade62").innerHTML = "+ "+normFormat(g.Star62Effect*StarE(62))
-    output=g.Star62Effect*StarE(62)
-    document.getElementById("StatBreakdown6UStarUpgrade62T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6URStarUpgrade62",StarE(62)?"show":"hide")
-    document.getElementById("StatBreakdown6UDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkUAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkUAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkUAxis
-    document.getElementById("StatBreakdown6UDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6URDarkMatter",(g.darkUAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6USoftcap").innerHTML = "convergent, start "+g.UAxis+", limit "+(g.UAxis*2)
-    output=ConvergentSoftcap(output,g.UAxis,g.UAxis*2)
-    document.getElementById("StatBreakdown6VSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6URSoftcap",(g.freeVAxis>g.VAxis)?"show":"hide")
-    g.freeUAxis=fix(output)
-    document.getElementById("SSB6UTable").style = (g.freeUAxis>0)?"display:inline-block":"display:none"
-    // T table
-    document.getElementById("StatBreakdown6TStarUpgrade63").innerHTML = "+ "+normFormat(g.Star63Effect*StarE(63))
-    output=g.Star63Effect*StarE(63)
-    document.getElementById("StatBreakdown6TStarUpgrade63T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6TRStarUpgrade63",StarE(63)?"show":"hide")
-    document.getElementById("StatBreakdown6TDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkTAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkTAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkTAxis
-    document.getElementById("StatBreakdown6TDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6TRDarkMatter",(g.darkTAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6TSoftcap").innerHTML = "convergent, start "+g.TAxis+", limit "+(g.TAxis*2)
-    output=ConvergentSoftcap(output,g.TAxis,g.TAxis*2)
-    document.getElementById("StatBreakdown6TSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6TRSoftcap",(g.freeTAxis>g.TAxis)?"show":"hide")
-    g.freeTAxis=fix(output)
-    document.getElementById("SSB6TTable").style = (g.freeTAxis>0)?"display:inline-block":"display:none"
-    // S table
-    document.getElementById("StatBreakdown6SStarUpgrade64").innerHTML = "+ "+normFormat(StarE(64))
-    output=StarE(64)
-    document.getElementById("StatBreakdown6SStarUpgrade64T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6SRStarUpgrade64",StarE(64)?"show":"hide")
-    document.getElementById("StatBreakdown6SDarkMatter").innerHTML = "+ "+normFormat(g.darkMatterFreeAxis*g.darkSAxis)+"<span class='small'> ("+normFormat(g.darkMatterFreeAxis)+" × "+normFormat(g.darkSAxis)+")</span>"
-    output+=g.darkMatterFreeAxis*g.darkSAxis
-    document.getElementById("StatBreakdown6SDarkMatterT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6SRDarkMatter",(g.darkSAxis>0)?"show":"hide")
-    document.getElementById("StatBreakdown6SSoftcap").innerHTML = "convergent, start "+g.WAxis+", limit "+(g.SAxis*2)
-    output=ConvergentSoftcap(output,g.SAxis,g.SAxis*2)
-    document.getElementById("StatBreakdown6SSoftcapT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown6SRSoftcap",(g.freeSAxis>g.SAxis)?"show":"hide")
-    g.freeSAxis=fix(output)
-    document.getElementById("SSB6STable").style = (g.freeSAxis>0)?"display:inline-block":"display:none"
-    document.getElementById("SSBBFreeAxis").style = (g.totalAxis>0)?"display:inline-block":"display:none"
-  } else if (x==7) {
-    // X table
-    output=Math.log10(3)
-    document.getElementById("StatBreakdown7XDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+7)/8)/10)
-    output*=1+Math.floor((g.darkstars+7)/8)/10
-    document.getElementById("StatBreakdown7XDarkStarsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7XRDarkStars",(g.darkstars>0)?"show":"hide")
-    document.getElementById("StatBreakdown7XMastery61").innerHTML = "^ "+normFormat(g.Mastery61Effect**MasteryE(61))
-    output*=g.Mastery61Effect**MasteryE(61)
-    document.getElementById("StatBreakdown7XMastery61T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7XRMastery61",MasteryE(61)?"show":"hide")
-    g.darkXAxisEffect=fix(output)
-    // Y table
-    output=Math.log10(4)
-    document.getElementById("StatBreakdown7YDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+6)/8)/10)
-    output*=1+Math.floor((g.darkstars+6)/8)/10
-    document.getElementById("StatBreakdown7YDarkStarsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7YRDarkStars",(g.darkstars>0)?"show":"hide")
-    document.getElementById("StatBreakdown7YStar84").innerHTML = "^ 5"
-    output*=StarE(84)?5:1
-    document.getElementById("StatBreakdown7YStar84T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7YRStar84",StarE(84)?"show":"hide")
-    g.darkYAxisEffect=fix(output)
-    // Z table
-    output=(infAdd(g.exoticmatter/200,1)-1)**0.2/5
-    document.getElementById("StatBreakdown7ZBaseEffect").innerHTML = "(("+infFormat(g.exoticmatter,true)+" ^ 0.005 / 10 + 1) dilate 0.2) ^ 0.2"
-    document.getElementById("StatBreakdown7ZBaseEffectT").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown7ZDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+5)/8)/10)
-    output*=1+Math.floor((g.darkstars+5)/8)/10
-    document.getElementById("StatBreakdown7ZDarkStarsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7ZRDarkStars",(g.darkstars>0)?"show":"hide")
-    document.getElementById("StatBreakdown7ZStardustBoost6").innerHTML = "^ "+normFormat(g.StardustBoost6)
-    output*=g.StardustBoost6
-    document.getElementById("StatBreakdown7ZStardustBoost6T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7ZRStardustBoost6",(g.StardustBoost6==1)?"hide":"show")
-    g.darkZAxisEffect=fix(output)
-    // W table
-    output=Math.log10(1.15)
-    document.getElementById("StatBreakdown7WDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+4)/8)/10)
-    output*=1+Math.floor((g.darkstars+4)/8)/10
-    document.getElementById("StatBreakdown7WDarkStarsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7WRDarkStars",(g.darkstars>0)?"show":"hide")
-    g.darkWAxisEffect=fix(output)
-    // V table
-    output=10
-    document.getElementById("StatBreakdown7VDarkStars").innerHTML = "× "+normFormat(1+Math.floor((g.darkstars+3)/8)/10)
-    output*=1+Math.floor((g.darkstars+3)/8)/10
-    document.getElementById("StatBreakdown7VDarkStarsT").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown7VRDarkStars",(g.darkstars>0)?"show":"hide")
-    output/=100
-    g.darkVAxisEffect=fix(output)
-    // U table
-    output=Math.log10(1.02)
-    document.getElementById("StatBreakdown7UDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+2)/8)/10)
-    output*=1+Math.floor((g.darkstars+2)/8)/10
-    document.getElementById("StatBreakdown7UDarkStarsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7URDarkStars",(g.darkstars>0)?"show":"hide")
-    g.darkUAxisEffect=fix(output)
-    // T table
-    output=infAdd(g.truetimeThisStardustReset-3,0)**0.5
-    document.getElementById("StatBreakdown7TBaseEffect").innerHTML = "(1 + "+infFormat(g.truetimeThisStardustReset,false)+" / 1000) dilate 0.5"
-    document.getElementById("StatBreakdown7TBaseEffectT").innerHTML = infFormat(output,true)
-    document.getElementById("StatBreakdown7TDarkStars").innerHTML = "^ "+normFormat(1+Math.floor((g.darkstars+1)/8)/10)
-    output*=1+Math.floor((g.darkstars+1)/8)/10
-    document.getElementById("StatBreakdown7TDarkStarsT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown7TRDarkStars",(g.darkstars>0)?"show":"hide")
-    g.darkTAxisEffect=fix(output)
-    // S table
-    output=1.01
-    document.getElementById("StatBreakdown7SDarkStars").innerHTML = "^ "+normFormat(1+Math.floor(g.darkstars/8)/10)+((g.darkstars>90)?" (softcapped to "+normFormat(LogarithmicSoftcap(1+Math.floor(g.darkstars/8)/10,10,10))+")":"")
-    output**=LogarithmicSoftcap(1+Math.floor(g.darkstars/8)/10,10,10)
-    document.getElementById("StatBreakdown7SDarkStarsT").innerHTML = normFormat(output,)
-    toggleTableRow("StatBreakdown7SRDarkStars",(g.darkstars>0)?"show":"hide")
-    g.darkSAxisEffect=fix(output)
-    document.getElementById("SSBBDarkAxisEffects").style = (g.stardustUpgrades[4]>0)?"display:inline-block":"display:none"
-  } else if (x==8) {
-    // Divisor table
-    document.getElementById("StatBreakdown8DiMastery12").innerHTML = "× "+infFormat(g.Mastery12Effect*MasteryE(12),true)
-    output=g.Mastery12Effect*MasteryE(12)
-    document.getElementById("StatBreakdown8DiMastery12T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown8DiRMastery12",MasteryE(12)?"show":"hide")
-    document.getElementById("StatBreakdown8DiVAxis").innerHTML = "× "+infFormat(g.VAxisEffect*g.realVAxis)+"<span class='small'> ("+infFormat(g.VAxisEffect)+" ^ "+normFormat(g.realVAxis)+")</span>"
-    output+=g.VAxisEffect*g.realVAxis
-    document.getElementById("StatBreakdown8DiVAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown8DiRVAxis",((g.VAxisEffect!==0)&&(g.realVAxis!==0))?"show":"hide")
-    g.axisCostDivisor=fix(output)
-    document.getElementById("SSB8DivisorTable").style = (g.axisCostDivisor==0)?"display:none":"display:inline-block"
-    // Exponent table
-    document.getElementById("StatBreakdown8ExStar81").innerHTML = "× 0.5"
-    output=StarE(81)?0.5:1
-    document.getElementById("StatBreakdown8ExStar81T").innerHTML = normFormat(output)
-    toggleTableRow("StatBreakdown8ExRStar81",StarE(81)?"show":"hide")
-    g.axisCostExponent=fix(output)
-    document.getElementById("SSB8ExponentTable").style = (g.axisCostExponent==1)?"display:none":"display:inline-block"
-    document.getElementById("SSBBAxisCostReduction").style = ((g.axisCostDivisor==0)&&(g.axisCostExponent==1))?"display:none":"display:inline-block"
-  } else if (x==9) {
-    // Divisor table
-    document.getElementById("StatBreakdown9DiDarkYAxis").innerHTML = "× "+infFormat(g.darkYAxisEffect*g.realdarkYAxis)+"<span class='small'> ("+infFormat(g.darkYAxisEffect)+" ^ "+normFormat(g.realdarkYAxis)+")</span>"
-    output=g.darkYAxisEffect*g.realdarkYAxis
-    document.getElementById("StatBreakdown9DiDarkYAxisT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown9DiRDarkYAxis",((g.darkYAxisEffect!==0)&&(g.realdarkYAxis!==0))?"show":"hide")
-    g.darkaxisCostDivisor=fix(output)
-    document.getElementById("SSB9DivisorTable").style = (g.darkaxisCostDivisor==0)?"display:none":"display:inline-block"
-    // Exponent table
-    document.getElementById("StatBreakdown9ExMastery62").innerHTML = "× "+normFormat(g.Mastery62Effect**MasteryE(62))
-    output=g.Mastery62Effect**MasteryE(62)
-    document.getElementById("StatBreakdown9ExMastery62T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown9ExRMastery62",MasteryE(62)?"show":"hide")
-    document.getElementById("StatBreakdown9ExStar83").innerHTML = "× 0.5"
-    output*=StarE(83)?0.5:1
-    document.getElementById("StatBreakdown9ExStar83T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown9ExRStar83",StarE(83)?"show":"hide")
-    g.darkaxisCostExponent=fix(output)
-    document.getElementById("SSB9ExponentTable").style = (g.darkaxisCostExponent==1)?"display:none":"display:inline-block"
-    document.getElementById("SSBBDarkAxisCostReduction").style = ((g.darkaxisCostDivisor==0)&&(g.darkaxisCostExponent==1))?"display:none":"display:inline-block"
-  } else if (x==10) {
-    // Speed table
-    document.getElementById("StatBreakdown10SpMastery71").innerHTML = "× "+normFormat(g.Mastery71Effect*MasteryE(71),true)
-    output=Math.log10(g.Mastery71Effect)*MasteryE(71)
-    document.getElementById("StatBreakdown10SpMastery71T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown10SpRMastery71",MasteryE(71)?"show":"hide")
-    document.getElementById("StatBreakdown10SpMetaEnergy").innerHTML = "× "+normFormat(g.metaEnergyEffect)
-    output+=Math.log10(g.metaEnergyEffect)
-    document.getElementById("StatBreakdown10SpMetaEnergyT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown10SpRMetaEnergy",(g.metaEnergyEffect==1)?"hide":"show")
-    document.getElementById("StatBreakdown10SpTickspeed").innerHTML = "× "+infFormat(g.tickspeed,true)
-    output+=g.tickspeed
-    document.getElementById("StatBreakdown10SpTickspeedT").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown10SpRTickspeed",(g.tickspeed==0)?"hide":"show")
-    g.energySpeedMult=fix(output)
-    document.getElementById("SSB10SpeedTable").style = (g.energySpeedMult==0)?"display:none":"display:inline-block"
-    // Effect table
-    document.getElementById("StatBreakdown10EfMastery72").innerHTML = "× "+normFormat(g.Mastery72Effect**MasteryE(72))
-    output=g.Mastery72Effect**MasteryE(72)
-    document.getElementById("StatBreakdown10EfMastery72T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown10EfRMastery72",((g.darkVAxisEffect!==0)&&(g.realdarkVAxis!==0))?"show":"hide")
-    g.energyEffectBoost=fix(output)
-    document.getElementById("SSB10EffectTable").style = (g.energyEffectBoost==1)?"display:none":"display:inline-block"
-    document.getElementById("SSBBEnergy").style = ((g.energySpeedMult==0)&&(g.energyEffectBoost==1))?"display:none":"display:inline-block"
-  } else if (x==11) {
-    document.getElementById("StatBreakdown11Star71").innerHTML = "× "+normFormat(1+g.Star71Effect/100)
-    output=Math.log10(1+g.Star71Effect/100)*StarE(71)
-    document.getElementById("StatBreakdown11Star71T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown11RStar71",StarE(71)?"show":"hide")
-    document.getElementById("StatBreakdown11Star72").innerHTML = "× "+normFormat(1+g.Star72Effect/100)
-    output+=Math.log10(1+g.Star72Effect/100)*StarE(72)
-    document.getElementById("StatBreakdown11Star72T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown11RStar72",StarE(72)?"show":"hide")
-    document.getElementById("StatBreakdown11Star73").innerHTML = "× "+normFormat(1+g.Star73Effect/100)
-    output+=Math.log10(1+g.Star73Effect/100)*StarE(73)
-    document.getElementById("StatBreakdown11Star73T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown11RStar73",StarE(73)?"show":"hide")
-    document.getElementById("StatBreakdown11Star74").innerHTML = "× "+normFormat(1+g.Star74Effect/100)
-    output+=Math.log10(1+g.Star74Effect/100)*StarE(74)
-    document.getElementById("StatBreakdown11Star74T").innerHTML = infFormat(output,true)
-    toggleTableRow("StatBreakdown11RStar74",StarE(74)?"show":"hide")
-    g.tickspeed=fix(output)
-    document.getElementById("SSBBTickspeed").style = (g.tickspeed==0)?"display:none":"display:inline-block"
+function masteryBoost(x) {
+  let row = Math.floor(x/10)
+  let b=N(1)
+  if (row==1&&AchievementE(105)) b = b.mul(achievement.get(105).effect().div(100).add(1))
+  if ([11,21,31].includes(x)&&MasteryE(41)) b = b.mul(masteryEffect(41))
+  if ([12,22,32].includes(x)&&MasteryE(43)) b = b.mul(masteryEffect(43))
+	if (row==4&&AchievementE(201)) b = b.mul(achievement.get(201).effect().div(100).add(1))
+  if (row==1&&MasteryE(52)) b = b.mul(masteryEffect(52))
+  if (row==8&&MasteryE(91)) b = b.mul(masteryEffect(91))
+  if (row==8&&MasteryE(92)) b = b.mul(masteryEffect(92))
+	if (x==52&&AchievementE(310)) b = b.mul(1.01)
+	if (row==10) b = b.mul(stardustBoost(11).div(100).add(1))
+  if (AchievementE(516)&&row>=2&&row<=9) if (StarE([51,52,53,54,101,102,103,104][row-2])) b = b.mul(1.01)
+  b = b.mul(knowledgeEffect().div(100).add(1))
+	if (achievement.ownedInTier(5)>=27&&row==10) b = b.mul(wormholeMilestone27Effect().div(100).add(1))
+  if ((x==11)&&ResearchE("r4_6")) b = b.mul(researchEffect(4,6))
+  if ((x==12)&&ResearchE("r4_10")) b = b.mul(researchEffect(4,10))
+  if (row==2&&ResearchE("r5_14")) b = b.mul(energyEffect(3).pow(researchEffect(5,13)))
+  if (ResearchE("r6_11")) {
+    let row = Math.floor(x/10)
+    let mult = 1
+    for (let i=1;i<5;i++) mult+=Number(StarE(row*10+i)?researchEffect(6,11).div(100):0)
+    b = b.mul(mult)
   }
+  return b.fix(0)
+}
+function masteryText(x) {
+  if (x==11) return "Multiply exotic matter gain by "+masteryEffect(11).format(2)
+  if (x==12) return "All "+(unlocked("Dark Matter")?"normal axis":"axis")+" are "+masteryEffect(12).format(2)+"× cheaper"
+  if ([21,22].includes(x)) return "Multiply the "+["X","Y"][x-21]+" axis effect by "+masteryEffect(x).format(2)
+  if (x==31) return "Gain "+masteryEffect(31).format(2)+" free Z axis that do not increase the cost"
+  if (x==32) return "Gain "+masteryEffect(32).format(2)+" free W axis that do not increase the cost"
+  if (x==41) return "Increase the effect of masteries 11, 21 and 31 by "+masteryEffect(41).sub(1).mul(100).format(2)+"%"
+  if (x==42) return "Multiply stardust gain by "+masteryEffect(42).format(2)
+  if (x==43) return "Increase the effect of masteries 12, 22 and 32 by "+masteryEffect(43).sub(1).mul(100).format(2)+"%"
+  if (x==51) return "Gain "+masteryEffect(51).format(2)+" free X axis"
+  if (x==52) return "Raise the effects of the first row Masteries to the power of "+masteryEffect(52).format(3)
+  if (x==61) return "Dark X axis are "+masteryEffect(61).sub(1).mul(100).format(2)+"% stronger"
+  if (x==62) return "Dark axis costs are raised to the power of "+masteryEffect(62).format(4)
+  if (x==63) return "Subtract "+masteryEffect(63).format(2)+" from the dark star cost"
+  if (x==71) return "Multiply energy gain by "+masteryEffect(71).format(2)
+  if (x==72) return "Energy effects are "+masteryEffect(72).sub(1).mul(100).format(2)+"% stronger"
+  if ([81,82,83,84].includes(x)) return "Multiply mastery power gain by "+masteryEffect(x).format(2)+" (based on "+["X axis","exotic matter","dark matter","stardust"][x-81]+")"
+  if (x==85) return "Add "+masteryEffect(85).format(2)+" to the base mastery power gain exponent<br><span class=\"small\">(currently a "+g.baseMasteryPowerGain.pow(masteryEffect(85)).format(2)+"x multiplier)</span>"
+  if ([91,92].includes(x)) return "Row 8 masteries are "+masteryEffect(x).sub(1).mul(100).format(2)+"% stronger ("+["in","de"][x-91]+"creases over time)"
+  if (x==101) return "The \"Wormhole to Somewhere\" achievement reward is raised to the power of "+masteryEffect(101).format(2)
+  if (x==102) return "Multiply Hawking radiation gain by "+masteryEffect(102).format(2)
+  if (x==103) return "Multiply knowledge gain by "+masteryEffect(103).format(2)
+}
+function fullMasteryText(x) {
+  return "<div style=\"position:absolute;top:5px;left:7px;color:rgba(0,0,0,0.4)\">"+x+"</div>"+(masteryBoost(x).eq(1)?"":("<div style=\"position:absolute;top:5px;right:7px;color:rgba(0,0,0,0.4)\">"+masteryBoost(x).mul(100).format(2)+"%</div>"))+"<div style=\"position:absolute;top:5px;left:7px;width:211px;color:rgba(0,0,0,0.4)\">"+(MasteryE(x)?"Active":"Inactive")+"</div>"+masteryText(x)
+}
+function masteryReset() {
+  g.masteryPower=N(0)
+  g.baseMasteryPowerGain=N(1)
+}
+var shownMasteries = []
+var updateMasteryHTML = true
+function masteryHTML() {
+  updateMasteryHTML = false
+  let out = "<table>"
+  shownMasteries = []
+  for (let i=1;i<=totalMasteryRows;i++) {
+    if (!masteryRowsUnlocked(i)) continue
+    let masteriesInRow = masteryCodes.filter(x => Math.floor(x/10)==i)
+		let visibleMasteriesInRow = []
+		for (let j=0;j<masteriesInRow.length;j++) if (masteryRowsUnlocked(i)>=masterySubGroup(masteriesInRow[j])) visibleMasteriesInRow.push(masteriesInRow[j])
+    shownMasteries.push(visibleMasteriesInRow)
+    out+="<tr><td style=\"width:240px\"><h3 style=\"color:#ff0099\">Row "+i+"</h3><button style=\"height:18px;width:150px;border-radius:9px\" onClick=\"g.activeMasteries["+(i-1)+"]=0;masteryReset()\">Unassign Mastery</button></td><td style=\"width:calc(99vw - 240px)\">"
+    for (let j=0;j<visibleMasteriesInRow.length;j++) out+="<button style=\"position:relative;margin:6px\" class=\""+(MasteryE(visibleMasteriesInRow[j])?"masterybuttonon":"masterybuttonoff")+"\" id=\"masteryButton"+visibleMasteriesInRow[j]+"\" onClick=\"toggleMastery("+visibleMasteriesInRow[j]+")\">"+fullMasteryText(visibleMasteriesInRow[j])+"</button>"
+    out+="<td></tr>"
+  }
+  shownMasteries=shownMasteries.flat()
+  d.innerHTML("masteryContainer",out)
+  updateMasteryHTML = true
+}
+function SSBsmall(x,y,hyper) {
+  let symbol=(hyper==2)?" × ":(hyper==3)?" ^ ":" ? "
+  return " <span class='small'>("+x+" "+symbol+" "+y+")</span>"
+}
+function stardustExoticMatterReqText() {
+  if (stat("pendingstardust").eq(0)||g.exoticmatter.lt(stardustExoticMatterReq)) return "(Need "+BEformat(g.stardust.floor().add(1).root(stat("stardustExponent")).div(stat("stardustMultiplier")).dilate(2).max(10).mul(stardustExoticMatterReq.div(10)))+" exotic matter)"
+  else if (stat("pendingstardust").add(g.stardust).lt(1000)) return "(Next at "+BEformat(Decimal.sum(stat("pendingstardust"),g.stardust.floor(),1).floor().root(stat("stardustExponent")).div(stat("stardustMultiplier")).dilate(2).mul(stardustExoticMatterReq.div(10)))+" exotic matter)"
+  return ""
 }
 function stardustReset(x) {
-  if ((g.pendingstardust>g.stardust)||(x=="force")) {
-    g.stardust=infFloor(Math.max(g.stardust,g.pendingstardust))
-    g.fastestStardustReset=Math.min(g.fastestStardustReset,g.timeThisStardustReset)
-    g.StardustResets++
-    g.exoticmatter=0
-    g.exoticmatterPerSec=0
-    g.XAxis=(g.stardustUpgrades[1]>=2)?Math.floor(g.XAxis/10):0
-    g.YAxis=(g.stardustUpgrades[1]>=3)?Math.floor(g.YAxis/10):0
-    g.ZAxis=(g.stardustUpgrades[1]>=4)?Math.floor(g.ZAxis/10):0
-    g.WAxis=(g.stardustUpgrades[1]>=5)?Math.floor(g.WAxis/10):0
-    g.VAxis=(g.stardustUpgrades[1]>=6)?Math.floor(g.VAxis/10):0
-    g.UAxis=(g.stardustUpgrades[1]>=7)?Math.floor(g.UAxis/10):0
-    g.TAxis=(g.stardustUpgrades[1]>=8)?Math.floor(g.TAxis/10):0
-    g.SAxis=(g.stardustUpgrades[1]>=9)?Math.floor(g.SAxis/10):0
-    g.masteryPower=-100
-    g.baseMasteryPowerGain=0
-    g.exoticmatterThisStardustReset=0
+  if ((stat("pendingstardust").gt(0))||(x=="force")) {
+    addAchievement(201)
+    addAchievement(511)
+    o.add("stardust",stat("pendingstardust"))
+    g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset)
+    g.exoticmatter=N(0)
+    for (let i=0;i<8;i++) {
+      let axis_retention = (g.stardustUpgrades[1]>=i+2)?0.1:0
+      axis_retention += studies[1].reward(2)/100
+      axis_retention = Decimal.convergentSoftcap(axis_retention,0.75,1)
+      g[axisCodes[i]+"Axis"]=Decimal.mul(g[axisCodes[i]+"Axis"],axis_retention).floor()
+    }
+    g.masteryPower=N(1)
+    g.baseMasteryPowerGain=N(1)
+    g.exoticmatterThisStardustReset=N(0)
     g.timeThisStardustReset=0
-    g.truetimeThisStardustReset=-100
-    g.darkEnergy=0
-    g.stelliferousEnergy=0
-    g.gravitationalEnergy=0
-    g.spatialEnergy=0
-    g.neuralEnergy=0
-    g.metaEnergy=0
-    g.EMSupernova.charges=g.EMSupernova.maxCharges
-    g.KnowledgeSupernova.charges=g.KnowledgeSupernova.maxCharges
+    g.truetimeThisStardustReset=N(0)
+    g.darkEnergy=N(1)
+    g.stelliferousEnergy=N(1)
+    g.gravitationalEnergy=N(1)
+    g.spatialEnergy=N(1)
+    g.neuralEnergy=N(1)
+    g.metaEnergy=N(1)
+  }
+  g.StardustResets++
+	addAchievement("s01")
+}
+function stardustBoostBoost(x) {
+	let out = N(1)
+	if (x==1) out=out.mul(AchievementE(507)?achievement.get(507).effect().div(100).add(1):1)
+	if (x==4) out=out.mul(AchievementE(508)?achievement.get(508).effect().div(100).add(1):1)
+	if (x==7) out=out.mul(AchievementE(509)?achievement.get(509).effect().div(100).add(1):1)
+	if (x==7) out=out.mul(ResearchE("r5_14")?Decimal.pow(energyEffect(4),researchEffect(5,14)):1)
+	return out
+}
+function stardustBoost(x) {
+  if ((g.stardustUpgrades[2]<(x-2))||!unlocked("Stardust")) return N([1,1,1,0,1,1,1,1,1,0,0,0][x-1])
+  if (x==1) return Decimal.convergentSoftcap(Decimal.mul(g.stardust.div(10).add(1).pow(0.5),Decimal.convergentSoftcap(g.stardust.add(1).dilate(1.5).pow(0.1),"ee9","ee12",2)).pow(stardustBoostBoost(1)),"ee12","ee15",2)
+  if (x==2) return Decimal.product(g.stardust.add(1).log10(),0.075,stardustBoostBoost(2)).add(1)
+  if (x==3) return Decimal.linearSoftcap(g.stardust.div(1e7).add(1).log10().pow(0.7).div(2).mul(stardustBoostBoost(3)),10,1).add(1)
+  if (x==4) return g.stardust.pow(0.05).add(10).log10().root(3).sub(1).mul(stardustBoostBoost(4))
+  if (x==5) return Decimal.linearSoftcap(g.stardust.mul(1e24).add(1e64).log10().root(1.5).sub(16).pow10(),c.inf,1).pow(stardustBoostBoost(5))
+  if (x==6) return g.stardust.pow(0.15).add(1e10).log10().log10().sub(1).mul(stardustBoostBoost(6)).add(1)
+  if (x==7) return g.stardust.add(10).log10().pow(stardustBoostBoost(7).div(100))
+  if (x==8) return g.stardust.add(1e100).log10().log10().div(2).pow(stardustBoostBoost(8).mul(5))
+	if (x==9) return g.stardust.pow(0.01).log10().pow(stardustBoostBoost(9).mul(0.4))
+	if (x==10) return Decimal.convergentSoftcap(g.stardust.pow(1e-3).add(10).log10().log10().mul(stardustBoostBoost(10)).div(10),0.5,1)
+	if (x==11) return Decimal.convergentSoftcap(g.stardust.pow(1e-4).add(10).log10().log10().mul(stardustBoostBoost(11)).mul(10),150,200)
+  if (x==12) return Decimal.convergentSoftcap(Decimal.product(g.stardust.pow(1e-5).add(10).log10().log10(),0.01,stardustBoostBoost(9)),0,0.1)
+}
+function buyStardustUpgrade(x) {
+  if (g.stardust.gt(stardustUpgradeCost(x))) {
+    o.sub("stardust",stardustUpgradeCost(x))
+    g.stardustUpgrades[x-1]++
+  }
+  for (let i=0;i<stardustUpgradeAchievements.length;i++) addAchievement(stardustUpgradeAchievements[i])
+}
+const autobuyers = {
+  axis:{baseInterval:5,baseCost:"1e25",costGrowth:1.05,resource:"exoticmatter",unlockReq:function(){return g.stardustUpgrades[1]>0}},
+  darkAxis:{baseInterval:5,baseCost:"1e25",costGrowth:1.05,resource:"darkmatter",unlockReq:function(){return achievement.ownedInTier(5)>=1}},
+  stardustUpgrade:{baseInterval:30,baseCost:"1e100",costGrowth:1.1,resource:"stelliferousEnergy",unlockReq:function(){return achievement.ownedInTier(5)>=3}},
+  star:{baseInterval:15,baseCost:"1e25",costGrowth:1.08,resource:"stardust",unlockReq:function(){return achievement.ownedInTier(5)>=4}}
+}
+const autobuyerMeta = {
+  cost:function(id){return Decimal.powerTower(autobuyers[id].baseCost,autobuyers[id].costGrowth,g[id+"AutobuyerUpgrades"])},
+  interval:function(id){return Math.max(0.1,autobuyers[id].baseInterval*0.95**g[id+"AutobuyerUpgrades"])},
+  cap:function(id){return Math.ceil(Math.log(0.1/autobuyers[id].baseInterval)/Math.log(0.95))}
+}
+function upgradeAutobuyer(id) {
+  while ((g[autobuyers[id].resource].gt(autobuyerMeta.cost(id))) && (g[id+"AutobuyerUpgrades"]<autobuyerMeta.cap(id))) {
+    o.sub(autobuyers[id].resource,autobuyerMeta.cost(id))
+    g[id+"AutobuyerUpgrades"]++
   }
 }
-function buyStardustUpgrade1() {
-  if ((g.stardust>=stardustUpgrade1Cost[g.stardustUpgrades[0]]) && (g.stardustUpgrades[0] < 4)) {
-    infDeduct("stardust",stardustUpgrade1Cost[g.stardustUpgrades[0]])
-    g.stardustUpgrades[0]++
-  }
-}
-function buyStardustUpgrade2() {
-  if ((g.stardust>=stardustUpgrade2Cost[g.stardustUpgrades[1]]) && (g.stardustUpgrades[1] < 9)) {
-    infDeduct("stardust",stardustUpgrade2Cost[g.stardustUpgrades[1]])
-    g.stardustUpgrades[1]++
-  }
-}
-function buyStardustUpgrade3() {
-  if ((g.stardust>=stardustUpgrade3Cost[g.stardustUpgrades[2]]) && (g.stardustUpgrades[2] < 6)) {
-    infDeduct("stardust",stardustUpgrade3Cost[g.stardustUpgrades[2]])
-    g.stardustUpgrades[2]++
-  }
-}
-function buyStardustUpgrade4() {
-  if ((g.stardust>=stardustUpgrade4Cost[g.stardustUpgrades[3]]) && (g.stardustUpgrades[3] < 5)) {
-    infDeduct("stardust",stardustUpgrade4Cost[g.stardustUpgrades[3]])
-    g.stardustUpgrades[3]++
-  }
-}
-function buyStardustUpgrade5() {
-  if ((g.stardust>=stardustUpgrade5Cost[g.stardustUpgrades[4]]) && (g.stardustUpgrades[4] < 7)) {
-    infDeduct("stardust",stardustUpgrade5Cost[g.stardustUpgrades[4]])
-    g.stardustUpgrades[4]++
-  }
-}
-function upgradeAxisAutobuyer() {
-  while ((g.exoticmatter>=g.axisAutobuyerCost) && (g.axisAutobuyerInterval>0.1)) {
-    infDeduct("exoticmatter",g.axisAutobuyerCost)
-    g.axisAutobuyerUpgrades++
-    g.axisAutobuyerCost = Math.round(50*1.05**g.axisAutobuyerUpgrades)
-  }
+function starCost(x) {
+  x = N((x==undefined)?g.stars:x)
+  if (ResearchE("r8_14")) x = x.sub(researchEffect(8,14))
+  x = x.max(0)
+  let formula_exponent = N((StudyE(2))?[3,4,5,6,7][g.studyCompletions[2]]:2)
+  let scaling_power = N(2.5)
+  scaling_power = scaling_power.mul(N(1).sub(studies[2].reward(1).div(100)))
+  if (ResearchE("r7_8")) scaling_power = scaling_power.mul(researchEffect(7,8))
+  let cost = Decimal.pow(2,Decimal.exponentialScaling(Decimal.superexpScaling(x,25,scaling_power),10,0.5).pow(formula_exponent).add(10)).pow(x>=10?1.5:1)
+  if (achievement.ownedInTier(5) >= 9) cost = N(cost).dilate(wormholeMilestone9Effect())
+  if (ResearchE("r6_2")) cost = cost.root(energyEffect(1).pow(researchEffect(6,2)))
+  if (ResearchE("r7_11")) cost = cost.pow(researchEffect(7,11).pow(g.darkstars))
+	if (AchievementE(519)) cost = cost.div(2**g.stardustUpgrades.reduce((x,y)=>x+y))
+  return cost
 }
 function buyStar() {
-  if ((g.stardust>=g.starCost) && (g.stars < 40)) {
-    infDeduct("stardust",g.starCost)
+  if (g.stardust.gt(starCost())) {
+    o.sub("stardust",starCost())
     g.stars++
-    g.unspentStars++
   }
+  starHTML()
+  addAchievement(401)
+  addAchievement(519)
+  addAchievement(528)
+  if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false
 }
 function buyStarUpgrade(x) {
-  if ((g.unspentStars > 0) && (Math.floor(x/10) == g.starRow[g.stars-g.unspentStars])) {
-    if (!(g.ownedStars.includes(x))) {
-      g.ownedStars.push(x)
-      g.unspentStars--
-    }
+  if ((unspentStars() > 0) && availableStarRow(Math.floor(x/10)) && !(g.ownedStars.includes(x))) {
+    g.ownedStars.push(x)
+    g.ach519possible = false
   }
+  starHTML()
+  if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false
+  addAchievement(412)
 }
 function respecStars() {
-  g.ownedStars=[]
-  g.unspentStars=g.stars
   stardustReset("force")
+  g.ownedStars=[]
+  starHTML()
+}
+function maxFullStarRows() {
+	for (let i=1;i<11;i++) if (maxStars(i)==4) for (let j=1;j<5;j++) buyStarUpgrade(i*10+j)
+	starHTML()
+}
+function starEffect(x) {
+  if ([11,12,13,14].includes(x)) {
+    let exp = null
+    if (x==11) exp = Decimal.sub(1,g.exoticmatter.add(1).mul(1e10).log10().log10().pow(-1))
+    if (x==12) exp = g.exoticmatter.add(1).mul(1e10).log10().log10().pow(-1)
+    if (x==13) exp = Decimal.sub(1,g.truetimeThisStardustReset.div(1000).add(1).pow(-1))
+    if (x==14) exp = g.truetimeThisStardustReset.div(1000).add(1).pow(-1)
+    if (StarE(x+20)) exp = exp.mul(3)
+    if (StarE(x+80)) exp = exp.mul(starEffect(90))
+    exp = exp.mul(achievement.ownedInTier(2)/100+1)
+    return Decimal.pow(1000,exp)
+  }
+  if (x==60) return Decimal.logarithmicSoftcap(g.exoticmatter.pow(0.02).add(10).log10().pow(0.7),1000,0.5)
+	if (x==64) return Decimal.convergentSoftcap(g.exoticmatter.add(10).log10().pow(0.1),1,3)
+  if ([71,72,73,74].includes(x)) {
+    let ef
+    if (x==71) ef = g.masteryPower.pow(10**-0.5).add(10).log10().log10().mul(22.5)
+    if (x==72) ef = g.exoticmatter.fix(0).add(10).log10().log10().pow(2).mul(1.5)
+    if (x==73) ef = g.stardust.add(10).log10().log10().mul(8)
+    if (x==74) ef = g.truetimeThisStardustReset.add(1).log10().mul(7.5)
+    if (ResearchE("r6_10")) ef=ef.mul(researchEffect(6,10).div(100).add(1))
+    return Decimal.convergentSoftcap(ef,75,100)
+  }
+  if (x==90) return g.exoticmatter.add(1).log10().pow(0.75).div(100).add(1).pow(studies[2].reward(2))
+}
+function starText(x) {
+	let out = "<div style=\"position:absolute;top:3px;left:0px;width:120px;text-align:center;color:rgba(0,0,0,0.4)\">"+x+"</div><div style=\"position:absolute;bottom:3px;left:0px;width:120px;text-align:center;color:rgba(0,0,0,0.4)\">"+(StarE(x)?"Active":"Inactive")+"</div>"
+  if ([11,12,13,14].includes(x)) out += "Exotic matter gain is multiplied by "+starEffect(x).format(2)+" ("+["de","in"][x%2]+"creases with "+(x>12?"time in this stardust reset":"exotic matter")+")"
+  if ([21,22,23,24].includes(x)) out += "Gain 3 free "+axisCodes[x-21]+" axis"
+  if ([31,32,33,34].includes(x)) out += "Cube the effect of star "+(x-20)+" (two above this)"
+	if (x==41) out += "Exotic matter gain is raised to the power of 1.05"
+	if (x==42) out += "Exotic matter gain is multiplied by "+BEformat(1e18)
+	if (x==43) out += "Stardust gain is raised to the power of 1.05"
+  if (x==44) out += "Stardust gain is multiplied by 100"
+  if ([51,52,53,54].includes(x)) out += "You can activate all "+["second","third","fourth","fifth"][x-51]+" row Masteries"
+  if ([61,62,63].includes(x)) out += "Gain "+starEffect(60).format(2)+" free "+axisCodes[x-57]+" axis (based on exotic matter)"
+  if (x==64) out += "Gain "+starEffect(64).format(3)+" free S axis (based on exotic matter)"
+  if ([71,72,73,74].includes(x)) out += "The game runs "+starEffect(x).format(2)+"% faster (based on "+["mastery power","exotic matter","stardust","time in this stardust reset"][x-71]+")"
+  if ([81,83].includes(x)) out += (x==83?"Dark":"Normal")+" axis costs are raised to the power of 0.8"
+  if ([82,84].includes(x)) out += (x==84?"Dark Y":"Normal V")+" axis is 4 times stronger"
+  if ([91,92,93,94].includes(x)) out += "The effect of star "+(x-80)+" is raised to the power of "+starEffect(90).format(2)+" (based on exotic matter)"
+  if ([101,102,103,104].includes(x)) out += "You can activate all "+["sixth","seventh","eighth","ninth"][x-101]+" row Masteries"
+	return out
+}
+const dynamicStars = [11,12,13,14,61,62,63,64,71,72,73,74,91,92,93,94]
+var starRowsShown = []
+var updateStarHTML = true
+function starHTML() {
+  updateStarHTML = false
+  let out = "<table>"
+  let rows = []
+  for (let i=1;i<Math.min(g.stars+1,40);i++) if (!rows.includes(starRow(i))) rows.push(starRow(i))
+  starRowsShown = Array.from(new Set(Array(40).fill(0).map((x,index) => starRow(index+1)))).slice(0,rows.length+1).sort(function(a,b){return a-b})
+  for (let i=0;i<starRowsShown.length;i++) {
+    out+="<tr><td style=\"width:240px;color:#ffffff;font-size:10px\"><span style=\"font-weight:900\">Row "+starRowsShown[i]+"</span><br>"+(maxStars(starRowsShown[i])-[1,2,3,4].map(x => StarE(starRowsShown[i]*10+x)?1:0).reduce((x,y)=>x+y))+" available</td>"
+    for (let j=1;j<5;j++) {
+      let style = StarE(starRowsShown[i]*10+j)?("ownedstarbutton"+starRowsShown[i]):availableStarRow(starRowsShown[i])?"availablestarbutton":"lockedstarbutton"
+      out+="<td><button class=\"starbutton "+style+"\" id=\"starButton"+(starRowsShown[i]*10+j)+"\" onClick=\"buyStarUpgrade("+(starRowsShown[i]*10+j)+")\">"+starText(starRowsShown[i]*10+j)+"</button></td>"
+    }
+    out+="</tr>"
+  }
+  out+="</table>"
+  d.innerHTML("starContainer",out)
+  updateStarHTML = true
 }
 function StarE(x) {
   return g.ownedStars.includes(x)
 }
+function unspentStars() {
+  return g.stars-g.ownedStars.length
+}
+function starRow(index) {
+  if (!StudyE(2)) return [1,1,2,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8,9,10,8,9,10,9,10,10][index-1]
+	if (g.studyCompletions[2]==0) return [1,1,2,1,1,2,3,2,2,3,4,3,3,4,5,4,4,5,6,5,5,6,7,6,6,7,8,7,7,8,9,8,8,9,10,9,9,10,10,10][index-1]
+	if (g.studyCompletions[2]==1) return [1,1,1,2,1,2,2,3,2,3,3,4,3,4,4,5,4,5,5,6,5,6,6,7,6,7,7,8,7,8,8,9,8,9,9,10,9,10,10,10][index-1]
+	if (g.studyCompletions[2]==2) return Math.floor(index/4+0.75)
+  return [3,3,9,3,9,2,3,9,2,4,9,2,4,5,2,4,5,6,4,5,6,7,5,6,7,8,6,7,8,1,7,8,1,10,8,1,10,1,10,10][index-1]
+}
+function maxStars(row) {
+  let output=0
+  for (let i=0;i<Math.min(g.stars,40);i++) if (starRow(i+1)==row) output++
+  return output
+}
+function availableStarRow(row) {
+  return (maxStars(row)>(StarE(row*10+1)+StarE(row*10+2)+StarE(row*10+3)+StarE(row*10+4)))
+}
 function buyDarkAxis(x) {
-  if (g.darkmatter>g["dark"+x+"AxisCost"]) {
-    infDeduct("darkmatter",g["dark"+x+"AxisCost"])
-    g["dark"+x+"Axis"]++
-    updateDarkAxisCosts()
+  if (g.darkmatter.gt(darkAxisCost(x))) {
+    o.sub("darkmatter",darkAxisCost(x))
+    o.add("dark"+x+"Axis",1)
   }
+  if (g.darkSAxis.gt(0)) g.ach525possible=false
+  if (axisCodes.map(x => g["dark"+x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
+  for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
 }
-
-function buyMaxDarkAxis() {
-  for (j=0; j<8; j++) {
-    while (g.darkmatter>g["dark"+axisCodes[j]+"AxisCost"]) buyDarkAxis(axisCodes[j])
+function buyMaxDarkAxis(caps) {
+  for (let j=0; j<8; j++) {
+    let amount = caps[j]=="u"?maxAffordableDarkAxis(axisCodes[j]):Decimal.min(maxAffordableDarkAxis(axisCodes[j]),N(caps[j]))
+    if (amount=="NA") continue
+    if (amount.lte(g["dark"+axisCodes[j]+"Axis"])) continue
+    if (darkAxisCost(axisCodes[j],amount.sub(1)).lt(g.darkmatter)) o.sub("darkmatter",darkAxisCost(axisCodes[j],amount.sub(1)))
+    g["dark"+axisCodes[j]+"Axis"]=amount
   }
+  for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
 }
-function updateDarkAxisCosts() {
-  for (i=0;i<8;i++) {
-    let [a,c,scale1start,scale1power,scale2start,scale2power] = [g["dark"+axisCodes[i]+"Axis"],0,g.darkaxisScalingStart,1,g.darkaxisSuperscalingStart,1]
-    if (i==3) scale2power*=3
-    if (i==7) {
-      scale1power*=2
-      scale2power*=5
+function darkStarEffect3(x) {
+	x=(x==undefined)?realDarkStars():N(x)
+	if (x.lte(100)) return x
+	return Decimal.convergentSoftcap(x.div(10).sub(9).ln().mul(10).add(100),150,200)
+}
+function darkMatterFreeAxis(x) {     // Input 1 signifies the base ratio. Input of an axis code signifies the gain from that dark axis.
+  let m=N(0.33)
+  m=m.mul(1+achievement.ownedInTier(3)/100)
+  m=m.mul(darkStarEffect3().div(100).add(1))
+  if (x!==1) m=m.mul(g["dark"+x+"Axis"])
+  return m
+}
+function darkStarEffectHTML() {
+	let v1 = realDarkStars()
+	let v2 = realDarkStars(maxAffordableDarkStars().max(g.darkstars.add(1)))
+	return `The base gain of dark matter will become `+v1.mul(5).format(0)+` → `+v2.mul(5).format(0)+`% stronger
+	   <br>Dark X Axis will become `+darkStarEffect2Level("X",v1).mul(10).format(v1.gt(320)?4:0)+` → `+darkStarEffect2Level("X",v2).mul(10).format(v2.gt(320)?4:0)+`% stronger
+	   <br>Dark Y Axis will become `+darkStarEffect2Level("Y",v1).mul(10).format(v1.gt(321)?4:0)+` → `+darkStarEffect2Level("Y",v2).mul(10).format(v2.gt(321)?4:0)+`% stronger
+	   <br>Dark Z Axis will become `+darkStarEffect2Level("Z",v1).mul(10).format(v1.gt(322)?4:0)+` → `+darkStarEffect2Level("Z",v2).mul(10).format(v2.gt(322)?4:0)+`% stronger
+	   <br>Dark W Axis will become `+darkStarEffect2Level("W",v1).mul(10).format(v1.gt(83)?4:0)+` → `+darkStarEffect2Level("W",v2).mul(10).format(v2.gt(83)?4:0)+`% stronger
+	   <br>Dark V Axis will become `+darkStarEffect2Level("V",v1).mul(10).format(v1.gt(324)?4:0)+` → `+darkStarEffect2Level("V",v2).mul(10).format(v2.gt(324)?4:0)+`% stronger
+	   <br>Dark U Axis will become `+darkStarEffect2Level("U",v1).mul(10).format(v1.gt(325)?4:0)+` → `+darkStarEffect2Level("U",v2).mul(10).format(v2.gt(325)?4:0)+`% stronger
+	   <br>Dark T Axis will become `+darkStarEffect2Level("T",v1).mul(10).format(v1.gt(326)?4:0)+` → `+darkStarEffect2Level("T",v2).mul(10).format(v2.gt(326)?4:0)+`% stronger
+	   <br>Dark S Axis will become `+darkStarEffect2Level("S",v1).mul(10).format(v1.gt(87)?4:0)+` → `+darkStarEffect2Level("S",v2).mul(10).format(v2.gt(87)?4:0)+`% stronger
+		 <br>You will gain `+darkStarEffect3(v1).format(v1.gt(100)?4:0)+` → `+darkStarEffect3(v2).format(v2.gt(100)?4:0)+`% more free axis from dark matter`
+}
+function darkAxisCost(type,axis) {
+  if (axis == undefined) axis = g["dark"+type+"Axis"]
+  let cost = null
+  let scale1start = axisScaling("dark","normal","start")
+  let scale1power = realAxisScalePower("dark","normal",type)
+  let scale2start = axisScaling("dark","super","start")
+  let scale2power = realAxisScalePower("dark","super",type)
+  axis = Decimal.semiexpScaling(axis,scale2start,scale2power)
+  axis = Decimal.linearScaling(axis,scale1start,scale1power)
+  if (type=="X") cost = axis.pow(1.2).add(1).pow10()
+  if (type=="Y") cost = Decimal.pow(100,axis.add(1))
+  if (type=="Z") cost = N(10).pow(axis).mul(1e10)
+  if (type=="W") cost = axis.pow(1.5).add(15).pow10()
+  if (type=="V") cost = axis.pow(1.25).add(30).pow10()
+  if (type=="U") cost = axis.pow(2).add(45).pow10()
+  if (type=="T") cost = N(1e4).pow(axis).mul(1e100)
+  if (type=="S") cost = Decimal.powerTower("2^1024",1.2,axis)
+  cost=cost.div(realDarkAxisCostDivisor(type))
+  cost=cost.pow(realDarkAxisCostExponent(type))
+  return cost
+}
+function realDarkAxisCostDivisor(type) {
+  let output = stat("darkAxisCostDivisor")
+  return output
+}
+function realDarkAxisCostExponent(type) {
+  let output = stat("darkAxisCostExponent")
+	if (type=="S"&&ResearchE("r3_11")) output = output.mul(researchEffect(3,11))
+  return output
+}
+function maxAffordableDarkAxis(type) {
+  if (darkAxisCost(type).gte(g.darkmatter)) return g["dark"+type+"Axis"]
+  let effective_DM = g.darkmatter.root(realDarkAxisCostExponent(type)).mul(realDarkAxisCostDivisor(type))
+  let axis       // prevent "lexical declaration cannot appear in single-statement context"
+  if (type=="X") axis = effective_DM.lte(10)?N(-1):effective_DM.log10().sub(1).pow(5/6)
+  if (type=="Y") axis = effective_DM.lte(100)?N(-1):effective_DM.log10().div(2).sub(1)
+  if (type=="Z") axis = effective_DM.lte(1e10)?N(-1):effective_DM.log10().sub(10)
+  if (type=="W") axis = effective_DM.lte(1e15)?N(-1):effective_DM.log10().sub(15).pow(2/3)
+  if (type=="V") axis = effective_DM.lte(1e30)?N(-1):effective_DM.log10().sub(30).pow(0.8)
+  if (type=="U") axis = effective_DM.lte(1e45)?N(-1):effective_DM.log10().sub(45).pow(0.5)
+  if (type=="T") axis = effective_DM.lte(1e100)?N(-1):effective_DM.log10().sub(100).div(4)
+  if (type=="S") axis = effective_DM.lte(c.inf)?N(-1):effective_DM.log(2).div(1024).log(1.2)
+  axis = Decimal.linearSoftcap(axis,axisScaling("dark","normal","start"),realAxisScalePower("dark","normal",type))
+  axis = Decimal.semilogSoftcap(axis,axisScaling("dark","super","start"),realAxisScalePower("dark","super",type))
+  return axis.floor().add(1)
+}
+function darkStarScaling(x) {
+	let out
+  if (x=="start") {
+    out = N(48)
+    if (AchievementE(527)) out = out.add(4)
+  }
+  if (x=="power") {
+    out = N(1)
+  }
+	return out
+}
+function darkStarPriceMod(type) {
+  let output
+  if (type=="sub") {
+    output=N(0)
+    if (MasteryE(63)) output=output.add(masteryEffect(63))
+  }
+  if (type=="div") {
+    output=stardustBoost(9)
+    if (AchievementE(512)) output=output.div(0.9975**g.stars)
+    if (ResearchE("r6_3")) output=output.mul(energyEffect(2).pow(researchEffect(6,3)))
+  }
+  return output
+}
+function darkStarReq(x) {
+  x=(x==undefined)?g.darkstars:N(x)
+  if (x.gt(darkStarScaling("start"))) {
+    let scalestart=darkStarScaling("start")
+    let scalepower=darkStarScaling("power")
+    x=x.sub(scalestart).mul(scalepower.add(1)).add(scalestart)
+    x=Decimal.exponentialScaling(x,scalestart,scalepower)
+  }
+  let c=Decimal.sum(36,x.mul(5.5),x.pow(2).div(8))
+  return c.div(darkStarPriceMod("div")).sub(darkStarPriceMod("sub")).ceil().max(0)
+}
+function realDarkStars(x) {
+  x=(x==undefined)?g.darkstars:N(x)
+  if (StudyE(2)) x=x.add(unspentStars())
+  if (!StudyE(2)) x=x.add(studies[2].reward(3).mul(g.stars+unspentStars()).div(2))
+  return x
+}
+function darkStarEffect2Level(axis,x) {
+  x=(x==undefined)?realDarkStars():N(x)
+  let cycles = x.div(8).floor()
+  let over = x.sub(axisCodes.indexOf(axis)).sub(cycles.mul(8)).max(0).min(1)
+  let out = Decimal.add(cycles,over)
+	if (axis=="W") return Decimal.linearSoftcap(out,10,3)
+	if (axis=="S") return Decimal.logarithmicSoftcap(out,10,9)
+	return Decimal.linearSoftcap(out,40,1)
+}
+function maxAffordableDarkStars(x) {
+  x=(x==undefined)?totalAxis("dark"):N(x)
+  let effective_dark_axis = x.add(darkStarPriceMod("sub")).mul(darkStarPriceMod("div"))
+  let out = (effective_dark_axis.lt(24))?N(-1):effective_dark_axis.mul(2).add(49).sqrt().mul(2).sub(22)
+  if (out.gt(darkStarScaling("start"))) {
+    let scalestart=darkStarScaling("start")
+    let scalepower=darkStarScaling("power")
+    out=Decimal.logarithmicSoftcap(out,scalestart,scalepower)
+    out=out.sub(scalestart).div(scalepower.add(1)).add(scalestart)
+  }
+  return out.floor().add(1)
+}
+function gainDarkStar(cap) {
+  let gain = (cap=="u")?maxAffordableDarkStars():maxAffordableDarkStars().min(N(cap))
+	if (gain.lte(g.darkstars)) return
+  if (gain.sub(g.darkstars).gte(20)) addAchievement(513)
+  if (gain.sub(g.darkstars).gte(35)) addAchievement(514)
+  if (gain.sub(g.darkstars).gte(50)) addAchievement(515)
+	g.darkstars=gain
+  if (achievement.ownedInTier(5)<7) {
+    g.darkmatter=N(0)
+    for (let i=0;i<8;i++) g["dark"+axisCodes[i]+"Axis"]=N(0)
+		stardustReset("force")
+  }
+  if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false
+  addAchievement(528)
+}
+function energyTypesUnlocked() {
+  return Math.max(0,Math.min(6,g.stardustUpgrades[4]-1))
+}
+function energyEffect(x) {
+  if (x+1>energyTypesUnlocked()) return N(1)
+  let type=eval("g."+["dark","stelliferous","gravitational","spatial","neural","meta"][x]+"Energy")
+  let resource=[g.exoticmatter,g.stardust,g.darkmatter,g.XAxis,g.masteryPower,N(10)][x]
+  let softcap=N([0.25,0.25,0.25,4,0.25,c.inf][x])
+  let inc=N([0.1,0.1,0.1,0.5,0.1,0.25][x])
+  let eff=((type.gt(resource))&&(resource.gt(1))) ? type.log(resource).log10().mul(stat("energyEffectBoost")).mul(inc).add(1) : N(1)
+  if (eff.gt(softcap.add(1))) eff=softcap.mul(eff.sub(1).div(softcap).ln().div(10).add(1)).add(1)
+  return eff
+}
+function energyPerSec(x) {
+  let resource = [g.exoticmatter,g.stardust,g.darkmatter,g.XAxis,g.masteryPower,Decimal.product(g.darkEnergy.add(10).log10(),g.stelliferousEnergy.add(10).log10(),g.gravitationalEnergy.add(10).log10(),g.spatialEnergy.add(10).log10(),g.neuralEnergy.add(10).log10(),g.metaEnergy.add(10).log10()).pow(0.1)][x]
+  let divisor = [200,350,500,350,200,50][x]
+  let mult = stat("tickspeed")
+  if (x==0&&AchievementE(408)) mult = mult.mul(achievement.get(408).effect().div(100).add(1))
+  if ([0,1].includes(x)&&AchievementE(521)) mult = mult.mul(1.5)
+  if ([2,3].includes(x)&&AchievementE(522)) mult = mult.mul(1.5)
+  if ([4,5].includes(x)&&AchievementE(523)) mult = mult.mul(1.5)
+  let research4energy = [1,2,3,13,14,15][x]
+  if (ResearchE("r4_"+research4energy)) mult = mult.mul(researchEffect(4,research4energy))
+  let research7energy = [[13,15],[1,14],[13,14],[2,3],[2,15],[1,3]][x]
+  for (let i=0;i<2;i++) if (ResearchE("r7_"+research7energy[i])) mult = mult.mul(researchEffect(7,research7energy[i]))
+  if (ResearchE("r8_5")) mult = mult.mul(researchEffect(8,5).mul(achievement.owned()).div(100).add(1))
+  return resource.add(10).dilate(0.9).pow(stat("energyGainSpeed")).root(divisor).pow(mult)
+}
+for (let i=0;i<energyTypes.length;i++) {
+	d.element("Energy").innerHTML += "<div class=\"energydivision\" id=\""+energyTypes[i]+"EnergyDiv\">You have <span class=\"energytext\" id=\""+energyTypes[i]+"EnergyAmount\"></span> "+energyTypes[i]+" energy.<br>It is being multiplied by <span class=\"energytext\" id=\""+energyTypes[i]+"EnergyPerSec\"></span> per second (based on "+energyDeterminers[i]+").<br>"+energyResources[i]+" is being "+[null,null,"multiplied by","raised to the power of"][energyHyper[i]]+" <span class=\"energytext\" id=\""+energyTypes[i]+"EnergyEffect\"></span>"+(i==5?(" (need 10 "+energyTypes[i]+"energy)"):(" (need more "+energyTypes[i]+" energy than "+energyDeterminers[i]+")"))+".</div>"
+}
+function energyHTML() {
+	for (let i=0;i<energyTypes.length;i++) {
+		if (energyTypesUnlocked()>i) {
+			d.display(energyTypes[i]+"EnergyDiv","inline-block")
+			d.innerHTML(energyTypes[i]+"EnergyAmount",g[energyTypes[i]+"Energy"].format(2))
+			d.innerHTML(energyTypes[i]+"EnergyPerSec",energyPerSec(i).format(i==3?4:2))
+			d.innerHTML(energyTypes[i]+"EnergyEffect",energyEffect(i).format(4))
+		} else {
+			d.display(energyTypes[i]+"EnergyDiv","none")
+		}
+	}
+}
+function wormholeAnimation() {
+	wormholeAnimationActive=true;wormholeAnimationStart=Date.now()
+}
+function wormholeReset(x) {
+  if ((totalAxis("dark").gte((g.activeStudy==0)?1000:studies[g.activeStudy].goal()))||(x=="force")) {
+		if (g.wormholeResets==0) {
+			d.display("wormholeAnimation","inline-block")
+			let start = Date.now()
+			while (Date.now()-start<1e4) d.element("wormholeAnimation").style.opacity = (Date.now()-start)/1e4
+		}
+    if (x!=="force") for (let i=0;i<wormholeResetAchievements.length;i++) addAchievement(wormholeResetAchievements[i])
+    if (g.activeStudy!==0) {
+      if (totalAxis("dark").gt(studies[g.activeStudy].goal())) g.studyCompletions[g.activeStudy]++
+      g.activeStudy=0
+			respecResearch()
+			generateStudyTable()
+			generateResearchCanvas()
     }
-    a = normSemiexpScaling(a,scale2start,scale2power)
-    a = normLinearScaling(a,scale1start,scale1power)
-    if (i==0) c = 1+a**1.2
-    if (i==1) c = 2+2*a
-    if (i==2) c = 10+a
-    if (i==3) c = 15+a**1.5
-    if (i==4) c = 30+a**1.25
-    if (i==5) c = 45+a**2
-    if (i==6) c = 100+4*a
-    if (i==7) c = 308.2547155599167*1.2**a
-    c-=g.darkaxisCostDivisor
-    c*=g.darkaxisCostExponent
-    g["dark"+axisCodes[i]+"AxisCost"]=c
-  }
-}
-function updateDarkStarCost() {
-  g.darkstarRequirement=24+3*g.darkstars
-  g.darkstarRequirement+=Math.floor(g.darkstars/4)*(g.darkstars%4)+4*normSimplex(Math.max(0,Math.floor(g.darkstars/4-1)),2)
-  g.darkstarRequirement*=1.05**Math.max(0,g.darkstars-g.darkstarScalingStart)                                                                               // Scaling
-  g.darkstarRequirement=Math.ceil(g.darkstarRequirement-g.Mastery63Effect*MasteryE(63))
-}
-function gainDarkStar() {
-  more=true
-  while ((g.totaldarkAxis >= g.darkstarRequirement)&&more) {
-    g.darkmatter=0
-    g.darkmatterPerSec=0
-    g.darkXAxis=0
-    g.darkYAxis=0
-    g.darkZAxis=0
-    g.darkWAxis=0
-    g.darkVAxis=0
-    g.darkUAxis=0
-    g.darkTAxis=0
-    g.darkSAxis=0
-    g.darkstars++
-    updateDarkStarCost()
-    stardustReset((g.pendingstardust > g.stardust)?"normal":"force")
-    more=g.darkstarBulk
-  }
-}
-function supernova(x) {
-  if (x==1) {
-    if (g.EMSupernova.charges>0) {
-      g.EMSupernova.charges--
-      incrementExoticMatter(g.exoticmatterPerSec*g.EMSupernova.power)
+    o.add("hawkingradiation",stat("pendinghr").floor())
+    g.exoticmatter=N(0)
+    for (let i=0;i<8;i++) {
+      g[axisCodes[i]+"Axis"]=N(0)
+      g["dark"+axisCodes[i]+"Axis"]=N(0)
     }
-  } else if (x==2) {
-    if (g.KnowledgeSupernova.charges>0) {
-      g.KnowledgeSupernova.charges--
-      infIncrement("masteryPower",g.masteryPowerPerSec*g.KnowledgeSupernova.power)
-    }
+    g.masteryPower=N(1)
+    g.baseMasteryPowerGain=N(0)
+    g.exoticmatterThisStardustReset=N(0)
+    g.timeThisStardustReset=0
+    g.truetimeThisStardustReset=N(0)
+    g.fastestStardustReset=N(9e15)
+    g.exoticmatterThisWormholeReset=N(0)
+    g.fastestWormholeReset=Decimal.min(g.fastestWormholeReset,g.timeThisWormholeReset)
+    g.timeThisWormholeReset=0
+    g.truetimeThisWormholeReset=N(0)
+    g.stardust=N(0)
+    g.stardustUpgrades=[0,1,0,5,0]
+    g.stars=0
+    g.ownedStars=[]
+    g.darkmatter=N(0)
+    g.darkstars=N(0)
+    g.darkEnergy=N(0)
+    g.stelliferousEnergy=N(0)
+    g.gravitationalEnergy=N(0)
+    g.spatialEnergy=N(0)
+    g.neuralEnergy=N(0)
+    g.metaEnergy=N(0)
+    g.StardustResets=0
+    g.WormholeResets++
+    g.shiningBrightTonight=true
+    g.ach519possible=true
+    g.ach524possible=achievement.get(524).active()
+    g.ach525possible=true
+    g.ach526possible=true
+		d.display("wormholeAnimation","none")
+		unlockFeature("Hawking Radiation","g.hawkingradiation.gt(0)")
+		if (g.researchRespec) {
+			respecResearch()
+			g.researchRespec = false
+		}
+		if (tabOpen(["Stardust","Dark Matter"])) openSubTab("stardust","Stardust Boosts")
+		if (tabOpen(["Stardust","Energy"])) openSubTab("stardust","Stardust Boosts")
   }
 }
-function unlockSupernova(x) {
-  if ((x==2)&&(g.KnowledgeSupernova.unlocked==false)&&(g.masteryPower>65)) {
-    infDeduct("masteryPower",65)
-    g.KnowledgeSupernova.unlocked=true
-  }
-}
-function upgradeSupernova(x,y) {
-  let resource=["exoticmatter","masteryPower"]
-  let types=["EMSupernova","KnowledgeSupernova"]
-  if (g[resource[x]]>SupernovaCosts[x][y]) {
-    g[types[x]]["upgrade"+(y+1)]++
-    infDeduct(resource[x],SupernovaCosts[x][y])
-  }
-}
-
-
-
-
-
-window.setInterval(function(){                                                                     // The game loop, which consists of functions that run automatically. Frame rate is 20fps
-
-
-  // QoL section
-  if ((baseOfflineSpeedup>1)&&(offlineTime>0)) {
-    offlineSpeedup = 1+(baseOfflineSpeedup-1)*Math.min(Math.max(offlineTime,0.001)/deltatime,1)
-    offlineTime = offlineTime-deltatime
-    document.getElementById("offlineSpeedupDisplay").innerHTML = "Offline speedup: "+normFormat(offlineSpeedup)+"x     Offline time left: "+normFormat(offlineTime)+"s"
+function wormholeResetButtonText() {
+  let out
+  if (g.activeStudy==0) out = "Reset to gain <span class=\"wormholelayertext\">"+stat("pendinghr").floor().format(0)+"</span> hawking radiation"
+  else out = "Complete this Study"
+  out+="<br><span class=\"small\">"
+  if (totalAxis("dark").lt(HRDarkAxisReq())) {
+    out+="(Need "+BEformat(HRDarkAxisReq())+" total dark axis)"
   } else {
-    offlineSpeedup = 1
-    document.getElementById("offlineSpeedupDisplay").innerHTML = ""
-  }
-  document.getElementById("offlineSpeedupLength").innerHTML = g.offlineSpeedupLength+"s"
-  document.getElementById("offlineSpeedupOn").innerHTML = g.offlineSpeedupOn
-  ProgressBar()
-  oldframetime=newframetime
-  newframetime=new Date().getTime()
-  deltatime=(newframetime-oldframetime)/1000
-
-
-  // Exotic matter section
-  g.axisCostDivisor = g.VAxisEffect*g.realVAxis+g.Mastery12Effect*MasteryE(12)
-  g.axisScalingStart = 8
-  g.axisSuperscalingStart = 128
-  updateAxisCosts()
-  g.realXAxis=g.XAxis+g.freeXAxis
-  g.realYAxis=g.YAxis+g.freeYAxis
-  g.realZAxis=g.ZAxis+g.freeZAxis
-  g.realWAxis=g.WAxis+g.freeWAxis
-  g.realVAxis=g.VAxis+g.freeVAxis
-  g.realUAxis=g.UAxis+g.freeUAxis
-  g.realTAxis=g.TAxis+g.freeTAxis
-  g.realSAxis=g.SAxis+g.freeSAxis
-  g.totalAxis = g.XAxis+g.YAxis+g.ZAxis+g.WAxis+g.VAxis+g.UAxis+g.TAxis+g.SAxis
-  g.axisUnlocked = Math.min(1+Math.sign(g.XAxis)+Math.sign(g.YAxis)+Math.sign(g.ZAxis)+Math.sign(g.WAxis)+Math.sign(g.VAxis)+Math.sign(g.UAxis)+Math.sign(g.TAxis)+Math.sign(g.SAxis),4+g.stardustUpgrades[0])
-  for (i=0;i<8;i++) {
-    document.getElementById(axisCodes[i]+"AxisButton").style.display=(g.axisUnlocked<=i)?"none":"inline-block"
-    document.getElementById(axisCodes[i]+"AxisButton").className=(g.exoticmatter<g[axisCodes[i]+"AxisCost"])?"lockedaxisbutton":"axisbutton"
-    document.getElementById(axisCodes[i]+"AxisCost").innerHTML = infFormat(g[axisCodes[i]+"AxisCost"],false)
-    document.getElementById(axisCodes[i]+"AxisAmount").innerHTML = normFormat(g[axisCodes[i]+"Axis"])+((g["free"+axisCodes[i]+"Axis"]>0)?" + "+normFormat(g["free"+axisCodes[i]+"Axis"]):(g["free"+axisCodes[i]+"Axis"]<0)?" - "+normFormat(-g["free"+axisCodes[i]+"Axis"]):"")
-    document.getElementById(axisCodes[i]+"AxisEffect").innerHTML = (i==7)?Math.round(g.SAxisEffect*1e4)/1e4:infFormat(g[axisCodes[i]+"AxisEffect"],true)
-  }
-
-
-  // Mastery section
-  if (g.masteryRowsUnlocked.includes(1)) {
-    document.getElementById("masteriesButton").style="display:inline-block"
-    g.baseMasteryPowerGain=infAdd(g.baseMasteryPowerGain,Math.log10(deltatime*offlineSpeedup)+g.tickspeed)
-  } else {
-    document.getElementById("masteriesButton").style="display:none"
-  }
-  document.getElementById("masteryPowerDisplay").innerHTML = infFormat(g.masteryPower,false)
-  document.getElementById("masteryPowerPerSec").innerHTML = infFormat(g.masteryPowerPerSec,true)
-  g.masteryRowsUnlocked[0]=(g.XAxis>0 || g.masteryRowsUnlocked[0]==1)?1:0
-  g.masteryRowsUnlocked[1]=(g.exoticmatter>6 || g.masteryRowsUnlocked[1]==1)?1:0
-  g.masteryRowsUnlocked[2]=(g.exoticmatter>17 || g.masteryRowsUnlocked[2]==1)?1:0
-  g.masteryRowsUnlocked[3]=(g.exoticmatter>22 || g.masteryRowsUnlocked[3]==1)?1:0
-  g.masteryRowsUnlocked[4]=(g.stardustUpgrades[3]>=2 || g.masteryRowsUnlocked[4]==1)?1:0
-  g.masteryRowsUnlocked[5]=(g.stardustUpgrades[3]>=3 || g.masteryRowsUnlocked[5]==1)?1:0
-  g.masteryRowsUnlocked[6]=(g.stardustUpgrades[3]>=4 || g.masteryRowsUnlocked[6]==1)?1:0
-  g.masteryRowsUnlocked[7]=(g.stardustUpgrades[3]==5 || g.masteryRowsUnlocked[7]==1)?1:0
-  g.masteryRowsUnlocked[8]=g.masteryRowsUnlocked[7]
-  if (g.stardustUpgrades[3]>0) g.activeMasteries[0]=9
-  if ((g.stardustUpgrades[3]==0)&&(g.activeMasteries[0]==9)) g.activeMasteries[0]=0
-  if (StarE(51)) g.activeMasteries[1]=9
-  if ((!StarE(51))&&(g.activeMasteries[1]==9)) g.activeMasteries[1]=0
-  if (StarE(52)) g.activeMasteries[2]=9
-  if ((!StarE(52))&&(g.activeMasteries[2]==9)) g.activeMasteries[2]=0
-  if (StarE(53)) g.activeMasteries[3]=9
-  if ((!StarE(53))&&(g.activeMasteries[3]==9)) g.activeMasteries[3]=0
-  if (StarE(54)) g.activeMasteries[4]=9
-  if ((!StarE(54))&&(g.activeMasteries[4]==9)) g.activeMasteries[4]=0
-  if (StarE(101)) g.activeMasteries[5]=9
-  if ((!StarE(101))&&(g.activeMasteries[5]==9)) g.activeMasteries[5]=0
-  if (StarE(102)) g.activeMasteries[6]=9
-  if ((!StarE(102))&&(g.activeMasteries[6]==9)) g.activeMasteries[6]=0
-  if (StarE(103)) g.activeMasteries[7]=9
-  if ((!StarE(103))&&(g.activeMasteries[7]==9)) g.activeMasteries[7]=0
-  if (StarE(104)) g.activeMasteries[8]=9
-  if ((!StarE(104))&&(g.activeMasteries[8]==9)) g.activeMasteries[8]=0
-  updateMasteryBoosts()
-  g.Mastery11Effect=infAdd(0,g.masteryPower)*0.1*masteryBoosts.b11
-  g.Mastery12Effect=infAdd(0,g.masteryPower)*0.15*masteryBoosts.b12
-  g.Mastery21Effect=infAdd(0,g.masteryPower)**0.6*0.0175*masteryBoosts.b21
-  g.Mastery22Effect=infAdd(0,g.masteryPower)**0.6*0.035*masteryBoosts.b22
-  g.Mastery31Effect=infAdd(0,g.masteryPower)**0.5*0.5*masteryBoosts.b31
-  g.Mastery32Effect=infAdd(0,g.masteryPower)**0.5*0.8*masteryBoosts.b32
-  g.Mastery41Effect=1+LogarithmicSoftcap(infAdd(0,g.masteryPower)/15,1,2)*masteryBoosts.b41
-  g.Mastery42Effect=(infAdd(g.masteryPower-1,4)**0.5-2)*masteryBoosts.b42
-  g.Mastery43Effect=1+LogarithmicSoftcap(infAdd(0,g.masteryPower)/15,1,2)*masteryBoosts.b43
-  g.Mastery51Effect=infAdd(g.masteryPower,0)**0.5*2*masteryBoosts.b51
-  g.Mastery52Effect=1+infAdd(g.masteryPower,0)**0.33*2*masteryBoosts.b52
-  g.Mastery61Effect=1+LogarithmicSoftcap(infAdd(g.masteryPower,1)**0.1-1,9,2)*masteryBoosts.b61
-  g.Mastery62Effect=1/LogarithmicSoftcap(infAdd(g.masteryPower,1)**0.04,2,1)**masteryBoosts.b62
-  g.Mastery63Effect=infAdd(g.masteryPower,0)**0.8*masteryBoosts.b63
-  g.Mastery71Effect=Math.log10(infAdd(g.masteryPower*1.25,10))**masteryBoosts.b71
-  g.Mastery72Effect=1+LogarithmicSoftcap(Math.log10(infAdd(g.masteryPower*1.25,10))**0.5-1,1,5)*masteryBoosts.b72
-  g.Mastery81Effect=infAdd(g.masteryPower,0)**0.5*g.XAxis**0.5*0.05*masteryBoosts.b81
-  g.Mastery82Effect=infAdd(g.masteryPower,0)**0.5*Math.log10(infAdd(g.exoticmatter,1))*0.25*masteryBoosts.b82
-  g.Mastery83Effect=infAdd(g.masteryPower,0)**0.5*Math.log10(infAdd(g.darkmatter,1))**0.75*0.6*masteryBoosts.b83
-  g.Mastery84Effect=infAdd(g.masteryPower,0)**0.5*Math.log10(infAdd(g.stardust,1))**0.5*0.7*masteryBoosts.b84
-  g.Mastery85Effect=Math.log10(infAdd(g.masteryPower,1))*masteryBoosts.b85
-  g.Mastery91Effect=1+Math.log10(infAdd(g.masteryPower,1))*0.1*(0.3*infAdd(g.truetimeThisStardustReset,1))*masteryBoosts.b91
-  g.Mastery92Effect=1+Math.log10(infAdd(g.masteryPower,1))*0.1/(0.3*infAdd(g.truetimeThisStardustReset,1))*masteryBoosts.b92
-  document.getElementById("Mastery11Effect").innerHTML = infFormat(g.Mastery11Effect,true)
-  document.getElementById("Mastery12Effect").innerHTML = infFormat(g.Mastery12Effect,true)
-  document.getElementById("Mastery11Button").className = (MasteryE(11)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery12Button").className = (MasteryE(12)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery21Effect").innerHTML = infFormat(g.Mastery21Effect,true)
-  document.getElementById("Mastery22Effect").innerHTML = infFormat(g.Mastery22Effect,true)
-  document.getElementById("Mastery21Button").className = (MasteryE(21)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery22Button").className = (MasteryE(22)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery31Effect").innerHTML = normFormat(g.Mastery31Effect)
-  document.getElementById("Mastery32Effect").innerHTML = normFormat(g.Mastery32Effect)
-  document.getElementById("Mastery31Button").className = (MasteryE(31)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery32Button").className = (MasteryE(32)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery41Effect").innerHTML = normFormat(100*g.Mastery41Effect-100)
-  document.getElementById("Mastery42Effect").innerHTML = infFormat(g.Mastery42Effect,true)
-  document.getElementById("Mastery43Effect").innerHTML = normFormat(100*g.Mastery43Effect-100)
-  document.getElementById("Mastery41Button").className = (MasteryE(41)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery42Button").className = (MasteryE(42)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery43Button").className = (MasteryE(43)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery51Effect").innerHTML = normFormat(g.Mastery51Effect)
-  document.getElementById("Mastery52Effect").innerHTML = normFormat(g.Mastery52Effect)
-  document.getElementById("Mastery51Button").className = (MasteryE(51)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery52Button").className = (MasteryE(52)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery61Effect").innerHTML = normFormat(100*g.Mastery61Effect-100)
-  document.getElementById("Mastery62Effect").innerHTML = g.Mastery62Effect.toFixed(4)
-  document.getElementById("Mastery63Effect").innerHTML = normFormat(g.Mastery63Effect)
-  document.getElementById("Mastery61Button").className = (MasteryE(61)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery62Button").className = (MasteryE(62)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery63Button").className = (MasteryE(63)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery71Effect").innerHTML = normFormat(g.Mastery71Effect)
-  document.getElementById("Mastery72Effect").innerHTML = normFormat(g.Mastery72Effect)
-  document.getElementById("Mastery71Button").className = (MasteryE(71)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery72Button").className = (MasteryE(72)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery81Effect").innerHTML = infFormat(g.Mastery81Effect,true)
-  document.getElementById("Mastery82Effect").innerHTML = infFormat(g.Mastery82Effect,true)
-  document.getElementById("Mastery83Effect").innerHTML = infFormat(g.Mastery83Effect,true)
-  document.getElementById("Mastery84Effect").innerHTML = infFormat(g.Mastery84Effect,true)
-  document.getElementById("Mastery85Effect").innerHTML = normFormat(g.Mastery85Effect)
-  document.getElementById("Mastery85Approx").innerHTML = "(this is currently a "+infFormat(g.baseMasteryPowerGain*g.Mastery85Effect,true)+"x boost)"
-  document.getElementById("Mastery81Button").className = (MasteryE(81)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery82Button").className = (MasteryE(82)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery83Button").className = (MasteryE(83)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery84Button").className = (MasteryE(84)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery85Button").className = (MasteryE(85)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery91Effect").innerHTML = normFormat(100*(g.Mastery91Effect-1))
-  document.getElementById("Mastery92Effect").innerHTML = normFormat(100*(g.Mastery92Effect-1))
-  document.getElementById("Mastery91Button").className = (MasteryE(91)==1)?"masterybuttonon":"masterybuttonoff"
-  document.getElementById("Mastery92Button").className = (MasteryE(92)==1)?"masterybuttonon":"masterybuttonoff"
-  for (i=2;i<=9;i++) document.getElementById("MasteryRow"+i).style = (g.masteryRowsUnlocked[i-1]==1)?"display:inline-block":"display:none"
-
-
-  // Options & Display section
-  document.getElementById("colortheme").innerHTML = g.colortheme
-  document.getElementById("game").style.display = (screen==1)?"inline-block":"none"
-  document.getElementById("story").style.display = (screen==2)?"inline-block":"none"
-  document.getElementById("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
-  if ((g.stardust>0)&&!g.storySnippets.includes("Stardust")) openStory("Stardust")
-  if ((g.stardustUpgrades[4]>0)&&!g.storySnippets.includes("Dark Matter")) openStory("Dark Matter")
-  if ((g.stardustUpgrades[4]>1)&&!g.storySnippets.includes("Energy")) openStory("Energy")
-  if ((g.stars>=24)&&!g.storySnippets.includes("Supernova")) openStory("Supernova")
-
-  document.getElementById("hiddenstatAxisAutobuyerUpgrades").innerHTML = g.axisAutobuyerUpgrades
-  toggleTableRow("hiddenstatrowAxisAutobuyerUpgrades",(g.axisAutobuyerUpgrades==0)?"hide":"show")
-  document.getElementById("hiddenstatAxisScaling").innerHTML = "start "+normFormat(g.axisScalingStart)+", power 100%"
-  toggleTableRow("hiddenstatrowAxisScaling",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisScalingStart)?"show":"hide")
-  document.getElementById("hiddenstatAxisSuperscaling").innerHTML = "start "+normFormat(g.axisSuperscalingStart)+", power 100%"
-  toggleTableRow("hiddenstatrowAxisSuperscaling",(Math.max(g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis)>g.axisSuperscalingStart)?"show":"hide")
-  document.getElementById("hiddenstatDarkAxisScalingStart").innerHTML = normFormat(g.darkaxisScalingStart)
-  toggleTableRow("hiddenstatrowDarkAxisScalingStart",(Math.max(g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis)>g.darkaxisScalingStart)?"show":"hide")
-  document.getElementById("hiddenstatDarkAxisSuperscalingStart").innerHTML = normFormat(g.darkaxisSuperscalingStart)
-  toggleTableRow("hiddenstatrowDarkAxisSuperscalingStart",(Math.max(g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis)>g.darkaxisSuperscalingStart)?"show":"hide")
-  document.getElementById("hiddenstatDeltaTime").innerHTML = deltatime*1000+"ms ("+Math.round(10/deltatime)/10+"fps)"
-  document.getElementById("hiddenstatStardustResets").innerHTML = g.StardustResets
-  toggleTableRow("hiddenstatrowStardustResets",(g.fastestStardustReset>1e12)?"hide":"show")
-  document.getElementById("hiddenstatTotalAxis").innerHTML = g.totalAxis
-  document.getElementById("hiddenstatTotalDarkAxis").innerHTML = g.totaldarkAxis
-  toggleTableRow("hiddenstatrowTotalDarkAxis",(g.stardustUpgrades[4]>0)?"show":"hide")
-  notation=g.notation     // infOP doesn't work without this
-  document.getElementById("notationButton").innerHTML = g.notation
-  document.getElementById("toggleAutosave").innerHTML = g.autosaveIsOn?"On":"Off";
-  document.getElementById("darkstarBulkButton").style.display = (g.storySnippets.includes("Dark Matter"))?"inline-block":"none"
-  document.getElementById("darkstarBulk").innerHTML = (g.darkstarBulk)?"On":"Off"
-  document.getElementById("tickspeedDisplay").innerHTML = (g.tickspeed==0)?"":"Tickspeed: "+infFormat(g.tickspeed,true)+"x"
-  for (i=0;i<document.getElementsByClassName("inf").length;i++) {
-    next=document.getElementsByClassName("inf")[i]
-    document.getElementsByClassName("inf")[i].innerHTML = infFormat(next.className.split(' ').pop("inf").substr(3,100),true)
-  }
-  g.HTPshown = ((g.HTPshown==1) && (g.masteryRowsUnlocked[0] == 1)) ? 2 : g.HTPshown
-  g.HTPshown = ((g.HTPshown==2) && (g.fastestStardustReset < 1e12)) ? 4 : g.HTPshown
-  g.HTPshown = ((g.HTPshown==4) && (g.stardustUpgrades[4]>0)) ? 5 : g.HTPshown
-  g.HTPshown = ((g.HTPshown==5) && (g.energyTypesUnlocked > 0)) ? 6 : g.HTPshown
-  g.HTPshown = ((g.HTPshown==6) && (g.stars > 24)) ? 7 : g.HTPshown
-  document.getElementById("HTPBMasteries").style = (g.HTPshown>=2) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBStardust").style = (g.HTPshown>=3) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBStars").style = (g.HTPshown>=4) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBDarkMatter").style = (g.HTPshown>=5) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBEnergy").style = (g.HTPshown>=6) ? "display:inline-block" : "display:none"
-  document.getElementById("HTPBSupernova").style = (g.HTPshown>=7) ? "display:inline-block" : "display:none"
-  if ((g.fastestStardustReset < 1e12) || (g.fastestWormholeReset < 1e12)) {
-    document.getElementById("stardustbigtab").style="display:inline-block"
-    document.getElementById("stardustDisplay").style="display:inline-block"
-    document.getElementById("stardustStatistics").style="display:inline-block"
-  } else {
-    document.getElementById("stardustbigtab").style="display:none"
-    document.getElementById("stardustDisplay").style="display:none"
-    document.getElementById("stardustStatistics").style="display:none"
-  }
-  if (g.fastestWormholeReset < 1e12) {
-    document.getElementById("wormholeStatistics").style.visibility="visible"
-  } else {
-    document.getElementById("wormholeStatistics").style.visibility="hidden"
-  }
-  g.timePlayed+=deltatime*offlineSpeedup
-  g.truetimePlayed=infAdd(g.truetimePlayed,Math.log10(deltatime*offlineSpeedup)+g.tickspeed)
-  g.timeThisStardustReset+=deltatime*offlineSpeedup
-  g.truetimeThisStardustReset=infAdd(g.truetimeThisStardustReset,Math.log10(deltatime*offlineSpeedup)+g.tickspeed)
-  g.timeThisWormholeReset+=deltatime*offlineSpeedup
-  g.timeLeft=Number(new Date())
-  document.getElementById("timePlayed").innerHTML = timeFormat(g.timePlayed);
-  document.getElementById("truetimePlayed").innerHTML = (g.truetimePlayed>300)?infFormat(g.truetimePlayed-7.49909469142)+" years":timeFormat(10**g.truetimePlayed)
-  document.getElementById("timeThisStardustReset").innerHTML = timeFormat(g.timeThisStardustReset);
-  document.getElementById("truetimeThisStardustReset").innerHTML = (g.truetimeThisStardustReset>300)?infFormat(g.truetimeThisStardustReset-7.49909469142)+" years":timeFormat(10**g.truetimeThisStardustReset)
-  document.getElementById("timeThisWormholeReset").innerHTML = timeFormat(g.timeThisWormholeReset);
-  document.getElementById("truetimeThisWormholeReset").innerHTML = (g.truetimeThisWormholeReset>300)?infFormat(g.truetimeThisWormholeReset-7.49909469142)+" years":timeFormat(10**g.truetimeThisWormholeReset)
-  document.getElementById("fastestStardustReset").innerHTML = timeFormat(g.fastestStardustReset);
-  document.getElementById("fastestWormholeReset").innerHTML = timeFormat(g.fastestWormholeReset);
-
-  glowtabs[0][0]=(((g.XAxisCost<g.exoticmatter)&&(g.axisUnlocked>0))||((g.YAxisCost<g.exoticmatter)&&(g.axisUnlocked>1))||((g.ZAxisCost<g.exoticmatter)&&(g.axisUnlocked>2))||((g.WAxisCost<g.exoticmatter)&&(g.axisUnlocked>3))||((g.VAxisCost<g.exoticmatter)&&(g.axisUnlocked>4))||((g.UAxisCost<g.exoticmatter)&&(g.axisUnlocked>5))||((g.TAxisCost<g.exoticmatter)&&(g.axisUnlocked>6))||((g.SAxisCost<g.exoticmatter)&&(g.axisUnlocked>7)))
-  glowtabs[0][1]=false
-  for (i=0; i<g.masteryRowsUnlocked.length; i++) if (MasteryE(10+10*i)&&g.masteryRowsUnlocked[i]&&!MasteryE(19+10*i)) glowtabs[0][1]=true
-  glowtabs[0][2]=((g.EMSupernova.charges>0)||(Math.min(SupernovaCosts[0][0],SupernovaCosts[0][1])<g.exoticmatter)||(g.KnowledgeSupernova.charges>0)||(Math.min(SupernovaCosts[1][0],SupernovaCosts[1][1])<g.masteryPower))&&g.supernovaUnlocked
-  glowtabs[1][0]=((stardustUpgrade1Cost[g.stardustUpgrades[0]]<g.stardust)||(stardustUpgrade2Cost[g.stardustUpgrades[1]]<g.stardust)||(stardustUpgrade3Cost[g.stardustUpgrades[2]]<g.stardust)||(stardustUpgrade4Cost[g.stardustUpgrades[3]]<g.stardust)||(stardustUpgrade5Cost[g.stardustUpgrades[4]]<g.stardust))
-  glowtabs[1][1]=(((g.unspentStars>0)||(g.stardust>g.starCost))&&(!(StarE(101)&&StarE(102)&&StarE(103)&&StarE(104))))
-  glowtabs[1][2]=((g.darkXAxisCost<g.darkmatter)||(g.darkYAxisCost<g.darkmatter)||(g.darkZAxisCost<g.darkmatter)||(g.darkWAxisCost<g.darkmatter)||(g.darkVAxisCost<g.darkmatter)||(g.darkUAxisCost<g.darkmatter)||(g.darkTAxisCost<g.darkmatter)||(g.darkSAxisCost<g.darkmatter)||(g.darkstarRequirement<g.totaldarkAxis))
-  glowtabs[2]=((g.exoticmatter>g.axisAutobuyerCost)&&(g.axisAutobuyerInterval>0.1))
-  toggleGlow("mainaxisButton",glowtabs[0][0])
-  toggleGlow("masteriesButton",glowtabs[0][1])
-  toggleGlow("supernovaButton",glowtabs[0][2])
-  toggleGlow("StardustBoostButton",glowtabs[1][0])
-  toggleGlow("StarTabButton",glowtabs[1][1])
-  toggleGlow("DarkMatterButton",glowtabs[1][2])
-  toggleGlow("mainbigtab",glowtabs[0].includes(true))
-  toggleGlow("stardustbigtab",glowtabs[1].includes(true))
-  toggleGlow("automationbigtab",glowtabs[2])
-
-
-  // Stardust section
-  if (g.stardustUpgrades[1] == 0) {
-    document.getElementById("automationbigtab").style="display:none"
-  } else {
-    document.getElementById("automationbigtab").style="display:inline-block"
-  }
-  if (g.fastestStardustReset>1e12 && g.exoticmatter<22) {
-    document.getElementById("stardustResetButton").style.visibility="hidden"
-  } else if (g.pendingstardust<infAdd(g.stardust,0)) {
-    document.getElementById("stardustResetButton").style.visibility="visible"
-    document.getElementById("stardustResetButton").className = "lockedstardustResetButton"
-  } else {
-    document.getElementById("stardustResetButton").style.visibility="visible"
-    document.getElementById("stardustResetButton").className = "stardustResetButton"
-  }
-  if (g.pendingstardust<infAdd(g.stardust,0)) {
-    stardustExoticMatterReq=((infAdd(infFloor(g.stardust),0)/g.StardustExponent)-g.StardustMultiplier)**2+21
-    stardustExoticMatterReqText="(Need "+infFormat(stardustExoticMatterReq,false)+" exotic matter)"
-  } else if ((g.pendingstardust>g.stardust)&&(g.pendingstardust<2)) {
-    stardustExoticMatterReq=((infAdd(infFloor(g.pendingstardust),0)/g.StardustExponent)-g.StardustMultiplier)**2+21
-    stardustExoticMatterReqText="(Next at "+infFormat(stardustExoticMatterReq,false)+" exotic matter)"
-  } else {
-    stardustExoticMatterReqText=""
-  }
-  document.getElementById("stardustExoticMatterRequirement").innerHTML = stardustExoticMatterReqText
-  document.getElementById("currentStardust").innerHTML = infFormat(g.stardust,false);
-  if (g.autosaveIsOn && savecounter > 0) {
-    save()
-  }
-  document.getElementById("pendingStardust").innerHTML = infFormat(infSubtract(Math.max(g.pendingstardust,g.stardust),g.stardust),false)
-  g.StardustBoost1=infAdd(0,g.stardust-1)*0.5+infAdd(0,g.stardust)**1.5/10
-  document.getElementById("StardustBoost1").innerHTML = infFormat(g.StardustBoost1,true)
-  g.StardustBoost2=infAdd(0,Math.log10(normLinearSoftcap(infAdd(g.stardust,0),5,2))-1.12493873661)
-  document.getElementById("StardustBoost2").innerHTML = infFormat(infSubtract(g.StardustBoost2,0)+2,true)
-  g.StardustBoost3=normLinearSoftcap(infAdd(g.stardust-7,0)**0.7*50*((g.stardustUpgrades[2]>0)?1:0),1000,1)
-  document.getElementById("StardustBoost3").innerHTML = normFormat(g.StardustBoost3)
-  g.StardustBoost4=(infAdd(g.stardust/20,1)**0.33-1)*((g.stardustUpgrades[2]>1)?1:0)
-  document.getElementById("StardustBoost4").innerHTML = (g.StardustBoost4>10?normFormat(g.StardustBoost4):g.StardustBoost4.toFixed(4))
-  g.StardustBoost5=(infAdd(g.stardust+6,27)**(2/3)-9)*((g.stardustUpgrades[2]>2)?1:0)
-  document.getElementById("StardustBoost5").innerHTML = infFormat(g.StardustBoost5,true)
-  g.StardustBoost6=Math.log10(infAdd(g.stardust/5.6,10))**((g.stardustUpgrades[2]>3)?1:0)
-  document.getElementById("StardustBoost6").innerHTML = normFormat((g.StardustBoost6-1)*100)
-  g.StardustBoost7=Math.log10(infAdd(g.stardust,1))*0.01*((g.stardustUpgrades[2]>4)?1:0)
-  document.getElementById("StardustBoost7").innerHTML = infFormat(g.StardustBoost7,true)
-  g.StardustBoost8=(Math.log10(infAdd(g.stardust/2,100))**5/32)**((g.stardustUpgrades[2]>5)?1:0)
-  document.getElementById("StardustBoost8").innerHTML = normFormat(100*(g.StardustBoost8-1))
-  for (i=3;i<=8;i++) toggleTableRow("StardustBoost"+i+"Display",(g.stardustUpgrades[2]>(i-3))?"show":"hide")
-  document.getElementById("StardustUpgrade1Cost").innerHTML = infFormat(stardustUpgrade1Cost[g.stardustUpgrades[0]],false)
-  document.getElementById("StardustUpgrade1Button").className = (g.stardust < stardustUpgrade1Cost[g.stardustUpgrades[0]])?"lockedaxisbutton":"stardustupgradebutton"
-  document.getElementById("StardustUpgrade2Button").className = (g.stardust < stardustUpgrade2Cost[g.stardustUpgrades[1]])?"lockedaxisbutton":"stardustupgradebutton"
-  document.getElementById("StardustUpgrade2Tooltip").innerHTML = stardustUpgrade2Tooltip[g.stardustUpgrades[1]]
-  document.getElementById("StardustUpgrade2Cost").innerHTML = infFormat(stardustUpgrade2Cost[g.stardustUpgrades[1]],false)
-  document.getElementById("StardustUpgrade3Button").className = (g.stardust < stardustUpgrade3Cost[g.stardustUpgrades[2]])?"lockedaxisbutton":"stardustupgradebutton"
-  document.getElementById("StardustUpgrade3Cost").innerHTML = infFormat(stardustUpgrade3Cost[g.stardustUpgrades[2]],false)
-  document.getElementById("StardustUpgrade4Button").className = (g.stardust < stardustUpgrade4Cost[g.stardustUpgrades[3]])?"lockedaxisbutton":"stardustupgradebutton"
-  document.getElementById("StardustUpgrade4Cost").innerHTML = infFormat(stardustUpgrade4Cost[g.stardustUpgrades[3]],false)
-  document.getElementById("StardustUpgrade4Tooltip").innerHTML = (g.stardustUpgrades[3]==0)?"You can activate both first row Masteries":(g.stardustUpgrades[3]==4)?"Unlock 2 new rows of Masteries":"Unlock a new row of Masteries"
-  document.getElementById("StardustUpgrade5Button").className = (g.stardust < stardustUpgrade5Cost[g.stardustUpgrades[4]])?"lockedaxisbutton":"stardustupgradebutton"
-  document.getElementById("StardustUpgrade5Cost").innerHTML = infFormat(stardustUpgrade5Cost[g.stardustUpgrades[4]],false)
-  document.getElementById("StardustUpgrade5Tooltip").innerHTML = stardustUpgrade5Tooltip[g.stardustUpgrades[4]]
-  document.getElementById("axisAutobuyerToggle").className = (g.axisAutobuyerOn==true)?"automatortoggleon":"automatortoggleoff"
-  g.axisAutobuyerCost = Math.round(50*1.05**g.axisAutobuyerUpgrades)
-  document.getElementById("axisAutobuyerUpgradeCost").innerHTML = infFormat(g.axisAutobuyerCost,false)
-  g.axisAutobuyerInterval=Math.max(0.1,5*0.95**g.axisAutobuyerUpgrades/offlineSpeedup)
-  if ((g.stardustUpgrades[1] > 0) && (g.axisAutobuyerOn)) {
-    g.axisAutobuyerProgress+=deltatime/g.axisAutobuyerInterval
-  }
-  if (g.axisAutobuyerProgress > 1) {
-    buyMaxAxis()
-    g.axisAutobuyerProgress%=1
-  }
-  document.getElementById("axisAutobuyerInterval").innerHTML = timeFormat(g.axisAutobuyerInterval)
-  document.getElementById("axisAutobuyerUpgrade").style = (g.axisAutobuyerInterval>0.1)?"display:inline-block":"display:none"
-  document.getElementById("StardustUpgrade1Button").style=(g.stardustUpgrades[0]==4)?"display:none":"display:inline-block"
-  document.getElementById("StardustUpgrade2Button").style=(g.stardustUpgrades[1]==9)?"display:none":"display:inline-block"
-  document.getElementById("StardustUpgrade3Button").style=(g.stardustUpgrades[2]==6)?"display:none":"display:inline-block"
-  document.getElementById("StardustUpgrade4Button").style=(g.stardustUpgrades[3]==5)?"display:none":"display:inline-block"
-  document.getElementById("StardustUpgrade5Button").style=(g.stardustUpgrades[4]==7)?"display:none":"display:inline-block"
-
-
-  // Star section
-  g.starCost=(0.30102999566*(12+ExponentialScaling(SuperexpScaling(g.stars,25,2.5),10,0.5)**2))*1.5**Math.floor(g.stars/10)
-  document.getElementById("unspentStars").innerHTML = g.unspentStars
-  document.getElementById("starCost").innerHTML = infFormat(g.starCost,false)
-  for (i=0;i<40;i++) {
-    j=11+i+6*Math.floor(i/4)
-    if (StarE(j)) {
-      document.getElementById("Star"+j).className = "ownedstarbutton"+Math.floor(j/10)
-    } else if ((g.unspentStars > 0) && (g.starRow[g.stars-g.unspentStars] == Math.floor(j/10))) {
-      document.getElementById("Star"+j).className = "starbutton"
-    } else {
-      document.getElementById("Star"+j).className = "lockedstarbutton"
+    if ((g.activeStudy==0)&&stat("pendinghr").lt(100)) {
+      out+="(Next at "+BEformat(stat("pendinghr").floor().add(1).root(stat("HRExponent")).div(stat("HRMultiplier")).log(2).root(breakdownStats.pendinghr.modifiers[0].exp()).mul(1500).ceil())+" total dark axis)"
     }
   }
-  toggleTableRow("StarRow2",(StarE(11)||StarE(12)||StarE(13)||StarE(14))?"show":"hide")
-  toggleTableRow("StarRow3",(StarE(21)||StarE(22)||StarE(23)||StarE(24))?"show":"hide")
-  toggleTableRow("StarRow4",(StarE(31)||StarE(32)||StarE(33)||StarE(34))?"show":"hide")
-  toggleTableRow("StarRow5",(StarE(41)||StarE(42)||StarE(43)||StarE(44))?"show":"hide")
-  toggleTableRow("StarRow6",(StarE(51)||StarE(52)||StarE(53)||StarE(54))?"show":"hide")
-  toggleTableRow("StarRow7",(StarE(61)||StarE(62)||StarE(63)||StarE(64))?"show":"hide")
-  toggleTableRow("StarRow8",(StarE(71)||StarE(72)||StarE(73)||StarE(74))?"show":"hide")
-  toggleTableRow("StarRow9",(StarE(81)||StarE(82)||StarE(83)||StarE(84))?"show":"hide")
-  toggleTableRow("StarRow10",(StarE(91)||StarE(92)||StarE(93)||StarE(94))?"show":"hide")
-  g.Star11Effect = 3*(1-1/Math.log10(infAdd(10,g.exoticmatter)))*(3**StarE(31))*(g.Row9StarEffect**StarE(91))
-  document.getElementById("Star11Effect").innerHTML = infFormat(g.Star11Effect,true)
-  g.Star12Effect = 3/Math.log10(infAdd(10,g.exoticmatter))*(3**StarE(32))*(g.Row9StarEffect**StarE(92))
-  document.getElementById("Star12Effect").innerHTML = infFormat(g.Star12Effect,true)
-  g.Star13Effect = 3*(1-1/(1+10**ConvergentSoftcap(g.truetimeThisStardustReset,15,16)/1000))*(3**StarE(33))*(g.Row9StarEffect**StarE(93))
-  document.getElementById("Star13Effect").innerHTML = infFormat(g.Star13Effect,true)
-  g.Star14Effect = 3/(1+10**ConvergentSoftcap(g.truetimeThisStardustReset,15,16)/1000)*(3**StarE(34))*(g.Row9StarEffect**StarE(94))
-  document.getElementById("Star14Effect").innerHTML = infFormat(g.Star14Effect,true)
-  g.Star61Effect = LogarithmicSoftcap(infAdd(g.exoticmatter/50,1)**0.6,1000,0.5)
-  document.getElementById("Star61Effect").innerHTML = normFormat(g.Star61Effect)
-  g.Star62Effect = LogarithmicSoftcap(infAdd(g.exoticmatter/50,1)**0.6,1000,0.5)
-  document.getElementById("Star62Effect").innerHTML = normFormat(g.Star62Effect)
-  g.Star63Effect = LogarithmicSoftcap(infAdd(g.exoticmatter/50,1)**0.6,1000,0.5)
-  document.getElementById("Star63Effect").innerHTML = normFormat(g.Star63Effect)
-  g.Star71Effect = 22.5*Math.log10(infAdd(g.masteryPower/Math.sqrt(10),1))
-  document.getElementById("Star71Effect").innerHTML = normFormat(g.Star71Effect)
-  g.Star72Effect = 1.5*Math.log10(infAdd(fix(g.exoticmatter),1))**2
-  document.getElementById("Star72Effect").innerHTML = normFormat(g.Star72Effect)
-  g.Star73Effect = 8*Math.log10(infAdd(g.stardust,1))
-  document.getElementById("Star73Effect").innerHTML = normFormat(g.Star73Effect)
-  g.Star74Effect = 7.5*g.truetimeThisStardustReset
-  document.getElementById("Star74Effect").innerHTML = normFormat(g.Star74Effect)
-  g.Row9StarEffect = 1+infAdd(g.exoticmatter,1)**0.75/10
-  for (i=1;i<5;i++) document.getElementById("Star9"+i+"Effect").innerHTML = normFormat(g.Row9StarEffect)
-
-  // Dark Matter section
-  document.getElementById("DarkMatterButton").style=(g.stardustUpgrades[4]>0)?"display:inline-block":"display:none"
-  g.darkaxisScalingStart = 8
-  g.darkaxisSuperscalingStart = 64
-  g.darkMatterFreeAxis=(1+g.darkstars/100)/3
-  updateDarkAxisCosts()
-  g.totaldarkAxis = g.darkXAxis+g.darkYAxis+g.darkZAxis+g.darkWAxis+g.darkVAxis+g.darkUAxis+g.darkTAxis+g.darkSAxis
-  g.realdarkXAxis=g.darkXAxis+g.freedarkXAxis
-  g.realdarkYAxis=g.darkYAxis+g.freedarkYAxis
-  g.realdarkZAxis=g.darkZAxis+g.freedarkZAxis
-  g.realdarkWAxis=g.darkWAxis+g.freedarkWAxis
-  g.realdarkVAxis=g.darkVAxis+g.freedarkVAxis
-  g.realdarkUAxis=g.darkUAxis+g.freedarkUAxis
-  g.realdarkTAxis=g.darkTAxis+g.freedarkTAxis
-  g.realdarkSAxis=g.darkSAxis+g.freedarkSAxis
-  document.getElementById("darkMatterDisplay").innerHTML = infFormat(g.darkmatter,false);
-  document.getElementById("darkMatterPerSec").innerHTML = infFormat(g.darkmatterPerSec,false)
-  document.getElementById("darkMatterFreeAxis1").innerHTML = normFormat(Math.max(1,1/g.darkMatterFreeAxis))
-  document.getElementById("darkMatterFreeAxis2").innerHTML = normFormat(Math.max(1,g.darkMatterFreeAxis))
-  document.getElementById("DarkXAxisEffect").innerHTML = infFormat(g.darkXAxisEffect,true);
-  document.getElementById("DarkXAxisCost").innerHTML = infFormat(g.darkXAxisCost,false);
-  document.getElementById("DarkXAxisAmount").innerHTML = (g.freedarkXAxis > 0) ? g.darkXAxis+" + "+normFormat(g.freedarkXAxis) : g.darkXAxis;
-  document.getElementById("DarkYAxisEffect").innerHTML = infFormat(g.darkYAxisEffect,true);
-  document.getElementById("DarkYAxisCost").innerHTML = infFormat(g.darkYAxisCost,false);
-  document.getElementById("DarkYAxisAmount").innerHTML = (g.freedarkYAxis > 0) ? g.darkYAxis+" + "+normFormat(g.freedarkYAxis) : g.darkYAxis;
-  document.getElementById("DarkZAxisEffect").innerHTML = infFormat(g.darkZAxisEffect,true);
-  document.getElementById("DarkZAxisCost").innerHTML = infFormat(g.darkZAxisCost,false);
-  document.getElementById("DarkZAxisAmount").innerHTML = (g.freedarkZAxis > 0) ? g.darkZAxis+" + "+normFormat(g.freedarkZAxis) : g.darkZAxis;
-  document.getElementById("DarkWAxisEffect").innerHTML = infFormat(g.darkWAxisEffect,true);
-  document.getElementById("DarkWAxisCost").innerHTML = infFormat(g.darkWAxisCost,false);
-  document.getElementById("DarkWAxisAmount").innerHTML = (g.freedarkWAxis > 0) ? g.darkWAxis+" + "+normFormat(g.freedarkWAxis) : g.darkWAxis;
-  document.getElementById("DarkVAxisEffect").innerHTML = normFormat(g.darkVAxisEffect*100);
-  document.getElementById("DarkVAxisCost").innerHTML = infFormat(g.darkVAxisCost,false);
-  document.getElementById("DarkVAxisAmount").innerHTML = (g.freedarkVAxis > 0) ? g.darkVAxis+" + "+normFormat(g.freedarkVAxis) : g.darkVAxis;
-  document.getElementById("DarkUAxisEffect").innerHTML = infFormat(g.darkUAxisEffect,true);
-  document.getElementById("DarkUAxisCost").innerHTML = infFormat(g.darkUAxisCost,false);
-  document.getElementById("DarkUAxisAmount").innerHTML = (g.freedarkUAxis > 0) ? g.darkUAxis+" + "+normFormat(g.freedarkUAxis) : g.darkUAxis;
-  document.getElementById("DarkTAxisEffect").innerHTML = infFormat(g.darkTAxisEffect,true);
-  document.getElementById("DarkTAxisCost").innerHTML = infFormat(g.darkTAxisCost,false);
-  document.getElementById("DarkTAxisAmount").innerHTML = (g.freedarkTAxis > 0) ? g.darkTAxis+" + "+normFormat(g.freedarkTAxis) : g.darkTAxis;
-  document.getElementById("DarkSAxisEffect").innerHTML = Math.floor(g.darkSAxisEffect*10000)/10000;
-  document.getElementById("DarkSAxisCost").innerHTML = infFormat(g.darkSAxisCost,false);
-  document.getElementById("DarkSAxisAmount").innerHTML = (g.freedarkSAxis > 0) ? g.darkSAxis+" + "+normFormat(g.freedarkSAxis) : g.darkSAxis;
-  document.getElementById("DarkXAxisButton").className=(g.darkmatter<g.darkXAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkYAxisButton").className=(g.darkmatter<g.darkYAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkZAxisButton").className=(g.darkmatter<g.darkZAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkWAxisButton").className=(g.darkmatter<g.darkWAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkVAxisButton").className=(g.darkmatter<g.darkVAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkUAxisButton").className=(g.darkmatter<g.darkUAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkTAxisButton").className=(g.darkmatter<g.darkTAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  document.getElementById("DarkSAxisButton").className=(g.darkmatter<g.darkSAxisCost)?"lockedaxisbutton":"darkaxisbutton"
-  g.darkstarScalingStart=48
-  updateDarkStarCost()
-  document.getElementById("darkstarButton").className = (g.totaldarkAxis>=g.darkstarRequirement)?"darkstarbutton":"lockeddarkstarbutton"
-  document.getElementById("darkstarDisplay").innerHTML = g.darkstars
-  document.getElementById("nextDarkStarAxis").innerHTML = axisCodes[g.darkstars%8]
-  document.getElementById("darkstarProgress").innerHTML = g.totaldarkAxis
-  document.getElementById("darkstarRequirement").innerHTML = normFormat(g.darkstarRequirement)
-
-
-  // Energy section
-  g.energyTypesUnlocked=Math.max(0,Math.min(6,g.stardustUpgrades[4]-1))
-  if (g.energyTypesUnlocked>0) {
-    document.getElementById("EnergyButton").style="display:inline-block"
-    g.darkEnergy+=g.darkEnergyPerSec*deltatime
+  out+="</span>"
+  return out
+}
+function AchievementE(id) {
+  return g.ownedAchievements.includes(String(id))
+}
+function addAchievement(x) {
+  if (achievement.get(x).check()&&!AchievementE(x)) {
+    g.ownedAchievements.push(String(x))
+    g.ownedAchievements.sort(function(a,b){return a-b})
+    notify("Achievement Get! \""+achievement.get(x).name+"\"",achievement.tierColors[String(x).substr(0,String(x).length-2)][1])
+    generateAchievementsTab()
+		generateResearchTree()
+  }
+}
+const wormholeMilestoneList = [
+  [1,"Unlock dark axis autobuyer"],
+  [2,"Unlock dark star autobuyer"],
+  [3,"Unlock stardust upgrade autobuyer"],
+  [4,"Unlock star autobuyer"],
+  [5,"Unlock automatic star allocation"],
+  [7,"Dark stars no longer reset dark matter"],
+  [9,function(){return "Stars and stardust upgrades cost less based on your hawking radiation<br>(formula: 10<sup>log(cost)<sup>"+wormholeMilestone9Effect().format(4)+"</sup></sup>)"}],
+	[10,"Gain 1 stardust per second, unaffected by all multipliers"],
+  [11,"The third Stardust Upgrade can be purchased 4 additional times"],
+  [13,"The game runs 0.25% faster per achievement unlocked"],
+  [15,"Unlock more research in row 4"],
+  [18,function(){return "Add "+timeFormat(wormholeMilestone18Effect())+" to the dark T axis timer (based on hawking radiation)"}],
+	[20,"Unlock automatic Wormhole resets"],
+  [21,"Research in the first row is 0.1% stronger per achievement unlocked in all tiers"],
+  [24,"Research in the second row is 0.2% stronger per achievement unlocked in all tiers"],
+	[25,"Unlock automatic Stardust resets"],
+  [27,function(){return "Row 10 Masteries are "+wormholeMilestone27Effect().format(2)+"% stronger (based on hawking radiation)"}],
+  [30,"Gain all pending stardust immediately. Does not work in Studies."]
+]
+function wormholeMilestoneText(num) {
+	let out = wormholeMilestoneList[wormholeMilestoneList.map(x => x[0]).indexOf(num)][1]
+	return (typeof out == "function")?out():out
+}
+function wormholeMilestone9Effect(x) {
+  x = (x==undefined)?g.hawkingradiation:N(x)
+  return c.e.pow(x.div(10).add(1).quad_slog(10).mul(-0.1))
+}
+function wormholeMilestone18Effect(x) {
+	x = (x==undefined)?g.hawkingradiation:N(x)
+	return Decimal.convergentSoftcap(x.add(1).log10().pow(1.5).mul(200),86400,3155692599,1)
+}
+function wormholeMilestone27Effect(x) {
+	x = (x==undefined)?g.hawkingradiation:N(x)
+	let out = x.div(1000).add(1).log10().pow(0.3).mul(10)
+	return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(out,25,1),50,100)
+}
+function wormholeMilestoneHTML() {
+  let ach = achievement.ownedInTier(5)
+  d.innerHTML("wormholeMilestoneT5Achievements",ach)
+  let out = ""
+  for (let i=0;i<wormholeMilestoneList.length;i++) {
+    if (ach>=wormholeMilestoneList[i][0]) out += "<div class=\"wormholeMilestone\"><h3>"+wormholeMilestoneList[i][0]+" achievement"+((i==0)?"":"s")+"</h3><p>"+wormholeMilestoneText(wormholeMilestoneList[i][0])+"</p></div>"
+    else {d.innerHTML("nextWormholeMilestone","At "+wormholeMilestoneList[i][0]+" achievements: "+wormholeMilestoneText(wormholeMilestoneList[i][0]));break}
+  }
+  d.innerHTML("unlockedWormholeMilestones",out)
+}
+function ach501Effect() {
+  let out = g.truetimeThisWormholeReset.div(1e4).add(1)
+  if (MasteryE(101)) out = out.pow(masteryEffect(101))
+	return out
+}
+function ironWill() {
+  return g.StardustResets==0&&g.ownedResearch.length==0
+}
+function ResearchE(x) {
+  return [g.ownedResearch,g.permanentResearch].flat().includes(x)
+}
+function researchCost(x) {
+  let output = N(research[x]["basecost"])
+  return output.max(0).ceil()
+}
+const researchRows = Object.keys(research).map(x => researchRow(x)).reduce((x,y)=>Math.max(x,y))
+function researchRowsUnlocked() {
+	return unknownResearch().map(x => researchRow(x)).reduce((x,y)=>Math.max(x,y))
+}
+function researchBackground(id) {
+	if (ResearchE(id)) return "#005500"
+	if (!visibleResearch().includes(id)) return "#193333"
+	if (research[id].type == "normal") return "#003333"
+	if (research[id].type == "permanent") return "#333333"
+	if (research[id].type == "study") return "#330000"
+}
+const researchCanvas = d.element("researchCanvas")
+const researchContext = researchCanvas.getContext("2d")
+function generateResearchTree() {
+  let table = "<table>"
+  let unknown_research = unknownResearch()
+  for (let row=1;row<=researchRowsUnlocked();row++) {
+    table+="<tr>"
+    for (let col=1;col<16;col++) {
+      let id = "r"+row+"_"+col
+      if (research[id]==undefined) {table+="<td style=\"height:72px;width:72px\"></td>";continue}
+      let research_state = (!research[id].visibility())?"hide":visibleResearch().includes(id)?(research[id].type+"ResearchButton"):unknownResearch().includes(id)?"unknownResearchButton":"hide"
+      if (research_state=="hide") table+="<td style=\"height:72px;width:72px\"></td>"
+      else table+="<td style=\"height:72px;width:72px\"><button style=\"font-size:16px;background-color:"+researchBackground("r"+row+"_"+col)+";opacity:"+((id=="r6_9"&&!ResearchE("r6_9"))?0:1)+";filter:brightness("+(availableResearch(row,col)?100:50)+"%)\" class=\"researchButton "+research_state+"\" onClick=\"buyResearch("+row+","+col+")\" onMouseover=\"showResearchInfo("+row+","+col+")\">"+(visibleResearch().includes(id)?research[id]["icon"]:"")+"</td>"
+    }
+    table+="</tr>"
+  }
+  table+="</table>"
+  d.innerHTML("researchTable",table)
+}
+function generateResearchCanvas() {
+	researchCanvas.style.height = (researchRowsUnlocked()*74)+"px"
+	researchCanvas.height = researchRowsUnlocked()*74
+	researchContext.clearRect(0, 0, researchCanvas.width, researchCanvas.height)
+	let count = 0
+	for (let i=0;i<unknownResearch().length;i++) {
+		let res = unknownResearch()[i]
+		if (res=="r6_9") continue
+		for (let j=0;j<research[res].adjacent_req.length;j++) if (unknownResearch().includes(research[res].adjacent_req[j])) {
+			let res2 = research[res].adjacent_req[j]
+			if (res2=="r6_9") continue
+			researchContext.moveTo(researchCol(res)*74-37,researchRow(res)*74-37)
+			researchContext.lineTo(researchCol(res2)*74-37,researchRow(res2)*74-37)
+			count++
+		}
+	}
+	researchContext.strokeStyle = "#FFFFFF"
+	researchContext.lineWidth = 2
+	researchContext.stroke()
+}
+function visibleResearch() {
+  let out = new Set(["r1_3","r1_8","r1_13"]) 
+  let res = g.researchVisibility
+  for (let i=0;i<Object.keys(research).length;i++) {
+    let next = Object.entries(research)[i]
+		if (!next[1].visibility()) continue
+    if (res.includes(next[0])) out.add(next[0])
+    for (let j=0;j<next[1].adjacent_req.length;j++) if (res.includes(next[1].adjacent_req[j])) out.add(next[0])
+  }
+  return Array.from(out)
+}
+function unknownResearch() {
+  let out = new Set()
+  let res = visibleResearch()
+  for (let i=0;i<Object.keys(research).length;i++) {
+    let next = Object.entries(research)[i]
+		if (!next[1].visibility()) continue
+    if (res.includes(next[0])) out.add(next[0])
+    for (let j=0;j<next[1].adjacent_req.length;j++) if (res.includes(next[1].adjacent_req[j])) out.add(next[0])
+  }
+  return Array.from(out)
+}
+function showResearchInfo(row,col) {
+  let res=research["r"+row+"_"+col]
+	if (row==6&&col==9&&!ResearchE("r6_9")) return
+  let out1 = []
+	let out2 = []
+  if (res.type=="normal") out1.push("<span style=\"font-size:10px;color:#00ff00\">Research "+row+"-"+col+"</span>")
+  if (res.type=="permanent") out1.push("<span style=\"font-size:10px;color:#ffff00\">Research "+row+"-"+col+"<br>This research will not be refunded upon respec.</span>")
+  if (res.type=="study") out1.push("<span style=\"font-size:10px;color:#ff0000\">Purchasing this will unlock a Study. If you can do a Wormhole reset under special restrictions, you will gain a permanent reward.</span>")
+  out1.push(res.description())
+  out2.push("Cost: "+researchCost("r"+row+"_"+col)+" Discover"+(researchCost("r"+row+"_"+col).eq(1)?"y":"ies"))
+  if (res.condition_tooltip !== undefined) {
+    let color = res.condition()?"#00cc00":"#cc0000"
+    out2.push("<span style=\"font-size:12px;color:"+color+"\">Need "+res.condition_tooltip()+"</span>")
+  }
+	out2.push(ResearchE("r"+row+"_"+col)?"<span style=\"color:#66ff66\">(Owned)</span>":"<span style=\"color:#ff6666\">(Unowned)</span>")
+  if (visibleResearch().includes("r"+row+"_"+col)) {
+		d.innerHTML("researchInfo","<table style=\"table-layout:fixed\"><tr><td style=\"width:49vw;height:60px\">"+out1.join("<br>")+"</td><td style=\"width:49vw;height:60px\">"+out2.join("<br>")+"</td></tr></table>")
   } else {
-    document.getElementById("EnergyButton").style="display:none"
+		d.innerHTML("researchInfo","<p style=\"color:#999999\">Buy a Research adjacent to this to reveal this</p>")
+	}
+}
+function respecResearch() {
+	g.spentDiscoveries=N(0)
+  g.ownedResearch=g.ownedResearch.filter(x => research[x].type == "permanent")
+	generateResearchTree()
+}
+var observationCostRatios = [["ee5",0.1,4],
+														 ["ee3",0.5,2],
+														 ["ee3",0.2,3],
+														 [2,1,1]]
+function observationCost(type,amount) {
+  if (amount == undefined) amount = g.observations[type-1]
+  let ratios = observationCostRatios[type-1]
+  return Decimal.powerTower(ratios[0],amount.mul(ratios[1]).add(1),ratios[2])
+}
+var observationResources = ["exoticmatter","stardust","darkmatter","hawkingradiation"]
+function maxAffordableObservations(type) {
+  let resource = observationResources[type-1]
+  let ratios = observationCostRatios[type-1]
+  if (g[resource].lt(ratios[0])) return N(0)
+  return g[resource].log(ratios[0]).root(ratios[2]).sub(1).div(ratios[1]).add(1).floor()
+}
+function buyMaxObservations(type) {
+  let resource = observationResources[type-1]
+  let newvalue = maxAffordableObservations(type)
+  if (newvalue.lte(g.observations[type-1])) return
+  g.observations[type-1]=newvalue
+}
+function observationEffect(x) {
+	if (x==0) return g.observations[0].mul(0.1).add(1)
+	if (x==1) return g.observations[1].mul(0.1).add(1)
+	if (x==2) return g.observations[2].mul(0.1).add(1)
+	if (x==3) return g.observations[3].mul(0.2).add(1)
+	return [0,1,2,3].map(i => observationEffect(i)).reduce((x,y)=>x.mul(y))
+}
+function knowledgeEffect() {
+  return Decimal.convergentSoftcap(g.knowledge.add(10).log10().log10().mul(10),37.5,50)
+}
+function extraDiscoveries(op) {
+  let out
+  if (op=="add") {
+    out = N(0)
   }
-  if (isNaN(g.darkEnergy)) {
-    g.darkEnergy=0
-    g.darkEnergyPerSec=0
+  if (op=="mul") {
+    out = N(1)
+		out = out.mul(AchievementE(504)?1.05:1)
   }
-  g.darkEnergyPerSec=Math.log10(infAdd(g.exoticmatter,1))*0.9+g.energySpeedMult-Math.log10(200)
-  g.darkEnergyPerSec=10**ConvergentSoftcap(g.darkEnergyPerSec,275,300)*offlineSpeedup
-  g.darkEnergyEffect=((g.darkEnergy>g.exoticmatter) && (g.exoticmatter>0)) ? 1+Math.log10(g.darkEnergy/g.exoticmatter)*g.energyEffectBoost/3 : 1
-  if (g.darkEnergyEffect>2.5) g.darkEnergyEffect = 2.5+0.25*Math.log(g.darkEnergyEffect/2.5)
-  document.getElementById("darkEnergyDisplay").innerHTML = infFormat(g.darkEnergy,false)
-  document.getElementById("darkEnergyPerSec").innerHTML = infFormat(g.darkEnergyPerSec,true)
-  document.getElementById("darkEnergyEffect").innerHTML = g.darkEnergyEffect.toFixed(4)
-  if (g.energyTypesUnlocked>1) {
-    document.getElementById("StelliferousEnergy").style.visibility="visible"
-    g.stelliferousEnergy+=g.stelliferousEnergyPerSec*deltatime
+  return out
+}
+function discoveriesFromKnowledge(x) {
+  x=(x==undefined)?g.knowledge:N(x)
+  let base = g.knowledge.lt(1)?N(0):g.knowledge.log10()
+  return base.add(extraDiscoveries("add")).mul(extraDiscoveries("mul"))
+}
+function nextDiscovery(x) {
+  x=(x==undefined)?g.totalDiscoveries:N(x)
+  let real = x.add(1).div(extraDiscoveries("mul")).sub(extraDiscoveries("add"))
+  return real.pow10()
+}
+function unspentDiscoveries() {
+  return g.totalDiscoveries.sub(g.spentDiscoveries).sub(g.permanentSpentDiscoveries)
+}
+function availableResearch(row,col) {
+	if (row==1) return true
+  let adjacents = research["r"+row+"_"+col]["adjacent_req"]
+  let adjacent_test = false
+  for (let i=0;i<adjacents.length;i++) if (ResearchE(adjacents[i])) adjacent_test = true
+  if (!adjacent_test) return false
+  return research["r"+row+"_"+col].condition()                                                                      // check if research purchase requirement is met
+}
+function buyResearch(row,col) {
+  let id = "r"+row+"_"+col
+  if (research[id]==undefined) return             // research does not exist
+  if (!research[id].condition()) return           // special requirement not met
+	if (!availableResearch(row,col)) return         // adjacent research not owned
+  if (ResearchE(id)) return                       // research already owned
+  let cost = researchCost(id)
+  if (cost.gt(unspentDiscoveries())) return       // research too expensive
+  if (research[id].type=="permanent") {
+    g.permanentResearch.push(id)
+    o.add("permanentSpentDiscoveries",cost)
   } else {
-    document.getElementById("StelliferousEnergy").style.visibility="hidden"
+    g.ownedResearch.push(id)
+    o.add("spentDiscoveries",cost)
   }
-  if (isNaN(g.stelliferousEnergy)) {
-    g.stelliferousEnergy=0
-    g.stelliferousEnergyPerSec=0
+	if (research[id].type == "study") unlockFeature("Studies","true")
+  if (!g.researchVisibility.includes(id)) {
+		g.researchVisibility.push(id)
+		generateResearchCanvas()
+	}
+  generateResearchTree()
+	addAchievement("s17")
+}
+function researchRow(code) {                 // gets the row number of a research code, eg "r5_7" returns 5
+  return Number(code.split("_")[0].substr(1))
+}
+function researchCol(code) {                 // gets the column number of a research code, eg "r5_7" returns 7
+  return Number(code.split("_")[1])
+}
+function researchOut(code) {                 // converts an internal research code to an output code, eg "r5_7" returns "5-7"
+  return researchRow(code)+"-"+researchCol(code)
+}
+function researchInt(code) {                 // converts an output research code to an internal code, eg "5-7" returns "r5_7"
+  return "r"+code.replace("-","_")
+}
+function visibleStudies() {
+  let out = []
+  for (let i=1;i<=Object.keys(studies).length;i++) if ((g.studyCompletions[i]>0)||ResearchE(studies[i]["research"])) out.push(i)
+  return out
+}
+function StudyE(x) {
+	if (g.activeStudy==x) return true
+	return false
+}
+function generateStudyHTML(index) {
+  let out="<div class=\"study study"+g.studyCompletions[index]+"\">"
+  out+="<h2 style=\"text-decoration:underline\">Study "+roman(index)+": "+studies[index].name+"</h2>"
+  out+="<p>"+studies[index].description()+"</p>"
+  if (g.activeStudy==index) {
+		out+="<button class=\"startStudyEnabled\" onClick=\"wormholeReset('force')\">Abort Study</button>"
+	} else if (StudyE(index)) {
+		out+="<button class=\"startStudyEnabled\">Trapped in</button>"
+	} else if (ResearchE(studies[index]["research"])) {
+    out+="<button class=\"startStudyEnabled\" onClick=\"enterStudy("+index+")\">Start</button>"
+	} else if (g.activeStudy!==0) {
+		out+="<button class=\"startStudyDisabled\">Already in Study "+roman(g.activeStudy)+"</button>"
+	} else {
+    out+="<button class=\"startStudyDisabled\">Need research "+researchOut(studies[index]["research"])+"</button>"
   }
-  g.stelliferousEnergyPerSec=Math.log10(infAdd(g.stardust,1))*0.9+g.energySpeedMult-Math.log10(350)
-  g.stelliferousEnergyPerSec=10**ConvergentSoftcap(g.stelliferousEnergyPerSec,275,300)*offlineSpeedup
-  g.stelliferousEnergyEffect=((g.stelliferousEnergy>g.stardust) && (g.stardust>0)) ? 1+Math.log10(g.stelliferousEnergy/g.stardust)*g.energyEffectBoost/3 : 1
-  if (g.stelliferousEnergyEffect>2.5) g.stelliferousEnergyEffect = 2.5+0.25*Math.log(g.stelliferousEnergyEffect/2.5)
-  document.getElementById("stelliferousEnergyDisplay").innerHTML = infFormat(g.stelliferousEnergy,false)
-  document.getElementById("stelliferousEnergyPerSec").innerHTML = infFormat(g.stelliferousEnergyPerSec,true)
-  document.getElementById("stelliferousEnergyEffect").innerHTML = g.stelliferousEnergyEffect.toFixed(4)
-  if (g.energyTypesUnlocked>2) {
-    document.getElementById("GravitationalEnergy").style.visibility="visible"
-    g.gravitationalEnergy+=g.gravitationalEnergyPerSec*deltatime
-  } else {
-    document.getElementById("GravitationalEnergy").style.visibility="hidden"
-  }
-  if (isNaN(g.gravitationalEnergy)) {
-    g.gravitationalEnergy=0
-    g.gravitationalEnergyPerSec=0
-  }
-  g.gravitationalEnergyPerSec=Math.log10(infAdd(g.darkmatter,1))*0.9+g.energySpeedMult-Math.log10(500)
-  g.gravitationalEnergyPerSec=10**ConvergentSoftcap(g.gravitationalEnergyPerSec,275,300)*offlineSpeedup
-  g.gravitationalEnergyEffect=((g.gravitationalEnergy>g.darkmatter) && (g.darkmatter>0)) ? 1+Math.log10(g.gravitationalEnergy/g.darkmatter)*g.energyEffectBoost/3 : 1
-  if (g.gravitationalEnergyEffect>2.5) g.gravitationalEnergyEffect = 2.5+0.25*Math.log(g.gravitationalEnergyEffect/2.5)
-  document.getElementById("gravitationalEnergyDisplay").innerHTML = infFormat(g.gravitationalEnergy,false)
-  document.getElementById("gravitationalEnergyPerSec").innerHTML = infFormat(g.gravitationalEnergyPerSec,true)
-  document.getElementById("gravitationalEnergyEffect").innerHTML = g.gravitationalEnergyEffect.toFixed(4)
-  if (g.energyTypesUnlocked>3) {
-    document.getElementById("SpatialEnergy").style.visibility="visible"
-    g.spatialEnergy+=g.spatialEnergyPerSec*deltatime
-  } else {
-    document.getElementById("SpatialEnergy").style.visibility="hidden"
-  }
-  if (isNaN(g.spatialEnergy)) {
-    g.spatialEnergy=0
-    g.spatialEnergyPerSec=0
-  }
-  g.spatialEnergyPerSec=Math.log10(infAdd(g.XAxis,1))*0.9+g.energySpeedMult-Math.log10(5e4)
-  g.spatialEnergyPerSec=10**ConvergentSoftcap(g.spatialEnergyPerSec,275,300)*offlineSpeedup
-  g.spatialEnergyEffect=((g.spatialEnergy>Math.log10(Math.max(g.XAxis,2))) && (g.XAxis>1)) ? 1+Math.log10(g.spatialEnergy/Math.log10(g.XAxis))*g.energyEffectBoost*2 : 1
-  if (g.spatialEnergyEffect>15) g.spatialEnergyEffect = 15+1.5*Math.log(g.spatialEnergyEffect/15)
-  document.getElementById("spatialEnergyDisplay").innerHTML = infFormat(g.spatialEnergy,true)
-  document.getElementById("spatialEnergyPerSec").innerHTML = infFormat(g.spatialEnergyPerSec,true)
-  document.getElementById("spatialEnergyEffect").innerHTML = g.spatialEnergyEffect.toFixed(4)
-  if (g.energyTypesUnlocked>4) {
-    document.getElementById("NeuralEnergy").style.visibility="visible"
-    g.neuralEnergy+=g.neuralEnergyPerSec*deltatime
-  } else {
-    document.getElementById("NeuralEnergy").style.visibility="hidden"
-  }
-  if (isNaN(g.neuralEnergy)) {
-    g.neuralEnergy=0
-    g.neuralEnergyPerSec=0
-  }
-  g.neuralEnergyPerSec=Math.log10(infAdd(g.masteryPower,1))*0.9+g.energySpeedMult-Math.log10(250)
-  g.neuralEnergyPerSec=10**ConvergentSoftcap(g.neuralEnergyPerSec,275,300)*offlineSpeedup
-  g.neuralEnergyEffect=((g.neuralEnergy>g.masteryPower) && (g.masteryPower>0)) ? 1+Math.log10(g.neuralEnergy/g.masteryPower)*g.energyEffectBoost/3 : 1
-  if (g.neuralEnergyEffect>2.5) g.neuralEnergyEffect = 2.5+0.25*Math.log(g.neuralEnergyEffect/2.5)
-  document.getElementById("neuralEnergyDisplay").innerHTML = infFormat(g.neuralEnergy,false)
-  document.getElementById("neuralEnergyPerSec").innerHTML = infFormat(g.neuralEnergyPerSec,true)
-  document.getElementById("neuralEnergyEffect").innerHTML = g.neuralEnergyEffect.toFixed(4)
-  if (g.energyTypesUnlocked>5) {
-    document.getElementById("MetaEnergy").style.visibility="visible"
-    g.metaEnergy+=g.metaEnergyPerSec*deltatime
-  } else {
-    document.getElementById("MetaEnergy").style.visibility="hidden"
-  }
-  if (isNaN(g.metaEnergy)) {
-    g.metaEnergy=0
-    g.metaEnergyPerSec=0
-  }
-  g.metaEnergyPerSec=Math.log10(infAdd(g.darkEnergy,1))+Math.log10(infAdd(g.stelliferousEnergy,1))+Math.log10(infAdd(g.gravitationalEnergy,1))+Math.log10(infAdd(g.spatialEnergy,1))+Math.log10(infAdd(g.neuralEnergy,1))+Math.log10(infAdd(g.metaEnergy,1))
-  g.metaEnergyPerSec=g.metaEnergyPerSec*0.1+g.energySpeedMult-Math.log10(25)
-  g.metaEnergyPerSec=10**ConvergentSoftcap(g.metaEnergyPerSec,275,300)*offlineSpeedup
-  g.metaEnergyEffect=1+Math.log10(infAdd(g.metaEnergy,1))*g.energyEffectBoost/3*(g.energyTypesUnlocked>5)
-  document.getElementById("metaEnergyDisplay").innerHTML = infFormat(g.metaEnergy,false)
-  document.getElementById("metaEnergyPerSec").innerHTML = infFormat(g.metaEnergyPerSec,true)
-  document.getElementById("metaEnergyEffect").innerHTML = g.metaEnergyEffect.toFixed(4)
-  for (i=0;i<6;i++) {
-    type=["dark","stelliferous","gravitational","spatial","neural","meta"]
-    if (g.energyTypesUnlocked<i) g[type[i]+"Energy"]=0
-  }
+  out+="<hr><p>Goal: "+BEformat(studies[index].goal())+" total dark axis</p>"
+  out+="<p>"+g.studyCompletions[index]+"/4 completions"
+  out+="<hr><p>Reward:<br>"+studies[index].reward_desc()
+  out+="</div>"
+  return out
+}
+function generateStudyTable() {
+  d.innerHTML("Studies",visibleStudies().map(x => generateStudyHTML(x)).join(""))
+}
+function enterStudy(x) {
+  wormholeReset("force")
+  g.activeStudy=x
+	generateStudyTable()
+}
 
-
-  // Supernova section
-  if (g.stars>=24) g.supernovaUnlocked = true
-  document.getElementById("supernovaButton").style.display = (g.supernovaUnlocked)?"inline-block":"none"
-
-  document.getElementById("EMSupernovaCharges").innerHTML = g.EMSupernova.charges+" / "+g.EMSupernova.maxCharges
-  fillpercentage = 100*g.EMSupernova.charges/g.EMSupernova.maxCharges
-  document.getElementById("EMSupernovaCharges").style = "width:130px;height:130px;border-radius:20px;background-image:linear-gradient(0deg,#00ff00 0%,#00ff00 "+fillpercentage+"%,#999999 0%,#999999)"
-  g.EMSupernova.maxCharges=1+g.EMSupernova.upgrade1
-  g.EMSupernova.power=1.05+0.01*g.EMSupernova.upgrade2
-  SupernovaCosts[0] = [50000*2**normSimplex(g.EMSupernova.upgrade1,2),25000*Math.floor(2**g.EMSupernova.upgrade2**1.3)]
-  document.getElementById("EMSupernovaReward").innerHTML = infFormat(g.exoticmatterPerSec*g.EMSupernova.power,false)
-  for (i=1;i<3;i++) document.getElementById("EMSupernovaCost"+i).innerHTML = infFormat(SupernovaCosts[0][i-1],false)
-
-  document.getElementById("Supernova2Locked").style.display = (g.KnowledgeSupernova.unlocked)?"none":"inline-block"
-  document.getElementById("Supernova2Unlocked").style.display = (g.KnowledgeSupernova.unlocked)?"inline-block":"none"
-  document.getElementById("UnlockSupernova2").innerHTML = "Unlock this Supernova for "+infFormat(65,false)+" mastery power"
-  document.getElementById("KnowledgeSupernovaCharges").innerHTML = g.KnowledgeSupernova.charges+" / "+g.KnowledgeSupernova.maxCharges
-  fillpercentage = 100*g.KnowledgeSupernova.charges/g.KnowledgeSupernova.maxCharges
-  document.getElementById("KnowledgeSupernovaCharges").style = "width:130px;height:130px;border-radius:20px;background-image:linear-gradient(0deg,#ff0099 0%,#ff0099 "+fillpercentage+"%,#999999 0%,#999999)"
-  g.KnowledgeSupernova.maxCharges=1+g.KnowledgeSupernova.upgrade1
-  g.KnowledgeSupernova.power=1.05+0.01*g.KnowledgeSupernova.upgrade2
-  SupernovaCosts[1] = [Math.floor(75*1.1**normSimplex(g.KnowledgeSupernova.upgrade1,3)),Math.floor(70*1.1**g.KnowledgeSupernova.upgrade2**2)]
-  document.getElementById("KnowledgeSupernovaReward").innerHTML = infFormat(g.masteryPowerPerSec*g.KnowledgeSupernova.power,false)
-  for (i=1;i<3;i++) document.getElementById("KnowledgeSupernovaCost"+i).innerHTML = infFormat(SupernovaCosts[1][i-1],false)
-
-
-  // Incrementer section - this comes last because otherwise resets don't work properly
-  for (i=1; i<=11; i++) {
-    updateStat(i)
-  }
-  incrementExoticMatter(g.exoticmatterPerSec+Math.log10(deltatime))
-  if (g.masteryRowsUnlocked[0]==1) g.masteryPower=infAdd(g.masteryPower,g.masteryPowerPerSec+Math.log10(deltatime))
-  if (g.stardustUpgrades[4]>0) g.darkmatter=infAdd(g.darkmatter,g.darkmatterPerSec+Math.log10(deltatime))
-
-  for (i=0; i<g.length; i++) {
-    fixable=Object.keys(g)[i]
-    if (isNaN(fixable)) Object.keys(g)[i] = fixable
-  }
-}, 50);
-
+var notify_fade = 0
+function notify(x,color) {
+  document.getElementById("notify").innerHTML += "<br><span style=\"color:"+color+"\">"+x+"</span>"
+  document.getElementById("notify").style.opacity = 1
+  notify_fade = Number(new Date())+5000
+}
+const topResources = [
+	{
+		label:"Exotic Matter",
+		value:function(){return "<span style=\"color:#00ff00\">"+g.exoticmatter.format(2)+" ("+stat("exoticmatterPerSec").format(2)+" / s)"},
+		condition:function(){return true}
+	},
+	{
+		label:"Stardust",
+		value:function(){return "<span class=\"stardusttextsmall\">"+g.stardust.format(0)+"</span>"},
+		condition:function(){return unlocked("Stardust")},
+	},
+	{
+		label:"Hawking radiation",
+		value:function(){return "<span class=\"wormholetextsmall\">"+g.hawkingradiation.format(0)+"</span>"},
+		condition:function(){return unlocked("Hawking Radiation")}
+	},
+	{
+		label:"Offline Boost",
+		value:function(){return "<span style=\"color:#00cc00\">"+BEformat(offlineSpeedup,2)+"× ("+offlineTime.toFixed(1)+"s)</span>"},
+		condition:function(){return offlineSpeedup!=1}
+	},
+	{
+		label:"Tickspeed",
+		value:function(){return "<span style=\"color:#00cc00\">"+stat("tickspeed").format(3)+"×</span>"},
+		condition:function(){return stat("tickspeed").neq(1)}
+	},
+	{
+		label:"Total Dark Axis",
+		value:function(){return "<span style=\"color:#990099\">"+totalAxis("dark").format(0)+"</span>"},
+		condition:function(){return StudyE(1)}
+	}
+]
+function endgameColor() {
+	return "hsl("+((Date.now()/1e4)%360)+","+(90+Math.sin(Date.now()/1e6)*10)+"%,"+(50+Math.cos(Date.now()/1e8)*10)+"%)"        // random color that slowly changes over time
+}
+const progressMilestones = [
+	{
+		type:1,
+		label:"Masteries",
+		percent:function(){return Decimal.div(g.exoticmatter,axisCost("X",0))},
+		req:function(){return "1 X Axis"},
+		color:"#ff0099",
+		condition:function(){return unlocked("Masteries")}
+	},
+	{
+		type:1,
+		label:"the next row of Masteries",
+		percent:function(){return Decimal.div(g.exoticmatter,axisCost("Z",0))},
+		req:function(){return "1 Z Axis"},
+		color:"#ff0099",
+		condition:function(){return masteryRowsUnlocked(2)==1}
+	},
+	{
+		type:1,
+		label:"the next row of Masteries",
+		percent:function(){return totalAxis("normal").div(40)},
+		req:function(){return "40 total axis"},
+		color:"#ff0099",
+		condition:function(){return masteryRowsUnlocked(3)==1}
+	},
+	{
+		type:1,
+		label:"the next row of Masteries",
+		percent:function(){return totalAxis("normal").div(50)},
+		req:function(){return "50 total axis"},
+		color:"#ff0099",
+		condition:function(){return masteryRowsUnlocked(4)>0}
+	},
+	{
+		type:1,
+		label:"Stardust and another Row 4 Mastery",
+		percent:function(){return g.exoticmatter.div(stardustExoticMatterReq)},
+		req:function(){return BEformat(stardustExoticMatterReq)+" exotic matter"},
+		color:"linear-gradient(0deg,rgba(0,0,0,0),rgba(0,0,0,0) 50%,#ff0099 50%,#ff0099),linear-gradient(90deg,#ff0,#f60)",
+		condition:function(){return masteryRowsUnlocked(4)==2}
+	},
+	{
+		type:2,
+		condition:function(){return g.stardustUpgrades[4]>0}
+	},
+	{
+		type:1,
+		label:"Wormhole",
+		percent:function(){return totalAxis("dark").div(HRDarkAxisReq())},
+		req:function(){return HRDarkAxisReq().format(0)+" dark axis"},
+		color:"linear-gradient(90deg,#0000ff,#9900ff)",
+		condition:function(){return unlocked("Hawking Radiation")}
+	},
+	{
+		type:2,
+		condition:function(){return unlocked("Studies")}
+	},
+	{
+		type:1,
+		label:"Study completion",
+		percent:function(){return totalAxis("dark").div(HRDarkAxisReq())},
+		req:function(){return HRDarkAxisReq().format(0)+" dark axis"},
+		color:"#000066",
+		condition:function(){return g.activeStudy==0}
+	},
+	{
+		type:1,
+		label:"current endgame",
+		percent:function(){return g.studyCompletions.reduce((x,y)=>x+y)/4},
+		req:function(){return "4 Study completions"},
+		color:"endgame",
+		condition:function(){return g.studyCompletions.reduce((x,y)=>x+y)>=4}
+	},
+	{
+		type:3,
+		condition:function(){return false}
+	}
+]
 function ProgressBar() {
-  if (g.masteryRowsUnlocked[0]==0) {
-    progressbarvalue = 10**Math.min(g.exoticmatter-g.XAxisCost,0)
-    g.progressbartooltip = "Progress to Masteries: "+normFormat(progressbarvalue*100)+"% (Need an X Axis)"
-  } else if (g.masteryRowsUnlocked[1]==0) {
-    progressbarvalue = 10**Math.min(g.exoticmatter-6,0)
-    g.progressbartooltip = "Progress to the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(6)+" exotic matter)"
-  } else if (g.masteryRowsUnlocked[2]==0) {
-    progressbarvalue = Math.max(0,g.exoticmatter)/17
-    g.progressbartooltip = "Progress to the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(17)+" exotic matter)"
-  } else if (g.masteryRowsUnlocked[3]==0) {
-    progressbarvalue = Math.max(0,g.exoticmatter)/22
-    g.progressbartooltip = "Progress to Stardust and the next row of Masteries: "+normFormat(progressbarvalue*100)+"% (Need "+infFormat(22)+" exotic matter)"
-  } else if (g.stardustUpgrades[4] < 2) {
-    progressbarvalue = 0
-    g.progressbartooltip = "No new aspects detected. "+"Perhaps you need something else.".bold().fontcolor("#00ffff")
-  } else if (g.supernovaUnlocked == false) {
-    progressbarvalue = g.stars/24
-    g.progressbartooltip = "Progress to Supernova: "+normFormat(progressbarvalue*100)+"% (Need 24 stars)"
-  } else {
-    progressbarvalue = 1
-    g.progressbartooltip = "All features unlocked!"
-  }
-  document.getElementById("progress").innerHTML = g.progressbartooltip
-  document.getElementById("progressBar").value = fix(progressbarvalue)
+  let data,label,filled,color
+	for (let i=0;i<progressMilestones.length;i++) {
+		let next = progressMilestones[i]
+		if (!next.condition()) {
+			data = progressMilestones[i]
+			break
+		}
+	}
+	if (data.type==1) {
+		label = "Progress to "+data.label+": "+N(data.percent()).max(0).min(1).mul(100).toNumber().toFixed(2)+"% (Need "+data.req()+")"
+		filled = N(data.percent()).max(0).min(1).mul(100).toNumber()
+		color = data.color=="endgame"?endgameColor():data.color
+	} else if (data.type==2) {
+		label = "No new aspects detected. <span style=\"font-weight:700\">Perhaps you need something else.</span>"
+		filled = 0
+		color = "#000000" // doesn't get used
+	} else if (data.type==3) {
+		label = "You are at the current endgame. Look out for the <b>Light</b> update..."
+		filled = 100
+		color =	endgameColor()
+	}
+	d.innerHTML("progress",label)
+	d.element("progress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+filled+"%,rgba(102,102,102,0.9) "+filled+"%,rgba(102,102,102,0.9)),"+color
 }
 function save() {
   localStorage.setItem("save",JSON.stringify(g)); 
 }
 function load(type) {
+  let savegame
   if (type=="normal") {
-    var savegame = JSON.parse(localStorage.getItem("save"));
+    savegame = JSON.parse(localStorage.getItem("save"));
   } else if (type=="import") {
-    var savegame = JSON.parse(atob(prompt("Copy and paste your save file here:")))
+		let imported = prompt("Copy and paste your save file here:")
+		if (imported.toLowerCase() == "cat") addAchievement("s07")
+		if (imported.toLowerCase() == "alemaninc") addAchievement("s08")
+		imported = atob(imported)
+		if (!JSON.valid(imported)) throw "Invalid save."
+    savegame = JSON.parse(imported)
+  } else {
+    console.error("load("+type+") is not a valid loading mode")
   }
-  if ((typeof savegame == "object") && (savegame !== null) && (savegame.stardust !== undefined)) {
-    vars=Object.keys(g)
-    for (i=0; i<vars.length; i++) {
-      if (savegame[vars[i]] !== undefined) g[vars[i]] = savegame[vars[i]]
-    }
-    var timeSpentOffline = Number(new Date())-g.timeLeft
-    if ((timeSpentOffline>1000)&&(g.offlineSpeedupOn!=="Off")) {
-      if (g.offlineSpeedupOn=="Weakened") timeSpentOffline = normLinearSoftcap(timeSpentOffline,3.6e6,1) // Starts at 1 hour
-      offlineTime=g.offlineSpeedupLength
-      baseOfflineSpeedup=1+(timeSpentOffline/g.offlineSpeedupLength/1000)
-    }
+  if ((typeof savegame == "object") && (savegame !== null)) {
+		if (typeof savegame.exoticmatter == "number") {
+			loadOldSave(savegame)
+		} else {
+			let vars=Object.keys(g)
+			for (let i=0; i<vars.length; i++) {
+				if (savegame[vars[i]] !== undefined) {
+					let value = savegame[vars[i]]
+					g[vars[i]] = validDecimal(value)?N(value):value
+				}
+			}
+			fixMasteryArrays()
+			for (let i=0; i<4; i++) g.observations[i]=N(g.observations[i])
+			let timeSpentOffline = Number(new Date())-g.timeLeft
+			if ((timeSpentOffline>1000)&&(g.offlineSpeedupOn!=="Off")) {
+				if (g.offlineSpeedupOn=="Weakened") timeSpentOffline = Decimal.linearSoftcap(timeSpentOffline,3.6e6,1).toNumber() // Starts at 1 hour
+				offlineTime=g.offlineSpeedupLength
+				baseOfflineSpeedup=1+(timeSpentOffline/g.offlineSpeedupLength/1000)
+			}
+		}
   }
+	if (StudyE(1)) openTab("Wormhole")
+	theme()
+  generateResearchTree()
+	generateResearchCanvas()
+  generateAchievementsTab()
+  for (let i=0;i<8;i++) {
+    d.element("axisAutobuyerMax"+axisCodes[i]).value=g.axisAutobuyerCaps[i]
+    d.element("darkAxisAutobuyerMax"+axisCodes[i]).value=g.darkAxisAutobuyerCaps[i]
+  }
+  d.element("darkAxisAutobuyerMaxStars").value=g.darkAxisAutobuyerCaps[12]
+  d.element("starAutobuyerMax").value=g.starAutobuyerCap
+	d.element("wormholeAutomatorValue").value=g.wormholeAutomatorValue
+	d.element("stardustAutomatorValue").value=g.stardustAutomatorValue
+	addAchievement("s02")
   savecounter++
 }
 function exportSave() {
@@ -2003,15 +1627,15 @@ function exportSave() {
   prompt("Your save has automatically been copied to the clipboard, but if that did not work you can copy it from here:",btoa(localStorage.getItem("save")))
 }
 function wipeSave() {
-  let numa = Math.floor(50*3**Math.random())
-  let numb = Math.floor(50*3**Math.random())
+  let numa = Math.round(50*3**Math.random())
+  let numb = Math.round(50*3**Math.random())
   let answer = numa*numb
-  let confirm = prompt("To confirm that you want to wipe your save, answer this question: What is "+numa+"× "+numb+"?")
+  let confirm = prompt("To confirm that you want to wipe your save, answer this question: What is "+numa+" × "+numb+"?")
   if (confirm==answer) {
-    g.autosaveIsOn=false
-    localStorage.removeItem("save")
-    location.reload()
-  } else {
+    g = Object.assign({},basesave)
+  } else if (confirm==null) {
+		// do nothing
+	} else {
     alert("Incorrect answer, wiping did not proceed.")
   }
 }
@@ -2020,4 +1644,7 @@ function toggle(x) {
 }
 function multitoggle(variable,options) {
   g[variable]=options[(options.indexOf(g[variable])+1)%options.length]
+}
+function halt() { // Terminates the game loop, used for debugging
+  clearInterval(gameloop)
 }
