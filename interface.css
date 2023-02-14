@@ -94,7 +94,14 @@ button,div {
 	color:#000000;
 	width:calc(100vw - 30px);
 	position:fixed;
-	bottom:2vh;
+	bottom:30px;
+	left:15px
+}
+#footer {
+	height:24px;
+	width:calc(100vw - 30px);
+	position:fixed;
+	bottom:0px;
 	left:15px
 }
 .optionsbutton {
