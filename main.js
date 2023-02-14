@@ -101,6 +101,9 @@ const basesave = {
 var g = Object.assign({},basesave) // "game"
 var timeSinceGameOpened = 0                 // "halted" achievements were being awarded randomly on load
 var screen = 1    // 1: game      2: story
+var offlineSpeedup = 0
+var baseOfflineSpeedup = 1
+var offlineTime = 0
 const axisCodes = ["X","Y","Z","W","V","U","T","S"]
 const masteryCodes = [11,12,21,22,31,32,41,42,43,51,52,61,62,63,71,72,81,82,83,84,85,91,92,101,102,103]
 // Returns the sub-group of a mastery within a row

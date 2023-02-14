@@ -3129,9 +3129,6 @@ function timeFormat(x) {
 }
 var savecounter=0
 
-let offlineSpeedup=0
-let baseOfflineSpeedup=0
-let offlineTime=0
 function save() {
   if (savecounter>0) localStorage.setItem("MineralGame",JSON.stringify(g)); 
 }
