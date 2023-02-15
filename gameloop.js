@@ -114,6 +114,7 @@ function updateHTML() {
     for (let i=0;i<dynamicStars.length;i++) if (starRowsShown.includes(Math.floor(dynamicStars[i]/10))) d.innerHTML("starButton"+dynamicStars[i],starText(dynamicStars[i]))
     d.innerHTML("span_unspentStars",BEformat(unspentStars()))
 		d.display("button_maxFullStarRows",[1,2,3,4,5,6,7,8,9,10].map(x => maxStars(x)).includes(4)?"inline-block":"none")
+		d.innerHTML("span_nextStarRow",g.stars>=40?"":("The next star you buy will go in row <span class=\"startext\">"+starRow(g.stars+1)+"</span>"))
   }
   if (tabOpen(["Stardust","Dark Matter"])) {
     d.innerHTML("span_darkmatter",BEformat(g.darkmatter))

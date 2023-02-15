@@ -309,6 +309,10 @@ tab {
   height: 125px;
 	margin:4px;
 }
+.startext {
+	color: #ffffff;
+	font-size: 18px
+}
 .starbutton {
 	font-size:12px;
 	width:120px;

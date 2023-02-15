@@ -35,6 +35,7 @@ const basesave = {
   offlineSpeedupLength: 30,
   offlineSpeedupOn: "On",
   notation: "Mixed scientific",
+	beta: false,
   ownedAchievements: [],
   StardustResets: 0,
   stardust: N(0),
@@ -835,6 +836,7 @@ function buyDarkAxis(x) {
   if (g.darkSAxis.gt(0)) g.ach525possible=false
   if (axisCodes.map(x => g["dark"+x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
   for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
+	if (ironWill()) g.ach505Progress = g.ach505Progress.max(totalAxis("dark"))
 }
 function buyMaxDarkAxis(caps) {
   for (let j=0; j<8; j++) {
@@ -1099,6 +1101,7 @@ function wormholeReset(x) {
 		}
 		if (tabOpen(["Stardust","Dark Matter"])) openSubTab("stardust","Stardust Boosts")
 		if (tabOpen(["Stardust","Energy"])) openSubTab("stardust","Stardust Boosts")
+		if (AchievementE(506)&&g.ach505Progress.lt(1000)) g.ach505Progress=N(1000)
   }
 }
 function wormholeResetButtonText() {
@@ -1627,7 +1630,7 @@ function load(type) {
 function exportSave() {
 	d.element("span_export").value = btoa(localStorage.getItem("save"))
 }
-const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me"])
+const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me","CONFIRM","CORNFIRM","CRONFIRM","statrnark","zenrnoroni","Antimatter Dimensions is better.","Incredibly slow start","Surprised there isn't something to speed this up"])
 function stringSimplify(x) {
 	return String(x).replace(/[^A-Za-z0-9]/g,"").toLowerCase()
 }
