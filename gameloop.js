@@ -294,7 +294,7 @@ function tick(time) {                                                           
 
   // Incrementer section - this comes last because otherwise resets don't work properly
   incrementExoticMatter(stat("exoticmatterPerSec").mul(time))
-  g.exoticmatter = g.exoticmatter.max(stat("exoticmatterPerSec").mul(AchievementE(112)?45:AchievementE(111)?30:AchievementE(110)?15:0))
+  g.exoticmatter = g.exoticmatter.max(stat("exoticmatterPerSec").mul(AchievementE(112)?60:AchievementE(111)?30:AchievementE(110)?15:0))
   if (unlocked("Masteries")) {
     o.add("baseMasteryPowerGain",deltaBaseMasteryPowerGain().mul(time))
     o.add("masteryPower",stat("masteryPowerPerSec").mul(time))

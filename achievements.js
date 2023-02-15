@@ -141,7 +141,7 @@ const achievementList = {
     },
     111:{
       name:"Halted II",
-      description:function(){return "Store 1,000,000 seconds worth of exotic matter production"},
+      description:function(){return "Store "+timeFormat(1e6)+" (1,000,000 seconds) worth of exotic matter production"},
       check:function(){return g.exoticmatter.div(stat("exoticmatterPerSec")).gt(1e6)&&timeSinceGameOpened>5},
       progress:function(){return achievement.percent(g.exoticmatter,stat("exoticmatterPerSec").mul(1e6),0)},
       visibility:function(){return AchievementE(110)},
@@ -150,11 +150,11 @@ const achievementList = {
     },
     112:{
       name:"Halted III",
-      description:function(){return "Store 1,000,000,000 seconds worth of exotic matter production"},
+      description:function(){return "Store "+timeFormat(1e9)+" ("+BEformat(1e9)+" seconds) worth of exotic matter production"},
       check:function(){return g.exoticmatter.div(stat("exoticmatterPerSec")).gt(1e9)&&timeSinceGameOpened>5},
       progress:function(){return achievement.percent(g.exoticmatter,stat("exoticmatterPerSec").mul(1e9),0)},
       visibility:function(){return AchievementE(111)},
-      reward:function(){return "If your exotic matter is less than 45 seconds worth of production, it will instantly increase to that amount"},
+      reward:function(){return "If your exotic matter is less than 60 seconds worth of production, it will instantly increase to that amount"},
       flavor:"Integrity involves the ability to stand straight when you tell your truth, and still stand straight when the other person comes to talk!"
     },
     113:{
