@@ -35,7 +35,6 @@ const basesave = {
   offlineSpeedupLength: 30,
   offlineSpeedupOn: "On",
   notation: "Mixed scientific",
-	beta: false,
   ownedAchievements: [],
   StardustResets: 0,
   stardust: N(0),
