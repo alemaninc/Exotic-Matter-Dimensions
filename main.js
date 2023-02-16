@@ -305,11 +305,11 @@ function unlocked(x) {
 }
 function openStory(x) {
   let snippets = {
-    'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+BEformat(g.stardust)+" atoms of <span class='stardustlayertext'>Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
-    'Dark Matter': "<p>You have just condensed 500 billion Stardust atoms into a <span class='darkmattertext'>particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
-    'Energy': "<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log(1e80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class='energytext'>Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
-    'Black hole': "<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of science'.</p>",
-    'Hawking Radiation': "<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class='wormholelayertext'>Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class='researchtext'>research</span>?</p>",
+    'Stardust': "<p>The universe has collapsed due to negative mass, yielding "+BEformat(g.stardust)+" atoms of <span class=\"stardustlayertext\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
+    'Dark Matter': "<p>You have just condensed 500 billion Stardust atoms into a <span class=\"darkmattertext\">particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
+    'Energy': "<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log(1e80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class=\"energytext\">Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
+    'Black hole': "<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"researchtext\">science</span>'.</p>",
+    'Hawking Radiation': "<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"wormholelayertext\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"researchtext\">research</span>?</p>",
 		'Studies': "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"in which stars don't form easily":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you enlightenment.</p>"
   }
   if (snippets[x]!==undefined) {
@@ -989,9 +989,9 @@ function gainDarkStar(cap) {
   if (gain.sub(g.darkstars).gte(50)) addAchievement(515)
 	g.darkstars=gain
   if (achievement.ownedInTier(5)<7) {
+		stardustReset("force")
     g.darkmatter=N(0)
     for (let i=0;i<8;i++) g["dark"+axisCodes[i]+"Axis"]=N(0)
-		stardustReset("force")
   }
   if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false
   addAchievement(528)
