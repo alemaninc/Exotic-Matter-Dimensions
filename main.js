@@ -320,6 +320,37 @@ function openStory(x) {
     d.display("story","inline-block")
   }
 }
+const axisEffectHTML = {
+	X:"Exotic matter gain is multiplied by {e}",
+	darkX:"Dark matter gain is multiplied by {e}",
+	Y:"Increase X axis effect by +{e}×",
+	darkY:"All dark axis are {e}× cheaper",
+	YEmpowered:"Empowered Y axis multiply the X axis effect instead of adding to it",
+	Z:"Exotic matter gain is multiplied by {e} (based on exotic matter)",
+	darkZ:"Dark matter gain is multiplied by {e} (based on exotic matter)",
+	W:"Exotic matter gain is multiplied by {e} (increases over time)",
+	darkW:"Mastery power gain is multiplied by {e}",
+	V:"All normal axis are {e}× cheaper",
+	darkV:"Normal V axis is {e}% stronger",
+	U:"Stardust gain is multiplied by {e} (based on unspent stardust)",
+	darkU:"Dark matter gain is multiplied by {e} per dark axis owned",
+	T:"Exotic matter gain is multiplied by {e} (based on total normal axis)",
+	darkT:"Dark matter gain is multiplied by {e} (based on time this stardust reset)",
+	S:"Exotic matter gain is raised to the power of {e}",
+	darkS:"Dark matter gain is raised to the power of {e}"
+}
+const empowerableAxis = ["Y"]
+function generateAxisTable() {
+	let out = ""
+	for (let i=0;i<8;i++) {
+		out+="<button class=\"lockedaxisbutton\" onClick=\"buyAxis('"+axisCodes[i]+"')\" id=\"button_"+axisCodes[i]+"Axis\" style=\"display:none\">"+axisCodes[i]+" Axis (<span id=\"span_"+axisCodes[i]+"AxisAmount\"></span>)<br>"+axisEffectHTML[axisCodes[i]].replace("{e}","<span id=\"span_"+axisCodes[i]+"AxisEffect\"></span>")+"<br>Cost: <span id=\"span_"+axisCodes[i]+"AxisCost\"></span></button>"
+	}
+	for (let i=0;i<empowerableAxis.length;i++) {
+		out+="<button class=\"empoweredaxis\" id=\"button_empowered"+empowerableAxis[i]+"Axis\" onClick=\"buyEmpoweredAxis()\" style=\"display:none\">Empowered "+empowerableAxis[i]+" Axis (<span id=\"span_empowered"+empowerableAxis[i]+"AxisAmount\"></span>)<br>"+axisEffectHTML[empowerableAxis[i]+"Empowered"]+"</button>"
+	}
+	d.innerHTML("div_normalAxisContainer",out)
+}
+generateAxisTable()
 function axisArray(type) {
   if (type=="normal") return [g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis]
   if (type=="dark") return [g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis]
@@ -827,6 +858,19 @@ function maxStars(row) {
 function availableStarRow(row) {
   return (maxStars(row)>(StarE(row*10+1)+StarE(row*10+2)+StarE(row*10+3)+StarE(row*10+4)))
 }
+const empowerableDarkAxis = []
+function generateDarkAxisTable() {
+	let out = ""
+	for (let i=0;i<8;i++) {
+		out+="<button class=\"lockedaxisbutton\" onClick=\"buyDarkAxis('"+axisCodes[i]+"')\" id=\"button_dark"+axisCodes[i]+"Axis\">Dark "+axisCodes[i]+" Axis (<span id=\"span_dark"+axisCodes[i]+"AxisAmount\"></span>)<br>"+axisEffectHTML["dark"+axisCodes[i]].replace("{e}","<span id=\"span_dark"+axisCodes[i]+"AxisEffect\"></span>")+"<br>Cost: <span id=\"span_dark"+axisCodes[i]+"AxisCost\"></span><div style=\"position:absolute;top:5px;right:7px;color:rgba(0,0,0,0.5);font-size:7px\">Dark star boost: <span id=\"span_darkStarEffect2"+axisCodes[i]+"\"></span></div></button>"
+	}
+	for (let i=0;i<empowerableDarkAxis.length;i++) {
+		out+="<button class=\"empoweredaxis\" id=\"button_empoweredDark"+empowerableAxis[i]+"Axis\" onClick=\"buyEmpoweredAxis()\" style=\"display:none\">Empowered Dark "+empowerableAxis[i]+" Axis (<span id=\"span_empoweredDark"+empowerableAxis[i]+"AxisAmount\"></span>)<br>"+axisEffectHTML["dark"+empowerableAxis[i]+"Empowered"]+"</button>"
+	}
+	d.innerHTML("div_darkAxisContainer",out)
+}
+generateDarkAxisTable()
+generateAxisTable()
 function buyDarkAxis(x) {
   if (g.darkmatter.gt(darkAxisCost(x))) {
     o.sub("darkmatter",darkAxisCost(x))
@@ -859,18 +903,18 @@ function darkMatterFreeAxis(x) {     // Input 1 signifies the base ratio. Input 
   if (x!==1) m=m.mul(g["dark"+x+"Axis"])
   return m
 }
+function darkAxisBoostedNextStar() {
+	let v1 = realDarkStars()
+	let v2 = realDarkStars(maxAffordableDarkStars().max(g.darkstars.add(1)))
+	let out = []
+	for (let i=0;i<8;i++) if (Decimal.neq(darkStarEffect2Level(axisCodes[i],v1),darkStarEffect2Level(axisCodes[i],v2))) out.push(axisCodes[i])
+	return out
+}
 function darkStarEffectHTML() {
 	let v1 = realDarkStars()
 	let v2 = realDarkStars(maxAffordableDarkStars().max(g.darkstars.add(1)))
 	return `The base gain of dark matter will become `+v1.mul(5).format(0)+` → `+v2.mul(5).format(0)+`% stronger
-	   <br>Dark X Axis will become `+darkStarEffect2Level("X",v1).mul(10).format(v1.gt(320)?4:0)+` → `+darkStarEffect2Level("X",v2).mul(10).format(v2.gt(320)?4:0)+`% stronger
-	   <br>Dark Y Axis will become `+darkStarEffect2Level("Y",v1).mul(10).format(v1.gt(321)?4:0)+` → `+darkStarEffect2Level("Y",v2).mul(10).format(v2.gt(321)?4:0)+`% stronger
-	   <br>Dark Z Axis will become `+darkStarEffect2Level("Z",v1).mul(10).format(v1.gt(322)?4:0)+` → `+darkStarEffect2Level("Z",v2).mul(10).format(v2.gt(322)?4:0)+`% stronger
-	   <br>Dark W Axis will become `+darkStarEffect2Level("W",v1).mul(10).format(v1.gt(83)?4:0)+` → `+darkStarEffect2Level("W",v2).mul(10).format(v2.gt(83)?4:0)+`% stronger
-	   <br>Dark V Axis will become `+darkStarEffect2Level("V",v1).mul(10).format(v1.gt(324)?4:0)+` → `+darkStarEffect2Level("V",v2).mul(10).format(v2.gt(324)?4:0)+`% stronger
-	   <br>Dark U Axis will become `+darkStarEffect2Level("U",v1).mul(10).format(v1.gt(325)?4:0)+` → `+darkStarEffect2Level("U",v2).mul(10).format(v2.gt(325)?4:0)+`% stronger
-	   <br>Dark T Axis will become `+darkStarEffect2Level("T",v1).mul(10).format(v1.gt(326)?4:0)+` → `+darkStarEffect2Level("T",v2).mul(10).format(v2.gt(326)?4:0)+`% stronger
-	   <br>Dark S Axis will become `+darkStarEffect2Level("S",v1).mul(10).format(v1.gt(87)?4:0)+` → `+darkStarEffect2Level("S",v2).mul(10).format(v2.gt(87)?4:0)+`% stronger
+	   <br>`+(darkAxisBoostedNextStar().length==8?"All dark":("Dark "+Array.joinWithAnd(darkAxisBoostedNextStar())))+` axis will become stronger
 		 <br>You will gain `+darkStarEffect3(v1).format(v1.gt(100)?4:0)+` → `+darkStarEffect3(v2).format(v2.gt(100)?4:0)+`% more free axis from dark matter`
 }
 function darkAxisCost(type,axis) {

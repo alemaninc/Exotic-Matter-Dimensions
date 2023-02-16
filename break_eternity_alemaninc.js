@@ -789,7 +789,7 @@
 
     // ALEMANINC FUNCTIONS START HERE
     Decimal.linearSoftcap = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -797,7 +797,7 @@
     }
 
     Decimal.semilogSoftcap = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -805,7 +805,7 @@
     }
 
     Decimal.logarithmicSoftcap = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -813,7 +813,7 @@
     }
 
     Decimal.superlogSoftcap = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -830,7 +830,7 @@
     }
 
     Decimal.linearScaling = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -838,7 +838,7 @@
     }
 
     Decimal.semiexpScaling = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -846,7 +846,7 @@
     }
 
     Decimal.exponentialScaling = function (value,start,power,layer=0) {
-      if (Decimal.lt(value,start)) return value
+      if (Decimal.lt(value,start)) return N(value)
       value=new Decimal(value).layerf("{x}-"+layer)
       start=new Decimal(start).layerf("{x}-"+layer)
       power=new Decimal(power)
@@ -3017,6 +3017,15 @@ Object.defineProperty(Array,"equal",{
   value: function equal(a,b) {
     a.every(item => b.includes(item)) && b.every(item => a.includes(item))
   }
+})
+Object.defineProperty(Array,"joinWithAnd",{
+	value: function joinWithAnd(array) {
+		if (array.length<3) return array.join(" and ")
+		let out = array.splice(0,1)
+		while (array.length>1) out+=", "+array.splice(0,1)
+		out+=" and "+array[0]
+		return out
+	}
 })
 Object.defineProperty(JSON,"valid",{
 	value: function isJsonString(str) {

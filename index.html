@@ -38,19 +38,9 @@
 				</div>
 				<div class="mainTab" id="tabAxis">
 					<button class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis</button><br>
-					<div style="width:900px">                                                                                   <!-- Axis are arranged as a table so that they are aligned -->
-						<button class="lockedaxisbutton" onClick="buyAxis('X')" id="button_XAxis">X Axis (<span id="span_XAxisAmount"></span>)<br>Exotic matter gain is multiplied by <span id="span_XAxisEffect"></span><br>Cost: <span id="span_XAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('Y')" id="button_YAxis" style="display:none">Y Axis (<span id="span_YAxisAmount"></span>)<br>Increase X axis effect by +<span id="span_YAxisEffect"></span>x<br>Cost: <span id="span_YAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('Z')" id="button_ZAxis" style="display:none">Z Axis (<span id="span_ZAxisAmount"></span>)<br>Exotic matter gain is multiplied by <span id="span_ZAxisEffect"></span> (based on exotic matter)<br>Cost: <span id="span_ZAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('W')" id="button_WAxis" style="display:none">W Axis (<span id="span_WAxisAmount"></span>)<br>Exotic matter gain is multiplied by <span id="span_WAxisEffect"></span> (based on time played)<br>Cost: <span id="span_WAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('V')" id="button_VAxis" style="display:none">V Axis (<span id="span_VAxisAmount"></span>)<br>All axis are <span id="span_VAxisEffect"></span>× cheaper<br>Cost: <span id="span_VAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('U')" id="button_UAxis" style="display:none">U Axis (<span id="span_UAxisAmount"></span>)<br>Stardust gain is multiplied by <span id="span_UAxisEffect"></span> (based on stardust)<br>Cost: <span id="span_UAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('T')" id="button_TAxis" style="display:none">T Axis (<span id="span_TAxisAmount"></span>)<br>Exotic matter gain is multiplied by <span id="span_TAxisEffect"></span> (based on total axis)<br>Cost: <span id="span_TAxisCost"></span></button>
-						<button class="lockedaxisbutton" onClick="buyAxis('S')" id="button_SAxis" style="display:none">S Axis (<span id="span_SAxisAmount"></span>)<br>Exotic matter gain is raised to the power of <span id="span_SAxisEffect"></span><br>Cost: <span id="span_SAxisCost"></span></button>
-						<button class="empoweredaxis" id="button_YAxisEmpowerment" onClick="buyEmpoweredAxis()" style="display:none">Empowered Y Axis (<span id="span_YAxisEmpowermentFactor"></span>)<br>Empowered Y Axis multiply the X Axis effect instead of adding to it.</button>
-					</div><br>
+					<div id="div_normalAxisContainer" style="width:900px"></div><br>
 					<div id="progress"></div>
-					<div id="footer"><a href="changelog.html">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.6 </div>
+					<div id="footer"><a href="changelog.html">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.7</div>
 				</div>
 				<div class="mainTab" id="tabMasteries" style="display:none">
 					<p>You have <span class="masterytext" id="span_masteryPower"></span> mastery power.<br>
@@ -108,16 +98,7 @@
 					Dark matter gain is multiplied by <span class="darkmattertext" id="span_baseDarkMatterGain"></span> (based on stardust)<br>
 					For every <span class="darkmattertext" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="darkmattertext" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free<br>
 					<button class="maxdarkaxisbutton" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis</button><br>
-					<div style="width:900px">
-						<button class="darkaxisbutton" onClick="buyDarkAxis('X')" id="button_darkXAxis">Dark X Axis (<span id="span_darkXAxisAmount"></span>)<br>Dark matter gain is multiplied by <span id="span_darkXAxisEffect"></span><br>Cost: <span id="span_darkXAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('Y')" id="button_darkYAxis">Dark Y Axis (<span id="span_darkYAxisAmount"></span>)<br>All dark axis are <span id="span_darkYAxisEffect"></span>× cheaper<br>Cost: <span id="span_darkYAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('Z')" id="button_darkZAxis">Dark Z Axis (<span id="span_darkZAxisAmount"></span>)<br>Dark matter gain is multiplied by <span id="span_darkZAxisEffect"></span> (based on exotic matter)<br>Cost: <span id="span_darkZAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('W')" id="button_darkWAxis">Dark W Axis (<span id="span_darkWAxisAmount"></span>)<br>Mastery power gain is multiplied by <span id="span_darkWAxisEffect"></span><br>Cost: <span id="span_darkWAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('V')" id="button_darkVAxis">Dark V Axis (<span id="span_darkVAxisAmount"></span>)<br>Normal V Axis is <span id="span_darkVAxisEffect"></span>% stronger<br>Cost: <span id="span_darkVAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('U')" id="button_darkUAxis">Dark U Axis (<span id="span_darkUAxisAmount"></span>)<br>Dark matter gain is multiplied by <span id="span_darkUAxisEffect"></span> per dark axis owned<br>Cost: <span id="span_darkUAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('T')" id="button_darkTAxis">Dark T Axis (<span id="span_darkTAxisAmount"></span>)<br>Dark matter gain is multiplied by <span id="span_darkTAxisEffect"></span> (based on time this stardust reset)<br>Cost: <span id="span_darkTAxisCost"></span></button>
-						<button class="darkaxisbutton" onClick="buyDarkAxis('S')" id="button_darkSAxis">Dark S Axis (<span id="span_darkSAxisAmount"></span>)<br>Dark matter gain is raised to the power of <span id="span_darkSAxisEffect"></span><br>Cost: <span id="span_darkSAxisCost"></span></button>
-					</div>
+					<div id="div_darkAxisContainer" style="width:900px"></div>
 					<div>You have <span class="darkmattertext" id="span_darkstars"></span> dark stars<br>
 					<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar(g.darkstarBulk?'u':g.darkstars.add(1))"></button></div>
 				</div>

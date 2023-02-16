@@ -33,6 +33,7 @@ th {
 }
 button,div {
   display:inline-block;
+	position:relative;
 }
 .small {
   font-size: 8px;

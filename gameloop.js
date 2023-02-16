@@ -43,8 +43,10 @@ function updateHTML() {
       d.innerHTML("span_"+type+"AxisEffect",BEformat(stat(type+"AxisEffect"),[2,2,2,2,2,2,2,4][i]))
       d.innerHTML("span_"+type+"AxisCost",BEformat(axisCost(type)))
     }
-    d.display("button_YAxisEmpowerment",axisEmpowerment("Y").gt(0)?"inline-block":"none")
-    d.innerHTML("span_YAxisEmpowermentFactor",BEformat(axisEmpowerment("Y"),2))
+		for (let i=0;i<empowerableAxis.length;i++) {
+			d.display("button_empowered"+empowerableAxis[i]+"Axis",axisEmpowerment(empowerableAxis[i]).gt(0)?"inline-block":"none")
+			d.innerHTML("span_empowered"+empowerableAxis[i]+"AxisAmount",BEformat(axisEmpowerment(empowerableAxis[i]),2))
+		}
     ProgressBar()
   }
   if (tabOpen(["Main","tabMasteries"])&&updateMasteryHTML) {
@@ -134,7 +136,14 @@ function updateHTML() {
       d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat("freedark"+type+"Axis").gt(0))?(" + "+BEformat(stat("freedark"+type+"Axis"),2)):""))
       d.innerHTML("span_dark"+type+"AxisEffect",BEformat(stat("dark"+type+"AxisEffect"),[2,2,2,3,2,3,2,4][i]))
       d.innerHTML("span_dark"+type+"AxisCost",BEformat(darkAxisCost(type)))
+			let v1 = realDarkStars()
+			let v2 = realDarkStars(maxAffordableDarkStars().max(g.darkstars.add(1)))
+			d.innerHTML("span_darkStarEffect2"+type,Decimal.eq(darkStarEffect2Level(type,v1),darkStarEffect2Level(type,v2))?(darkStarEffect2Level(type,v1).mul(10).format(4)+"%"):(darkStarEffect2Level(type,v1).mul(10).format(4)+"% → "+darkStarEffect2Level(type,v2).mul(10).format(4)+"%"))
     }
+		for (let i=0;i<empowerableDarkAxis.length;i++) {
+			d.display("button_empoweredDark"+empowerableDarkAxis[i]+"Axis",axisEmpowerment("dark"+empowerableDarkAxis[i]).gt(0)?"inline-block":"none")
+			d.innerHTML("span_empoweredDark"+empowerableDarkAxis[i]+"AxisAmount",BEformat(axisEmpowerment("dark"+empowerableDarkAxis[i]),2))
+		}
   }
   if (tabOpen(["Stardust","Energy"])) {
     energyHTML()
