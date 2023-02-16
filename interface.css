@@ -46,9 +46,10 @@ button,div {
 .resource {
   height: 20px;
   width: 384px;
-  font-size: 17px;
+  font-size: 12px;
 	margin-left:5px;
-	margin-right:5px
+	margin-right:5px;
+	text-align: center;
 }
 .maxaxisbutton {
   background-color: rgba(0,153,153,0.9);

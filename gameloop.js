@@ -17,7 +17,7 @@ function updateHTML() {
 	let resourceModal = ""
 	for (let i=0;i<topResources.length;i++) {
 		if (!topResources[i].condition()) continue
-		resourceModal += "<div class=\"resource\"><span style=\"float:left;font-size:12px\">"+topResources[i].label+"</span><span style=\"float:right;font-size:12px\">"+topResources[i].value()+"</span></div>"
+		resourceModal += "<div class=\"resource\">"+[topResources[i].before(),topResources[i].label,topResources[i].after()].join(" ")+"</div>"
 	}
 	d.innerHTML("resourceModal",resourceModal)
   d.display("button_automation",(g.stardustUpgrades[1]>0)?"inline-block":"none")

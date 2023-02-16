@@ -1437,32 +1437,38 @@ function notify(x,color) {
 const topResources = [
 	{
 		label:"Exotic Matter",
-		value:function(){return "<span style=\"color:#00ff00\">"+g.exoticmatter.format(2)+" ("+stat("exoticmatterPerSec").format(2)+" / s)"},
+		before:function(){return "<span style=\"color:#00ff00\">"+g.exoticmatter.format(2)+"</span>"},
+		after:function(){return "<span style=\"color:#00ff00\">("+stat("exoticmatterPerSec").format(2)+" / s)</span>"},
 		condition:function(){return true}
 	},
 	{
 		label:"Stardust",
-		value:function(){return "<span class=\"stardusttextsmall\">"+g.stardust.format(0)+"</span>"},
+		before:function(){return "<span class=\"stardusttextsmall\">"+g.stardust.format(0)+"</span>"},
+		after:function(){return ""},
 		condition:function(){return unlocked("Stardust")},
 	},
 	{
 		label:"Hawking radiation",
-		value:function(){return "<span class=\"wormholetextsmall\">"+g.hawkingradiation.format(0)+"</span>"},
+		before:function(){return "<span class=\"wormholetextsmall\">"+g.hawkingradiation.format(0)+"</span>"},
+		after:function(){return ""},
 		condition:function(){return unlocked("Hawking Radiation")}
 	},
 	{
 		label:"Offline Boost",
-		value:function(){return "<span style=\"color:#00cc00\">"+BEformat(offlineSpeedup,2)+"× ("+offlineTime.toFixed(1)+"s)</span>"},
+		before:function(){return "<span style=\"color:#00cc00\">"+BEformat(offlineSpeedup,2)+"× ("+offlineTime.toFixed(1)+"s)</span>"},
+		after:function(){return ""},
 		condition:function(){return offlineSpeedup!=1}
 	},
 	{
 		label:"Tickspeed",
-		value:function(){return "<span style=\"color:#00cc00\">"+stat("tickspeed").format(3)+"×</span>"},
+		before:function(){return "<span style=\"color:#00cc00\">"+stat("tickspeed").format(3)+"×</span>"},
+		after:function(){return ""},
 		condition:function(){return stat("tickspeed").neq(1)}
 	},
 	{
 		label:"Total Dark Axis",
-		value:function(){return "<span style=\"color:#990099\">"+totalAxis("dark").format(0)+"</span>"},
+		before:function(){return "<span style=\"color:#990099\">"+totalAxis("dark").format(0)+"</span>"},
+		after:function(){return ""},
 		condition:function(){return StudyE(1)}
 	}
 ]
