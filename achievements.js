@@ -174,7 +174,7 @@ const achievementList = {
       reward:function(){return "+"+this.effect().format(2)+"% exotic matter (based on mastery power)"},
       visibility:function(){return unlocked("Masteries")},
       flavor:"I'm not for the left wing or the right wing--I'm for the whole bird.",
-      effect:function(){return Decimal.convergentSoftcap(g.masteryPower.add(1).log10().pow(2).div(10),750,900)}
+      effect:function(){return Decimal.convergentSoftcap(g.masteryPower.add(1).log10().pow(2).div(10),750,900).fix(0)}
     },
     115:{
       name:"Cheap Knockoff",
@@ -195,7 +195,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "Masteries in the fourth row are "+this.effect().format(2)+"% stronger (based on total "+(AchievementE(301)?"normal ":"")+"axis)"},
       flavor:"\"Look on my matter, ye Mighty, and despair!\"<br>Nothing beside remains.",
-      effect:function(){return Decimal.convergentSoftcap(totalAxis("normal").add(1).log10(),4,5)}
+      effect:function(){return Decimal.convergentSoftcap(totalAxis("normal").add(1).log10(),4,5).fix(0)}
     },
     202:{
       name:"Timeless",
@@ -241,7 +241,7 @@ const achievementList = {
       visibility:function(){return AchievementE(102)},
       reward:function(){return this.effect().format(2)+" free Y axis (based on mastery power)"},
       flavor:"It’s almost impossible to prevent Y axis from breeding, but when a Y axis reproduces evolution is halted and devolution commences. Y axis truly are the missing link of society",
-      effect:function(){return Decimal.convergentSoftcap(g.masteryPower.add(1).dilate(0.3).pow(0.3),8,12)}
+      effect:function(){return Decimal.convergentSoftcap(g.masteryPower.add(1).dilate(0.3).pow(0.3),8,12).fix(0)}
     },
     207:{
       name:"Penteract",
@@ -352,7 +352,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "+"+this.effect().format(2)+"% stardust (based on dark matter)"},
       flavor:"This is not your average, everyday darkness. This is... ADVANCED darkness.",
-      effect:function(){return Decimal.convergentSoftcap(g.darkmatter.div(1e4).add(1).log10().pow(0.5).mul(30),750,900)}
+      effect:function(){return Decimal.convergentSoftcap(g.darkmatter.div(1e4).add(1).log10().pow(0.5).mul(30),750,900).fix(0)}
     },
     302:{
       name:"Valence",
@@ -426,7 +426,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "Multiply exotic matter gain by mastery power<sup>"+this.effect().format(3)+"</sup> (based on dark matter)"},
       flavor:"Only one who devotes himself to a cause with his whole strength and soul can be a true grandmaster. For this reason grandmastery demands all of a person.",
-      effect:function(){return Decimal.convergentSoftcap(g.darkmatter.add(1).log10().pow(0.5).div(100),0.5,1)},
+      effect:function(){return Decimal.convergentSoftcap(g.darkmatter.add(1).log10().pow(0.5).div(100),0.5,1).fix(0)},
       active:function(){return masteryCodes.map(x => MasteryE(x)?1:0).reduce((x,y) => x+y)}
     },
 		310:{
@@ -446,7 +446,7 @@ const achievementList = {
 			visibility:function(){return true},
 			reward:function(){return "Multiply exotic matter gain by "+this.effect().format(2)+" (based on exotic matter)"},
 			flavor:"The number of Planck volumes in the observable universe is around 4.65×10<sup>185</sup>. Hence find the volume of 1 exotic matter if 1 observable universe = 10<sup>10<sup>3</sup></sup> exotic matters",
-			effect:function(){return Decimal.convergentSoftcap(g.exoticmatter.add(1).pow(0.001),1e9,1e10,1)}
+			effect:function(){return Decimal.convergentSoftcap(g.exoticmatter.add(1).pow(0.001),1e9,1e10,1).fix(1)}
 		},
 		312:{
 			name:"Garage Sale",
@@ -530,7 +530,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "+"+this.effect().format(2)+"% dark energy gain (based on exotic matter)"},
       flavor:"I don't mind going back to daylight saving time. With inflation, the hour will be the only thing I've saved all year.",
-      effect:function(){return Decimal.convergentSoftcap(g.exoticmatter.add(10).log10().log10().pow(4).div(12),750,900)}
+      effect:function(){return Decimal.convergentSoftcap(g.exoticmatter.add(10).log10().log10().pow(4).div(12),750,900).fix(0)}
     },
     409:{
       name:"Time is relative",
@@ -540,7 +540,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "Extremely small tickspeed boost based on exotic matter (currently: "+this.effect().format(2)+"%)"},
       flavor:"All the sounds of the night seemed to pass through a hollow tunnel of indefinite length.",
-      effect:function(){return g.exoticmatter.add(1e10).log10().log10().log10().mul(0.8)}
+      effect:function(){return g.exoticmatter.add(1e10).log10().log10().log10().mul(0.8).fix(0)}
     },
     410:{
       name:"Time is relative II",
@@ -550,7 +550,7 @@ const achievementList = {
       visibility:function(){return AchievementE(409)},
       reward:function(){return "Extremely small tickspeed boost based on mastery power (currently: "+this.effect().format(2)+"%)"},
       flavor:"If I get up early the day feels longer than if I get up late, even if I spend the same amount of time awake.",
-      effect:function(){return g.masteryPower.add(1e10).log10().log10().log10().mul(1.2)}
+      effect:function(){return g.masteryPower.add(1e10).log10().log10().log10().mul(1.2).fix(0)}
     },
     411:{
       name:"Time is relative III",
@@ -560,7 +560,7 @@ const achievementList = {
       visibility:function(){return AchievementE(410)},
       reward:function(){return "Extremely small tickspeed boost based on stardust (currently: "+this.effect().format(2)+"%)"},
       flavor:"A mathematician makes plans to travel backwards in time through a wormhole to a parallel universe when he can't even make it to Mars with the fastest rocket on hand today.",
-      effect:function(){return g.stardust.add(1e10).log10().log10().log10()}
+      effect:function(){return g.stardust.add(1e10).log10().log10().log10().fix(0)}
     },
     412:{
       name:"Full House",
@@ -570,7 +570,7 @@ const achievementList = {
       visibility:function(){return AchievementE(201)},
       reward:function(){return "Multiply stardust gain by "+this.effect().format(2)+" (based on dark stars)"},
       flavor:"More than a paradise",
-      effect:function(){return Decimal.logarithmicSoftcap(Decimal.powerTower(1.125,g.darkstars,2),c.inf,1,1)}
+      effect:function(){return Decimal.logarithmicSoftcap(Decimal.powerTower(1.125,g.darkstars,2),c.inf,1,1).fix(1)}
     },
 		413:{
 			name:"OMCCDV",
@@ -629,7 +629,7 @@ const achievementList = {
       flavor:"As a young man just starting out…<br>… I was very poor.<br>But, I never gave up. And today, after many years of hard work and perseverance…<br>… I am old.",
 			effectBreakpoints:[1,2,3,4,5,6,7,8,9,10,12,15,20,25,30,40,50,60,70,80,90,100,120,140,160,180,200,225,250,275,300,325,350,400,450,500,550,600,700,800,900],
 			milestones:function(){return this.effectBreakpoints.map(x => g.ach505Progress.gte(x)?1:0).reduce((x,y)=>x+y)},
-      effect:function(){return N((this.milestones()/10)+(this.milestones()>0?0.9:0))}
+      effect:function(){return N((this.milestones()/10)+(this.milestones()>0?0.9:0)).fix(0)}
     },
     506:{
       name:"Iron Will V",
@@ -648,7 +648,7 @@ const achievementList = {
       visibility:function(){return AchievementE(501)},
       reward:function(){return "Stardust Boost 1 is "+this.effect().format(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)"},
       flavor:"N o t h i n g   t r a v e l s   f a s t e r   t h a n   t h e   s p e e d   o f   l i g h t",
-      effect:function(){return N(18000).div(g.fastestWormholeReset.max(18)).log10().max(0).simplex(2).mul(2.5)}
+      effect:function(){return N(18000).div(g.fastestWormholeReset.max(18)).log10().max(0).simplex(2).mul(2.5).fix(0)}
     },
     508:{
       name:"Hyperspeed II",
@@ -658,7 +658,7 @@ const achievementList = {
       visibility:function(){return AchievementE(507)},
       reward:function(){return "Stardust Boost 4 is "+this.effect().format(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)"},
       flavor:"w  i  t  h     t  h  e     p  o  s  s  i  b  l  e     e  x  c  e  p  t  i  o  n",
-      effect:function(){return N(1800).div(g.fastestWormholeReset.max(18)).log10().max(0).simplex(2).mul(10/3)}
+      effect:function(){return N(1800).div(g.fastestWormholeReset.max(18)).log10().max(0).simplex(2).mul(10/3).fix(0)}
     },
     509:{
       name:"Hyperspeed III",
@@ -668,7 +668,7 @@ const achievementList = {
       visibility:function(){return AchievementE(508)},
       reward:function(){return "Stardust Boost 7 is "+this.effect().format(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)"},
       flavor:"o   f       b   a   d       n   e   w   s",
-      effect:function(){return N(180).div(g.fastestWormholeReset.max(18)).log10().max(0).simplex(2).mul(5)}
+      effect:function(){return N(180).div(g.fastestWormholeReset.max(18)).log10().max(0).simplex(2).mul(5).fix(0)}
     },
     510:{
       name:"Hyperspeed IV",
@@ -751,7 +751,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "Exotic matter gain is multiplied by "+this.effect().format(2)+" (based on observations)"},
       flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",
-			effect:function(){return g.observations.map(x => Decimal.powerTower(2,x,0.75)).reduce((x,y)=>x.mul(y))}
+			effect:function(){return g.observations.map(x => Decimal.powerTower(2,x,0.75)).reduce((x,y)=>x.mul(y)).fix(1)}
     },
     519:{
       name:"Shiny Yellow Orbs",
@@ -826,7 +826,7 @@ const achievementList = {
       visibility:function(){return AchievementE(525)},
       reward:function(){return "+"+this.effect().format(3)+" normal and dark S axis effect (based on total normal axis)"},
       flavor:"",    // intentionally left blank
-      effect:function(){return Decimal.convergentSoftcap(totalAxis("normal").add(1).log10().div(1e4),0.0004,0.0009)}
+      effect:function(){return Decimal.convergentSoftcap(totalAxis("normal").add(1).log10().div(1e4),0.0004,0.0009).fix(0)}
     },
     527:{
       name:"The 4th dimension doesn't exist",
@@ -855,7 +855,7 @@ const achievementList = {
       visibility:function(){return true},
       reward:function(){return "The base gain of mastery power is raised to the power of "+this.effect().format(4)+" (based on unspent hawking radiation)"},
       flavor:"Go become a millionaire in real life.",
-      effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(10).dilate(0.1).div(10),1.75,2),g.hawkingradiation.add(1e10).log10().log10())}
+      effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(10).dilate(0.1).div(10),1.75,2),g.hawkingradiation.add(1e10).log10().log10()).fix(1)}
     },
     530:{
       name:"Big Bang",
@@ -1080,7 +1080,7 @@ function generateAchievementsTab() {
 	let tiers = Object.keys(achievementList)
   for (let i=0;i<tiers.length;i++) {
     if (achievement.ownedInTier(tiers[i])==0) continue
-		if ((!g.completedAchievementTiersShown)&&(achievement.ownedInTier(tiers[i])==Object.keys(achievementList[tiers[i]]).length)) continue
+		if ((!g.completedAchievementTiersShown)&&(achievement.ownedInTier(tiers[i])==Object.keys(achievementList[tiers[i]]).length)&&(tiers[i]!=="s")) continue
     out+="<div class=\"achievementtiercontainer\" style=\"background-color:"+achievement.tierColors[tiers[i]][0]+";border-color:"+achievement.tierColors[tiers[i]][1]+"\">"
     out+="<table style=\"table-layout:fixed\"><tr><td style=\"width:49vw\"><h3 style=\"text-decoration:underline;color:"+achievement.tierColors[tiers[i]][1]+"\">"+achievement.tierName(tiers[i])+" ("+achievement.ownedInTier(tiers[i])+(tiers[i]=="s"?"":("/"+Object.keys(achievementList[tiers[i]]).length))+")</h3></td><td style=\"width:49vw;color:#ffffff\">"+achievement.perAchievementReward[tiers[i]]+"</td></tr></table><br>"
     for (let j=1;j<=Object.keys(achievementList[tiers[i]]).length;j++) {

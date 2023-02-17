@@ -474,6 +474,7 @@ function buyMaxAxis(caps) {
     if (axisCost(axisCodes[j],amount.sub(1)).lt(g.exoticmatter)) o.sub("exoticmatter",axisCost(axisCodes[j],amount.sub(1)))
     g[axisCodes[j]+"Axis"]=amount
   }
+	g.exoticmatter=g.exoticmatter.max(0) // maxAffordableAxis() doesn't seem to work properly because people are getting negative EM.
   for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
   if (g.SAxis.gt(0)) g.ach525possible=false
   if (axisCodes.map(x => g[x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
@@ -637,7 +638,7 @@ function masteryHTML() {
 		let visibleMasteriesInRow = []
 		for (let j=0;j<masteriesInRow.length;j++) if (masteryRowsUnlocked(i)>=masterySubGroup(masteriesInRow[j])) visibleMasteriesInRow.push(masteriesInRow[j])
     shownMasteries.push(visibleMasteriesInRow)
-    out+="<tr><td style=\"width:240px\"><h3 style=\"color:#ff0099\">Row "+i+"</h3><button style=\"height:18px;width:150px;border-radius:9px\" onClick=\"g.activeMasteries["+(i-1)+"]=0;masteryReset()\">Unassign Mastery</button></td><td style=\"width:calc(99vw - 240px)\">"
+    out+="<tr><td style=\"width:240px\"><h3 style=\"color:#ff0099\">Row "+i+"</h3><button style=\"height:18px;width:150px;border-radius:9px\" onClick=\"g.activeMasteries["+i+"]=0;masteryReset()\">Unassign Mastery</button></td><td style=\"width:calc(99vw - 240px)\">"
     for (let j=0;j<visibleMasteriesInRow.length;j++) out+="<button style=\"position:relative;margin:6px\" class=\""+(MasteryE(visibleMasteriesInRow[j])?"masterybuttonon":"masterybuttonoff")+"\" id=\"masteryButton"+visibleMasteriesInRow[j]+"\" onClick=\"toggleMastery("+visibleMasteriesInRow[j]+")\">"+fullMasteryText(visibleMasteriesInRow[j])+"</button>"
     out+="<td></tr>"
   }
