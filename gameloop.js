@@ -64,6 +64,7 @@ function updateHTML() {
     d.innerHTML("offlineSpeedupLength",timeFormat(g.offlineSpeedupLength))
     d.innerHTML("offlineSpeedupOn",g.offlineSpeedupOn)
     d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off")
+		d.innerHTML("span_completedAchievementTiersShown",g.completedAchievementTiersShown?"Showing":"Hiding")
   }
   if (tabOpen(["Statistics","Main Statistics"])) {
     mainStats()
@@ -323,7 +324,7 @@ function tick(time) {                                                           
 function auto_tick() {
   oldframetime=newframetime
   newframetime=new Date().getTime()
-  deltatime=(newframetime-oldframetime)/1000
+  deltatime=Math.max(0,(newframetime-oldframetime)/1000)
   tick(deltatime*offlineSpeedup)
 	timeSinceGameOpened+=deltatime
 }

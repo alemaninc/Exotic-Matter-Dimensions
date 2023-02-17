@@ -449,16 +449,16 @@ tab {
   color: #ffffff;
   padding: 4px;
   border-radius: 16px;
-  width: 480px;
-  height: 240px;
+  width: 400px;
+  height: 140px;
 }
 .lockeddarkstarbutton {
   background-color: #999999;
   color: #000000;
   padding: 4px;
   border-radius: 16px;
-  width: 480px;
-  height: 240px
+  width: 400px;
+  height: 140px
 }
 .globalnavigation {
   text-align: center;

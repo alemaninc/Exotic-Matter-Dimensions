@@ -36,6 +36,7 @@ const basesave = {
   offlineSpeedupOn: "On",
   notation: "Mixed scientific",
   ownedAchievements: [],
+	completedAchievementTiersShown: true,
   StardustResets: 0,
   stardust: N(0),
   autosaveIsOn: true,

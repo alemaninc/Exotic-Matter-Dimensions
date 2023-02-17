@@ -4,16 +4,13 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="interface.css" />                                 <!-- Internally embeds CSS -->
     <meta charset="utf-8"/>
-    <title>
-      Exotic Matter Dimensions
-    </title>
+    <title>Exotic Matter Dimensions</title>
   </head>
   <body>
     <div id="game" class="topleveldiv" style="display:none">
 			<table>
 				<tr>
-					<td class="toptable" id="resourceModal">
-					</td>
+					<td class="toptable" id="resourceModal"></td>
 					<td class="toptable" style="width:270px">
 						<table><tr>
 							<td><button onClick="stardustReset('normal')" id="button_stardustReset">Reset to gain <span class="stardustlayertext" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
@@ -40,7 +37,7 @@
 					<button class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis</button><br>
 					<div id="div_normalAxisContainer" style="width:900px"></div><br>
 					<div id="progress"></div>
-					<div id="footer"><a href="changelog.html">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.7</div>
+					<div id="footer"><a href="changelog.html">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.8</div>
 				</div>
 				<div class="mainTab" id="tabMasteries" style="display:none">
 					<p>You have <span class="masterytext" id="span_masteryPower"></span> mastery power.<br>
@@ -143,6 +140,7 @@
 					<button class="optionsbutton" onClick="load('import')">Import save</button>
 					<button class="optionsbutton" onClick="openSubTab('options','tabExport');exportSave()">Export save</button>
 					<button class="optionsbutton" onClick="multitoggle('colortheme',availableThemes());theme()">Theme: <span id="colortheme"></span></button>
+					<button class="optionsbutton" onClick="toggle('completedAchievementTiersShown')"><span id="span_completedAchievementTiersShown"></span> completed achievement tiers</button>
 					<button class="optionsbutton" onClick="toggle('darkstarBulk')" id="button_bulkDarkStar">Dark star bulk buy: <span id="darkstarBulk"></span></button>
 				</div>
 				<div class="optionsTab" id="tabExport" style="display:none">

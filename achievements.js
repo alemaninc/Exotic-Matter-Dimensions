@@ -1080,6 +1080,7 @@ function generateAchievementsTab() {
 	let tiers = Object.keys(achievementList)
   for (let i=0;i<tiers.length;i++) {
     if (achievement.ownedInTier(tiers[i])==0) continue
+		if ((!g.completedAchievementTiersShown)&&(achievement.ownedInTier(tiers[i])==Object.keys(achievementList[tiers[i]]).length)) continue
     out+="<div class=\"achievementtiercontainer\" style=\"background-color:"+achievement.tierColors[tiers[i]][0]+";border-color:"+achievement.tierColors[tiers[i]][1]+"\">"
     out+="<table style=\"table-layout:fixed\"><tr><td style=\"width:49vw\"><h3 style=\"text-decoration:underline;color:"+achievement.tierColors[tiers[i]][1]+"\">"+achievement.tierName(tiers[i])+" ("+achievement.ownedInTier(tiers[i])+(tiers[i]=="s"?"":("/"+Object.keys(achievementList[tiers[i]]).length))+")</h3></td><td style=\"width:49vw;color:#ffffff\">"+achievement.perAchievementReward[tiers[i]]+"</td></tr></table><br>"
     for (let j=1;j<=Object.keys(achievementList[tiers[i]]).length;j++) {
