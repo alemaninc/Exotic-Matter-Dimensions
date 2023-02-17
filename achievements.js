@@ -11,7 +11,7 @@ const achievement = {
               2:["#aa6600","#ff9900"],
               3:["#660066","#cc66ff"],
               4:["#009999","#00ffff"],
-							5:["#000066","#000099"],
+							5:["#000080","#0000cc"],
 							s:["#666666","#999999"]},
   perAchievementReward:{1:"+0.02x X axis effect per achievement in this tier",
                         2:"Stars in the first row are 1% stronger per achievement in this tier",
