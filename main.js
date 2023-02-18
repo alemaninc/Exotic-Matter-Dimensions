@@ -38,6 +38,7 @@ const basesave = {
   ownedAchievements: [],
 	completedAchievementTiersShown: true,
   StardustResets: 0,
+	last10StardustRuns: [],
   stardust: N(0),
   autosaveIsOn: true,
   stardustUpgrades: [0,0,0,0,0],
@@ -65,6 +66,7 @@ const basesave = {
   metaEnergy: N(1),
   hawkingradiation: N(0),
   WormholeResets: 0,
+	last10WormholeRuns: [],
   ach505Progress: N(0),
   shiningBrightTonight: true,
   ach519possible: true,
@@ -657,6 +659,8 @@ function stardustExoticMatterReqText() {
 }
 function stardustReset(x) {
   if ((stat("pendingstardust").gt(0))||(x=="force")) {
+		g.last10StardustRuns = [{gain:stat("pendingstardust"),realtime:g.timeThisStardustReset,gametime:g.truetimeThisStardustReset}].concat(g.last10StardustRuns)
+		if (g.last10StardustRuns.length>10) g.last10StardustRuns.splice(0,1)
     addAchievement(201)
     addAchievement(511)
     o.add("stardust",stat("pendingstardust"))
@@ -1095,9 +1099,12 @@ function wormholeReset(x) {
 			let start = Date.now()
 			while (Date.now()-start<1e4) d.element("wormholeAnimation").style.opacity = (Date.now()-start)/1e4
 		}
+		g.last10StardustRuns=[]
+		g.last10WormholeRuns = [{gain:stat("pendinghr"),realtime:g.timeThisWormholeReset,gametime:g.truetimeThisWormholeReset}].concat(g.last10WormholeRuns)
+		if (g.last10WormholeRuns.length>10) g.last10WormholeRuns.splice(0,1)
     if (x!=="force") for (let i=0;i<wormholeResetAchievements.length;i++) addAchievement(wormholeResetAchievements[i])
     if (g.activeStudy!==0) {
-      if (totalAxis("dark").gt(studies[g.activeStudy].goal())) g.studyCompletions[g.activeStudy]++
+      if (totalAxis("dark").gte(studies[g.activeStudy].goal())) g.studyCompletions[g.activeStudy]++
       g.activeStudy=0
 			respecResearch()
 			generateStudyTable()

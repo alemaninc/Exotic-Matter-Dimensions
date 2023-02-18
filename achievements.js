@@ -1067,7 +1067,7 @@ const achievementList = {
 			progress:function(){return ""},
 			visibility:function(){return AchievementE("s22")},
 			reward:null,
-			flavor:function(){return "You've still "+BEformat(1e5-empoweredAxisBought)+" more clicks before the next one. Good luck!"}
+			flavor:function(){return (empoweredAxisBought>=1e5)?("THERE IS NO EMPOWERED EXOTIC MATTER DIMENSIONS VI<br>[cackles maniacally]"):("You've still "+BEformat(1e5-empoweredAxisBought)+" more clicks before the next one. Good luck!")}
 		}
 	}
 }
