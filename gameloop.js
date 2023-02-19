@@ -296,6 +296,10 @@ function tick(time) {                                                           
 		if (doReset) stardustReset("normal")
 	}
 	g.stardustAutomatorValue=d.element("stardustAutomatorValue").value
+	
+	
+	// Dark Matter section
+	if (ironWill()) g.ach505Progress = g.ach505Progress.max(totalAxis("dark"))
 
 
   // Research section

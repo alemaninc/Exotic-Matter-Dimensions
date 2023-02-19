@@ -885,7 +885,6 @@ function buyDarkAxis(x) {
   if (g.darkSAxis.gt(0)) g.ach525possible=false
   if (axisCodes.map(x => g["dark"+x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
   for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
-	if (ironWill()) g.ach505Progress = g.ach505Progress.max(totalAxis("dark"))
 }
 function buyMaxDarkAxis(caps) {
   for (let j=0; j<8; j++) {
@@ -896,7 +895,6 @@ function buyMaxDarkAxis(caps) {
     g["dark"+axisCodes[j]+"Axis"]=amount
   }
   for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
-	if (ironWill()) g.ach505Progress = g.ach505Progress.max(totalAxis("dark"))
 }
 function darkStarEffect3(x) {
 	x=(x==undefined)?realDarkStars():N(x)
