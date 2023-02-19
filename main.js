@@ -896,6 +896,7 @@ function buyMaxDarkAxis(caps) {
     g["dark"+axisCodes[j]+"Axis"]=amount
   }
   for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
+	if (ironWill()) g.ach505Progress = g.ach505Progress.max(totalAxis("dark"))
 }
 function darkStarEffect3(x) {
 	x=(x==undefined)?realDarkStars():N(x)
