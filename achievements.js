@@ -13,7 +13,7 @@ const achievement = {
               4:["#009999","#00ffff"],
 							5:["#000080","#0000aa"],
 							s:["#666666","#999999"]},
-  perAchievementReward:{1:"+0.02x X axis effect per achievement in this tier",
+  perAchievementReward:{1:"+0.02× X axis effect per achievement in this tier",
                         2:"Stars in the first row are 1% stronger per achievement in this tier",
                         3:"Gain 1% more free axis from dark matter per achievement in this tier",
                         4:"Energy effects are 0.1% stronger per achievement in this tier",
@@ -105,7 +105,7 @@ const achievementList = {
     },
     107:{
       name:"X² axis",
-      description:function(){return "Make the X Axis effect go above 4x"},
+      description:function(){return "Make the X Axis effect go above 4×"},
       check:function(){return stat("XAxisEffect").gt(4)},
       progress:function(){return achievement.percent(stat("XAxisEffect"),4,1)},
       visibility:function(){return AchievementE(101)},
@@ -114,7 +114,7 @@ const achievementList = {
     },
     108:{
       name:"Feedback Loop",
-      description:function(){return "Make the Z Axis effect go above 4x"},
+      description:function(){return "Make the Z Axis effect go above 4×"},
       check:function(){return stat("ZAxisEffect").gt(4)},
       progress:function(){return achievement.percent(stat("ZAxisEffect"),4,1)},
       visibility:function(){return AchievementE(103)},
@@ -123,7 +123,7 @@ const achievementList = {
     },
     109:{
       name:"Slow",
-      description:function(){return "Make the W Axis effect go above 4x"},
+      description:function(){return "Make the W Axis effect go above 4×"},
       check:function(){return stat("WAxisEffect").gt(4)},
       progress:function(){return achievement.percent(stat("WAxisEffect"),4,1)},
       visibility:function(){return AchievementE(104)},
@@ -163,7 +163,7 @@ const achievementList = {
       check:function(){return g.XAxis.gte(9)},
       progress:function(){return achievement.percent(g.XAxis,9,0)},
       visibility:function(){return AchievementE(101)},
-      reward:function(){return "+0.0004x Y Axis effect per Y Axis"},
+      reward:function(){return "+0.0004× Y Axis effect per Y Axis"},
       flavor:"6<sup>X<sup>2</sup></sup>"
     },
     114:{
@@ -235,7 +235,7 @@ const achievementList = {
     },
     206:{
       name:"The Missing Link",
-      description:function(){return "Make the Y Axis effect go above 0.4x"},
+      description:function(){return "Make the Y Axis effect go above 0.4×"},
       check:function(){return stat("YAxisEffect").gt(0.4)},
       progress:function(){return achievement.percent(stat("YAxisEffect"),0.4,0)},
       visibility:function(){return AchievementE(102)},
@@ -267,7 +267,7 @@ const achievementList = {
       check:function(){return g.TAxis.gt(0)},
       progress:function(){return "Not Completed!"},
       visibility:function(){return AchievementE(208)},
-      reward:function(){return "+0.0001x to the effects of the first seven "+(AchievementE(301)?"normal axis":"axis")+" per "+(AchievementE(301)?"normal axis":"axis")+" owned"},
+      reward:function(){return "+0.0001× to the effects of the first seven "+(AchievementE(301)?"normal axis":"axis")+" per "+(AchievementE(301)?"normal axis":"axis")+" owned"},
       flavor:"560 cubic cells, 280 tesseract 4-faces, 84 penteract 5-faces"
     },
     210:{
@@ -393,7 +393,7 @@ const achievementList = {
     },
     306:{
       name:"Merchant",
-      description:function(){return "Make the V axis effect go above 44,444x"},
+      description:function(){return "Make the V axis effect go above 44,444×"},
       check:function(){return stat("VAxisEffect").gt(44444)},
       progress:function(){return achievement.percent(stat("VAxisEffect"),44444,1)},
       visibility:function(){return AchievementE(207)},
@@ -402,7 +402,7 @@ const achievementList = {
     },
     307:{
       name:"Neutron Star",
-      description:function(){return "Make the U axis effect go above 4x"},
+      description:function(){return "Make the U axis effect go above 4×"},
       check:function(){return stat("UAxisEffect").gt(4)},
       progress:function(){return achievement.percent(stat("UAxisEffect"),4,1)},
       visibility:function(){return AchievementE(208)},
@@ -411,7 +411,7 @@ const achievementList = {
     },
     308:{
       name:"Multinomial Theorem",
-      description:function(){return "Make the T axis effect go above 44,444x"},
+      description:function(){return "Make the T axis effect go above 44,444×"},
       check:function(){return stat("TAxisEffect").gt(44444)},
       progress:function(){return achievement.percent(stat("TAxisEffect"),44444,1)},
       visibility:function(){return AchievementE(209)},
@@ -534,7 +534,7 @@ const achievementList = {
     },
     409:{
       name:"Time is relative",
-      description:function(){return "Reach 2x tickspeed"},
+      description:function(){return "Reach 2× tickspeed"},
       check:function(){return stat("tickspeed").gte(2)},
       progress:function(){return achievement.percent(stat("tickspeed"),2,1)},
       visibility:function(){return true},
@@ -544,7 +544,7 @@ const achievementList = {
     },
     410:{
       name:"Time is relative II",
-      description:function(){return "Reach 4x tickspeed"},
+      description:function(){return "Reach 4× tickspeed"},
       check:function(){return stat("tickspeed").gte(4)},
       progress:function(){return achievement.percent(stat("tickspeed"),4,1)},
       visibility:function(){return AchievementE(409)},
@@ -554,7 +554,7 @@ const achievementList = {
     },
     411:{
       name:"Time is relative III",
-      description:function(){return "Reach 8x tickspeed"},
+      description:function(){return "Reach 8× tickspeed"},
       check:function(){return stat("tickspeed").gte(8)},
       progress:function(){return achievement.percent(stat("tickspeed"),8,1)},
       visibility:function(){return AchievementE(410)},
@@ -589,7 +589,7 @@ const achievementList = {
       check:function(){return true},
       progress:function(){return "Not Completed!"},
       visibility:function(){return true},
-      reward:function(){return "+0.01% to exotic matter, mastery power, stardust and dark matter gain per second spent in the current universe"},
+      reward:function(){return "+0.01% to exotic matter, mastery power, stardust and dark matter gain per second spent in the current universe (current total: +"+g.truetimeThisWormholeReset.div(100).format(2)+"%"+(MasteryE(101)?" before Mastery 101":"")+")"},
       flavor:"The urge to destroy is also a creative urge."
     },
     502:{
@@ -759,7 +759,7 @@ const achievementList = {
       check:function(){return g.stars>=40&&g.ach519possible},
       progress:function(){return g.ach519possible?achievement.percent(g.stars,40,0):"Failed"},
       visibility:function(){return true},
-      reward:function(){return "Stars are 2x cheaper per Stardust Upgrade owned. Stardust Upgrades are 2x cheaper per star owned."},
+      reward:function(){return "Stars are 2× cheaper per Stardust Upgrade owned. Stardust Upgrades are 2× cheaper per star owned."},
       flavor:"You do know how these work, right?"
     },
     520:{
@@ -965,7 +965,7 @@ const achievementList = {
 			progress:function(){return ""},
 			visibility:function(){return AchievementE("s11")},
 			reward:null,
-			flavor:"<a href=\"https://books.google.co.uk/books/about/Quantum_Physics_For_Dummies.html?id=pRRq8vCFvzEC&source=kp_book_description&redir_esc=y\">Studies will help</a>"
+			flavor:"<a style=\"color:#ffffff\" href=\"https://books.google.co.uk/books/about/Quantum_Physics_For_Dummies.html?id=pRRq8vCFvzEC&source=kp_book_description&redir_esc=y\">Studies will help</a>"
 		},
 		s12:{
 			name:"Precision to the millimeter",

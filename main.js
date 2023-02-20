@@ -615,7 +615,7 @@ function masteryText(x) {
   if (x==71) return "Multiply energy gain by "+masteryEffect(71).format(2)
   if (x==72) return "Energy effects are "+masteryEffect(72).sub(1).mul(100).format(2)+"% stronger"
   if ([81,82,83,84].includes(x)) return "Multiply mastery power gain by "+masteryEffect(x).format(2)+" (based on "+["X axis","exotic matter","dark matter","stardust"][x-81]+")"
-  if (x==85) return "Add "+masteryEffect(85).format(2)+" to the base mastery power gain exponent<br><span class=\"small\">(currently a "+g.baseMasteryPowerGain.pow(masteryEffect(85)).format(2)+"x multiplier)</span>"
+  if (x==85) return "Add "+masteryEffect(85).format(2)+" to the base mastery power gain exponent<br><span class=\"small\">(currently a "+g.baseMasteryPowerGain.pow(masteryEffect(85)).format(2)+"× multiplier)</span>"
   if ([91,92].includes(x)) return "Row 8 masteries are "+masteryEffect(x).sub(1).mul(100).format(2)+"% stronger ("+["in","de"][x-91]+"creases over time)"
   if (x==101) return "The \"Wormhole to Somewhere\" achievement reward is raised to the power of "+masteryEffect(101).format(2)
   if (x==102) return "Multiply Hawking radiation gain by "+masteryEffect(102).format(2)
@@ -883,7 +883,7 @@ function buyDarkAxis(x) {
     o.add("dark"+x+"Axis",1)
   }
   if (g.darkSAxis.gt(0)) g.ach525possible=false
-  if (axisCodes.map(x => g["dark"+x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
+  if (axisCodes.map(x => g[x+"Axis"].eq(0)).includes(false)) g.ach526possible=false
   for (let i=0;i<axisBuyAchievements.length;i++) addAchievement(axisBuyAchievements[i])
 }
 function buyMaxDarkAxis(caps) {

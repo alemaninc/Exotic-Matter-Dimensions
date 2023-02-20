@@ -16,7 +16,7 @@ icon                 the text inside the research box
 */
 const research = {
   r1_3: {
-    description:function(){return "Gain "+researchEffect(1,3).format(2)+"× more exotic matter per normal axis owned (current total: "+researchEffect(1,3).pow(totalAxis("normal")).format(2)+")×"},
+    description:function(){return "Gain "+researchEffect(1,3).format(2)+"× more exotic matter per normal axis owned (current total: "+researchEffect(1,3).pow(totalAxis("normal")).format(2)+"×)"},
     adjacent_req:[],
     condition:function(){return true}, 
     visibility:function(){return true},
@@ -36,7 +36,7 @@ const research = {
     effect:function(power){return N(1.5).pow(power)}
   },
   r1_13: {
-    description:function(){return "Gain "+researchEffect(1,13).format(2)+"× more dark matter per dark axis owned (current total: "+researchEffect(1,13).pow(totalAxis("dark")).format(2)+")×"},
+    description:function(){return "Gain "+researchEffect(1,13).format(2)+"× more dark matter per dark axis owned (current total: "+researchEffect(1,13).pow(totalAxis("dark")).format(2)+"×)"},
     adjacent_req:[],
     condition:function(){return true},
     visibility:function(){return true},
@@ -538,7 +538,7 @@ const research = {
     type:"normal",
     basecost:"6",
     icon:"<span class=\"energytext\">E</span>→<span class=\"energytext\">E</span>",
-    effect:function(power){return power.mul(7)}
+    effect:function(power){return power}
   },
   r8_2: {
     description:function(){return "Multiply hawking radiation by tickspeed<sup>"+(researchEffect(8,2)==1?"":researchEffect(8,2).format(2))+"</sup>"},

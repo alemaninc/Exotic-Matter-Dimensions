@@ -596,7 +596,7 @@ breakdownStats.baseMasteryPowerExponent={
 		},
 		breakdownTemplates.masteryAdd(85),
 		{
-			label:"<span onClick=\"addAchievement('s09')\">Secret Achievements</span>",
+			label:"<span onMouseover=\"addAchievement('s09')\">Secret Achievements</span>",
 			func:function(prev){return prev.add(achievement.ownedInTier("s")/1e16)},
 			text:function(){return "<span onClick=\"addAchievement('s09')\">+ "+(achievement.ownedInTier("s")/1e16).toFixed(16)+"</span>"},
 			alwaysShow:function(){return achievement.ownedInTier("s")>0}
