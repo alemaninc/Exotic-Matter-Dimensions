@@ -193,7 +193,7 @@ function tick(time) {                                                           
 
   // QoL section
   if ((baseOfflineSpeedup>1)&&(offlineTime>0)) {
-    offlineSpeedup = 1+(baseOfflineSpeedup-1)*Math.min(Math.max(offlineTime,0.001)/deltatime,1)
+    offlineSpeedup = Math.max(1,1+(baseOfflineSpeedup-1)*Math.min(Math.max(offlineTime,0.001)/deltatime,1))
     offlineTime-=deltatime
   } else {
     offlineSpeedup = 1

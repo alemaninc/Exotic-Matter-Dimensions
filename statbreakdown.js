@@ -1404,6 +1404,11 @@ breakdownStats.tickspeed={
 			},
 			func:function(prev){return prev.mul(this.mod())},
 			text:function(){return "× "+this.mod().toFixed(4)}
+		},
+		{
+			label:"Time Paradox",
+			func:function(prev){return prev.max(0)},
+			text:function(){return "No negative numbers allowed"}
 		}
 	]
 }

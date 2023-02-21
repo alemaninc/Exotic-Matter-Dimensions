@@ -1103,11 +1103,13 @@ function wormholeReset(x) {
 		if (g.last10WormholeRuns.length>10) g.last10WormholeRuns.splice(0,1)
     if (x!=="force") for (let i=0;i<wormholeResetAchievements.length;i++) addAchievement(wormholeResetAchievements[i])
     if (g.activeStudy!==0) {
-      if (totalAxis("dark").gte(studies[g.activeStudy].goal())) g.studyCompletions[g.activeStudy]++
-      g.activeStudy=0
-			respecResearch()
+      if (totalAxis("dark").gte(studies[g.activeStudy].goal())) {
+				g.studyCompletions[g.activeStudy]++
+				respecResearch()
+				generateResearchCanvas()
+			}		
+			g.activeStudy=0
 			generateStudyTable()
-			generateResearchCanvas()
     }
     o.add("hawkingradiation",stat("pendinghr").floor())
     g.exoticmatter=N(0)
