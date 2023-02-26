@@ -2968,26 +2968,6 @@ const d = {    // d for "document"
     else document.getElementById(arguments[0]).classList.remove("glownotify")
   }
 }
-function openTab() {  // id      (argument variables: parent)
-  arguments[1] = d.class("tab");
-  for (let i = 0; i < arguments[1].length; i++) d.display(arguments[1][i],"none")
-  d.display(arguments[0],"inline-block")
-}
-function openSubTab() {  // parent, id
-  arguments[0] = d.class(arguments[0]+"Tab");
-  for (let i = 0; i < arguments[0].length; i++) d.display(arguments[0][i],"none")
-  d.display(arguments[1],"inline-block")
-}
-function openHTP() {  // id      (argument variables: parent)
-  arguments[1] = d.class("htpTab");
-  for (let i = 0; i < arguments[1].length; i++) arguments[1][i].style.display = "none";  
-  d.display(arguments[0],"inline-block")
-}
-function openSSB() {  // id      (argument variables: parent)
-  arguments[1] = d.class("ssbTab");
-  for (let i = 0; i < arguments[1].length; i++) arguments[1][i].style.display = "none";  
-  d.display("SSBD"+arguments[0],"inline-block")
-}
 const o = {      // o = "operations"
   add(variable,value) {
     g[variable]=g[variable].add(N(value).fix(0))
@@ -3015,7 +2995,7 @@ Object.defineProperty(Array,"random",{
 })
 Object.defineProperty(Array,"equal",{
   value: function equal(a,b) {
-    a.every(item => b.includes(item)) && b.every(item => a.includes(item))
+    return a.every(item => b.includes(item)) && b.every(item => a.includes(item))
   }
 })
 Object.defineProperty(Array,"joinWithAnd",{

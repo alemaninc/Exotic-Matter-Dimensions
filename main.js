@@ -38,6 +38,7 @@ const basesave = {
   ownedAchievements: [],
 	completedAchievementTiersShown: true,
   StardustResets: 0,
+	TotalStardustResets: 0,
 	last10StardustRuns: [],
   stardust: N(0),
   autosaveIsOn: true,
@@ -66,6 +67,7 @@ const basesave = {
   metaEnergy: N(1),
   hawkingradiation: N(0),
   WormholeResets: 0,
+	TotalWormholeResets: 0,
 	last10WormholeRuns: [],
   ach505Progress: N(0),
   shiningBrightTonight: true,
@@ -169,6 +171,27 @@ const formattags = {
   c: document.querySelectorAll('[data-c]'),     // class
   s: document.querySelectorAll('[data-s]')      // src
 }
+
+function openTopLevelDiv(id) {
+  let siblings = d.class("topleveldiv");
+  for (let i=0;i<siblings.length;i++) d.display(siblings[i],"none")
+  d.display(id,"inline-block")
+}
+function openTab(id) {
+  let siblings = d.class("tab");
+  for (let i=0;i<siblings.length;i++) d.display(siblings[i],"none")
+  d.display(id,"inline-block")
+}
+function openSubTab(parentTab,id) {  // parent, id
+  let siblings = d.class(parentTab+"Tab");
+  for (let i=0;i<siblings.length;i++) d.display(siblings[i],"none")
+  d.display(id,"inline-block")
+}
+function openSSB(id) {
+  let siblings = d.class("ssbTab");
+  for (let i=0;i<siblings.length;i++) siblings[i].style.display = "none";  
+  d.display("SSBD"+id,"inline-block")
+}
 // Takes an array consisting of a tab ID and parent tab IDs and determines if a tab is open or not. Used to only update HTML which is currently being viewed.
 function tabOpen(array) {
   if (d.element("game").style.display == "none") return false
@@ -186,15 +209,15 @@ function stardustUpgradeCap(x) {
 	if (x==5) return 7
 }
 function stardustUpgradeCost(x) {
-  let cost = [[1.5e6,4.5e10,1e14,1e20,c.maxvalue],
+  let cost = N([[1.5e6,4.5e10,1e14,1e20,c.maxvalue],
               [50,100,1e4,1e6,1e8,1e12,1e16,1e24,1e100,c.maxvalue],
               [3.3333e9,1.5e16,1e43,1e75,1e140,c.inf,"ee4","ee5","ee6","ee7",c.maxvalue],
               [125,2e7,5e18,1e60,1e115,c.maxvalue],
-              [5e11,1e60,1e96,1e175,2.2222e222,1e270,c.inf,c.maxvalue]][x-1][g.stardustUpgrades[x-1]]
-  if (achievement.ownedInTier(5) >= 9) cost = N(cost).dilate(wormholeMilestone9Effect())
-	if (AchievementE(520)&&g.stardustUpgrades[x-1]==0) cost = cost.sqrt()
-	if (AchievementE(519)) cost = cost.div(2**g.stars)
-  return N(cost)
+              [5e11,1e60,1e96,1e175,2.2222e222,1e270,c.inf,c.maxvalue]][x-1][g.stardustUpgrades[x-1]])
+  if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(wormholeMilestone9Effect())
+  if (AchievementE(520)&&g.stardustUpgrades[x-1]==0) cost = cost.sqrt()
+  if (AchievementE(519)) cost = cost.div(2**g.stars)
+  return cost
 }
 function axisEmpowerment(axis) {                                       // percentage of an axis which is empowered
   let output = N(0)
@@ -319,8 +342,7 @@ function openStory(x) {
     d.innerHTML("storyTitle",x)
     d.innerHTML("storyText",snippets[x])
     if (!g.storySnippets.includes(x)) g.storySnippets.push(x)
-    d.display("game","none")
-    d.display("story","inline-block")
+    openTopLevelDiv("story")
   }
 }
 const axisEffectHTML = {
@@ -544,8 +566,8 @@ function toggleMastery(x) {
 function masteryEffect(x) {
   if (x==11) return g.masteryPower.add(1).pow(masteryBoost(11).mul(0.1))
   if (x==12) return g.masteryPower.add(1).pow(masteryBoost(12).mul(0.15))
-  if (x==21) return g.masteryPower.add(1).dilate(0.6).pow(masteryBoost(21).mul(0.0175))
-  if (x==22) return g.masteryPower.add(1).dilate(0.6).pow(masteryBoost(22).mul(0.035))
+  if (x==21) return Decimal.logarithmicSoftcap(g.masteryPower.add(1).dilate(0.6).pow(masteryBoost(21).mul(0.0175)),1e50,0.2)
+  if (x==22) return Decimal.logarithmicSoftcap(g.masteryPower.add(1).dilate(0.6).pow(masteryBoost(22).mul(0.035)),1e100,0.1)
   if ([31,32].includes(x)) return g.masteryPower.add(1).log10().pow(0.5).mul(0.75).mul(masteryBoost(x))
   if ([41,43].includes(x)) return Decimal.logarithmicSoftcap(g.masteryPower.add(1).log10().div(15),1,2).mul(masteryBoost(x)).add(1)
   if (x==42) return g.masteryPower.add(1e4).dilate(0.5).div(100).pow(masteryBoost(42))
@@ -660,7 +682,7 @@ function stardustExoticMatterReqText() {
 function stardustReset(x) {
   if ((stat("pendingstardust").gt(0))||(x=="force")) {
 		g.last10StardustRuns = [{gain:stat("pendingstardust"),realtime:g.timeThisStardustReset,gametime:g.truetimeThisStardustReset}].concat(g.last10StardustRuns)
-		if (g.last10StardustRuns.length>10) g.last10StardustRuns.splice(0,1)
+		if (g.last10StardustRuns.length>10) g.last10StardustRuns.splice(10)
     addAchievement(201)
     addAchievement(511)
     o.add("stardust",stat("pendingstardust"))
@@ -683,9 +705,14 @@ function stardustReset(x) {
     g.spatialEnergy=N(1)
     g.neuralEnergy=N(1)
     g.metaEnergy=N(1)
+		if (stat("pendingstardust").gt(0)) g.StardustResets++
   }
-  g.StardustResets++
+	g.TotalStardustResets++
 	addAchievement("s01")
+}
+function last10StardustRunTable() {
+	if (g.last10StardustRuns.length==0) return ""
+	let out = "<tr><th colspan=\"5\">Last 10 Stardust Runs</th></tr>"
 }
 function stardustBoostBoost(x) {
 	let out = N(1)
@@ -773,6 +800,13 @@ function respecStars() {
   stardustReset("force")
   g.ownedStars=[]
   starHTML()
+}
+function importStars() {
+	let starBuild = prompt("Import your star build here:").split(",").map(x => Number(x))
+	for (let i=0;i<starBuild.length;i++) buyStarUpgrade(starBuild[i])
+}
+function exportStars() {
+	openExport(g.ownedStars.join(","))
 }
 function maxFullStarRows() {
 	for (let i=1;i<11;i++) if (maxStars(i)==4) for (let j=1;j<5;j++) buyStarUpgrade(i*10+j)
@@ -1100,10 +1134,11 @@ function wormholeReset(x) {
 		}
 		g.last10StardustRuns=[]
 		g.last10WormholeRuns = [{gain:stat("pendinghr"),realtime:g.timeThisWormholeReset,gametime:g.truetimeThisWormholeReset}].concat(g.last10WormholeRuns)
-		if (g.last10WormholeRuns.length>10) g.last10WormholeRuns.splice(0,1)
+		if (g.last10WormholeRuns.length>10) g.last10WormholeRuns.splice(10)
     if (x!=="force") for (let i=0;i<wormholeResetAchievements.length;i++) addAchievement(wormholeResetAchievements[i])
     if (g.activeStudy!==0) {
       if (totalAxis("dark").gte(studies[g.activeStudy].goal())) {
+				console.log("Yash")
 				g.studyCompletions[g.activeStudy]++
 				respecResearch()
 				generateResearchCanvas()
@@ -1140,7 +1175,7 @@ function wormholeReset(x) {
     g.neuralEnergy=N(0)
     g.metaEnergy=N(0)
     g.StardustResets=0
-    g.WormholeResets++
+		g.TotalStardustResets=0
     g.shiningBrightTonight=true
     g.ach519possible=true
     g.ach524possible=achievement.get(524).active()
@@ -1155,7 +1190,9 @@ function wormholeReset(x) {
 		if (tabOpen(["Stardust","Dark Matter"])) openSubTab("stardust","Stardust Boosts")
 		if (tabOpen(["Stardust","Energy"])) openSubTab("stardust","Stardust Boosts")
 		if (AchievementE(506)&&g.ach505Progress.lt(1000)) g.ach505Progress=N(1000)
+    if (stat("pendinghr").gt(0)) g.WormholeResets++
   }
+	g.TotalWormholeResets++
 }
 function wormholeResetButtonText() {
   let out
@@ -1237,7 +1274,7 @@ function ach501Effect() {
 	return out
 }
 function ironWill() {
-  return g.StardustResets==0&&g.ownedResearch.length==0
+  return g.StardustResets==0&&g.TotalStardustResets==0&&g.ownedResearch.length==0
 }
 function ResearchE(x) {
   return [g.ownedResearch,g.permanentResearch].flat().includes(x)
@@ -1408,11 +1445,24 @@ function availableResearch(row,col) {
   if (!adjacent_test) return false
   return research["r"+row+"_"+col].condition()                                                                      // check if research purchase requirement is met
 }
-function buyResearch(row,col) {
+function allParentResearch(row,col) {    // This returns all "parent" research; i.e. the "adjacent requirements" of the research, the adjacent requirements of the adjacent requirements and so on.
+	let out = ["r"+row+"_"+col]
+	while (true) {
+		let before = out
+		let nextOut = new Set(out)
+		for (let i=0;i<out.length;i++) {
+			let current = out[i]
+			for (let j=research[current].adjacent_req.length;j>0;j--) nextOut.add(research[current].adjacent_req[j-1])
+		}
+		nextOut = Array.from(nextOut)
+		if (Array.equal(before,nextOut)) return nextOut.reverse()
+		else out = nextOut
+	}
+}
+function buySingleResearch(row,col) {
   let id = "r"+row+"_"+col
   if (research[id]==undefined) return             // research does not exist
   if (!research[id].condition()) return           // special requirement not met
-	if (!availableResearch(row,col)) return         // adjacent research not owned
   if (ResearchE(id)) return                       // research already owned
   let cost = researchCost(id)
   if (cost.gt(unspentDiscoveries())) return       // research too expensive
@@ -1424,12 +1474,19 @@ function buyResearch(row,col) {
     o.add("spentDiscoveries",cost)
   }
 	if (research[id].type == "study") unlockFeature("Studies","true")
+	let regenerateCanvas = false
   if (!g.researchVisibility.includes(id)) {
 		g.researchVisibility.push(id)
-		generateResearchCanvas()
+		regenerateCanvas = true
 	}
-  generateResearchTree()
 	addAchievement("s17")
+}
+function buyResearch(row,col) {
+	let toBePurchased = allParentResearch(row,col).filter(x => (!ResearchE(x) && research[x].type == "normal") || (x == "r"+row+"_"+col))
+	let regenerateCanvas = false
+	for (let i=0;i<toBePurchased.length;i++) regenerateCanvas = regenerateCanvas || buySingleResearch(researchRow(toBePurchased[i]),researchCol(toBePurchased[i]))
+  generateResearchTree()
+	if (regenerateCanvas) generateResearchCanvas()
 }
 function researchRow(code) {                 // gets the row number of a research code, eg "r5_7" returns 5
   return Number(code.split("_")[0].substr(1))
@@ -1526,6 +1583,11 @@ const topResources = [
 		condition:function(){return StudyE(1)}
 	}
 ]
+function generateTopResourceHTML() {
+	let out = ""
+	for (let i=0;i<topResources.length;i++) out+="<div id=\"div_topResource"+i+"\"><td class=\"resource\"><span id=\"span_topResource"+i+"Before\"></span> "+topResources[i].label+" <span id=\"span_topResource"+i+"After\"></span></div>"
+	d.innerHTML("resourceModal",out)
+}
 function endgameColor() {
 	return "hsl("+((Date.now()/1e4)%360)+","+(90+Math.sin(Date.now()/1e6)*10)+"%,"+(50+Math.cos(Date.now()/1e8)*10)+"%)"        // random color that slowly changes over time
 }
@@ -1662,6 +1724,8 @@ function load(type) {
 			}
 			fixMasteryArrays()
 			for (let i=0; i<4; i++) g.observations[i]=N(g.observations[i])
+			g.TotalStardustResets=Math.max(g.StardustResets,g.TotalStardustResets)
+			g.TotalWormholeResets=Math.max(g.WormholeResets,g.TotalWormholeResets)
 			let timeSpentOffline = Number(new Date())-g.timeLeft
 			if ((timeSpentOffline>1000)&&(g.offlineSpeedupOn!=="Off")) {
 				if (g.offlineSpeedupOn=="Weakened") timeSpentOffline = Decimal.linearSoftcap(timeSpentOffline,3.6e6,1).toNumber() // Starts at 1 hour
@@ -1686,8 +1750,12 @@ function load(type) {
 	addAchievement("s02")
   savecounter++
 }
+function openExport(x) {
+	openTopLevelDiv("export")
+	d.element("span_export").value = x
+}
 function exportSave() {
-	d.element("span_export").value = btoa(localStorage.getItem("save"))
+	openExport(btoa(localStorage.getItem("save")))
 }
 const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me","CONFIRM","CORNFIRM","CRONFIRM","statrnark","zenrnoroni","Antimatter Dimensions is better.","Incredibly slow start","Surprised there isn't something to speed this up"])
 function stringSimplify(x) {

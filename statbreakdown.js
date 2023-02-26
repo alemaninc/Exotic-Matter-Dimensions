@@ -50,12 +50,12 @@ const mainStatistics = [
 		condition:function(){return g.ownedAchievements.length>0}
 	}
 ]
-function mainStats() {
+function generateMainStatTable() {
   let out = ""
-  let shown = mainStatistics.filter(x => x.condition())
-  for (let i=0;i<shown.length;i++) out+="<tr><td class=\"tablecell\" style=\"width:40vw\">"+shown[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\">"+shown[i].value()+"</td></tr>"
+  for (let i=0;i<mainStatistics.length;i++) out+="<tr id=\"mainStatRow"+i+"\"><td class=\"tablecell\" style=\"width:40vw\">"+mainStatistics[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\" id=\"mainStatValue"+i+"\"></td></tr>"
   d.innerHTML("mainstattable",out)
 }
+generateMainStatTable()
 
 const hiddenStatistics = [
   {
@@ -80,11 +80,11 @@ const hiddenStatistics = [
     condition:function(){return true}
   },{
     name:"Stardust Resets",
-    value:function(){return BEformat(g.StardustResets)},
+    value:function(){return BEformat(g.TotalStardustResets)+" total, "+BEformat(g.StardustResets)+" with reward"},
     condition:function(){return unlocked("Stardust")}
   },{
     name:"Wormhole Resets",
-    value:function(){return BEformat(g.WormholeResets)},
+    value:function(){return BEformat(g.TotalWormholeResets)+" total, "+BEformat(g.WormholeResets)+" with reward"},
     condition:function(){return unlocked("Hawking Radiation")}
   },{
     name:"Total Axis",
@@ -100,12 +100,12 @@ const hiddenStatistics = [
 		condition:function(){return axisCodes.map(x => stat("free"+x+"Axis").gt(g[x+"Axis"])||stat("freedark"+x+"Axis").gt(g["dark"+x+"Axis"])).reduce((x,y)=>x||y)}
 	}
 ].sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
-function hiddenStats() {
+function generateHiddenStatTable() {
   let out = ""
-  let shown = hiddenStatistics.filter(x => x.condition())
-  for (let i=0;i<shown.length;i++) out+="<tr><td class=\"tablecell\" style=\"width:40vw\">"+shown[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\">"+shown[i].value()+"</td></tr>"
+  for (let i=0;i<hiddenStatistics.length;i++) out+="<tr id=\"hiddenStatRow"+i+"\"><td class=\"tablecell\" style=\"width:40vw\">"+hiddenStatistics[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\" id=\"hiddenStatValue"+i+"\"></td></tr>"
   d.innerHTML("hiddenstattable",out)
 }
+generateHiddenStatTable()
 
 const breakdownTemplates = {
 	base:function(value){

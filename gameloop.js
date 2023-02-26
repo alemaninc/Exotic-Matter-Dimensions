@@ -66,11 +66,28 @@ function updateHTML() {
     d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off")
 		d.innerHTML("span_completedAchievementTiersShown",g.completedAchievementTiersShown?"Showing":"Hiding")
   }
+	if (tabOpen(["Statistics"])) {
+		d.display("button_previousPrestiges",unlocked("Stardust")?"inline-block":"none")
+	}
   if (tabOpen(["Statistics","Main Statistics"])) {
-    mainStats()
+    for (let i=0;i<mainStatistics.length;i++) {
+			if (mainStatistics[i].condition()) {
+				d.tr("mainStatRow"+i,true)
+				d.innerHTML("mainStatValue"+i,mainStatistics[i].value())
+			} else {
+				d.tr("mainStatRow"+i,false)
+			}
+		}
   }
 	if (tabOpen(["Statistics","Hidden Statistics"])) {
-		hiddenStats()
+    for (let i=0;i<hiddenStatistics.length;i++) {
+			if (hiddenStatistics[i].condition()) {
+				d.tr("hiddenStatRow"+i,true)
+				d.innerHTML("hiddenStatValue"+i,hiddenStatistics[i].value())
+			} else {
+				d.tr("hiddenStatRow"+i,false)
+			}
+		}
 	}
   if (tabOpen(["Statistics","Stat Breakdown"])) {
 		for (let i=0;i<breakdownTabList.length;i++) {
