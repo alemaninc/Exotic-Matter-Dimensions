@@ -202,6 +202,7 @@ function updateHTML() {
     d.innerHTML("span_knowledgeEffect",BEformat(knowledgeEffect(),3))
     d.innerHTML("span_knowledgePerSec",BEformat(stat("knowledgePerSec"),2))
 		d.element("button_researchRespec").style["background-color"] = g.researchRespec?"rgba(128,255,204,0.75)":"rgba(179,204,255,0.75)"
+		d.element("button_buyMaxResearch").style["background-color"] = g.buyMaxResearch?"rgba(255,204,128,0.75)":"rgba(179,204,255,0.75)"
     for (let i=1;i<5;i++) d.innerHTML("span_observeCost"+i,BEformat(observationCost(i)))
   }
 }
