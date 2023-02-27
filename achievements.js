@@ -747,7 +747,7 @@ const achievementList = {
       name:"Irradiated",
       description:function(){return "Gain "+BEformat(696342)+" hawking radiation from a single Wormhole reset"},
       check:function(){return stat("pendinghr").gt(696342)},
-      progress:function(){return achievement.percent(stat("pendinghr"),696342,1)},
+      progress:function(){return achievement.percent(stat("pendinghr"),696342,0)},
       visibility:function(){return true},
       reward:function(){return "Exotic matter gain is multiplied by "+this.effect().format(2)+" (based on observations)"},
       flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",

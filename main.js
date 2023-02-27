@@ -1668,10 +1668,10 @@ const progressMilestones = [
 	{
 		type:1,
 		label:"current endgame",
-		percent:function(){return g.studyCompletions.reduce((x,y)=>x+y)/4},
-		req:function(){return "4 Study completions"},
+		percent:function(){return g.studyCompletions.reduce((x,y)=>x+y)/6},
+		req:function(){return "6 total Study completions"},
 		color:"endgame",
-		condition:function(){return g.studyCompletions.reduce((x,y)=>x+y)>=4}
+		condition:function(){return g.studyCompletions.reduce((x,y)=>x+y)>=6}
 	},
 	{
 		type:3,
