@@ -7,7 +7,7 @@ function updateHTML() {
 			wormholeAnimationActive=false
 		} else if (Date.now()-wormholeAnimationStart>8000) {
 			d.display("wormholeAnimation","inline-block")
-			unlockFeature("Hawking Radiation","true")
+			unlockFeature("Hawking Radiation",true)
 			d.element("wormholeAnimation").style.opacity = 2-(Date.now()-wormholeAnimationStart)/8000
 		} else {
 			d.display("wormholeAnimation","inline-block")
@@ -228,12 +228,9 @@ function tick(time) {                                                           
   for (let num=0;num<formattags.c.length;num++) formattags.c[num].className = eval(formattags.c[num].getAttribute("data-c"))
   for (let num=0;num<formattags.s.length;num++) formattags.s[num].src = eval(formattags.s[num].getAttribute("data-s"))
   d.element("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;"
-  unlockFeature("Masteries","g.XAxis.gt(0)")
-  unlockFeature("Stardust","g.StardustResets>0")
-  unlockFeature("Stars","g.StardustResets>0")
-  unlockFeature("Dark Matter","g.stardustUpgrades[4]>0")
-  unlockFeature("Energy","g.stardustUpgrades[4]>1")
-  unlockFeature("Supernova","g.stars>=24")
+  unlockFeature("Masteries",g.XAxis.gt(0))
+  unlockFeature("Dark Matter",g.stardustUpgrades[4]>0)
+  unlockFeature("Energy",g.stardustUpgrades[4]>1)
   if (totalAxis("dark").gte(1000)&&!g.storySnippets.includes("Black hole")) openStory("Black hole")
   g.timePlayed+=time
   o.add("truetimePlayed",stat("tickspeed").mul(time))

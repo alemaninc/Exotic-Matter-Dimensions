@@ -321,7 +321,7 @@ function incrementExoticMatter(x) {
   for (let i=0;i<emtypes.length;i++) g[emtypes[i]]=g[emtypes[i]].add(x)
 }
 function unlockFeature(x,condition) {
-  if (!g.featuresUnlocked.includes(x)&&eval(condition)) {
+  if (!g.featuresUnlocked.includes(x)&&condition) {
     g.featuresUnlocked.push(x)
     openStory(x)
   }
@@ -682,6 +682,9 @@ function stardustExoticMatterReqText() {
 }
 function stardustReset(x) {
   if ((stat("pendingstardust").gt(0))||(x=="force")) {
+		if (stat("pendingstardust").gt(0)) g.StardustResets++
+    unlockFeature("Stardust",true)
+    unlockFeature("Stars",true)
 		g.last10StardustRuns = [{gain:stat("pendingstardust"),realtime:g.timeThisStardustReset,gametime:g.truetimeThisStardustReset}].concat(g.last10StardustRuns)
 		if (g.last10StardustRuns.length>10) g.last10StardustRuns.splice(10)
     addAchievement(201)
@@ -706,7 +709,6 @@ function stardustReset(x) {
     g.spatialEnergy=N(1)
     g.neuralEnergy=N(1)
     g.metaEnergy=N(1)
-		if (stat("pendingstardust").gt(0)) g.StardustResets++
   }
 	g.TotalStardustResets++
 	addAchievement("s01")
@@ -1183,7 +1185,7 @@ function wormholeReset(x) {
     g.ach525possible=true
     g.ach526possible=true
 		d.display("wormholeAnimation","none")
-		unlockFeature("Hawking Radiation","g.hawkingradiation.gt(0)")
+		unlockFeature("Hawking Radiation",true)
 		if (g.researchRespec) {
 			respecResearch()
 			g.researchRespec = false
@@ -1475,7 +1477,7 @@ function buySingleResearch(row,col) {
     g.ownedResearch.push(id)
     o.add("spentDiscoveries",cost)
   }
-	if (research[id].type == "study") unlockFeature("Studies","true")
+	if (research[id].type == "study") unlockFeature("Studies",true)
 	let regenerateCanvas = false
   if (!g.researchVisibility.includes(id)) {
 		g.researchVisibility.push(id)

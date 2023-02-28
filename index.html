@@ -37,7 +37,7 @@
 					<button class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis</button><br>
 					<div id="div_normalAxisContainer" style="width:900px"></div><br>
 					<div id="progress"></div>
-					<div id="footer"><a href="changelog.html" target="_blank">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.20</div>
+					<div id="footer"><a href="changelog.html" target="_blank">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.21</div>
 				</div>
 				<div class="mainTab" id="tabMasteries" style="display:none">
 					<p>You have <span class="masterytext" id="span_masteryPower"></span> mastery power.<br>
@@ -257,7 +257,7 @@
     	<div id="story" class="topleveldiv" style="display:none">
 			<h1 id="storyTitle">Story Screen</h1>   <!-- Rainbow text -->
 			<p><span id="storyText" style="font-size:18px;color:#fff">If you are seeing this text, the game is in an error state. Reload the page and inform <i>AleManInc</i> if it persists</span></p>
-			<p><button onClick="d.display('story','none');d.display('game','inline-block')">Back to game</button></p>
+			<p><button onClick="openTopLevelDiv('game')" class="starbuybutton">Back to game</button></p>
 		</div>
 		<div id="loadScreen" class="topleveldiv">    <!-- This gets hidden when the game finishes loading -->
 			<h1>Loading game...</h1><h4>This shouldn't take longer than a second</h4>
