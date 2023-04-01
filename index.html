@@ -7,82 +7,77 @@
 		<title>Exotic Matter Dimensions</title>
 	</head>
 	<body>
-		<div id="game" class="topleveldiv" style="display:none">
+		<div id="game" class="topleveldiv" style="display:none;padding-bottom:44px">
 			<table>
 				<tr>
 					<td class="toptable" id="resourceModal"></td>
 					<td class="toptable" style="width:270px">
 						<table><tr>
-							<td><button onClick="stardustReset('normal')" id="button_stardustReset">Reset to gain <span class="stardustlayertext" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
+							<td><button onClick="stardustReset('normal')" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
 							<td><button onClick="unlocked('Hawking Radiation')?wormholeReset('normal'):wormholeAnimation()" id="button_wormholeReset"></button></td>
 						</tr></table>
 					</td>
 				</tr>
 			</table>
-			<div class="navigation globalnavigation" align="center">
-				<button id="button_main" onClick="if (!StudyE(1)) openTab('Main');masteryHTML()" class="bigtab">Main</button>
-				<button id="button_options" onClick="openTab('Options')" class="bigtab">Options</button>
-				<button id="button_statistics" onClick="openTab('Statistics')" class="bigtab">Statistics</button>
-				<button id="button_achievements" onClick="openTab('Achievements')" class="bigtab">Achievements</button>
-				<button id="button_automation" onClick="if (!StudyE(1)) openTab('Automation')" class="bigtab" style="display:none">Automation</button>
-				<button id="button_stardust" onClick="if (!StudyE(1)) {openTab('Stardust');starHTML();energyHTML();if (tabOpen(['Dark Matter'])&&g.stardustUpgrades[4]<1) openSubTab('stardust','Stardust Boosts');if (tabOpen(['Energy'])&&g.stardustUpgrades[4]<2) openSubTab('stardust','Stardust Boosts')}" class="bigtab" style="display:none">Stardust</button>
-				<button id="button_wormhole" onClick="openTab('Wormhole');generateResearchTree();generateStudyTable()" class="bigtab" style="display:none">Wormhole</button>
+			<div class="navigation globalnavigation" style="text-align:center">
+				<button id="button_main" onClick="if (!StudyE(1)) openTab('Main')" class="bigtab">Main</button>
+				<button id="button_options" onClick="openTab('Options')" class="bigtab" style="filter:brightness(60%)">Options</button>
+				<button id="button_statistics" onClick="openTab('Statistics')" class="bigtab" style="filter:brightness(60%)">Statistics</button>
+				<button id="button_achievements" onClick="openTab('Achievements')" class="bigtab" style="filter:brightness(60%)">Achievements</button>
+				<button id="button_automation" onClick="if (!StudyE(1)) openTab('Automation')" class="bigtab" style="display:none;filter:brightness(60%)">Automation</button>
+				<button id="button_stardust" onClick="if (!StudyE(1)) {openTab('Stardust');energyHTML();if (tabOpen(['Dark Matter'])&&g.stardustUpgrades[4]<1) openSubTab('stardust','Stardust Boosts');if (tabOpen(['Energy'])&&g.stardustUpgrades[4]<2) openSubTab('stardust','Stardust Boosts')}" class="bigtab" style="display:none;filter:brightness(60%)">Stardust</button>
+				<button id="button_wormhole" onClick="openTab('Wormhole');updateResearchTree()" class="bigtab" style="display:none;filter:brightness(60%)">Wormhole</button>
 			</div><hr>
 			<div class="tab" id="Main">                                                                     <!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
-				<div class="mainNavigation globalnavigation" align="center">
+				<div class="mainNavigation globalnavigation" style="text-align:center">
 					<button class="tabtier2 tier2main" onClick="openSubTab('main','tabAxis')" id="button_mainaxis">Axis</button>
-					<button class="tabtier2 tier2main" onClick="openSubTab('main','tabMasteries');masteryHTML()" style="display:none" id="button_masteries">Masteries</button>
+					<button class="tabtier2 tier2main" onClick="openSubTab('main','tabMasteries')" style="display:none;filter:brightness(60%)" id="button_masteries">Masteries</button>
+					<button class="tabtier2 tier2main" onClick="openSubTab('main','tabOfflineTime')" style="filter:brightness(60%)" id="button_offlineTimeTab">Offline Time</button>
 				</div>
 				<div class="mainTab" id="tabAxis">
 					<button class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis</button><br>
 					<div id="div_normalAxisContainer" style="width:900px"></div><br>
-					<div id="progress"></div>
-					<div id="footer"><a href="changelog.html" target="_blank">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw">Discord</a> | Version v1.0.21</div>
 				</div>
 				<div class="mainTab" id="tabMasteries" style="display:none">
-					<p>You have <span class="masterytext" id="span_masteryPower"></span> mastery power.<br>
-					You are getting <span class="masterytext" id="span_masteryPowerPerSec"></span> mastery power per second (based on exotic matter and time since last mastery swap).<br>
+					<p>You have <span class="_mastery" id="span_masteryPower"></span> mastery power.<br>
+					You are getting <span class="_mastery" id="span_masteryPowerPerSec"></span> mastery power per second (based on exotic matter and time since last mastery swap).<br>
 					You can activate 1 Mastery from each row. Unassigning a Mastery will reset your mastery power.</p>
-					<div id="masteryContainer"></div>
 					<button style="height:50px;width:200px;border-radius:12px" onClick="g.activeMasteries.fill(0);masteryReset()">Unassign all Masteries (this will reset mastery power)</button>
+					<div id="masteryContainer"></div>
+					<div id="masteryPanel">
+						<span id="span_shownMasteryText"></span><br>
+						<span id="button_enableShownMastery"></span>
+					</div>
+				</div>
+				<div class="mainTab" id="tabOfflineTime" style="display:none">
+					<p>You have <span id="span_dilatedTime" class="big _time"></span> of dilated time.<br>You earn 1 second of dilated time per second spent offline.</p>
+					<div id="div_overclock">
+						<h1>Overclock</h1>
+						<input type="range" id="dilationSpeedupFactor" min="1" max="9" step="0.001" style="width:350px" onChange="g.dilationPower = Number(d.element('dilationSpeedupFactor').value)"></input>						
+						<p>When enabled, Overclock provides a <span id="span_overclockSpeedupFactor" class="big _time"></span>× time boost at the cost of <span id="span_overclockCost"></span> seconds of dilated time per real-life second.</p>
+						<p id="span_overclockCostScaling" class="big _time2"></p>
+						<button id="button_overclockActive" onClick="overclockActive=!overclockActive"></button>
+					</div>
 				</div>
 			</div>
 			<div class="tab" id="Stardust" style="display:none">
-				<div class="stardustNavigation globalnavigation" align="center">
+				<div class="stardustNavigation globalnavigation" style="text-align:center">
 					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Stardust Boosts')" id="button_stardustBoosts">Stardust Boosts</button>
-					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Stars');starHTML()" id="button_stars">Stars</button>
-					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Dark Matter')" id="button_darkmatter" style="display:none">Dark Matter</button>
-					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Energy');energyHTML()" id="button_energy" style="display:none">Energy</button>
+					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Stars')" id="button_stars" style="filter:brightness(60%)">Stars</button>
+					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Dark Matter')" id="button_darkmatter" style="display:none;filter:brightness(60%)">Dark Matter</button>
+					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','Energy');energyHTML()" id="button_energy" style="display:none;filter:brightness(60%)">Energy</button>
 				</div>
 				<div class="stardustTab" id="Stardust Boosts">
 					<p class="underline">Thanks to your Stardust:</p><br>
-					<table style="table-layout: fixed; width: 98vw">
-						<div class="stardustboost"><span class="bigstardusttext">#1</span><br>Exotic matter gain is multiplied by <span class="stardustlayertext" id="span_stardustBoost1"></span></div>
-						<div class="stardustboost"><span class="bigstardusttext">#2</span><br>Y axis is <span class="stardustlayertext" id="span_stardustBoost2"></span>% stronger</div>
-						<div class="stardustboost" id="span_stardustBoost3Cell" style="display:none"><span class="bigstardusttext">#3</span><br>W Axis is <span class="stardustlayertext" id="span_stardustBoost3"></span>% stronger</span></div>
-						<div class="stardustboost" id="span_stardustBoost4Cell" style="display:none"><span class="bigstardusttext">#4</span><br>Multiply stardust gain by (mastery power)<sup class="stardustlayertext" id="span_stardustBoost4"></sup></span></div>
-						<div class="stardustboost" id="span_stardustBoost5Cell" style="display:none"><span class="bigstardusttext">#5</span><br>X Axis base price ratio is divided by <span class="stardustlayertext" id="span_stardustBoost5"></span></span></div>
-						<div class="stardustboost" id="span_stardustBoost6Cell" style="display:none"><span class="bigstardusttext">#6</span><br>Dark Z Axis is <span class="stardustlayertext" id="span_stardustBoost6"></span>% stronger</span></div>
-						<div class="stardustboost" id="span_stardustBoost7Cell" style="display:none"><span class="bigstardusttext">#7</span><br>Mastery power gain is multiplied by <span class="stardustlayertext" id="span_stardustBoost7"></span><sup>s<sup>0.5</sup></sup>, where s = (seconds in this stardust reset)</span></div>
-						<div class="stardustboost" id="span_stardustBoost8Cell" style="display:none"><span class="bigstardusttext">#8</span><br>V Axis is <span class="stardustlayertext" id="span_stardustBoost8"></span>% stronger</span></div>
-						<div class="stardustboost" id="span_stardustBoost9Cell" style="display:none"><span class="bigstardusttext">#9</span><br>Dark stars are <span class="stardustlayertext" id="span_stardustBoost9"></span>× cheaper</div>
-						<div class="stardustboost" id="span_stardustBoost10Cell" style="display:none"><span class="bigstardusttext">#10</span><br>Increase the exponent of the Z axis effect formula by <span class="stardustlayertext" id="span_stardustBoost10"></div>
-						<div class="stardustboost" id="span_stardustBoost11Cell" style="display:none"><span class="bigstardusttext">#11</span><br>Row 10 Masteries are <span class="stardustlayertext" id="span_stardustBoost11"></span>% stronger</div>
-						<div class="stardustboost" id="span_stardustBoost12Cell" style="display:none"><span class="bigstardusttext">#12</span><br>Increase the exponent of the hawking radiation gain formula by <span class="stardustlayertext" id="span_stardustBoost12"></span></div>
-					</table><br>
-					<table><tr>
-						<td><button id="button_stardustUpgrade1" class="lockedaxisbutton" onClick="buyStardustUpgrade(1)">Unlock a new Axis<br>Cost: <span id="span_stardustUpgrade1Cost"></span> stardust</button></td>
-						<td><button id="button_stardustUpgrade2" class="lockedaxisbutton" onClick="buyStardustUpgrade(2)"><span id="span_stardustUpgrade2Tooltip"></span><br>Cost: <span id="span_stardustUpgrade2Cost"></span> stardust</button></td>
-						<td><button id="button_stardustUpgrade3" class="lockedaxisbutton" onClick="buyStardustUpgrade(3)">Unlock a new Stardust Boost<br>Cost: <span id="span_stardustUpgrade3Cost"></span> stardust</button></td>
-						<td><button id="button_stardustUpgrade4" class="lockedaxisbutton" onClick="buyStardustUpgrade(4)"><span id="span_stardustUpgrade4Tooltip"></span><br>Cost: <span id="span_stardustUpgrade4Cost"></span> stardust</button></td>
-						<td><button id="button_stardustUpgrade5" class="lockedaxisbutton" onClick="buyStardustUpgrade(5)"><span id="span_stardustUpgrade5Tooltip"></span><br>Cost: <span id="span_stardustUpgrade5Cost"></span> stardust</button></td>
-					</tr></table><br>
+					<div id="div_stardustBoostContainer"></div>
+					<div id="div_stardustUpgradeContainer"></div><br>
 					<button class="starbuybutton" onClick="stardustReset('force')">Reset with no reward (may be useful if you get stuck)</button>
+					<button class="starbuybutton" onClick="toggle('showingCappedStardustUpgrades');showingCappedStardustUpgradesOptionHTML()" id="button_showCappedStardustUpgrades"></button>
 				</div>
 				<div class="stardustTab" id="Stars" style="display:none">
 					<div id="starContainer"></div>
 					<div style="width:420px">
-						You have <span id="span_unspentStars" class="startext"></span> stars.<br>
+						You have <span id="span_unspentStars" class="big _stars"></span> stars.<br>
 						<span id="span_nextStarRow"></span>
 						<button class="starbuybutton" onClick="buyStar()">Buy a Star<br>Cost: <span id="span_starCost"></span> stardust</button>
 						<button class="starbuybutton" onClick="respecStars()">Respec your Stars (This forces a Stardust reset)</button>
@@ -92,39 +87,40 @@
 					</div>
 				</div>
 				<div class="stardustTab" id="Dark Matter" style="display:none">
-					You have <span class="darkmattertext" id="span_darkmatter"></span> dark matter<br>
-					You are gaining <span class="darkmattertext" id="span_darkmatterPerSec"></span> dark matter per second<br>
-					Dark matter gain is multiplied by <span class="darkmattertext" id="span_baseDarkMatterGain"></span> (based on stardust)<br>
-					For every <span class="darkmattertext" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="darkmattertext" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free<br>
+					You have <span class="big _darkmatter" id="span_darkmatter"></span> dark matter<br>
+					You are gaining <span class="big _darkmatter" id="span_darkmatterPerSec"></span> dark matter per second<br>
+					Dark matter gain is multiplied by <span class="big _darkmatter" id="span_baseDarkMatterGain"></span> (based on stardust)<br>
+					For every <span class="big _darkmatter" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="big _darkmatter" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free<br>
 					<button class="maxdarkaxisbutton" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis</button><br>
 					<div id="div_darkAxisContainer" style="width:900px"></div>
-					<div>You have <span class="darkmattertext" id="span_darkstars"></span> dark stars<br>
+					<div>You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
 					<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar(g.darkstarBulk?'u':g.darkstars.add(1))"></button></div>
 				</div>
 				<div class="stardustTab" id="Energy" style="display:none"></div>
 			</div>
 			<div class="tab" id="Wormhole" style="display:none">
-				<div class="wormholeNavigation globalnavigation" align="center">
-					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','Research');generateResearchTree()" id="button_research">Research</button>
-					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','Studies');generateStudyTable()" id="button_studiesTab" style="display:none">Studies</button>
+				<div class="wormholeNavigation globalnavigation" style="text-align:center">
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','Research');updateResearchTree()" id="button_research">Research</button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','Studies')" id="button_studiesTab" style="display:none;filter:brightness(60%)">Studies</button>
 				</div>
 				<div class="wormholeTab" id="Research">
-					<div style="width:1140px;height:576px;overflow:auto;padding-bottom:240px;position:relative">
+					<div id="researchContainer" style="width:1140px;height:576px;overflow:auto;padding-bottom:240px;position:relative">
 						<canvas style="position:absolute;top:0px;left:15px;z-index:1" id="researchCanvas" style="width:1110px" width="1110"></canvas>
 						<div style="position:absolute;top:0px;left:15px;z-index:2" id="researchTable"></div>
 					</div>
 					<div id="discoveryPanel">
-						<p style="column-count:2">You have <span id="span_knowledge" class="researchtext"></span> knowledge, giving a <span id="span_knowledgeEffect" class="researchtext"></span>% boost to all Masteries.<br>
-						You are gaining <span id="span_knowledgePerSec" class="researchtext"></span> knowledge per second (based on mastery power and observations)<br>
-						You have <span id="span_discoveryDisplay" class="researchtext"></span> Discoveries<br>
-						Next at <span id="span_discoveryKnowledgeReq" class="researchtext"></span> knowledge</p>
+						<p style="column-count:2">You have <span id="span_knowledge" class="big _research"></span> knowledge, giving a <span id="span_knowledgeEffect" class="big _research"></span>% boost to all Masteries.<br>
+						You are gaining <span id="span_knowledgePerSec" class="big _research"></span> knowledge per second (based on mastery power and observations)<br>
+						You have <span id="span_discoveryDisplay" class="big _research"></span> Discoveries<br>
+						Next at <span id="span_discoveryKnowledgeReq" class="big _research"></span> knowledge</p>
 						<button class="observation" onClick="buyMaxObservations(1)">Observe exotic matter<br>(Need <span id="span_observeCost1"></span> exotic matter)</button>
 						<button class="observation" onClick="buyMaxObservations(2)">Observe nebulae<br>(Need <span id="span_observeCost2"></span> stardust)</button>
 						<button class="observation" onClick="buyMaxObservations(3)">Observe dark matter<br>(Need <span id="span_observeCost3"></span> dark matter)</button>
 						<button class="observation" onClick="buyMaxObservations(4)">Observe black hole<br>(Need <span id="span_observeCost4"></span> hawking radiation)</button>
-						<button class="observation" onClick="for (let i=1;i<5;i++) buyMaxObservations(i)">Max all Observations</button>
+						<button class="observation" onClick="for (let i=1;i<5;i++) buyMaxObservations(i)">Max all Observations</button><br>
 						<button class="observation" id="button_researchRespec" onClick="toggle('researchRespec')">Respec Research on next Wormhole</button>
 						<button class="observation" id="button_buyMaxResearch" onClick="toggle('buyMaxResearch')">Buy all previous research when buying Research</button>
+						<button class="observation" onClick="researchLoadouts.open()">Show research loadouts</button>
 						<hr>
 						<div id="researchInfo" style="height:70px;width:100%" style="display:none"></div>
 					</div>
@@ -134,25 +130,23 @@
 			</div>
 			<div class="tab" id="Options" style="display:none">
 				<div class="optionsTab" id="tabOptions">
-					<button class="optionsbutton" onClick="multitoggle('notation',['Alemaninc Ordinal','BE Default','Engineering','Hyper-E','Infinity','Logarithm','Mixed scientific','Scientific','Tetration'])">Notation: <span id="notation"></span></button>
+					<button class="optionsbutton" onClick="selectOption('notation',['Alemaninc Ordinal','BE Default','Engineering','Hyper-E','Infinity','Logarithm','Mixed scientific','Scientific','Tetration'],'notation')">Notation: <span id="notation"></span></button>
 					<button class="optionsbutton" onClick="save()">Save</button>
 					<button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button>
-					<button class="redoptionsbutton" onClick="wipeSave()">WIPE SAVE</button>
-					<button class="optionsbutton" onClick="multitoggle('offlineSpeedupLength',[1,5,10,30,60,300,3600])">Offline boost length: <span id="offlineSpeedupLength"></span></button>
-					<button class="optionsbutton" onClick="multitoggle('offlineSpeedupOn',['On','Weakened','Off'])">Offline boost: <span id="offlineSpeedupOn"></span></button>
-					<button class="optionsbutton" onClick="load('import')">Import save</button>
+					<button class="redoptionsbutton" onClick="wipeSavePopup()">WIPE SAVE</button>
+					<button class="optionsbutton" onClick="importSave()">Import save</button>
 					<button class="optionsbutton" onClick="exportSave()">Export save</button>
-					<button class="optionsbutton" onClick="multitoggle('colortheme',availableThemes());theme()">Theme: <span id="colortheme"></span></button>
+					<button class="optionsbutton" onClick="changeTheme()">Theme: <span id="colortheme"></span></button>
 					<button class="optionsbutton" onClick="toggle('completedAchievementTiersShown')"><span id="span_completedAchievementTiersShown"></span> completed achievement tiers</button>
 					<button class="optionsbutton" onClick="toggle('darkstarBulk')" id="button_bulkDarkStar">Dark star bulk buy: <span id="darkstarBulk"></span></button>
 				</div>
 			</div>
 			<div class="tab" id="Statistics" style="display:none">
-				<div class="statisticsNavigation globalnavigation" align="center">
-					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Main Statistics')">Statistics</button>
-					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Hidden Statistics')">Hidden Statistics</button>
-					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Stat Breakdown')">Stat Breakdown</button>
-					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Previous Prestiges')" id="button_previousPrestiges">Previous Prestiges</button>
+				<div class="statisticsNavigation globalnavigation" style="text-align:center">
+					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Main Statistics')" id="button_subtabStatistics">Statistics</button>
+					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Hidden Statistics')" style="filter:brightness(60%)" id="button_subtabHiddenStatistics">Hidden Statistics</button>
+					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Stat Breakdown')" style="filter:brightness(60%)" id="button_subtabStatBreakdown">Stat Breakdown</button>
+					<button class="tabtier2 tier2statistics" onClick="openSubTab('statistics','Previous Prestiges')" id="button_previousPrestiges" style="display:none;filter:brightness(60%)">Previous Prestiges</button>
 				</div>
 				<div class="statisticsTab" id="Main Statistics">
 					<table id="mainstattable" style="border-spacing: 0"></table>
@@ -163,29 +157,37 @@
 					<p>More statistics appear the further you progress!</p>
 				</div>
 				<div class="statisticsTab" id="Stat Breakdown" style="display:none">
-					<div style="background-color:rgba(102,51,102,0.5);width:99%" id="SSBnavigation"></div>
-					<div id="SSBtable"></div>
+					<div id="SSBnav1" class="navigationtier3"></div>
+					<div id="SSBnav2" class="navigationtier4"></div>
+					<table id="SSBtable"></table>
 				</div>
 				<div class="statisticsTab" id="Previous Prestiges" style="display:none">
-					<table id="div_last10StardustRuns"></table>
-					<table id="div_last10WormholeRuns"></table>
-					<div id="div_bestEverStardustRun"></div>
-					<div id="div_bestEverWormholeRun"></div>
+					<div class="tier3navigation globalnavigation">
+						<button class="tabtier3 previousPrestigeTabButton" onClick="previousPrestige.showTab('div_previousStardustRuns')">Stardust</button>
+						<button class="tabtier3 previousPrestigeTabButton" onClick="previousPrestige.showTab('div_previousWormholeRuns')" style="display:none;filter:brightness(60%)" id="button_previousPrestige_wormholeTab">Wormhole</button>
+					</div>
+					<div id="div_previousStardustRuns" class="previousPrestigeTab">
+						<table id="table_last10StardustRuns"><tr><th colspan="4" class="tablecell">Last 10 Stardust runs</th></tr><tr><th style="width:30px" class="tablecell">#</th><th style="width:calc(33vw - 20px)" class="tablecell">Time taken</th><th style="width:calc(33vw - 20px)" class="tablecell">Stardust gained</th><th style="width:calc(33vw - 20px)" class="tablecell" id="span_last10StardustRuns_buildnames"><span class="previousPrestigeBuildList1"></span> build</th></tr></table>
+					</div>
+					<div id="div_previousWormholeRuns" class="previousPrestigeTab" style="display:none">
+						<table id="table_last10WormholeRuns"><tr><th colspan="4" class="tablecell">Last 10 Wormhole runs</th></tr><tr><th style="width:30px" class="tablecell">#</th><th style="width:calc(33vw - 20px)" class="tablecell">Time taken</th><th style="width:calc(33vw - 20px)" class="tablecell">HR gained</th><th style="width:calc(33vw - 20px)" class="tablecell" id="span_last10WormholeRuns_buildnames"><span class="previousPrestigeBuildList2"></span> build</th></tr></table>
+					</div>
 				</div>
 			</div>
 			<div class="tab" id="Achievements" style="display:none">
-				<div class="achievementsNavigation globalnavigation" align="center">
+				<div class="achievementsNavigation globalnavigation" style="text-align:center">
 					<button class="tabtier2 tier2achievements" onClick="openSubTab('achievements','subtabAchievements')" id="button_subtabAchievements">Achievements</button>
-					<button class="tabtier2 tier2achievements" onClick="wormholeMilestoneHTML();openSubTab('achievements','Wormhole Milestones')" style="display:none;font-size:11px" id="button_wormholeMilestones">Wormhole Milestones</button>
+					<button class="tabtier2 tier2achievements" onClick="openSubTab('achievements','Wormhole Milestones')" style="display:none;font-size:11px;filter:brightness(60%)" id="button_wormholeMilestones">Wormhole Milestones</button>
 				</div>
 				<div class="achievementsTab" id="subtabAchievements">
+					<span id="span_noAchievements" style="display:none">You have not earned any Achievements yet.</span>
 					<div id="achievementContainer" style="padding-bottom:240px"></div>
 					<div id="achievementPanel"></div>
 				</div>
 				<div class="achievementsTab" id="Wormhole Milestones" style="display:none">
-					<p>Gain increasing quality of life boosts as you complete more Tier 5 achievements. You currently have <span class="wormholelayertext" id="wormholeMilestoneT5Achievements"></span> Tier 5 achievements.</p>
-					<div id="unlockedWormholeMilestones"></div>
-					<p id="nextWormholeMilestone" style="color:#808080"></p>
+					<p>Gain increasing quality of life boosts as you complete more Tier 5 achievements. You currently have <span class="big _wormhole" id="wormholeMilestoneT5Achievements"></span> Tier 5 achievements.</p>
+					<div id="wormholeMilestoneContainer"></div>
+					<p id="span_nextWormholeMilestone" style="color:#808080"></p>
 				</div>
 			</div>
 			<div class="tab" id="Automation" style="display:none">
@@ -238,44 +240,59 @@
 					Interval: <span id="span_starAutobuyerInterval"></span><br>
 					<button id="button_starAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('star')">Reduce the interval by 5%<br>Cost: <span id="span_starAutobuyerCost"></span> stardust</button><br>
 					<label for="starAutobuyerMax">Max stars to buy:</label><input id="starAutobuyerMax" type="text"></input><br>
-					<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="starbuybutton" onClick="g.starAllocatorBuild=g.ownedStars">Save your current star build to the allocator</button><br>The star allocator runs on the same interval as the autobuyer.</span>
-				</div>
-				<div class="automatordiv" id="wormholeAutomator" style="display:none">
-					<h3>Wormhole Reset Automator</h3>
-					<button class="automatortoggleon" id="button_wormholeAutomatorToggle" onClick="toggle('wormholeAutomatorOn')"></button><br>
-					<label for="wormholeAutomatorMode">Setting:</label><button class="texttoggle" id="button_wormholeAutomatorMode" onClick="multitoggle('wormholeAutomatorMode',['amount','time','mult','pow'])"></button><br>
-					<input id="wormholeAutomatorValue" type="text"></input>
+					<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="starbuybutton" onClick="importStarAllocatorBuild()">Save your current star build to the allocator</button><br>The star allocator runs on the same interval as the autobuyer.</span>
 				</div>
 				<div class="automatordiv" id="stardustAutomator" style="display:none">
 					<h3>Stardust Reset Automator</h3>
 					<button class="automatortoggleon" id="button_stardustAutomatorToggle" onClick="toggle('stardustAutomatorOn')"></button><br>
-					<label for="stardustAutomatorMode">Setting:</label><button class="texttoggle" id="button_stardustAutomatorMode" onClick="multitoggle('stardustAutomatorMode',['amount','time','mult','pow'])"></button><br>
+					<label for="stardustAutomatorMode">Setting:</label><button class="genericbutton" id="button_stardustAutomatorMode" onClick="selectOption('stardustAutomatorMode',stardustAutomatorModes,'mode')"></button><br>
 					<input id="stardustAutomatorValue" type="text"></input>
 				</div>
+				<div class="automatordiv" id="wormholeAutomator" style="display:none">
+					<h3>Wormhole Reset Automator</h3>
+					<button class="automatortoggleon" id="button_wormholeAutomatorToggle" onClick="toggle('wormholeAutomatorOn')"></button><br>
+					<label for="wormholeAutomatorMode">Setting:</label><button class="genericbutton" id="button_wormholeAutomatorMode" onClick="selectOption('wormholeAutomatorMode',wormholeAutomatorModes,'mode')"></button><br>
+					<input id="wormholeAutomatorValue" type="text"></input>
+				</div>
+			</div>
+			<div id="footer" style="z-index: 0">
+				<div id="gameprogress" class="progress"></div>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | Version <span id="span_currentVersion"></span>
 			</div>
 		</div>
-    	<div id="story" class="topleveldiv" style="display:none">
+		<div id="div_fancyPopupScreen" class="popupScreen">
+			<div id="div_fancyPopup" class="popup">
+				<span id="span_fancyPopupText"></span>
+				<br>
+				<span id="span_fancyPopupButtons"></span>
+			</div>
+		</div>
+    <div id="story" class="topleveldiv" style="display:none">
 			<h1 id="storyTitle">Story Screen</h1>   <!-- Rainbow text -->
 			<p><span id="storyText" style="font-size:18px;color:#fff">If you are seeing this text, the game is in an error state. Reload the page and inform <i>AleManInc</i> if it persists</span></p>
-			<p><button onClick="openTopLevelDiv('game')" class="starbuybutton">Back to game</button></p>
+			<p><button onClick="openTopLevelDiv('game')" class="genericbutton">Back to game</button></p>
 		</div>
 		<div id="loadScreen" class="topleveldiv">    <!-- This gets hidden when the game finishes loading -->
-			<h1>Loading game...</h1><h4>This shouldn't take longer than a second</h4>
+			<h1>Loading game...</h1><div class="progress" id="loadprogress"><span id="span_loadPercentage"></span>%</div>
 		</div>
 		<div id="export" class="topleveldiv" style="display:none">
 			This is your export string:<br>
 			<textarea id="span_export" style="height:50vh;width:50vw"></textarea><br>
-			<button class="starbuybutton" onClick="openTopLevelDiv('game')">Back to game</button>
+			<button class="genericbutton" onClick="openTopLevelDiv('game')">Back to game</button>
 		</div>
 		<div id="wormholeAnimation" class="topleveldiv" style="display:none;opacity:0"></div>
 		<div id="notify" style="position: fixed;top: 0px;right: 2vw;width: 96vw;height: 24px;border: rgba(0,0,0,0);background: rgba(0,0,0,0);text-align:center"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script type="text/javascript" src="researchtree.js"></script>
 		<script type="text/javascript" src="achievements.js"></script>
+		<script type="text/javascript" src="previousprestige.js"></script>
 		<script type="text/javascript" src="main.js"></script>
 		<script type="text/javascript" src="statbreakdown.js"></script>
 		<script type="text/javascript" src="gameloop.js"></script>
 		<script type="text/javascript" src="oldsaves.js"></script>
-		<script>updateHTML();load('normal');d.display('loadScreen','none');d.display('game','inline-block')</script>
+		<script type="text/javascript" src="howtoplay.js"></script>
+		<script type="text/javascript" src="htmlgenerator.js"></script>
+		<script type="text/javascript" src="initialize.js"></script>
+		<script></script>
 	</body>
 </html>

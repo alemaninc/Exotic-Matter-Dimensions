@@ -1,3 +1,53 @@
+.big {
+  font-size:120%;
+}
+.huge {
+  font-size:150%;
+  font-weight:700;
+}
+._time {
+  color: #00cc00;
+}
+._time2 {
+  color: #ff0000;
+}
+._exoticmatter {
+  color: #00ff00;
+}
+._mastery {
+  color: #ff0099;
+}
+._achievements {
+  color: #ffff00;
+}
+._stardust {
+  background: -webkit-radial-gradient(circle,#ff0,#f60);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+._stardust_dark{
+  background: -webkit-radial-gradient(circle,#990,#930);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+._stars {
+  color: #ffffff;
+}
+._darkmatter {
+  color: #990099;
+}
+._energy {
+  color: #00ffff;
+}
+._wormhole {
+  color: #3333ff;
+  text-shadow: 0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
+}
+._research {
+  color: #66ccff
+}
 html, body {
   max-width: 100%;
 	min-width: 1200px;
@@ -88,24 +138,22 @@ button,div {
 	margin:4px
 }
 .tablecell {
-  border: 1px solid rgba(0,255,0,0.67);
+  border: 2px solid rgba(0,153,0,0.9);
   border-collapse: collapse
 }
-#progress {
+.progress {
 	height:24px;
 	border-radius:6px;
 	color:#000000;
 	width:calc(100vw - 30px);
-	position:fixed;
-	bottom:30px;
-	left:15px
 }
 #footer {
-	height:24px;
+  height:44px;
 	width:calc(100vw - 30px);
 	position:fixed;
 	bottom:0px;
-	left:15px
+	left:10px;
+  padding:0px;
 }
 .optionsbutton {
   background-color: #cccccc;
@@ -134,33 +182,33 @@ button,div {
 	border-radius: 5px;
 }
 .tier2main {
-	background-color:rgba(0,0,0,0.8);
+	background-color:rgba(0,0,0,0.9);
 	border-color:rgba(0,255,0,0.9);
 	color:#00ff00
 }
 .tier2options {
-	background-color:rgba(204,204,204,0.8);
+	background-color:rgba(204,204,204,0.9);
 	border-color:rgba(153,153,153,0.9)
 }
 .tier2statistics {
-	background-color:rgba(0,153,0,0.8);
+	background-color:rgba(0,153,0,0.9);
 	border-color:rgba(0,204,0,0.9)
 }
 .tier2achievements {
-	background-color:rgba(170,102,0,0.8);
+	background-color:rgba(170,102,0,0.9);
 	border-color:rgba(102,51,0,0.9)
 }
 .tier2automation {
-	background-color:rgba(178,178,178,0.8);
+	background-color:rgba(178,178,178,0.9);
 	border-color:rgba(153,153,153,0.9)
 }
 .tier2stardust {
-	background-color:rgba(102,76,51,0.8);
+	background-color:rgba(102,76,51,0.9);
 	border-color:rgba(128,102,76,0.9);
 	color:#ffffff
 }
 .tier2wormhole {
-	background-color:rgba(51,76,102,0.8);
+	background-color:rgba(51,76,102,0.9);
 	border-color:rgba(76,102,128,0.9);
 	color:#ffffff
 }
@@ -168,6 +216,14 @@ button,div {
   width: 100px;
   height: 20px;
   font-size: 9px;
+}
+.tabtier4 {
+  width: 90px;
+  height: 18px;
+  font-size: 8px;
+}
+.tab, .mainTab, .optionsTab, .statisticsTab, .achievementsTab, .stardustTab, .wormholeTab {
+  width:100vw;
 }
 .htpTab {
   width: 48vw;
@@ -177,36 +233,39 @@ button,div {
 }
 .navigationtier3 {
   background-color: #331933;
-  margin-left:0vw;
-  margin-right:0vw;
+  width:100vw;
+}
+.navigationtier4 {
+  background-color: #193333;
+  width:100vw;
 }
 .bigtab {
-	font-size:20px;
+	font-size:18px;
 	border-style:solid;
 	border-width:2px;
 	border-radius:8px;
-	width:150px
+	width:130px
 }
 tab {
 	width:calc(100vw - 120px)
 }
 #button_main {
-  background-color: rgba(0,0,0,0.75);
+  background-color: rgba(0,0,0,0.9);
   color: rgba(0,255,0,0.9);
   border-color: rgba(0,204,0,0.8);
 }
 #button_options {
-	background-color: rgba(153,153,153,0.75);
+	background-color: rgba(153,153,153,0.9);
 	color:rgba(0,0,0,0.9);
 	border-color:rgba(102,102,102,0.8)
 }
 #button_statistics {
-	background-color: rgba(0,153,0,0.75);
+	background-color: rgba(0,153,0,0.9);
 	color:rgba(0,204,0,0.9);
 	border-color:rgba(0,153,0,0.8);
 }
 #button_achievements {
-	background-color: rgba(170,102,0,0.75);
+	background-color: rgba(153,76,0,0.9);
 	color:rgba(255,153,0,0.9);
 	border-color:rgba(170,102,0,0.8)
 }
@@ -231,6 +290,14 @@ tab {
   border: none;
   background: transparent;
 }
+.howtoplay {
+  background-color:rgba(0,0,0,0);
+  color:inherit;
+  border-style:solid;
+  border-color:rgba(51,153,255,0.5);
+  border-width:1px;
+  border-radius:50vh;
+}
 .stardustResetButton{
   background-image: url("stardustbackground.png");
   background-size: cover;
@@ -248,53 +315,50 @@ tab {
   width: 125px;
   height: 90px;
 }
-.matterlayertext{
-  color: #00ff00;
-  font-size: 18px;
+.masterybutton {
+  height: 50px;
+  width: 60px;
+  border-radius: 8px;
+  color: inherit
 }
-.masterytext{
-  color: #ff0099;
-  font-size: 18px;
-}
-.masterybuttonoff{
-  width: 225px;
-  height: 150px;
-  border-radius: 18px;
-  background-color: #cccccc
-}
-.masterybuttonon{
-  width: 225px;
-  height: 150px;
-  border-radius: 18px;
-  background-color: #00ff00
-}
-.stardustlayertext{
-  background: -webkit-radial-gradient(circle,#ff0,#f60);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 18px;
-}
-.darkstardustlayertext{
-  background: -webkit-radial-gradient(circle,#990,#930);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 18px;
-}
-.bigstardusttext{
-  color: #ff6600;
-  background: -webkit-radial-gradient(circle,#ff0,#f60);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 20px;
-  font-weight: 700;
+#masteryPanel {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  min-height: 75px;
+  width: 100%;
+  font-size: 16px;
+  background: linear-gradient(180deg,rgba(72,0,24,0.95),rgba(72,0,24,1));
+	padding:5px;
+	z-index:1
 }
 .glownotify{
   box-shadow: 0px 0px 20px 0px #ff0
 }
+.previousPrestige {
+  height:200px;
+  width:300px;
+  border-style:solid;
+  border-radius:25px;
+  border-width:4px;
+  margin:8px;
+}
+.previousPrestige_eternity {
+  background-color: rgba(0,102,0,0.9);
+  color: rgba(0,255,102,0.9);
+}
+.previousPrestige_spacetime {
+  background-color: rgba(0,0,0,0.9);
+  color: rgba(255,255,255,0.9);
+}
+.previousPrestige_wormhole {
+  background-color: rgba(0,0,102,0.9);
+  color: rgba(51,51,255,0.9);
+}
 .stardustboost {
-	background-color: rgba(255,102,0,0.4);
+	background-color: rgba(102,51,0,0.9);
 	width:225px;
-	height:100px;
+	height:120px;
 	margin:8px;
 	color:#ffffff;
 	border-style:solid;
@@ -312,9 +376,16 @@ tab {
   height: 125px;
 	margin:4px;
 }
-.startext {
-	color: #ffffff;
-	font-size: 18px
+.maxedstardustupgradebutton {
+  background-image: url("stardustbackground.png");
+  background-size: cover;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  width: 200px;
+  height: 125px;
+	margin:4px;
+  filter:brightness(50%)
 }
 .starbutton {
 	font-size:12px;
@@ -382,6 +453,15 @@ tab {
   height: 50px;
 	margin: 2px;
 }
+.genericbutton {
+  background-color: #cccccc;
+  color: #000000;
+  padding: 0px;
+  border-radius: 20px;
+  width: 140px;
+  height: 30px;
+	margin: 2px;
+}
 .automatordiv {
   background-color: #999999;
   color: #000000;
@@ -395,15 +475,19 @@ tab {
 }
 .automatortoggleon {
   background-color: #00ff00;
+  color: #009900;
   border-radius: 50%;
   width: 24px;
   height: 24px;
+  font-size:8px;
 }
 .automatortoggleoff {
-  background-color: #ff0000;
+  background-color: #ff6600;
+  color: #930;
   border-radius: 50%;
   width: 24px;
   height: 24px;
+  font-size:8px;
 }
 .autobuyerupgrade {
   background-color: #cccccc;
@@ -440,10 +524,6 @@ tab {
   height: 125px;
 	margin:4px
 }
-.darkmattertext {
-  color: #990099;
-  font-size: 18px
-}
 .darkstarbutton {
   background-color: #990099;
   color: #ffffff;
@@ -464,10 +544,6 @@ tab {
   text-align: center;
   width: 96vw;
 }
-.energytext {
-  color: #00ffff;
-  font-size: 18px
-}
 .energydivision {
   height: 115px;
   width: calc(50vw - 50px);
@@ -483,8 +559,34 @@ tab {
   height: 90px;
 }
 .topleveldiv {
+  position: absolute;
+  top: 0px;
 	left: 0px;
 	width:100vw;
+}
+.popupScreen {
+  position:fixed;
+  top:0px;
+  left:0px;
+  width:100vw;
+  height:100vh;
+  background-color:rgba(0,0,0,0.5);
+  display:none;
+  z-index:4;
+}
+.popup {
+  position:fixed;
+  top:20vh;
+  left:20vw;
+  width:60vw;
+  height:60vh;
+  border-radius:24px;
+  background-image:radial-gradient(circle,#330066,#190033);
+  border-style:solid;
+  border-color:#330066;
+  border-width:3px;
+  z-index:4;
+  overflow: auto;
 }
 #wormholeAnimation{
   background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
@@ -494,50 +596,69 @@ tab {
 	top: 0px;
 	height:100vh;
 }
-.wormholelayertext {
-  color: #0000ff;
-  text-shadow: 0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
-  font-size: 18px;
-}
 .researchButton {
 	height:64px;
 	width:64px;
 	font-size:16px;
-  color: #3399ff;
+  color: inherit;
 	border-style:groove;
 	border-width:5px;
 }
 .normalResearchButton {
   border-color: rgba(0,204,204,0.9);
+  background-color: #003333;
 }
 .permanentResearchButton {
   border-color: rgba(255,255,255,0.9);
+  background-color: #333333;
 }
 .studyResearchButton {
   border-color: rgba(153,0,0,0.9);
+  background-color: #330000;
 }
 .unknownResearchButton {
   border-color: rgba(153,153,153,0.8);
+  background-color: #193333;
+}
+.researchLoadout {
+  height:40px;
+  width:180px;
+  margin:8px;
+  background-color:rgba(51,102,153,0.9);
+  border-style:solid;
+  border-width:2px;
+  border-color:rgba(34,68,102,0.9);
+  border-radius:12px;
+  color:#66ccff;
+}
+.researchLoadoutSelected {
+  height:40px;
+  width:180px;
+  margin:8px;
+  background-color:rgba(68,136,204,0.9);
+  border-style:solid;
+  border-width:2px;
+  border-color:rgba(51,102,153,0.9);
+  border-radius:12px;
+  color:#66ccff;
 }
 #discoveryPanel {
   position: fixed;
   bottom: 0px;
   left: 0px;
   width: 100%;
-  font-size: 16px;
+  font-size: 13px;
   background: linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
 	padding:5px;
 	z-index:3
 }
 .observation {
-  width: 180px;
-  height: 60px;
-  margin: 4px;
+  width: 140px;
+  height: 45px;
+  margin: 2px;
   border-radius: 12px;
-  background-color: rgba(179,204,255,0.75)
-}
-.researchtext {
-  color: #66ccff;
+  background-color: rgba(179,204,255,0.75);
+  font-size:11px;
 }
 .study {
   height: 480px;
@@ -582,6 +703,16 @@ tab {
   border-color: rgba(0,68,170,0.9);
 	color:#ffffff;
 }
+.startStudyTrapped {
+  height: 48px;
+  width: 150px;
+	border-radius:8px;
+  background-color: rgba(15,30,114,0.9);
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(0,68,170,0.9);
+	color:#ffffff;
+}
 .startStudyDisabled {
   height: 48px;
   width: 150px;
@@ -590,15 +721,6 @@ tab {
   border-style: solid;
   border-width: 2px;
   border-color: rgba(0,68,170,0.9);
-}
-.stardusttextsmall {
-  background: -webkit-radial-gradient(circle,#ff0,#f60);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.wormholetextsmall {
-  color: #0000ff;
-  text-shadow: 0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
 }
 .wormholeMilestone {
   width:230px;
@@ -645,5 +767,29 @@ tab {
   width: 100%;
   height: 240px;
   font-size: 16px;
-  background: linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1))
+  background: linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1));
+  z-index: 1;
+}
+#div_overclock {
+  width:450px;
+  height:350px;
+  background-color: rgba(0,102,0,0.9);
+  color:#00ff00;
+  border-style:solid;
+  border-radius:15px;
+  border-width:4px;
+  border-color:rgba(0,153,0,0.9);
+}
+#button_overclockActive {
+  height:90px;
+  width:120px;
+  color: #00ff00;
+  font-weight: 700;
+  border-style:solid;
+  border-radius:5px;
+  border-width:1px;
+  border-color:#00ff00;
+  position: absolute;
+  bottom: 15px;
+  left: 165px;
 }
