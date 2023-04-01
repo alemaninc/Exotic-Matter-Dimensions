@@ -3,13 +3,13 @@ var gameloop
 var initComplete = false
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
+  function(){load("normal");},
   function(){
-    let versionName = "𝕍1.1.2"
+    let versionName = "𝕍1.1.3"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000502.1
+    g.version = 1000503
   },
-  function(){load("normal");},
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
   function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
   function(){updateStats()},
