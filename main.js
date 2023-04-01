@@ -35,7 +35,7 @@ const basesave = {
 	dilatedTime: 0,
 	dilationPower: 1,
 	notation: "Mixed scientific",
-	version:1000500,
+	version:1000501,
 	ownedAchievements: [],
 	completedAchievementTiersShown: true,
 	StardustResets: 0,
@@ -211,7 +211,11 @@ function baseOverclockSpeedup() {
 }
 function overclockSoftcap() {
 	let out = 4
-	return Math.max(2,Math.min(512,out))
+	return Math.max(2,Math.min(out,overclockHardcap()))
+}
+function overclockHardcap() {
+	let out = 16
+	return out
 }
 function overclockCost() {
 	return (2+Math.max(0,g.dilationPower-Math.log2(overclockSoftcap())))**g.dilationPower-1
@@ -2030,6 +2034,7 @@ function load(type,str) {
 			let timeSpentOffline = Number(new Date())-g.timeLeft;
 			g.dilatedTime += timeSpentOffline/1000
 			d.element('dilationSpeedupFactor').value = g.dilationPower
+			d.element('dilationSpeedupFactor').max = overclockHardcap()
 		}
 	}
 	savecounter++;

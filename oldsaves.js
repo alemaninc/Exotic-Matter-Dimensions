@@ -14,6 +14,8 @@ const oldSaveLoaders = {
 	v1_0: function(savegame) {
 		g.stardustAutomatorMode = stardustAutomatorModes[["amount","time","mult","pow"].indexOf(g.stardustAutomatorMode)]
 		g.wormholeAutomatorMode = wormholeAutomatorModes[["amount","time","mult","pow"].indexOf(g.wormholeAutomatorMode)]
+		g.colortheme = "Light"
+		theme()
 	},
 	beta: function(savegame) {
 		g = Object.assign({},basesave);

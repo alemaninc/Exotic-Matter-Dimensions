@@ -4,7 +4,7 @@ var initComplete = false
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
   function(){
-    let versionName = "𝕍1.1"
+    let versionName = "𝕍1.1.1"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc" 
   },

@@ -125,7 +125,7 @@ const HTPtexts = [
       "There are {0} types of Energy{1}."
     ],
     dynamics:[
-      function(){return numword(stardustUpgradeCap(5))},
+      function(){return numword(stardustUpgradeCap(5)-1)},
       function(){return g.studyCompletions[3]>0?". Most energies reset on Stardust reset, but a few persist until Wormhole":", each of which resets on Stardust reset"}
     ]
   },

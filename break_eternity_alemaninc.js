@@ -3117,6 +3117,7 @@ function gformat(value,precision,notation) {
 }
 function timeFormat(x) {
 	x = N(x);
+	if (x.eq(0)) return "0 seconds";
 	if (x.eq(Infinity)) return "Infinite time";
 	if (x.lt(1e-30)) return "1 / "+BEformat(x.pow(-1))+" seconds";
 	if (x.lt(1)) {
