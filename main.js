@@ -2035,7 +2035,7 @@ function load(type,str) {
 			g.dilatedTime += timeSpentOffline/1000
 			d.element('dilationSpeedupFactor').value = g.dilationPower
 			d.element('dilationSpeedupFactor').max = overclockHardcap()
-			if (g.version < 1000501) {
+			if (g.version < 1000502.1) {
 				g.colortheme = "Light"
 				theme()
 			}

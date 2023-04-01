@@ -4,10 +4,10 @@ var initComplete = false
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
   function(){
-    let versionName = "𝕍1.1.1"
+    let versionName = "𝕍1.1.2"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000502
+    g.version = 1000502.1
   },
   function(){load("normal");},
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
