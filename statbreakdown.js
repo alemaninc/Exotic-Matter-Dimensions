@@ -1394,6 +1394,11 @@ breakdownStats.tickspeed={
 	modifiers:[
 		breakdownTemplates.base("1"),
 		{
+			label:"Dilation Upgrade 4",
+			func:function(prev){return prev.mul(dilationUpgrades[4].effect())},
+			text:function(){return "× "+dilationUpgrades[4].effectFormat()}
+		},
+		{
 			label:achievement.label(212,true),
 			mod:function(){return [212,213,214,215].map(x => AchievementE(x)?1.004:1).reduce((x,y)=>x*y);},
 			func:function(prev){return prev.mul(this.mod());},

@@ -5,10 +5,10 @@ var initComplete = false
 const initSteps = [
   function(){load("normal");},
   function(){
-    let versionName = "𝕍1.1.3"
+    let versionName = "𝕍1.1.4"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000503
+    g.version = 1000504
   },
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
   function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
@@ -18,6 +18,7 @@ const initSteps = [
   function(){HTMLGenerator.darkAxisTable();},
   function(){HTMLGenerator.masteries();},
   function(){HTMLGenerator.achievements();},
+  function(){HTMLGenerator.dilationUpgrades();},
   function(){updateAchievementsTab();},
   function(){HTMLGenerator.previousPrestiges();},
   function(){HTMLGenerator.stardustBoosts();},

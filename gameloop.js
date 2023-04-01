@@ -58,11 +58,21 @@ function updateHTML() {
 	}
 	if (tabOpen(["Main","tabOfflineTime"])) {
 		d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
-		d.innerHTML("span_overclockSpeedupFactor",baseOverclockSpeedup().toPrecision(4))
+		d.innerHTML("span_overclockSpeedupFactor",BEformat(baseOverclockSpeedup(),3))
 		d.innerHTML("span_overclockCost",(baseOverclockSpeedup()>overclockSoftcap())?("<span class=\"big _time\">"+BEformat(baseOverclockSpeedup()-1,2)+"</span> → <span class=\"big _time2\">"+BEformat(overclockCost(),2)+"</span>"):("<span class=\"big _time\">"+BEformat(baseOverclockSpeedup()-1,2)+"</span>"))
 		d.innerHTML("span_overclockCostScaling",(baseOverclockSpeedup()>overclockSoftcap())?("Overclock costs are much higher above "+overclockSoftcap().toPrecision(4)+"×"):"")
 		d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")
 		d.element("button_overclockActive").style["background-color"] = overclockActive?"#000000":"#009900"
+		for (let i=1;i<5;i++) {
+			if (g.dilationUpgradesUnlocked>=i) {
+				d.display("div_dilationUpgrade"+i,"inline-block")
+				d.innerHTML("span_dilationUpgrade"+i+"Effect",(g.dilationUpgrades[i]<dilationUpgrades[i].cap)?(dilationUpgrades[i].effectFormat(g.dilationUpgrades[i])+" → "+dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]+1)):dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]))
+				d.innerHTML("span_dilationUpgrade"+i+"Cost",(g.dilationUpgrades[i]==dilationUpgrades[i].cap)?"Maxed":("Cost: "+timeFormat(dilationUpgrades[i].cost())+" of dilated time"))
+				d.element("div_dilationUpgrade"+i).style["filter"] = "brightness("+((g.dilationUpgrades[i]==dilationUpgrades[i].cap)?50:(dilationUpgrades[i].cost()<g.dilatedTime)?100:80)+"%)"
+			} else {
+				d.display("div_dilationUpgrade"+i,"none")
+			}
+		}
 	}
 	if (tabOpen(["Options","tabOptions"])) {
 		d.innerHTML("colortheme",g.colortheme);
@@ -306,6 +316,9 @@ function updateHTML() {
 function tick(time) {                                                                     // The game loop, which consists of functions that run automatically. Frame rate is 20fps
 	updateStats()
 
+  // Dilation section
+	if (g.dilationUpgradesUnlocked<4) if (stat.tickspeed.gt(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
+
 
 	// Mastery section
 
@@ -324,7 +337,6 @@ function tick(time) {                                                           
 	o.add("truetimeThisWormholeReset",stat.tickspeed.mul(time));
 	g.timeThisSpacetimeReset+=time;
 	o.add("truetimeThisSpacetimeReset",stat.tickspeed.mul(time));
-	g.timeLeft=Number(new Date());
 
 	d.glow("button_mainaxis",tabGlow("Axis"));
 	d.glow("button_masteries",tabGlow("Masteries"));
@@ -429,4 +441,5 @@ function auto_tick() {
 	tick(deltatime*overclockSpeedupFactor);
 	updateHTML();
 	timeSinceGameOpened+=deltatime;
+	g.timeLeft=Number(new Date());
 }

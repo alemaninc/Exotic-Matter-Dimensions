@@ -42,6 +42,13 @@ const HTMLGenerator = {
     d.innerHTML("achievementContainer",out);
     if (g.ownedAchievements.length==0) d.display("span_noAchievements","inline-block")
   },
+  dilationUpgrades: function() {
+    let out = "<h1>Dilation Upgrades</h1>"
+    for (let i=1;i<5;i++) {
+      out+="<button id=\"div_dilationUpgrade"+i+"\" class=\"dilationUpgrade\" onClick=\"buyDilationUpgrade("+i+")\">"+dilationUpgrades[i].tooltip.replace("{e}","<span id=\"span_dilationUpgrade"+i+"Effect\"></span>")+"<br><br><span id=\"span_dilationUpgrade"+i+"Cost\"></span></button>"
+    }
+    d.innerHTML("div_dilationUpgrades",out)
+  },
   previousPrestiges() {
     for (let i=1;i<11;i++) {
       d.element("table_last10StardustRuns").innerHTML += "<tr id=\"last10StardustRuns_row"+i+"\"><td style=\"width:30px\" class=\"tablecell\">"+i+"</td><td id=\"span_last10StardustRuns_time"+i+"\" style=\"width:calc(33vw - 30px)\" class=\"tablecell\"></td><td id=\"span_last10StardustRuns_gain"+i+"\" style=\"width:calc(33vw - 30px)\" class=\"tablecell\"></td><td style=\"width:calc(33vw - 30px)\" class=\"tablecell\"><button id=\"button_last10StardustRuns_build"+i+"\" onClick=\"previousPrestige.showBuild('stardust','last',"+i+")\">Show <span class=\"previousPrestigeBuildList\"></span> builds</button></td></tr>"

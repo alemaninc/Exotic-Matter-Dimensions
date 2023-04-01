@@ -3040,14 +3040,14 @@ const format = {     // functions used in formatting
 		x=N(x);
 		x.mag+=Math.min(1e-8,x.mag/1e8); // rogue decimal prevention
 		let exponent = x.log(1000).floor().mul(3);
-		return x.div(N(10).pow(exponent)).toPrecision(p+1)+"e"+exponent.toNumber().toLocaleString("en-US");
+		return x.div(N(10).pow(exponent)).mul(10**p).floor().div(10**p).toPrecision(p+1)+"e"+exponent.toNumber().toLocaleString("en-US");
 	},
 	mixedscientific(x,p) {
 		x=N(x);
 		x.mag+=Math.min(1e-8,x.mag/1e8); // rogue decimal prevention
 		if (x.lt(1e33)) { 
 			let thousand = x.log10().div(3).add(1e-14).floor().toNumber();
-			return x.div(N(1000).pow(thousand)).toNumber().toPrecision(p+1)+" "+["","K","M","B","T","Qa","Qt","Sx","Sp","Oc","No"][thousand];
+			return x.div(N(1000).pow(thousand)).mul(10**p).floor().div(10**p).toPrecision(p+1)+" "+["","K","M","B","T","Qa","Qt","Sx","Sp","Oc","No"][thousand];
 		}
 		return format.scientific(x,p);
 	},

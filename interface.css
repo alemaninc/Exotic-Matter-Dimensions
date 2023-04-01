@@ -770,9 +770,10 @@ tab {
   background: linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1));
   z-index: 1;
 }
-#div_overclock {
+.dilationDiv {
   width:450px;
   height:350px;
+  margin:10px;
   background-color: rgba(0,102,0,0.9);
   color:#00ff00;
   border-style:solid;
@@ -792,4 +793,18 @@ tab {
   position: absolute;
   bottom: 15px;
   left: 165px;
+}
+.dilationUpgrade {
+  height:120px;
+  width:200px;
+  margin:5px;
+  background-color:rgba(0,153,0,0.9);
+  color:#00ff00;
+  border-style:solid;
+  border-radius:10px;
+  border-width:2px;
+  border-color:rgba(0,153,0,0.9);
+  font-size:inherit;
+  font-family:inherit;
+
 }

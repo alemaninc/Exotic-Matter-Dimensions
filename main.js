@@ -34,6 +34,8 @@ const basesave = {
 	timeLeft: 0,
 	dilatedTime: 0,
 	dilationPower: 1,
+	dilationUpgrades: [null,0,0,0,0],
+	dilationUpgradesUnlocked: 0,
 	notation: "Mixed scientific",
 	version:null,
 	ownedAchievements: [],
@@ -207,18 +209,72 @@ function tabOpen(array) {
 
 var overclockActive = false
 function baseOverclockSpeedup() {
-	return 2**g.dilationPower
+	return Math.min(overclockHardcap(),2**g.dilationPower)
 }
 function overclockSoftcap() {
-	let out = 4
+	let out = 16
+	out += dilationUpgrades[2].effect()
 	return Math.max(2,Math.min(out,overclockHardcap()))
 }
-function overclockHardcap() {
-	let out = 16
-	return out
+function overclockHardcap(x=g.dilationUpgrades[1]) {
+	return dilationUpgrades[1].effect()
 }
 function overclockCost() {
-	return (2+Math.max(0,g.dilationPower-Math.log2(overclockSoftcap())))**g.dilationPower-1
+	if (baseOverclockSpeedup()<overclockSoftcap()) return baseOverclockSpeedup()-1
+	return overclockSoftcap()**(Math.log(baseOverclockSpeedup())/Math.log(overclockSoftcap()))**(1+2*dilationUpgrades[3].effect())
+}
+const dilationUpgrades = [
+	null,
+	{
+		tooltip:"Increase the limit of Overclock to {e}×",
+		cost:function(x=g.dilationUpgrades[1]){return this.effect(x+1)*144},
+		cap:20,
+		effect:function(x=g.dilationUpgrades[1]){return [1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x%10]*10**Math.floor(2+x/10)},
+		effectFormat:function(x=g.dilationUpgrades[1]){return this.effect(x).toFixed(0)},
+		tickspeedNeeded:8
+	},
+	{
+		tooltip:"Overclock softcap starts {e} later",
+		cost:function(x=g.dilationUpgrades[2]){return 1440+60*Math.max(0,Math.max(x,x*4-141)-23)+Math.max(0,Math.max(x,x*4-141)-23)**2*1.25},
+		cap:84,
+		effect:function(x=g.dilationUpgrades[2]){return x},
+		effectFormat:function(x=g.dilationUpgrades[1]){return this.effect(x).toFixed(0)},
+		tickspeedNeeded:128,
+	},
+	{
+		tooltip:"The Overclock softcap is reduced by {e}%",
+		cost:function(x=g.dilationUpgrades[3]){return 86400+21600*x},
+		cap:5,
+		effect:function(x=g.dilationUpgrades[3]){return 1-0.1*x},
+		effectFormat:function(x=g.dilationUpgrades[1]){return (1-this.effect(x)).toFixed(1)},
+		tickspeedNeeded:32768
+	},
+	{
+		tooltip:"Multiply tickspeed by {e}",
+		cost:function(x=g.dilationUpgrades[4]){return 86400},
+		cap:3,
+		effect:function(x=g.dilationUpgrades[4]){return 2**x},
+		effectFormat:function(x=g.dilationUpgrades[1]){return this.effect(x).toFixed(0)},
+		tickspeedNeeded:2147483648
+	}
+]
+function buyDilationUpgrade(x) {
+	if ((g.dilationUpgrades[x]<dilationUpgrades[x].cap)&&(g.dilatedTime>dilationUpgrades[x].cost())) {
+		g.dilatedTime -= dilationUpgrades[x].cost()
+		g.dilationUpgrades[x]++
+	}
+	updateOverclockScrollbar()
+}
+function unlockDilationUpgrade() {
+	g.dilationUpgradesUnlocked++
+	popup({
+		text:"By reaching "+BEformat(dilationUpgrades[g.dilationUpgradesUnlocked].tickspeedNeeded)+"× tickspeed, you have unlocked a new Dilation Upgrade! Find it in the 'Offline Time' subtab.",
+		buttons:[["Close",""]]
+	})
+}
+function updateOverclockScrollbar() {
+	d.element('dilationSpeedupFactor').max = Math.ceil(Math.log2(overclockHardcap())*1000)/1000
+	d.element('dilationSpeedupFactor').value = g.dilationPower
 }
 function getRealOverclockSpeedup() {
 	if (overclockActive) {
@@ -2033,12 +2089,12 @@ function load(type,str) {
 			g.TotalWormholeResets=Math.max(g.WormholeResets,g.TotalWormholeResets);
 			let timeSpentOffline = Number(new Date())-g.timeLeft;
 			g.dilatedTime += timeSpentOffline/1000
-			d.element('dilationSpeedupFactor').value = g.dilationPower
-			d.element('dilationSpeedupFactor').max = overclockHardcap()
-			if (g.version < 1000503) {
+			updateOverclockScrollbar()
+			if ((new Date().getUTCMonth()==3)&&(new Date().getUTCDate()==1)) {
 				g.colortheme = "Light"
 				theme()
 			}
+			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}
 	}
 	savecounter++;
