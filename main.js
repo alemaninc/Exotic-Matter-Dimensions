@@ -35,7 +35,7 @@ const basesave = {
 	dilatedTime: 0,
 	dilationPower: 1,
 	notation: "Mixed scientific",
-	version:1000501,
+	version:null,
 	ownedAchievements: [],
 	completedAchievementTiersShown: true,
 	StardustResets: 0,

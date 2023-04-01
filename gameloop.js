@@ -139,8 +139,7 @@ function updateHTML() {
 				d.innerHTML("span_last10WormholeRuns_gain"+i,BEformat(g.previousWormholeRuns.last10[i-1].gain,2))
 			}
 		}
-		let buildNodes = previousPrestige.buildListNodes
-		for (let i=0;i<buildNodes.length;i++) buildNodes[i].innerHTML = previousPrestige.shownBuilds().join("/")+" builds"
+		for (let i of previousPrestige.buildListNodes) i.innerHTML = previousPrestige.shownBuilds().join("/")+" builds"
 		let stardustRuns = previousPrestige.stardustRunsStored
 		for (let i=0;i<stardustRuns.length;i++) {
 			if (stardustRuns[i].visibility()) {
