@@ -1084,7 +1084,7 @@ const achievementList = {
 			progress:function(){return ""},
 			visibility:function(){return AchievementE("s23")},
 			reward:null,
-			flavor:"Row 11 stars coming in v3.0!"
+			flavor:"Row 11 stars coming in 𝕍3.0!"
 		}
 	}
 };

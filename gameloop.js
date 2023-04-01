@@ -63,15 +63,20 @@ function updateHTML() {
 		d.innerHTML("span_overclockCostScaling",(baseOverclockSpeedup()>overclockSoftcap())?("Overclock costs are much higher above "+overclockSoftcap().toPrecision(4)+"×"):"")
 		d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")
 		d.element("button_overclockActive").style["background-color"] = overclockActive?"#000000":"#009900"
-		for (let i=1;i<5;i++) {
-			if (g.dilationUpgradesUnlocked>=i) {
-				d.display("div_dilationUpgrade"+i,"inline-block")
-				d.innerHTML("span_dilationUpgrade"+i+"Effect",(g.dilationUpgrades[i]<dilationUpgrades[i].cap)?(dilationUpgrades[i].effectFormat(g.dilationUpgrades[i])+" → "+dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]+1)):dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]))
-				d.innerHTML("span_dilationUpgrade"+i+"Cost",(g.dilationUpgrades[i]==dilationUpgrades[i].cap)?"Maxed":("Cost: "+timeFormat(dilationUpgrades[i].cost())+" of dilated time"))
-				d.element("div_dilationUpgrade"+i).style["filter"] = "brightness("+((g.dilationUpgrades[i]==dilationUpgrades[i].cap)?50:(dilationUpgrades[i].cost()<g.dilatedTime)?100:80)+"%)"
-			} else {
-				d.display("div_dilationUpgrade"+i,"none")
+		if (g.dilationUpgradesUnlocked>0) {
+			d.display("div_dilationUpgrades","inline-block")
+			for (let i=1;i<5;i++) {
+				if (g.dilationUpgradesUnlocked>=i) {
+					d.display("div_dilationUpgrade"+i,"inline-block")
+					d.innerHTML("span_dilationUpgrade"+i+"Effect",(g.dilationUpgrades[i]<dilationUpgrades[i].cap)?(dilationUpgrades[i].effectFormat(g.dilationUpgrades[i])+" → "+dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]+1)):dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]))
+					d.innerHTML("span_dilationUpgrade"+i+"Cost",(g.dilationUpgrades[i]==dilationUpgrades[i].cap)?"Maxed":("Cost: "+timeFormat(dilationUpgrades[i].cost())+" of dilated time"))
+					d.element("div_dilationUpgrade"+i).style["filter"] = "brightness("+((g.dilationUpgrades[i]==dilationUpgrades[i].cap)?50:(dilationUpgrades[i].cost()<g.dilatedTime)?100:80)+"%)"
+				} else {
+					d.display("div_dilationUpgrade"+i,"none")
+				}
 			}
+		} else {
+			d.display("div_dilationUpgrades","none")
 		}
 	}
 	if (tabOpen(["Options","tabOptions"])) {

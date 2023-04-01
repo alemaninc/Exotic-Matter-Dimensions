@@ -212,7 +212,7 @@ function baseOverclockSpeedup() {
 	return Math.min(overclockHardcap(),2**g.dilationPower)
 }
 function overclockSoftcap() {
-	let out = 16
+	let out = 64
 	out += dilationUpgrades[2].effect()
 	return Math.max(2,Math.min(out,overclockHardcap()))
 }
@@ -228,8 +228,8 @@ const dilationUpgrades = [
 	{
 		tooltip:"Increase the limit of Overclock to {e}×",
 		cost:function(x=g.dilationUpgrades[1]){return this.effect(x+1)*144},
-		cap:20,
-		effect:function(x=g.dilationUpgrades[1]){return [1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x%10]*10**Math.floor(2+x/10)},
+		cap:22,
+		effect:function(x=g.dilationUpgrades[1]){return [1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][(x+8)%10]*10**Math.floor((x+18)/10)},
 		effectFormat:function(x=g.dilationUpgrades[1]){return this.effect(x).toFixed(0)},
 		tickspeedNeeded:8
 	},
@@ -237,7 +237,7 @@ const dilationUpgrades = [
 		tooltip:"Overclock softcap starts {e} later",
 		cost:function(x=g.dilationUpgrades[2]){return 1440+60*Math.max(0,Math.max(x,x*4-141)-23)+Math.max(0,Math.max(x,x*4-141)-23)**2*1.25},
 		cap:84,
-		effect:function(x=g.dilationUpgrades[2]){return x},
+		effect:function(x=g.dilationUpgrades[2]){return Math.max(2*x,3*x-60)},
 		effectFormat:function(x=g.dilationUpgrades[1]){return this.effect(x).toFixed(0)},
 		tickspeedNeeded:128,
 	},
@@ -691,7 +691,7 @@ const masteryData = {
 		subgroup:1
 	},
 	41:{
-		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub>x1</sub></span>",
+		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">x1</sub></span>",
 		subgroup:1
 	},
 	42:{
@@ -699,7 +699,7 @@ const masteryData = {
 		subgroup:2
 	},
 	43:{
-		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub>x2</sub></span>",
+		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">x2</sub></span>",
 		subgroup:1
 	},
 	51:{
@@ -707,7 +707,7 @@ const masteryData = {
 		subgroup:1
 	},
 	52:{
-		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub>1x</sub></span>",
+		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">1x</sub></span>",
 		subgroup:1
 	},
 	61:{
