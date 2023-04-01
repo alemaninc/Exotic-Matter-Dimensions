@@ -15,8 +15,6 @@ const oldSaveLoaders = {
 		console.log("v1.0 save loaded")
 		g.stardustAutomatorMode = stardustAutomatorModes[["amount","time","mult","pow"].indexOf(g.stardustAutomatorMode)]
 		g.wormholeAutomatorMode = wormholeAutomatorModes[["amount","time","mult","pow"].indexOf(g.wormholeAutomatorMode)]
-		g.colortheme = "Light"
-		theme()
 	},
 	beta: function(savegame) {
 		console.log("Beta save loaded")
