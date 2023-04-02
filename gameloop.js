@@ -26,6 +26,7 @@ function updateHTML() {
 	d.class("button_wormholeReset",totalAxis("dark").gte((g.activeStudy==0)?1000:studies[g.activeStudy].goal())?"wormholeResetButton":"lockedStardustResetButton");
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||totalAxis("dark").gte(1000))?"visible":"hidden";
 	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
+	d.display("footer",((g.footerDisplay=="All tabs")?true:(g.footerDisplay=="Only Axis tab")?tabOpen(["Main","tabAxis"]):(g.footerDisplay=="None")?false:undefined)?"inline-block":"none")
 	if (tabOpen(["Main"])) {
 		d.display("button_masteries",unlocked("Masteries")?"inline-block":"none");
 	}
@@ -87,6 +88,7 @@ function updateHTML() {
 		d.innerHTML("notation",g.notation);
 		d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off");
 		d.innerHTML("span_completedAchievementTiersShown",g.completedAchievementTiersShown?"Showing":"Hiding");
+		d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
 	}
 	if (tabOpen(["Statistics"])) {
 		d.display("button_previousPrestiges",unlocked("Stardust")?"inline-block":"none");
@@ -213,7 +215,6 @@ function updateHTML() {
 		d.display("button_subtabSecretAchievements",g.ownedSecretAchievements.length>0?"inline-block":"none");
 		d.display("button_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none");
 	}
-	if (tabOpen(["Achievements",""]))
 	if (tabOpen(["Achievements","Wormhole Milestones"])) {
 		let owned = wormholeMilestoneList.map(x => achievement.ownedInTier(5)>=x[0]?1:0).reduce((x,y)=>x+y)
 		for (let i=0;i<wormholeMilestoneList.length;i++) {

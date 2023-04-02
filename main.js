@@ -21,6 +21,7 @@ const basesave = {
 	HTPshown: ["Exotic Matter"],
 	featuresUnlocked: [],
 	colortheme: "Default",
+	footerDisplay: "All tabs",
 	timeThisStardustReset: 0,
 	truetimeThisStardustReset: N(0),
 	fastestStardustReset: N(9e15),
@@ -205,7 +206,7 @@ function openSubTab(parentTab,id) {
 function tabOpen(array) {
 	if (!initComplete) return true;   /* prevent flashing when opening a tab for the first time*/
 	if (d.element("game").style.display == "none") return false;
-	return array.reduce((x,y) => x&&y)
+	return array.map(x => d.element(x).style.display == "inline-block").reduce((x,y) => x&&y)
 }
 
 var overclockActive = false
