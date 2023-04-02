@@ -1557,10 +1557,8 @@ function updateResearchTree() {
 					continue;
 				} else if (!unknownResearch().includes(id)) {
 					toggleResearchCell(row,col,"none");
-					continue;
 				} else if (!visibleResearch().includes(id)) {
 					toggleResearchCell(row,col,"unknown");
-					continue;
 				} else {
 					toggleResearchCell(row,col,"visible");
 					if (ResearchE(id)) {
@@ -2087,10 +2085,8 @@ function load(type,str) {
 				g.colortheme = "Light"
 				theme()
 			}
-			if (g.version < 1000506) {
-				g.ownedAchievements = g.ownedAchievements.filter(x => x.substring(0,1)=="s")
-				g.ownedSecretAchievements = g.ownedAchievements.filter(x => x.substring(0,1)!=="s").map(x => Number(x.substring(1)))
-			}
+			g.ownedSecretAchievements = g.ownedAchievements.filter(x => x.substring(0,1)=="s").map(x => Number(x.substring(1)))
+			g.ownedAchievements = g.ownedAchievements.filter(x => x.substring(0,1)!=="s")
 			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}
 	}

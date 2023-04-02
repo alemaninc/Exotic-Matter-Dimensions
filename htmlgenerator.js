@@ -110,7 +110,7 @@ const HTMLGenerator = {
       for (let col=1;col<16;col++) {
         let id="r"+row+"_"+col;
         if (research[id]==undefined) {table+="<td style=\"height:72px;width:72px\"></td>";}
-        else {table+="<td style=\"height:72px;width:72px\"><button id=\"button_research_"+id+"_visible\" class=\"researchButton "+research[id].type+"ResearchButton\" onClick=\"buyResearch("+row+","+col+")\" onMouseover=\"showResearchInfo("+row+","+col+")\">"+research[id].icon+"</button><button id=\"button_research_"+id+"_unknown\" class=\"researchButton unknownResearchButton\"></button></td>";}
+        else {table+="<td style=\"height:72px;width:72px\"><button id=\"button_research_"+id+"_visible\" class=\"researchButton "+research[id].type+"ResearchButton\" onClick=\"buyResearch("+row+","+col+")\" onMouseover=\"showResearchInfo("+row+","+col+")\" style=\"display:none\">"+research[id].icon+"</button><button id=\"button_research_"+id+"_unknown\" class=\"researchButton unknownResearchButton\" style=\"display:none\"></button></td>";}
       }
       table+="</tr>";
     }
