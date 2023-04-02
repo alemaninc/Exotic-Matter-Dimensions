@@ -1079,7 +1079,7 @@ var wormholeResetSecretAchievements = [11,12]
 function updateAchievementsTab() {
 	let tiers = Object.keys(achievementList);
 	for (let tier of tiers) {
-		if (achievement.ownedInTier(tier)==0) {
+		if ((achievement.ownedInTier(tier)==0)||((achievement.ownedInTier(tier)==Object.keys(achievementList[tier]).length)&&(!g.completedAchievementTiersShown))) {
 			d.display("div_achievementTier"+tier,"none");
 		} else {
 			d.display("div_achievementTier"+tier,"inline-block");

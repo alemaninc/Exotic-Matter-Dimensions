@@ -2086,6 +2086,7 @@ function load(type,str) {
 				theme()
 			}
 			for (let i of g.ownedAchievements.filter(x => x.substring(0,1)=="s")) g.ownedSecretAchievements.push(Number(i.substring(1)))
+			g.ownedSecretAchievements = Array.from(new Set(g.ownedSecretAchievements))
 			g.ownedAchievements = g.ownedAchievements.filter(x => x.substring(0,1)!=="s")
 			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}
@@ -2114,7 +2115,7 @@ function importSave() {
 function exportSave() {
 	openExport(btoa(localStorage.getItem("save")));
 }
-const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me","CONFIRM","CORNFIRM","CRONFIRM","statrnark","zenrnoroni","Antimatter Dimensions is better.","Incredibly slow start","Surprised there isn't something to speed this up"]);
+const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me","CONFIRM","CORNFIRM","CRONFIRM","statrnark","zenrnoroni","Antimatter Dimensions is better.","Incredibly slow start","Surprised there isn't something to speed this up","alemaninc impressively deploys broken code to production multiple times per week"]);
 function stringSimplify(x) {
 	return String(x).replace(/[^A-Za-z0-9]/g,"").toLowerCase();
 }
