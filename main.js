@@ -2085,7 +2085,7 @@ function load(type,str) {
 				g.colortheme = "Light"
 				theme()
 			}
-			g.ownedSecretAchievements = g.ownedAchievements.filter(x => x.substring(0,1)=="s").map(x => Number(x.substring(1)))
+			for (let i of g.ownedAchievements.filter(x => x.substring(0,1)=="s")) g.ownedSecretAchievements.push(Number(i.substring(1)))
 			g.ownedAchievements = g.ownedAchievements.filter(x => x.substring(0,1)!=="s")
 			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}
