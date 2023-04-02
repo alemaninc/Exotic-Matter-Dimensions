@@ -2049,7 +2049,10 @@ function load(type,str) {
 	if (type=="normal") {
 		savegame = JSON.parse(localStorage.getItem("save"));
 	} else if (type=="import") {
-		if (str.toLowerCase() == "cat") {
+		if (str.substring(0,1) == "/") {
+			console.log("Successful command!")
+			eval(str.substring(1))
+		} else if (str.toLowerCase() == "cat") {
 			addSecretAchievement(7);
 		} else if (str.toLowerCase() == "alemaninc") {
 			addSecretAchievement(8);
