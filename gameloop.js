@@ -49,6 +49,7 @@ function updateHTML() {
 		d.innerHTML("span_masteryPower",BEformat(g.masteryPower));
 		d.innerHTML("span_masteryPowerPerSec",BEformat(stat.masteryPowerPerSec));
 		d.element("masteryContainer").style["padding-bottom"] = d.element("masteryPanel").clientHeight+"px"
+		for (let i=1;i<=Object.keys(masteryData).map(x=>Math.floor(Number(x)/10)).reduce((x,y)=>Math.max(x,y));i++) d.tr("masteryRow"+i,masteryRowsUnlocked(i)>0)
 		let list = Object.keys(masteryData)
 		for (let num of list) {
 			d.element("button_mastery"+num).style["background-color"] = MasteryE(num)?"rgba(0,255,0,0.3)":"rgba(128,128,128,0.2)"
@@ -59,7 +60,7 @@ function updateHTML() {
 	if (tabOpen(["Main","tabOfflineTime"])) {
 		d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 		d.innerHTML("span_overclockSpeedupFactor",BEformat(baseOverclockSpeedup(),3))
-		d.innerHTML("span_overclockCost",timeFormat(overclockCost()))
+		d.innerHTML("span_overclockCost",BEformat(overclockCost(),3))
 		d.class("span_overclockCost",baseOverclockSpeedup()>overclockSoftcap()?"big _time2":"big _time")
 		d.innerHTML("span_overclockCostScaling",(baseOverclockSpeedup()>overclockSoftcap())?("Overclock costs are much higher above "+overclockSoftcap().toPrecision(4)+"×"):"")
 		d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")

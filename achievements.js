@@ -1111,7 +1111,7 @@ function showAchievementInfo(id) {
 	if (AchievementE(id)) out += "<p style=\"color:#00cc00\">(Completed!)</p>";
 	else out += "<p style=\"color:#ffcc00\">"+ach.progress()+"</p>";
 	if (ach.flavor!==undefined&&AchievementE(id)) out += "<p style=\"font-size:10px;color:#ffffff;white-space:break-spaces\">\""+halfFunction(ach.flavor)+"\"</p>";
-	d.innerHTML("secretAchievementPanel",out);  
+	d.innerHTML("achievementPanel",out);  
 }
 function AchievementE(id) {
 	return g.ownedAchievements.includes(String(id));
