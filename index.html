@@ -178,12 +178,17 @@
 			<div class="tab" id="Achievements" style="display:none">
 				<div class="achievementsNavigation globalnavigation" style="text-align:center">
 					<button class="tabtier2 tier2achievements" onClick="openSubTab('achievements','subtabAchievements')" id="button_subtabAchievements">Achievements</button>
+					<button class="tabtier2 tier2achievements" onClick="openSubTab('achievements','subtabSecretAchievements')" style="display:none;font-size:11px;filter:brightness(60%)" id="button_subtabSecretAchievements">Secret Achievements</button>
 					<button class="tabtier2 tier2achievements" onClick="openSubTab('achievements','Wormhole Milestones')" style="display:none;font-size:11px;filter:brightness(60%)" id="button_wormholeMilestones">Wormhole Milestones</button>
 				</div>
 				<div class="achievementsTab" id="subtabAchievements">
 					<span id="span_noAchievements" style="display:none">You have not earned any Achievements yet.</span>
 					<div id="achievementContainer" style="padding-bottom:240px"></div>
-					<div id="achievementPanel"></div>
+					<div id="achievementPanel" class="achievementPanel"></div>
+				</div>
+				<div class="achievementsTab" id="subtabSecretAchievements">
+					<div id="secretAchievementContainer" style="padding-bottom:240px"></div>
+					<div id="secretAchievementPanel" class="achievementPanel"></div>
 				</div>
 				<div class="achievementsTab" id="Wormhole Milestones" style="display:none">
 					<p>Gain increasing quality of life boosts as you complete more Tier 5 achievements. You currently have <span class="big _wormhole" id="wormholeMilestoneT5Achievements"></span> Tier 5 achievements.</p>

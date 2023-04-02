@@ -874,226 +874,208 @@ const achievementList = {
 			reward:function(){return "Dark axis cost scaling is 1% weaker";},
 			flavor:"Did God create man or did man create God?"
 		}
-	},
-	s:{
-		s01:{
-			name:"Prestigious",
-			description:function(){return "Stardust reset 10,000 times";},
-			check:function(){return g.StardustResets>=1e4;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s01");},
-			reward:null,
-			flavor:"What are you doing with your life..."
-		},
-		s02:{
-			name:"Anniversary",
-			description:function(){return "Play <i>Exotic Matter Dimensions</i> on its anniversary (using UTC time zone)";},
-			check:function(){return (new Date().getUTCMonth()==1)&&(new Date().getUTCDate()==22);},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s02");},
-			reward:null,
-			flavor:"bUt 22/2/22 sHoUlD bE 2022-02-22, lIkE tHe rEsT oF tHe cHaNgElOg!"
-		},
-		s03:{
-			name:"Epsilon Time",
-			description:function(){return "Have 10 consecutive frames be more than 1 second long";},
-			check:function(){return lagAchievementTicks>=10;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s03");},
-			reward:null,
-			flavor:"Oh, hey... you're still here?"
-		},
-		s04:{
-			name:"Oh, hey... you're still here?",
-			description:function(){return "Have the game window open for 8 hours";},
-			check:function(){return timeSinceGameOpened>28800;},
-			progress:function(){return "None";},
-			visibility:function(){return AchievementE("s04");},
-			reward:function(){return "Lifetime membership at <a href=\"https://www.reddit.com/r/StopGaming\" style=\"color:#999999\">https://www.reddit.com/r/StopGaming</a>";},
-			flavor:"Well, I'm flattered that people are having so much fun with <i>Exotic Matter Dimensions</i>!<br>But seriously, get help."
-		},
-		s05:{
-			name:"Legacy",
-			description:function(){return "Play for a year.";},
-			check:function(){return g.timePlayed>31556926;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s05");},
-			reward:null,
-			flavor:"That moment when you realize you left the game for a year and had the offline boost turned off..."
-		},
-		s06:{
-			name:"I am speed",
-			description:function(){return "Have 10 consecutive frames be 50 milliseconds long (maximum fps)";},
-			check:function(){return fpsAchievementTicks>=10;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s06");},
-			reward:null,
-			flavor:"1200 frames per minute! Wow. AleManInc only gets 20 frames per minute."
-		},
-		s07:{
-			name:"Rasputin",
-			description:function(){return "Import \"cat\" as a savefile";},
-			check:function(){return true;}, // checked locally
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s07");},
-			reward:null,
-			flavor:"There was a cat that really was gone"
-		},
-		s08:{
-			name:"Help Wanted",
-			description:function(){return "Import \"AleManInc\" as a savefile";},
-			check:function(){return true;}, // checked locally
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s08");},
-			reward:null,
-			flavor:"Have you considered becoming an EMD beta tester? Well, what if I told you that <b>all players already are beta testers?</b>"
-		},
-		s09:{
-			name:"The Ultimate Upgrade",
-			description:function(){return "Click the text of the Secret Achievement boost in the stat breakdown";},
-			check:function(){return true;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s09");},
-			reward:null,
-			flavor:"There is much pleasure to be gained from useless upgrades."
-		},
-		s10:{
-			name:"Nice",
-			description:function(){return "Input 69 as the cap of any normal axis for the autobuyer";},
-			check:function(){return g.axisAutobuyerCaps.includes("69");},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s10");},
-			reward:null,
-			flavor:"Don't act like you don't know what you did."
-		},
-		s11:{
-			name:"You do know how these work, right?",
-			description:function(){return "Respec Research without having any research.";},
-			check:function(){return g.researchRespec&&g.ownedResearch.length==0;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s11");},
-			reward:null,
-			flavor:"<a style=\"color:#ffffff\" href=\"https://books.google.co.uk/books/about/Quantum_Physics_For_Dummies.html?id=pRRq8vCFvzEC&source=kp_book_description&redir_esc=y\">Studies will help</a>"
-		},
-		s12:{
-			name:"Precision to the millimeter",
-			description:function(){return "Destroy the universe with exactly 1,000 total dark axis";},
-			check:function(){return totalAxis("dark").eq(1000);},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s12");},
-			reward:null,
-			flavor:"Should we tell them about buy max..."
-		},
-		s13:{
-			name:"One in a Million",
-			description:function(){return "You have a 1 in "+BEformat(1e6)+" chance of getting this achievement every second";},
-			check:function(){return true;}, // checked locally
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s13");},
-			reward:null,
-			flavor:"It takes on average 11 days, 13 hours, 46 minutes and 40 seconds to get this. That's... not that long.",
-			chance:function(time){return 1-Math.exp(-time/1e6);}
-		},
-		s14:{
-			name:"One in a Billion",
-			description:function(){return "You have a 1 in "+BEformat(1e9)+" chance of getting this achievement every second";},
-			check:function(){return true;}, // checked locally
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s14");},
-			reward:null,
-			flavor:"It takes on average 31 years, 259 days, 1 hour, 46 minutes and 40 seconds to get this. Thank you for spending that time with <i>Exotic Matter Dimensions</i>!",
-			chance:function(time){return 1-Math.exp(-time/1e9);}
-		},
-		s15:{
-			name:"One in a Trillion",
-			description:function(){return "You have a 1 in "+BEformat(1e12)+" chance of getting this achievement every second";},
-			check:function(){return true;}, // checked locally
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s15");},
-			reward:null,
-			flavor:"It takes on average 31,709 years, 289 days, 1 hour, 46 minutes and 40 seconds to get this. Did you have fun?",
-			chance:function(time){return 1-Math.exp(-time/1e12);}
-		},
-		s16:{
-			name:"Professional decorator",
-			description:function(){return "Toggle the color theme 20 times in one session.";},
-			check:function(){return themeAchievementCount>19;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s16");},
-			reward:function(){return "Unlock a new color theme";},
-			flavor:"Another DarkReader glitch? *sigh*"
-		},
-		s17:{
-			name:"Go research in real life instead.",
-			description:function(){return "Buy the secret research.";},
-			check:function(){return ResearchE("r6_9");},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s17");},
-			reward:null,
-			flavor:"<b>its not Free, Its Negative free, and Negative free is expensive.</b> - Statmark"
-		},
-		s18:{
-			name:"Empowered Exotic Matter Dimensions",
-			description:function(){return "Try to buy an empowered axis";},
-			check:function(){return true;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s18");},
-			reward:null,
-			flavor:"Just call it the R axis!"
-		},
-		s19:{
-			name:"Empowered Exotic Matter Dimensions II",
-			description:function(){return "Try to buy an empowered axis 10 times in one session";},
-			check:function(){return true;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s19");},
-			reward:null,
-			flavor:"Cost: 100 empowered exotic matter"
-		},
-		s20:{
-			name:"Empowered Exotic Matter Dimensions III",
-			description:function(){return "Try to buy an empowered axis 100 times in one session";},
-			check:function(){return true;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s20");},
-			reward:null,
-			flavor:"Stop it. Get some help."
-		},
-		s21:{
-			name:"Empowered Exotic Matter Dimensions IV",
-			description:function(){return "Try to buy an empowered axis 1,000 times in one session";},
-			check:function(){return true;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s21");},
-			reward:null,
-			flavor:"This is the last one, I promise."
-		},
-		s22:{
-			name:"Empowered Exotic Matter Dimensions V",
-			description:function(){return "Try to buy an empowered axis 10,000 times in one session";},
-			check:function(){return true;},
-			progress:function(){return "";},
-			visibility:function(){return AchievementE("s22");},
-			reward:null,
-			flavor:function(){return (empoweredAxisBought>=1e5)?("THERE IS NO EMPOWERED EXOTIC MATTER DIMENSIONS VI<br>[cackles maniacally]"):("You've still "+BEformat(1e5-empoweredAxisBought)+" more clicks before the next one. Good luck!");}
-		},
-		s23:{
-			name:"Tichat's Heart",
-			description:function(){return "Buy the 40th star."},
-			check:function(){return g.stars>39},
-			progress:function(){return ""},
-			visibility:function(){return AchievementE("s23")},
-			reward:null,
-			flavor:"Row 11 stars coming in 𝕍3.0!"
-		}
 	}
 };
+const secretAchievementRarityNames = [null,"Super Easy","Common","Rare","Legendary","Mythical","Shiny","Celestial"]
+const secretAchievementRarityColors = [
+	null,
+	["#999999","#000000"],
+	["#00cc00","#ffffff"],
+	["#cc66ff","#ffffff"],
+	["#ff6600","#000000"],
+	["#ff3333","#ffffff"],
+	["#ffff00","#000000"],
+	["#0000ff","#ffffff"]
+]
+const secretAchievementList = {
+	1:{
+		name:"Prestigious",
+		description:function(){return "Stardust reset 10,000 times";},
+		check:function(){return g.TotalStardustResets>=1e4;},
+		flavor:"What are you doing with your life...",
+		rarity:4
+	},
+	2:{
+		name:"Anniversary",
+		description:function(){return "Play <i>Exotic Matter Dimensions</i> on its anniversary (using UTC time zone)";},
+		check:function(){return (new Date().getUTCMonth()==1)&&(new Date().getUTCDate()==22);},
+		flavor:"bUt 22/2/22 sHoUlD bE 2022-02-22, lIkE tHe rEsT oF tHe cHaNgElOg!",
+		rarity:3
+	},
+	3:{
+		name:"Epsilon Time",
+		description:function(){return "Have 10 consecutive frames be more than 1 second long";},
+		check:function(){return lagAchievementTicks>=10;},
+		flavor:"Oh, hey... you're still here?",
+		rarity:2
+	},
+	4:{
+		name:"Oh, hey... you're still here?",
+		description:function(){return "Have the game window open for 8 hours";},
+		check:function(){return timeSinceGameOpened>28800;},
+		reward:function(){return "Lifetime membership at <a href=\"https://www.reddit.com/r/StopGaming\" style=\"color:#999999\">https://www.reddit.com/r/StopGaming</a>";},
+		flavor:"Well, I'm flattered that people are having so much fun with <i>Exotic Matter Dimensions</i>!<br>But seriously, get help.",
+		rarity:2
+	},
+	5:{
+		name:"Legacy",
+		description:function(){return "Play for a year.";},
+		check:function(){return g.timePlayed>31556926;},
+		flavor:"...and then you set Overclock to 10,000× and blow it all instantly.",
+		rarity:6
+	},
+	6:{
+		name:"I am speed",
+		description:function(){return "Have 10 consecutive frames be 50 milliseconds long (maximum fps)";},
+		check:function(){return fpsAchievementTicks>=10;},
+		flavor:"1200 frames per minute! Wow. AleManInc only gets 20 frames per minute.",
+		rarity:2
+	},
+	7:{
+		name:"Rasputin",
+		description:function(){return "Import \"cat\" as a savefile";},
+		check:function(){return true;}, // checked locally
+		flavor:"There was a cat that really was gone",
+		rarity:3
+	},
+	8:{
+		name:"Help Wanted",
+		description:function(){return "Import \"AleManInc\" as a savefile";},
+		check:function(){return true;}, // checked locally
+		flavor:"Have you considered becoming an EMD beta tester? Well, what if I told you that <b>all players already are beta testers?</b>",
+		rarity:3
+	},
+	9:{
+		name:"The Ultimate Upgrade",
+		description:function(){return "Click the text of the Secret Achievement boost in the stat breakdown";},
+		check:function(){return true;},
+		flavor:"There is much pleasure to be gained from useless upgrades.",
+		rarity:2
+	},
+	10:{
+		name:"Nice",
+		description:function(){return "Input 69 as the cap of any normal axis for the autobuyer";},
+		check:function(){return g.axisAutobuyerCaps.includes("69");},
+		flavor:"Don't act like you don't know what you did.",
+		rarity:2
+	},
+	11:{
+		name:"You do know how these work, right?",
+		description:function(){return "Respec Research without having any research.";},
+		check:function(){return g.researchRespec&&g.ownedResearch.length==0;},
+		flavor:"<a style=\"color:#ffffff\" href=\"https://books.google.co.uk/books/about/Quantum_Physics_For_Dummies.html?id=pRRq8vCFvzEC&source=kp_book_description&redir_esc=y\">Studies will help</a>",
+		rarity:3
+	},
+	12:{
+		name:"Precision to the millimeter",
+		description:function(){return "Destroy the universe with exactly 1,000 total dark axis";},
+		check:function(){return totalAxis("dark").eq(1000);},
+		flavor:"Should we tell them about buy max...",
+		rarity:3
+	},
+	13:{
+		name:"One in a Million",
+		description:function(){return "You have a 1 in "+BEformat(1e6)+" chance of getting this achievement every second";},
+		check:function(){return true;}, // checked locally
+		flavor:"It takes on average 11 days, 13 hours, 46 minutes and 40 seconds to get this. That's... not that long.",
+		chance:function(time){return 1-Math.exp(-time/1e6);},
+		rarity:5
+	},
+	14:{
+		name:"One in a Billion",
+		description:function(){return "You have a 1 in "+BEformat(1e9)+" chance of getting this achievement every second";},
+		check:function(){return true;}, // checked locally
+		flavor:"It takes on average 31 years, 259 days, 1 hour, 46 minutes and 40 seconds to get this. Thank you for spending that time with <i>Exotic Matter Dimensions</i>!",
+		chance:function(time){return 1-Math.exp(-time/1e9);},
+		rarity:6
+	},
+	15:{
+		name:"One in a Trillion",
+		description:function(){return "You have a 1 in "+BEformat(1e12)+" chance of getting this achievement every second";},
+		check:function(){return true;}, // checked locally
+		flavor:"It takes on average 31,709 years, 289 days, 1 hour, 46 minutes and 40 seconds to get this. Did you have fun?",
+		chance:function(time){return 1-Math.exp(-time/1e12);},
+		rarity:7
+	},
+	16:{
+		name:"Professional decorator",
+		description:function(){return "Toggle the color theme 20 times in one session.";},
+		check:function(){return themeAchievementCount>19;},
+		reward:function(){return "Unlock a new color theme";},
+		flavor:"Another DarkReader glitch? *sigh*",
+		rarity:3
+	},
+	17:{
+		name:"Go research in real life instead.",
+		description:function(){return "Buy the secret research.";},
+		check:function(){return ResearchE("r6_9");},
+		flavor:"<b>its not Free, Its Negative free, and Negative free is expensive.</b> - Statmark",
+		rarity:2
+	},
+	18:{
+		name:"Empowered Exotic Matter Dimensions",
+		description:function(){return "Try to buy an empowered axis";},
+		check:function(){return empoweredAxisBought>=1;},
+		flavor:"Just call it the R axis!",
+		rarity:1
+	},
+	19:{
+		name:"Empowered Exotic Matter Dimensions II",
+		description:function(){return "Try to buy an empowered axis 10 times in one session";},
+		check:function(){return empoweredAxisBought>=10;},
+		flavor:"Cost: 100 empowered exotic matter",
+		rarity:2
+	},
+	20:{
+		name:"Empowered Exotic Matter Dimensions III",
+		description:function(){return "Try to buy an empowered axis 100 times in one session";},
+		check:function(){return empoweredAxisBought>=100;},
+		flavor:"Stop it. Get some help.",
+		rarity:2
+	},
+	21:{
+		name:"Empowered Exotic Matter Dimensions IV",
+		description:function(){return "Try to buy an empowered axis 1,000 times in one session";},
+		check:function(){return empoweredAxisBought>=1000;},
+		flavor:"This is the last one, I promise.",
+		rarity:3
+	},
+	22:{
+		name:"Empowered Exotic Matter Dimensions V",
+		description:function(){return "Try to buy an empowered axis 10,000 times in one session";},
+		check:function(){return empoweredAxisBought>=10000;},
+		flavor:function(){return (empoweredAxisBought>=1e5)?("THERE IS NO EMPOWERED EXOTIC MATTER DIMENSIONS VI<br>[cackles maniacally]"):("You've still "+BEformat(1e5-empoweredAxisBought)+" more clicks before the next one. Good luck!");},
+		rarity:4
+	},
+	23:{
+		name:"Tichat's Heart",
+		description:function(){return "Buy the 40th star."},
+		check:function(){return g.stars>39},
+		flavor:"Row 11 stars coming in 𝕍3.0!",
+		rarity:1
+	},
+	24:{
+		name:"Tardis",
+		description:function(){return "Max out all dilation upgrades"},
+		check:function(){return countTo(4).map(x=>g.dilationUpgrades[x]==dilationUpgrades[x].cap).reduce((x,y)=>x&&y)},
+		timeTaken:function(){
+			let out = 0
+			for (let i=1;i<5;i++) for (let j=0;j<dilationUpgrades[i].cap;j++) out+=dilationUpgrades[i].cost(j)
+			return out
+		},
+		flavor:function(){return timeFormat(secretAchievementList[24].timeTaken())+" well spent."},
+		rarity:6
+	}
+}
 var axisBuyAchievements = [101,102,103,104,113,207,208,209,210,217,303,304,305,505,526,527];
-var gameloopAchievements = [105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529,"s03","s04","s05","s06","s10"];
-var luckyGameloopAchievements = ["s13","s14","s15"]
+var gameloopAchievements = [105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529];
+var gameloopSecretAchievements = [3,4,5,6,10]
+var luckyGameloopSecretAchievements = [13,14,15]
 var stardustUpgradeAchievements = [216,301,402,403,404,405,406,407];
-var starBuyAchievements = [401,519,528,"s23"]
-var wormholeResetAchievements = [501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,"s11","s12"];
+var starBuyAchievements = [401,519,528]
+var starBuySecretAchievements = [23]
+var wormholeResetAchievements = [501,506,507,508,509,510,512,516,518,520,521,522,523,524,525];
+var wormholeResetSecretAchievements = [11,12]
 function updateAchievementsTab() {
 	let tiers = Object.keys(achievementList);
 	for (let tier of tiers) {
@@ -1117,14 +1099,49 @@ function updateAchievementsTab() {
 		}
 	}
 }
+function updateSecretAchievementsTab() {
+	for (let i of Object.keys(secretAchievementList)) d.display("div_secretAchievement"+i,SecretAchievementE(Number(i))?"inline-block":"none")
+}
 function showAchievementInfo(id) {
 	let ach = achievement(id);
-	let textcolor = achievement.tierColors[String(id).substr(0,String(id).length-2)][1];
+	let textcolor = achievement.tierColors[String(id).substring(0,String(id).length-2)][1];
 	let out = "<h4 style=\"color:"+textcolor+";text-decoration:underline\">"+ach.name+"</h4>";
 	out += "<p style=\"color:"+textcolor+"\">"+ach.description()+"</p>";
-	if (ach.reward !== null) out += "<p style=\"color:"+textcolor+"\">Reward: "+ach.reward()+"</p>";
+	if (ach.reward !== undefined) out += "<p style=\"color:"+textcolor+"\">Reward: "+ach.reward()+"</p>";
 	if (AchievementE(id)) out += "<p style=\"color:#00cc00\">(Completed!)</p>";
 	else out += "<p style=\"color:#ffcc00\">"+ach.progress()+"</p>";
 	if (ach.flavor!==undefined&&AchievementE(id)) out += "<p style=\"font-size:10px;color:#ffffff;white-space:break-spaces\">\""+halfFunction(ach.flavor)+"\"</p>";
-	d.innerHTML("achievementPanel",out);  
+	d.innerHTML("secretAchievementPanel",out);  
+}
+function AchievementE(id) {
+	return g.ownedAchievements.includes(String(id));
+}
+function addAchievement(x) {
+	if (achievement(x).check()&&!AchievementE(x)) {
+		g.ownedAchievements.push(String(x));
+		notify("Achievement Get! \""+achievement(x).name+"\"",achievement.tierColors[String(x).substr(0,String(x).length-2)][1]);
+		updateResearchTree();
+		updateAchievementsTab();
+		d.display("span_noAchievements","none")
+	}
+}
+function showSecretAchievementInfo(id) {
+	let ach = secretAchievementList[id];
+	let textcolor = secretAchievementRarityColors[ach.rarity][0];
+	let out = "<h4 style=\"color:"+textcolor+";text-decoration:underline\">"+ach.name+"</h4>";
+	out += "<p style=\"color:"+textcolor+"\">"+ach.description()+"</p>";
+	if (ach.reward !== undefined) out += "<p style=\"color:"+textcolor+"\">Reward: "+ach.reward()+"</p>";
+	out += "<p style=\"color:#00cc00\">(Completed!)</p>";
+	if (ach.flavor!==undefined) out += "<p style=\"font-size:10px;color:#ffffff;white-space:break-spaces\">\""+halfFunction(ach.flavor)+"\"</p>";
+	d.innerHTML("secretAchievementPanel",out)
+}
+function SecretAchievementE(id) {
+	return g.ownedSecretAchievements.includes(id);
+}
+function addSecretAchievement(x) {
+	if (secretAchievementList[x].check()&&!SecretAchievementE(x)) {
+		g.ownedSecretAchievements.push(x);
+		notify("Secret Achievement Get! \""+secretAchievementList[x].name+"\" ("+secretAchievementRarityNames[secretAchievementList[x].rarity]+")",secretAchievementRarityColors[secretAchievementList[x].rarity][0])
+		updateSecretAchievementsTab();
+	}
 }

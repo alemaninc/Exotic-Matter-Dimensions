@@ -3046,7 +3046,7 @@ const format = {     // functions used in formatting
 		x=N(x);
 		x.mag+=Math.min(1e-8,x.mag/1e8); // rogue decimal prevention
 		if (x.lt(1e33)) { 
-			let thousand = x.log10().div(3).add(1e-14).floor().toNumber();
+			let thousand = x.log10().div(3).floor().toNumber();
 			return x.div(N(1000).pow(thousand)).mul(10**p).floor().div(10**p).toPrecision(p+1)+" "+["","K","M","B","T","Qa","Qt","Sx","Sp","Oc","No"][thousand];
 		}
 		return format.scientific(x,p);
@@ -3199,4 +3199,7 @@ function numword(x) {
   }
   if ((x/1000**exponent)%1==0) return numword(x/1000**exponent)+" "+name
   return numword(Math.floor(x/1000**exponent))+" "+name+", "+numword(x-Math.floor(x/1000**exponent)*1000**exponent)
+}
+function countTo(x) {
+	return Array(x).fill(0).map((x,i)=>i+1)
 }

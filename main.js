@@ -39,6 +39,7 @@ const basesave = {
 	notation: "Mixed scientific",
 	version:null,
 	ownedAchievements: [],
+	ownedSecretAchievements: [],
 	completedAchievementTiersShown: true,
 	StardustResets: 0,
 	TotalStardustResets: 0,
@@ -193,7 +194,7 @@ function openTab(id) {
 	for (let i of d.class("bigtab")) i.style.filter = "brightness(60%)"
 	d.element(dictionary(id,tier1NavTabToButtonDictionary)).style.filter = "brightness(100%)"
 }
-const tier2NavTabToButtonDictionary = [["tabAxis","button_mainaxis"],["tabMasteries","button_masteries"],["tabOfflineTime","button_offlineTimeTab"],["Stardust Boosts","button_stardustBoosts"],["Stars","button_stars"],["Dark Matter","button_darkmatter"],["Energy","button_energy"],["Research","button_research"],["Studies","button_studiesTab"],["Main Statistics","button_subtabStatistics"],["Hidden Statistics","button_subtabHiddenStatistics"],["Stat Breakdown","button_subtabStatBreakdown"],["Previous Prestiges","button_previousPrestiges"],["subtabAchievements","button_subtabAchievements"],["Wormhole Milestones","button_wormholeMilestones"]]
+const tier2NavTabToButtonDictionary = [["tabAxis","button_mainaxis"],["tabMasteries","button_masteries"],["tabOfflineTime","button_offlineTimeTab"],["Stardust Boosts","button_stardustBoosts"],["Stars","button_stars"],["Dark Matter","button_darkmatter"],["Energy","button_energy"],["Research","button_research"],["Studies","button_studiesTab"],["Main Statistics","button_subtabStatistics"],["Hidden Statistics","button_subtabHiddenStatistics"],["Stat Breakdown","button_subtabStatBreakdown"],["Previous Prestiges","button_previousPrestiges"],["subtabAchievements","button_subtabAchievements"],["subtabSecretAchievements","button_subtabSecretAchievements"],["Wormhole Milestones","button_wormholeMilestones"]]
 function openSubTab(parentTab,id) {
 	for (let i of d.class(parentTab+"Tab")) i.style.display="none";
 	d.display(id,"inline-block");
@@ -418,7 +419,7 @@ function researchEffect(row,col) {
 
 function availableThemes() {
 	let out = ["Default","Red","Green","Blue","Cyan","Magenta","Yellow","Light Gray","Dark Gray","Black","Light"];
-	if (AchievementE("s16")) out.push("Wormhole");
+	if (SecretAchievementE(16)) out.push("Wormhole");
 	return out;
 }
 function selectOption(variable,values,flavor="") {
@@ -451,7 +452,7 @@ function theme() {
 	
 	document.getElementsByTagName("body")[0].style = scheme+";min-height:100vh;font-size: 15px;font-family:verdana;text-align:center;";
 	themeAchievementCount++;
-	addAchievement("s16");
+	addSecretAchievement(16);
 }
 theme();
 
@@ -646,7 +647,7 @@ function buyMaxAxis(caps) {
 var empoweredAxisBought = 0;
 function buyEmpoweredAxis() {
 	empoweredAxisBought++;
-	for (let i=0;i<5;i++) if (empoweredAxisBought>=10**i) addAchievement("s"+(18+i));
+	for (let i=18;i<23;i++) addSecretAchievement(i);
 }
 function realAxis(x) {
 	return g[x+"Axis"].add(stat["free"+x+"Axis"]);
@@ -978,7 +979,7 @@ function stardustReset(x) {
 		g.metaEnergy=N(1);
 	}
 	g.TotalStardustResets++;
-	addAchievement("s01");
+	addSecretAchievement(1);
 }
 function stardustBoostBoost(x) {
 	let out = N(1);
@@ -1069,6 +1070,7 @@ function buyStar() {
 		o.sub("stardust",starCost());
 		g.stars++;
 		for (let i of starBuyAchievements) addAchievement(i);
+		for (let i of starBuySecretAchievements) addSecretAchievement(i);
 		if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false;
 	}
 }
@@ -1477,19 +1479,7 @@ function wormholeResetButtonText() {
 	out+="</span>";
 	return out;
 }
-function AchievementE(id) {
-	return g.ownedAchievements.includes(String(id));
-}
-function addAchievement(x) {
-	if (achievement(x).check()&&!AchievementE(x)) {
-		g.ownedAchievements.push(String(x));
-		g.ownedAchievements.sort(function(a,b){return a-b;});
-		notify("Achievement Get! \""+achievement(x).name+"\"",achievement.tierColors[String(x).substr(0,String(x).length-2)][1]);
-		updateResearchTree();
-		updateAchievementsTab();
-		d.display("span_noAchievements","none")
-	}
-}
+
 const wormholeMilestoneList = [
 	[1,"Unlock dark axis autobuyer"],
 	[2,"Unlock dark star autobuyer"],
@@ -1755,7 +1745,7 @@ function buySingleResearch(row,col) {
 		g.researchVisibility.push(id);
 		regenerateCanvas = true;
 	}
-	addAchievement("s17");
+	addSecretAchievement(17);
 	return regenerateCanvas;
 }
 function buyResearch(row,col) {
@@ -2060,9 +2050,9 @@ function load(type,str) {
 		savegame = JSON.parse(localStorage.getItem("save"));
 	} else if (type=="import") {
 		if (str.toLowerCase() == "cat") {
-			addAchievement("s07");
+			addSecretAchievement(7);
 		} else if (str.toLowerCase() == "alemaninc") {
-			addAchievement("s08");
+			addSecretAchievement(8);
 		} else {
 			str = atob(str);
 			if (!JSON.valid(str)) throw "Invalid save.";
@@ -2093,6 +2083,10 @@ function load(type,str) {
 			if ((new Date().getUTCMonth()==3)&&(new Date().getUTCDate()==1)) {
 				g.colortheme = "Light"
 				theme()
+			}
+			if (g.version < 1000506) {
+				g.ownedSecretAchievements = g.ownedAchievements.filter(x => x.substring(0,1)=="s")
+				g.ownedAchievements = g.ownedAchievements.filter(x => x.substring(0,1)!=="s").map(x => Number(x.substring(1)))
 			}
 			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}

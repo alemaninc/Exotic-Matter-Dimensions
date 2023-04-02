@@ -29,8 +29,7 @@ const HTMLGenerator = {
   },
   achievements: function() {
     let out = "";
-    let tiers = Object.keys(achievementList);
-    for (let tier of tiers) {
+    for (let tier of Object.keys(achievementList)) {
       out+="<div class=\"achievementtiercontainer\" style=\"background-color:"+achievement.tierColors[tier][0]+";border-color:"+achievement.tierColors[tier][1]+"\" id=\"div_achievementTier"+tier+"\">";
       out+="<table style=\"table-layout:fixed\"><tr><td style=\"width:49vw\"><h3 style=\"text-decoration:underline;color:"+achievement.tierColors[tier][1]+"\">"+achievement.tierName(tier)+" (<span id=\"span_ownedTier"+tier+"Achievements\"></span>"+(tier=="s"?"":("/"+Object.keys(achievementList[tier]).length))+")</h3></td><td style=\"width:49vw;color:#ffffff\">"+achievement.perAchievementReward[tier]+"</td></tr></table><br>";
       for (let ach of Object.keys(achievementList[tier])) {
@@ -41,6 +40,13 @@ const HTMLGenerator = {
     }
     d.innerHTML("achievementContainer",out);
     if (g.ownedAchievements.length==0) d.display("span_noAchievements","inline-block")
+  },
+  secretAchievements: function() {
+    let out = ""
+    for (let i of Object.keys(secretAchievementList).sort((a,b)=>secretAchievementList[a].rarity-secretAchievementList[b].rarity)) {
+      out+="<button class=\"achievement\" id=\"div_secretAchievement"+i+"\" onMouseover=\"showSecretAchievementInfo("+i+")\" style=\"background-color:"+secretAchievementRarityColors[secretAchievementList[i].rarity][0]+";color:"+secretAchievementRarityColors[secretAchievementList[i].rarity][1]+"\"><span style=\"position:absolute;top:5px;left:5px;width:90px;font-size:9px\">"+secretAchievementRarityNames[secretAchievementList[i].rarity]+"</span>"+secretAchievementList[i].name+"</button>"
+    }
+    d.innerHTML("secretAchievementContainer",out);
   },
   dilationUpgrades: function() {
     let out = "<h1>Dilation Upgrades</h1>"

@@ -59,7 +59,8 @@ function updateHTML() {
 	if (tabOpen(["Main","tabOfflineTime"])) {
 		d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 		d.innerHTML("span_overclockSpeedupFactor",BEformat(baseOverclockSpeedup(),3))
-		d.innerHTML("span_overclockCost",(baseOverclockSpeedup()>overclockSoftcap())?("<span class=\"big _time\">"+BEformat(baseOverclockSpeedup()-1,2)+"</span> → <span class=\"big _time2\">"+BEformat(overclockCost(),2)+"</span>"):("<span class=\"big _time\">"+BEformat(baseOverclockSpeedup()-1,2)+"</span>"))
+		d.innerHTML("span_overclockCost",timeFormat(overclockCost()))
+		d.class("span_overclockCost",baseOverclockSpeedup()>overclockSoftcap()?"big _time2":"big _time")
 		d.innerHTML("span_overclockCostScaling",(baseOverclockSpeedup()>overclockSoftcap())?("Overclock costs are much higher above "+overclockSoftcap().toPrecision(4)+"×"):"")
 		d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")
 		d.element("button_overclockActive").style["background-color"] = overclockActive?"#000000":"#009900"
@@ -208,8 +209,10 @@ function updateHTML() {
 		}
 	}
 	if (tabOpen(["Achievements"])) {
+		d.display("button_subtabSecretAchievements",g.ownedSecretAchievements.length>0?"inline-block":"none");
 		d.display("button_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none");
 	}
+	if (tabOpen(["Achievements",""]))
 	if (tabOpen(["Achievements","Wormhole Milestones"])) {
 		let owned = wormholeMilestoneList.map(x => achievement.ownedInTier(5)>=x[0]?1:0).reduce((x,y)=>x+y)
 		for (let i=0;i<wormholeMilestoneList.length;i++) {
@@ -360,7 +363,8 @@ function tick(time) {                                                           
 
 	// Achievement section
 	for (let ach of gameloopAchievements) addAchievement(ach);
-	for (let ach of luckyGameloopAchievements) if (Math.random()<achievement(ach).chance(time)) addAchievement(ach);
+	for (let ach of gameloopSecretAchievements) addSecretAchievement(ach);
+	for (let ach of luckyGameloopSecretAchievements) if (Math.random()<secretAchievementList[ach].chance(time)) addSecretAchievement(ach);
 	lagAchievementTicks = (deltatime>1)?(lagAchievementTicks+1):0;
 	fpsAchievementTicks = (deltatime==0.05)?(fpsAchievementTicks+1):0;
 

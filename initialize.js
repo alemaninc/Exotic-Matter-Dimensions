@@ -5,10 +5,10 @@ var initComplete = false
 const initSteps = [
   function(){load("normal");},
   function(){
-    let versionName = "𝕍1.1.5"
+    let versionName = "𝕍1.1.6"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000505
+    g.version = 1000506
   },
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
   function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
@@ -18,8 +18,10 @@ const initSteps = [
   function(){HTMLGenerator.darkAxisTable();},
   function(){HTMLGenerator.masteries();},
   function(){HTMLGenerator.achievements();},
-  function(){HTMLGenerator.dilationUpgrades();},
   function(){updateAchievementsTab();},
+  function(){HTMLGenerator.secretAchievements();},
+  function(){updateSecretAchievementsTab();},
+  function(){HTMLGenerator.dilationUpgrades();},
   function(){HTMLGenerator.previousPrestiges();},
   function(){HTMLGenerator.stardustBoosts();},
   function(){HTMLGenerator.stardustUpgrades();},
@@ -30,6 +32,7 @@ const initSteps = [
   function(){theme();},
   function(){HTMLGenerator.wormholeMilestones();},
   function(){HTMLGenerator.research();},
+  function(){updateResearchTree()},
   function(){generateResearchCanvas();},
   function(){HTMLGenerator.studies();},
   function(){updateAllStudyDivs();},
@@ -41,7 +44,7 @@ const initSteps = [
   function(){d.element("starAutobuyerMax").value=g.starAutobuyerCap;},
   function(){d.element("wormholeAutomatorValue").value=g.wormholeAutomatorValue;},
   function(){d.element("stardustAutomatorValue").value=g.stardustAutomatorValue;},
-  function(){addAchievement("s02");},
+  function(){addSecretAchievement(2);},
   function(){statBreakdownCategories();},
   function(){
     updateHTML();

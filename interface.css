@@ -760,7 +760,7 @@ tab {
   border-width:2px;
   margin:4px;
 }
-#achievementPanel {
+.achievementPanel {
   position: fixed;
   bottom: 0px;
   left: 0px;
