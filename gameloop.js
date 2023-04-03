@@ -59,6 +59,7 @@ function updateHTML() {
 		}
 	}
 	if (tabOpen(["Main","tabOfflineTime"])) {
+		g.dilationPower = Number(d.element('dilationSpeedupFactor').value)
 		d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 		d.innerHTML("span_overclockSpeedupFactor",BEformat(baseOverclockSpeedup(),3))
 		d.innerHTML("span_overclockCost",BEformat(overclockCost(),3))

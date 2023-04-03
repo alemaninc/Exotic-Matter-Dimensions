@@ -204,9 +204,10 @@ function openSubTab(parentTab,id) {
 }
 // Takes an array consisting of a tab ID and parent tab IDs and determines if a tab is open or not. Used to only update HTML which is currently being viewed.
 function tabOpen(array) {
+	return true /* error detection */
 	if (!initComplete) return true;   /* prevent flashing when opening a tab for the first time*/
 	if (d.element("game").style.display == "none") return false;
-	return array.map(x => d.element(x).style.display == "inline-block").reduce((x,y) => x&&y)
+	return array.map(x => d.element(x).style.display !== "none").reduce((x,y) => x&&y)
 }
 
 var overclockActive = false
@@ -222,8 +223,8 @@ function overclockHardcap(x=g.dilationUpgrades[1]) {
 	return dilationUpgrades[1].effect()
 }
 function overclockCost() {
-	if (baseOverclockSpeedup()<overclockSoftcap()) return baseOverclockSpeedup()-1
-	return overclockSoftcap()**(Math.log(baseOverclockSpeedup())/Math.log(overclockSoftcap()))**(1+2*dilationUpgrades[3].effect())
+	if (baseOverclockSpeedup()<=overclockSoftcap()) return baseOverclockSpeedup()-1
+	return overclockSoftcap()**(Math.log(baseOverclockSpeedup())/Math.log(overclockSoftcap()))**(1+2*dilationUpgrades[3].effect())-1
 }
 const dilationUpgrades = [
 	null,
@@ -1547,6 +1548,7 @@ function toggleResearchCell(row,col,mode) {
 const researchCanvas = d.element("researchCanvas");
 const researchContext = researchCanvas.getContext("2d");
 function updateResearchTree() {
+	d.element("researchContainer").style.height = (74*researchRowsUnlocked())+"px"
 	for (let row=1;row<=researchRows;row++) {
 		if (row>researchRowsUnlocked()) {
 			d.tr("researchRow"+row,false);
