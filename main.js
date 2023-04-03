@@ -1548,7 +1548,7 @@ const researchCanvas = d.element("researchCanvas");
 const researchContext = researchCanvas.getContext("2d");
 function updateResearchTree() {
 	for (let row=1;row<=researchRows;row++) {
-		if (researchRows>researchRowsUnlocked()) {
+		if (row>researchRowsUnlocked()) {
 			d.tr("researchRow"+row,false);
 		} else {
 			d.tr("researchRow"+row,true);
