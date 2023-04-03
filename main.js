@@ -2040,6 +2040,14 @@ function ProgressBar() {
 	d.innerHTML("gameprogress",label);
 	d.element("gameprogress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+filled+"%,rgba(102,102,102,0.9) "+filled+"%,rgba(102,102,102,0.9)),"+color;
 }
+function importCommand(str) {
+	if (str.substring(0,4)=="/rt ") {
+		popup({text:eval(str.substring(4)),buttons:[["Close",""]]})
+	} else {
+		eval(str.substring(1))
+	}
+	console.log("Successful command!")
+}
 function save() {
 	localStorage.setItem("save",JSON.stringify(g)); 
 }
@@ -2049,8 +2057,7 @@ function load(type,str) {
 		savegame = JSON.parse(localStorage.getItem("save"));
 	} else if (type=="import") {
 		if (str.substring(0,1) == "/") {
-			console.log("Successful command!")
-			eval(str.substring(1))
+			importCommand(str)
 		} else if (str.toLowerCase() == "cat") {
 			addSecretAchievement(7);
 		} else if (str.toLowerCase() == "alemaninc") {

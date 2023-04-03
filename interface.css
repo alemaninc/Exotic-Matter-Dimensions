@@ -587,6 +587,8 @@ tab {
   border-width:3px;
   z-index:4;
   overflow: auto;
+  word-wrap: break-word;
+  padding:20px;
 }
 #wormholeAnimation{
   background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
