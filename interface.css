@@ -72,6 +72,9 @@ button, div {
   vertical-align:top;
   display:inline-block;
 }
+a {
+  color:inherit;
+}
 .underline {
   text-decoration:underline
 }

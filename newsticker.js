@@ -4,9 +4,9 @@ const newsSupport = {
     let num = array.map(x => x.max(1)).reduce((x,y)=>x.mul(y))
     let dimension = array.map(x=>x.eq(0)?0:1).reduce((x,y)=>x+y)
     if (dimension == 0) return "1. Just 1. No dimensions. Buy an axis to get a dimension!"
-    return num.format(0)+" m"+(dimension==1?"":("<sup>"+dimension+"</sup>"))+(num.gt(c.inf)?"":(". As an ordinary number, that is "+numword(num.toNumber())+" metres"+(dimension==1?".":dimension==2?" squared.":dimension==3?"cubed.":(" to the power of "+numword(dimension)))))
+    return num.format(0)+" m"+(dimension==1?"":("<sup>"+dimension+"</sup>"))+". In words, that is "+(num.gt(c.inf)?"Infinity":numword(num.toNumber()))+" "+(dimension<11?["metres","square metres","cubic metres","quartic metres","quintic metres","sextic metres","septic metres","octic metres","nonic metres","decic metres"][dimension-1]:("metres to the power of "+numword(dimension)))
   },
-  nodeDocumentary(){
+  nodeDocumentary:function(){
     let list = document.getElementsByTagName("*")
     let node = list[Math.floor(list.length*Math.random())]
     let type = node.tagName
@@ -34,17 +34,23 @@ const newsSupport = {
     out += " So, now you know more about the ecosystem of nodes upon which the game is reliant. More documentaries by Davy Atombra only at UTQP!"
     return out
   },
-  timezone() {
+  timezone:function() {
     let offset = new Date().getTimezoneOffset()
     if (offset == 0) return ""
     return (offset<0?"+":"-")+Math.floor(Math.abs(offset)/60)+((offset%60==0)?"":(":"+String(Math.abs(offset)%60).padStart(2,"0")))
   },
-  phishing(){popup({text:"alemaninc needs your help! Will you help alemaninc?",buttons:[["Yes","newsSupport.phishing1()"],["No",""]]})},
-  phishing1(){popup({text:"To help alemaninc, answer the following five questions:<br>[1] How old are you?",input:"",buttons:[["Submit","newsSupport.phishing2()"]]})},
-  phishing2(){popup({text:"[2] What is your full legal name?",input:"",buttons:[["Submit","newsSupport.phishing3()"]]})},
-  phishing3(){popup({text:"[3] What is your Discord username?",input:"",buttons:[["Submit","newsSupport.phishing4()"]]})},
-  phishing4(){popup({text:"[4] What is your house address?",input:"",buttons:[["Submit","newsSupport.phishing5()"]]})},
-  phishing5(){popup({text:"[5] And finally, what is your credit card number?",input:"",buttons:[["Submit","popup({text:'Thank you for helping alemaninc!',buttons:[['Close','']]});addSecretAchievement(26)"]]})}
+  phishing:function(){popup({text:"alemaninc needs your help! Will you help alemaninc?",buttons:[["Yes","newsSupport.phishing1()"],["No",""]]})},
+  phishing1:function(){popup({text:"To help alemaninc, answer the following five questions:<br>[1] How old are you?",input:"",buttons:[["Submit","newsSupport.phishing2()"]]})},
+  phishing2:function(){popup({text:"[2] What is your full legal name?",input:"",buttons:[["Submit","newsSupport.phishing3()"]]})},
+  phishing3:function(){popup({text:"[3] What is your Discord username?",input:"",buttons:[["Submit","newsSupport.phishing4()"]]})},
+  phishing4:function(){popup({text:"[4] What is your house address?",input:"",buttons:[["Submit","newsSupport.phishing5()"]]})},
+  phishing5:function(){popup({text:"[5] And finally, what is your credit card number?",input:"",buttons:[["Submit","popup({text:'Thank you for helping alemaninc!',buttons:[['Close','']]});addSecretAchievement(26)"]]})},
+  codeInsight:function(item){
+    let text = Object.getOwnPropertyDescriptor(item,"text").value==undefined?Object.getOwnPropertyDescriptor(item,"text").get.toString():("text:\""+Object.getOwnPropertyDescriptor(item,"text").value+"\"")
+    let weight = item.weight==undefined?undefined:Object.getOwnPropertyDescriptor(item,"weight").value==undefined?Object.getOwnPropertyDescriptor(item,"weight").get.toString():("weight:\""+Object.getOwnPropertyDescriptor(item,"weight").value+"\"")
+    return (weight==undefined)?("{"+text+"}"):("{"+text+","+weight+"}")
+  },
+  secretAchievementHelp:function(){popup({text:"I'll give you the name of a Secret Achievement:"+this.secretAchievementList[Object.keys(secretAchievementList).filter(x=>!secretAchievementList.includes(Number(x)))[0]],buttons:[["Close",""]]})}
 }
 const newsList = [
   {text:"This is not an <i>Antimatter Dimensions</i> clone."},
@@ -85,7 +91,7 @@ const newsList = [
   {text:"The first study's always free",get weight(){return StudyE(1)||g.studyCompletions[1]>0?1:0}},
   {text:"Click the next message if you can travel through time."},
   {text:"We all know about stardust. But every stardust is related in some way. Those stardusts you 'spent' had families. You monster.",get weight(){return g.stardustUpgrades.reduce((x,y)=>x+y)==0?0:1}},
-  {get text(){return "Fact: your current exotic matter is ^"+Decimal.div(g.exoticmatter.log10(),g.totalexoticmatter.log10()).toFixed(5)+" of all the exotic matter you have ever produced."},get weight(){return g.exoticmatter.gt(1e100)?1:0}},
+  {get text(){return "Fact: your current exotic matter is ^"+Decimal.div(g.exoticmatter.log10(),g.totalexoticmatter.log10()).format(4)+" of all the exotic matter you have ever produced."},get weight(){return (g.exoticmatter.gt(1e100)&&Decimal.div(g.exoticmatter.log10(),g.totalexoticmatter.log10()).lt(0.999))?1:0}},
   {text:"This ticker could be yours. Join the Discord to suggest what it should be!"},
   {text:"Fact: this news ticker can only appear first.",get weight(){return timeSinceGameOpened<5?1:0}},
   {get text(){return "Ah, a fellow "+g.colortheme+" theme user. I see you have impeccable taste."}},
@@ -115,16 +121,26 @@ const newsList = [
   {text:"Discovery №14: If you drop a metric ton of bricks and a metric ton of feathers off a building, they will experience the same velocity. If you drop a metric ton of bricks and an imperial ton of bricks off a building, they too will experience the same velocity.",get weight(){return g.totalDiscoveries.gt(13)?0.1:0}},
   {text:"Discovery №15: c = (E ÷ m)<sup>0.5</sup>",get weight(){return g.totalDiscoveries.gt(14)?0.1:0}},
   {text:"Discovery №16: You should go make a Discovery in real life.",get weight(){return g.totalDiscoveries.gt(15)?0.1:0}},
-  {text:"<span onClick=\"newsSupport.phishing()\">🎣<span style=\"padding-left:150px\"></span>Look, a phishing rod! You should click it.</span>"},
+  {text:"Beware of phishing attempts, keep your information safe!<span style=\"padding-left:100vw\"></span><span onClick=\"newsSupport.phishing()\">🎣<span style=\"padding-left:150px\"></span>Look, a phishing rod! You should click this.</span>"},
+  {get text(){return "Have you ever wondered what the code of a news message looks like? Here is the code of a random news message: "+JSON.stringify(Array.random(newsList.filter(x=>newsWeight(x)>Math.random())))}},
+  {text:"<span onClick=\"newsSupport.secretAchievementHelp()\">Click this for help with a secret achievement</span>",get weight(){return (1-g.ownedSecretAchievements/Object.keys(secretAchievementList).length)**2}},
+  {text:"tHiS mEsSaGe Is CaSe sEnSiTiVe"},
+  {text:"You have <span style=\"color:#df5050;font-size:20px\">0</span> antimatter. Go <a href=\"https://ivark.github.io/AntimatterDimensions/\">here</a> to get some!"},
+  {text:[...[1,2,3,4,5,6,7,8,9].map(x=>((10**x-1)/9)+"<sup>2</sup> = "+String(BigInt((10**x-1)/9)**2n)),"But 1111111111<sup>2</sup> is 1234567<i>900</i>987654321! How!?"].join("<span style=\"padding-left:100px\"></span>")},
+  {text:"Be curious. Read widely. Try new things. What people call intelligence just boils down to curiosity."},
+  {text:"A concoction of varied pastries, puzzling grass and towers and citadels tall as though they piece the very sky... Seriously, how is this my game repertoire?!"},
+//  {text:"🎅🦌🔔⛄❄️🍪🥛🎄🎁🕯️"}
 ]
 var newsOrder = []
+function newsWeight(item) {
+  return (item.weight==undefined)?1:item.weight
+}
 function randomNewsItem() {
   if (newsOrder.length == 0) newsOrder = shuffle(countTo(newsList.length,true))
   let index
   while (true) {
     index = newsOrder.splice(0,1)
-    if (newsList[index].weight == undefined) break
-    if (newsList[index].weight>Math.random()) break
+    if (newsWeight(newsList[index])>Math.random()) break
   }
   return newsList[index].text
 }

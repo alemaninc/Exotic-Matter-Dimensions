@@ -91,6 +91,7 @@ function updateHTML() {
 		d.innerHTML("span_completedAchievementTiersShown",g.completedAchievementTiersShown?"Showing":"Hiding");
 		d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
 		d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
+		d.innerHTML("span_newsTickerSpeed",g.newsTickerSpeed)
 	}
 	if (tabOpen(["Statistics"])) {
 		d.display("button_previousPrestiges",unlocked("Stardust")?"inline-block":"none");
@@ -218,6 +219,7 @@ function updateHTML() {
 		d.display("button_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none");
 	}
 	if (tabOpen(["Achievements","Wormhole Milestones"])) {
+		d.innerHTML("span_wormholeMilestoneT5Achievements",achievement.ownedInTier(5))
 		let owned = wormholeMilestoneList.map(x => achievement.ownedInTier(5)>=x[0]?1:0).reduce((x,y)=>x+y)
 		for (let i=0;i<wormholeMilestoneList.length;i++) {
 			d.display("div_wormholeMilestone"+wormholeMilestoneList[i][0],i<owned?"inline-block":"none")
@@ -465,7 +467,7 @@ function fineGrainTick() {
     let transitionProgress = currentNewsOffset/(window.innerWidth+d.element("newsline").offsetWidth)
     if (transitionProgress > 1) {
       d.innerHTML("newsline",randomNewsItem())
-      currentNewsOffset = -g.newsTickerSpeed*4
+      currentNewsOffset = -g.newsTickerSpeed
       d.element("newsline").style.left = "100vw"
     } else {
       currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001

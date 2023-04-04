@@ -6,10 +6,10 @@ var initComplete = false
 const initSteps = [
   function(){load("normal");},
   function(){
-    let versionName = "𝕍1.1.15"
+    let versionName = "𝕍1.1.16"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000515
+    g.version = 1000516
   },
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
   function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
