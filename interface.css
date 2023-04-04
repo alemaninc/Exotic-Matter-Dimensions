@@ -1,3 +1,18 @@
+:root {
+  --exoticmatter:#00ff00;
+  --time:#00cc00;
+  --time2:#ff0000;
+  --mastery:#ff0099;
+  --achievements:#ffff00;
+  --stardust:-webkit-radial-gradient(circle,#ff0,#f60);
+  --stardust_dark:-webkit-radial-gradient(circle,#990,#930);
+  --stars:#ffffff;
+  --darkmatter:#990099;
+  --energy:#00ffff;
+  --wormhole_text:#3333ff;
+  --wormhole_glow:0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
+  --research:#66ccff;
+}
 .big {
   font-size:120%;
 }
@@ -5,141 +20,141 @@
   font-size:150%;
   font-weight:700;
 }
+._exoticmatter {
+  color:var(--exoticmatter);
+}
 ._time {
-  color: #00cc00;
+  color:var(--time)
 }
 ._time2 {
-  color: #ff0000;
-}
-._exoticmatter {
-  color: #00ff00;
+  color:var(--time2)
 }
 ._mastery {
-  color: #ff0099;
+  color:var(--mastery);
 }
 ._achievements {
-  color: #ffff00;
+  color:var(--achievements);
 }
 ._stardust {
-  background: -webkit-radial-gradient(circle,#ff0,#f60);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background:var(--stardust);
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 ._stardust_dark{
-  background: -webkit-radial-gradient(circle,#990,#930);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background:var(--stardust_dark);
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 ._stars {
-  color: #ffffff;
+  color:var(--stars);
 }
 ._darkmatter {
-  color: #990099;
+  color:var(--darkmatter);
 }
 ._energy {
-  color: #00ffff;
+  color:var(--energy);
 }
 ._wormhole {
-  color: #3333ff;
-  text-shadow: 0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
+  color:var(--wormhole_text);
+  text-shadow:var(--wormhole_glow);
 }
 ._research {
-  color: #66ccff
+  color:var(--research)
 }
 html, body {
-  max-width: 100%;
-	min-width: 1200px;
-  overflow-x: hidden;
+  max-width:100%;
+	min-width:1200px;
+  overflow-x:hidden;
 }
 button, div {
   vertical-align:top;
   display:inline-block;
 }
 .underline {
-  text-decoration: underline
+  text-decoration:underline
 }
 .strike {
-  text-decoration: line-through
+  text-decoration:line-through
 }
 span.xscript {
-  position: relative;
+  position:relative;
 }
 span.xscript sub {
-  position: absolute;
-  left: 0.1em;
-  bottom: -1ex;
+  position:absolute;
+  left:0.1em;
+  bottom:-1ex;
 }
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
+  border-collapse:collapse;
+  border-spacing:0;
   display:inline-block;
-  text-align: center;
+  text-align:center;
   table-layout:fixed;
 }
 th {
-  text-decoration: underline
+  text-decoration:underline
 }
 button,div {
   display:inline-block;
 	position:relative;
 }
 .small {
-  font-size: 8px;
-  opacity: 0.67;
+  font-size:8px;
+  opacity:0.67;
 }
 .toptable {
-  width: calc(100vw - 320px);
-  table-layout: fixed;
-  text-align: left;
+  width:calc(100vw - 320px);
+  table-layout:fixed;
+  text-align:left;
 }
 .resource {
-  height: 20px;
-  width: 384px;
-  font-size: 12px;
+  height:20px;
+  width:384px;
+  font-size:12px;
 	margin-left:5px;
 	margin-right:5px;
-	text-align: center;
+	text-align:center;
 }
 .maxaxisbutton {
-  background-color: rgba(0,153,153,0.9);
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 250px;
-  height: 50px;
+  background-color:rgba(0,153,153,0.9);
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:250px;
+  height:50px;
 }
 .axisbutton {
-  background-color: rgba(0,153,153,0.9);
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  height: 125px;
+  background-color:rgba(0,153,153,0.9);
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:200px;
+  height:125px;
 	margin:4px
 }
 .lockedaxisbutton {
-  background-color: rgba(153,153,153,0.9);
-  color: #000000;
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  height: 125px;
+  background-color:rgba(153,153,153,0.9);
+  color:#000000;
+  padding:10px;
+  border-radius:10px;
+  width:200px;
+  height:125px;
 	margin:4px
 }
 .empoweredaxis {
-  background-color: rgba(102,0,204,0.9);
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  height: 125px;
+  background-color:rgba(102,0,204,0.9);
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:200px;
+  height:125px;
 	margin:4px
 }
 .tablecell {
-  border: 2px solid rgba(0,153,0,0.9);
-  border-collapse: collapse
+  border:2px solid rgba(0,153,0,0.9);
+  border-collapse:collapse
 }
 .progress {
 	height:24px;
@@ -156,30 +171,30 @@ button,div {
   padding:0px;
 }
 .optionsbutton {
-  background-color: #cccccc;
-  color: #000000;
-  padding: 10px;
-  border-radius: 15px;
-  font-size: 18px;
-  width: 175px;
-  height: 150px;
+  background-color:#cccccc;
+  color:#000000;
+  padding:10px;
+  border-radius:15px;
+  font-size:18px;
+  width:175px;
+  height:150px;
 }
 .redoptionsbutton {
-  background-color: #000000;
-  color: #ff0000;
-  padding: 10px;
-  border-radius: 15px;
-  font-size: 18px;
-  width: 175px;
-  height: 150px;
+  background-color:#000000;
+  color:#ff0000;
+  padding:10px;
+  border-radius:15px;
+  font-size:18px;
+  width:175px;
+  height:150px;
 }
 .tabtier2 {
-  width: 120px;
-  height: 25px;
-  font-size: 13px;
-	border-style: solid;
-	border-width: 2px;
-	border-radius: 5px;
+  width:120px;
+  height:25px;
+  font-size:13px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:5px;
 }
 .tier2main {
 	background-color:rgba(0,0,0,0.9);
@@ -213,30 +228,24 @@ button,div {
 	color:#ffffff
 }
 .tabtier3 {
-  width: 100px;
-  height: 20px;
-  font-size: 9px;
+  width:100px;
+  height:20px;
+  font-size:9px;
 }
 .tabtier4 {
-  width: 90px;
-  height: 18px;
-  font-size: 8px;
+  width:90px;
+  height:18px;
+  font-size:8px;
 }
 .tab, .mainTab, .optionsTab, .statisticsTab, .achievementsTab, .stardustTab, .wormholeTab {
   width:100vw;
 }
-.htpTab {
-  width: 48vw;
-  height: 200px;
-  border-radius: 20px;
-  background-image: linear-gradient(135deg,#001933,#003366,#001933)
-}
 .navigationtier3 {
-  background-color: #331933;
+  background-color:#331933;
   width:100vw;
 }
 .navigationtier4 {
-  background-color: #193333;
+  background-color:#193333;
   width:100vw;
 }
 .bigtab {
@@ -250,45 +259,45 @@ tab {
 	width:calc(100vw - 120px)
 }
 #button_main {
-  background-color: rgba(0,0,0,0.9);
-  color: rgba(0,255,0,0.9);
-  border-color: rgba(0,204,0,0.8);
+  background-color:rgba(0,0,0,0.9);
+  color:rgba(0,255,0,0.9);
+  border-color:rgba(0,204,0,0.8);
 }
 #button_options {
-	background-color: rgba(153,153,153,0.9);
+	background-color:rgba(153,153,153,0.9);
 	color:rgba(0,0,0,0.9);
 	border-color:rgba(102,102,102,0.8)
 }
 #button_statistics {
-	background-color: rgba(0,153,0,0.9);
+	background-color:rgba(0,153,0,0.9);
 	color:rgba(0,204,0,0.9);
 	border-color:rgba(0,153,0,0.8);
 }
 #button_achievements {
-	background-color: rgba(153,76,0,0.9);
+	background-color:rgba(153,76,0,0.9);
 	color:rgba(255,153,0,0.9);
 	border-color:rgba(170,102,0,0.8)
 }
 #button_automation {
-	background-color: rgba(153,153,153,0.75);
+	background-color:rgba(153,153,153,0.75);
 	color:rgba(0,0,0,0.9);
 	border-color:rgba(102,102,102,0.8)
 }
 #button_stardust {
-  background-image: url("stardustbackground.png");
-  background-size: cover;
-  color: #ff9900;
-  border-color: #ff9900;
+  background-image:url("stardustbackground.png");
+  background-size:cover;
+  color:#ff9900;
+  border-color:#ff9900;
 }
 #button_wormhole {
-  background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
-  color: #ffffff;
+  background-image:repeating-radial-gradient(circle,#190033,#330066 10%,#190033 20%);
+  color:#ffffff;
 	border-color:#0000ff
 }
 .invisible {
-  font-size: 30px;
-  border: none;
-  background: transparent;
+  font-size:30px;
+  border:none;
+  background:transparent;
 }
 .howtoplay {
   background-color:rgba(0,0,0,0);
@@ -299,41 +308,41 @@ tab {
   border-radius:50vh;
 }
 .stardustResetButton{
-  background-image: url("stardustbackground.png");
-  background-size: cover;
-  color: #ffffff;
-  font-size: 15px;
-  border-radius: 4px;
-  width: 125px;
-  height: 90px;
+  background-image:url("stardustbackground.png");
+  background-size:cover;
+  color:#ffffff;
+  font-size:15px;
+  border-radius:4px;
+  width:125px;
+  height:90px;
 }
 .lockedStardustResetButton{
-  background-color: #999999;
-  color: #000000;
-  font-size: 15px;
-  border-radius: 4px;
-  width: 125px;
-  height: 90px;
+  background-color:#999999;
+  color:#000000;
+  font-size:15px;
+  border-radius:4px;
+  width:125px;
+  height:90px;
 }
 .masterybutton {
-  height: 50px;
-  width: 60px;
-  border-radius: 8px;
-  color: inherit
+  height:50px;
+  width:60px;
+  border-radius:8px;
+  color:inherit
 }
 #masteryPanel {
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  min-height: 75px;
-  width: 100%;
-  font-size: 16px;
-  background: linear-gradient(180deg,rgba(72,0,24,0.95),rgba(72,0,24,1));
+  position:fixed;
+  bottom:0px;
+  left:0px;
+  min-height:75px;
+  width:100%;
+  font-size:16px;
+  background:linear-gradient(180deg,rgba(72,0,24,0.95),rgba(72,0,24,1));
 	padding:5px;
 	z-index:1
 }
 .glownotify{
-  box-shadow: 0px 0px 20px 0px #ff0
+  box-shadow:0px 0px 20px 0px #ff0
 }
 .previousPrestige {
   height:200px;
@@ -344,19 +353,19 @@ tab {
   margin:8px;
 }
 .previousPrestige_eternity {
-  background-color: rgba(0,102,0,0.9);
-  color: rgba(0,255,102,0.9);
+  background-color:rgba(0,102,0,0.9);
+  color:rgba(0,255,102,0.9);
 }
 .previousPrestige_spacetime {
-  background-color: rgba(0,0,0,0.9);
-  color: rgba(255,255,255,0.9);
+  background-color:rgba(0,0,0,0.9);
+  color:rgba(255,255,255,0.9);
 }
 .previousPrestige_wormhole {
-  background-color: rgba(0,0,102,0.9);
-  color: rgba(51,51,255,0.9);
+  background-color:rgba(0,0,102,0.9);
+  color:rgba(51,51,255,0.9);
 }
 .stardustboost {
-	background-color: rgba(102,51,0,0.9);
+	background-color:rgba(102,51,0,0.9);
 	width:225px;
 	height:120px;
 	margin:8px;
@@ -364,26 +373,26 @@ tab {
 	border-style:solid;
 	border-radius:30px;
 	border-width:2px;
-	border-color: rgba(255,255,0,0.5);
+	border-color:rgba(255,255,0,0.5);
 }
 .stardustupgradebutton {
-  background-image: url("stardustbackground.png");
-  background-size: cover;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  height: 125px;
+  background-image:url("stardustbackground.png");
+  background-size:cover;
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:200px;
+  height:125px;
 	margin:4px;
 }
 .maxedstardustupgradebutton {
-  background-image: url("stardustbackground.png");
-  background-size: cover;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  height: 125px;
+  background-image:url("stardustbackground.png");
+  background-size:cover;
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:200px;
+  height:125px;
 	margin:4px;
   filter:brightness(50%)
 }
@@ -398,103 +407,103 @@ tab {
 }
 .availablestarbutton {
 	background-color:#cccccc;
-	color: #000000;
+	color:#000000;
 }
 .lockedstarbutton {
-  background-color: #999999;
-  color: #000000;
+  background-color:#999999;
+  color:#000000;
 }
 .ownedstarbutton1 {
-  background-color: #ff6600;
-  color: #000000;
+  background-color:#ff6600;
+  color:#000000;
 }
 .ownedstarbutton2 {
-  background-color: #ff9900;
-  color: #000000;
+  background-color:#ff9900;
+  color:#000000;
 }
 .ownedstarbutton3 {
-  background-color: #ffcc00;
-  color: #000000;
+  background-color:#ffcc00;
+  color:#000000;
 }
 .ownedstarbutton4 {
-  background-color: #ffff00;
-  color: #000000;
+  background-color:#ffff00;
+  color:#000000;
 }
 .ownedstarbutton5 {
-  background-color: #ccff33;
-  color: #000000;
+  background-color:#ccff33;
+  color:#000000;
 }
 .ownedstarbutton6 {
-  background-color: #99ff66;
-  color: #000000;
+  background-color:#99ff66;
+  color:#000000;
 }
 .ownedstarbutton7 {
-  background-color: #66ff99;
-  color: #000000;
+  background-color:#66ff99;
+  color:#000000;
 }
 .ownedstarbutton8 {
-  background-color: #33ffcc;
-  color: #000000;
+  background-color:#33ffcc;
+  color:#000000;
 }
 .ownedstarbutton9 {
-  background-color: #00ffff;
-  color: #000000;
+  background-color:#00ffff;
+  color:#000000;
 }
 .ownedstarbutton10 {
-  background-image: radial-gradient(#ffffff, #000000);
-  color: #000000;
+  background-image:radial-gradient(#ffffff, #000000);
+  color:#000000;
 }
 .starbuybutton {
-  background-color: #cccccc;
-  color: #000000;
-  padding: 0px;
-  border-radius: 20px;
-  width: 200px;
-  height: 50px;
-	margin: 2px;
+  background-color:#cccccc;
+  color:#000000;
+  padding:0px;
+  border-radius:20px;
+  width:200px;
+  height:50px;
+	margin:2px;
 }
 .genericbutton {
-  background-color: #cccccc;
-  color: #000000;
-  padding: 0px;
-  border-radius: 20px;
-  width: 140px;
-  height: 30px;
-	margin: 2px;
+  background-color:#cccccc;
+  color:#000000;
+  padding:0px;
+  border-radius:20px;
+  width:140px;
+  height:30px;
+	margin:2px;
 }
 .automatordiv {
-  background-color: #999999;
-  color: #000000;
-  text-align: center;
-  font-size: 12px;
-  font-family: "Courier New";
-  padding: 10px;
-  border-radius: 40px;
-  width: 200px;
-  height: 350px;
+  background-color:#999999;
+  color:#000000;
+  text-align:center;
+  font-size:12px;
+  font-family:"Courier New";
+  padding:10px;
+  border-radius:40px;
+  width:200px;
+  height:350px;
 }
 .automatortoggleon {
-  background-color: #00ff00;
-  color: #009900;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  background-color:#00ff00;
+  color:#009900;
+  border-radius:50%;
+  width:24px;
+  height:24px;
   font-size:8px;
 }
 .automatortoggleoff {
-  background-color: #ff6600;
-  color: #930;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  background-color:#ff6600;
+  color:#930;
+  border-radius:50%;
+  width:24px;
+  height:24px;
   font-size:8px;
 }
 .autobuyerupgrade {
-  background-color: #cccccc;
-  color: #000000;
-  font-size: 12px;
-  padding: 2px;
-  border-radius: 10px;
+  background-color:#cccccc;
+  color:#000000;
+  font-size:12px;
+  padding:2px;
+  border-radius:10px;
   height:40px;
   width:180px;
 }
@@ -508,60 +517,60 @@ tab {
 	width:180px
 }
 .maxdarkaxisbutton {
-  background-color: #990099;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 250px;
-  height: 50px;
+  background-color:#990099;
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:250px;
+  height:50px;
 }
 .darkaxisbutton {
-  background-color: #990099;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  height: 125px;
+  background-color:#990099;
+  color:#ffffff;
+  padding:10px;
+  border-radius:10px;
+  width:200px;
+  height:125px;
 	margin:4px
 }
 .darkstarbutton {
-  background-color: #990099;
-  color: #ffffff;
-  padding: 4px;
-  border-radius: 16px;
-  width: 400px;
-  height: 140px;
+  background-color:#990099;
+  color:#ffffff;
+  padding:4px;
+  border-radius:16px;
+  width:400px;
+  height:140px;
 }
 .lockeddarkstarbutton {
-  background-color: #999999;
-  color: #000000;
-  padding: 4px;
-  border-radius: 16px;
-  width: 400px;
-  height: 140px
+  background-color:#999999;
+  color:#000000;
+  padding:4px;
+  border-radius:16px;
+  width:400px;
+  height:140px
 }
 .globalnavigation {
-  text-align: center;
-  width: 96vw;
+  text-align:center;
+  width:96vw;
 }
 .energydivision {
-  height: 115px;
-  width: calc(50vw - 50px);
-	margin: 15px;
+  height:115px;
+  width:calc(50vw - 50px);
+	margin:15px;
 }
 .wormholeResetButton{
-  background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
-  background-size: cover;
-  color: #ffffff;
-  font-size: 15px;
-  border-radius: 4px;
-  width: 125px;
-  height: 90px;
+  background-image:repeating-radial-gradient(circle,#190033,#330066 10%,#190033 20%);
+  background-size:cover;
+  color:#ffffff;
+  font-size:15px;
+  border-radius:4px;
+  width:125px;
+  height:90px;
 }
 .topleveldiv {
-  position: absolute;
-  top: 0px;
-	left: 0px;
+  position:absolute;
+  top:0px;
+	left:0px;
 	width:100vw;
 }
 .popupScreen {
@@ -586,41 +595,41 @@ tab {
   border-color:#330066;
   border-width:3px;
   z-index:4;
-  overflow: auto;
-  word-wrap: break-word;
+  overflow:auto;
+  word-wrap:break-word;
   padding:20px;
 }
 #wormholeAnimation{
-  background-image: repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%);
-  background-size: cover;
-	position: fixed;
-	left: 0px;
-	top: 0px;
+  background-image:repeating-radial-gradient(circle,#190033,#330066 10%,#190033 20%);
+  background-size:cover;
+	position:fixed;
+	left:0px;
+	top:0px;
 	height:100vh;
 }
 .researchButton {
 	height:64px;
 	width:64px;
 	font-size:16px;
-  color: inherit;
+  color:inherit;
 	border-style:groove;
 	border-width:5px;
 }
 .normalResearchButton {
-  border-color: rgba(0,204,204,0.9);
-  background-color: #003333;
+  border-color:rgba(0,204,204,0.9);
+  background-color:#003333;
 }
 .permanentResearchButton {
-  border-color: rgba(255,255,255,0.9);
-  background-color: #333333;
+  border-color:rgba(255,255,255,0.9);
+  background-color:#333333;
 }
 .studyResearchButton {
-  border-color: rgba(153,0,0,0.9);
-  background-color: #330000;
+  border-color:rgba(153,0,0,0.9);
+  background-color:#330000;
 }
 .unknownResearchButton {
-  border-color: rgba(153,153,153,0.8);
-  background-color: #193333;
+  border-color:rgba(153,153,153,0.8);
+  background-color:#193333;
 }
 .researchLoadout {
   height:40px;
@@ -645,84 +654,84 @@ tab {
   color:#66ccff;
 }
 #discoveryPanel {
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  font-size: 13px;
-  background: linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
+  position:fixed;
+  bottom:0px;
+  left:0px;
+  width:100%;
+  font-size:13px;
+  background:linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
 	padding:5px;
 	z-index:3
 }
 .observation {
-  width: 140px;
-  height: 45px;
-  margin: 2px;
-  border-radius: 12px;
-  background-color: rgba(179,204,255,0.75);
+  width:140px;
+  height:45px;
+  margin:2px;
+  border-radius:12px;
+  background-color:rgba(179,204,255,0.75);
   font-size:11px;
 }
 .study {
-  height: 480px;
-  width: 400px;
-  border-style: solid;
-  border-width: 5px;
-  border-radius: 32px;
+  height:480px;
+  width:400px;
+  border-style:solid;
+  border-width:5px;
+  border-radius:32px;
 	margin:16px
 }
 .study0 {
-	border-color: rgba(51,0,0,0.9);
-	background-color: rgba(102,0,0,0.9);
-	color: #cc0000;
+	border-color:rgba(51,0,0,0.9);
+	background-color:rgba(102,0,0,0.9);
+	color:#cc0000;
 }
 .study1 {
-	border-color: rgba(51,51,0,0.9);
-	background-color: rgba(102,102,0,0.9);
-	color: #cccc00;
+	border-color:rgba(51,51,0,0.9);
+	background-color:rgba(102,102,0,0.9);
+	color:#cccc00;
 }
 .study2 {
-	border-color: rgba(0,51,0,0.9);
-	background-color: rgba(0,102,0,0.9);
-	color: #00cc00;
+	border-color:rgba(0,51,0,0.9);
+	background-color:rgba(0,102,0,0.9);
+	color:#00cc00;
 }
 .study3 {
-	border-color: rgba(0,51,51,0.9);
-	background-color: rgba(0,102,102,0.9);
-	color: #00cccc;
+	border-color:rgba(0,51,51,0.9);
+	background-color:rgba(0,102,102,0.9);
+	color:#00cccc;
 }
 .study4 {
-  border-color: rgba(34,0,51,0.9);
-  background-color: rgba(68,0,102,0.9);
-  color: #8800cc;
+  border-color:rgba(34,0,51,0.9);
+  background-color:rgba(68,0,102,0.9);
+  color:#8800cc;
 }
 .startStudyEnabled {
-  height: 48px;
-  width: 150px;
+  height:48px;
+  width:150px;
 	border-radius:8px;
-  background-color: rgba(0,0,102,0.9);
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgba(0,68,170,0.9);
+  background-color:rgba(0,0,102,0.9);
+  border-style:solid;
+  border-width:2px;
+  border-color:rgba(0,68,170,0.9);
 	color:#ffffff;
 }
 .startStudyTrapped {
-  height: 48px;
-  width: 150px;
+  height:48px;
+  width:150px;
 	border-radius:8px;
-  background-color: rgba(15,30,114,0.9);
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgba(0,68,170,0.9);
+  background-color:rgba(15,30,114,0.9);
+  border-style:solid;
+  border-width:2px;
+  border-color:rgba(0,68,170,0.9);
 	color:#ffffff;
 }
 .startStudyDisabled {
-  height: 48px;
-  width: 150px;
+  height:48px;
+  width:150px;
 	border-radius:8px;
-  background-color: rgba(60,120,150,0.9);
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgba(0,68,170,0.9);
+  background-color:rgba(60,120,150,0.9);
+  border-style:solid;
+  border-width:2px;
+  border-color:rgba(0,68,170,0.9);
 }
 .wormholeMilestone {
   width:230px;
@@ -763,20 +772,20 @@ tab {
   margin:4px;
 }
 .achievementPanel {
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  height: 240px;
-  font-size: 16px;
-  background: linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1));
-  z-index: 1;
+  position:fixed;
+  bottom:0px;
+  left:0px;
+  width:100%;
+  height:240px;
+  font-size:16px;
+  background:linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1));
+  z-index:1;
 }
 .dilationDiv {
   width:450px;
   height:350px;
   margin:10px;
-  background-color: rgba(0,102,0,0.9);
+  background-color:rgba(0,102,0,0.9);
   color:#00ff00;
   border-style:solid;
   border-radius:15px;
@@ -786,15 +795,15 @@ tab {
 #button_overclockActive {
   height:90px;
   width:120px;
-  color: #00ff00;
-  font-weight: 700;
+  color:#00ff00;
+  font-weight:700;
   border-style:solid;
   border-radius:5px;
   border-width:1px;
   border-color:#00ff00;
-  position: absolute;
-  bottom: 15px;
-  left: 165px;
+  position:absolute;
+  bottom:15px;
+  left:165px;
 }
 .dilationUpgrade {
   height:120px;
@@ -808,5 +817,39 @@ tab {
   border-color:rgba(0,153,0,0.9);
   font-size:inherit;
   font-family:inherit;
-
+}
+#newsticker {
+  width:100vw;
+  height:20px;
+  background-color:rgba(0,0,0,0.5);
+}
+#newsline {
+  font-size:16px;
+  font-family:'Courier New', Courier, monospace;
+  color:rgba(255,255,255,0.8);
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  position:absolute;
+}
+#notifyDiv {
+  position:fixed;
+  top:5px;
+  right:10px;
+  text-align:right;
+  height:24px;
+  border:rgba(0,0,0,0);
+  background:rgba(0,0,0,0);
+}
+.notification {
+  font-family:'Courier New', Courier, monospace;
+  font-size:16px;
+  font-weight:700;
+  width:auto;
+  max-width:min(700px,calc(100vw - 50px));
+  word-wrap:break-word;
+  border-radius:4px;
+  border-style:none;
+  margin:2px;
+  padding:6px;
 }

@@ -38,6 +38,8 @@ const basesave = {
 	dilationUpgrades: [null,0,0,0,0],
 	dilationUpgradesUnlocked: 0,
 	notation: "Mixed scientific",
+	newsTickerActive: true,
+	newsTickerSpeed: 80,
 	version:null,
 	ownedAchievements: [],
 	ownedSecretAchievements: [],
@@ -253,11 +255,11 @@ const dilationUpgrades = [
 		tickspeedNeeded:32768
 	},
 	{
-		tooltip:"Multiply tickspeed by {e}",
+		tooltip:"Tickspeed is increased by {e}% (based on dilated time, cap at 7 days)",
 		cost:function(x=g.dilationUpgrades[4]){return 86400},
 		cap:3,
-		effect:function(x=g.dilationUpgrades[4]){return 2**x},
-		effectFormat:function(x=g.dilationUpgrades[1]){return this.effect(x).toFixed(0)},
+		effect:function(x=g.dilationUpgrades[4]){return 10**(x*Math.log2(1+g.dilatedTime/86400)/3)},
+		effectFormat:function(x=g.dilationUpgrades[1]){return (100*(this.effect(x)-1)).toFixed(0)},
 		tickspeedNeeded:2147483648
 	}
 ]
@@ -376,7 +378,7 @@ const studies = {
 		},
 		reward:function(num,comp=g.studyCompletions[1]) {
 			if (num==1) return N([0,0.2,0.33,0.42,0.5][comp]);
-			if (num==2) return Decimal.convergentSoftcap(achievement.owned()**((5+comp)/6)/4,comp*5,comp*10);
+			if (num==2) return Decimal.convergentSoftcap(g.ownedAchievements.length**((5+comp)/6)/4,comp*5,comp*10);
 			if (num==3) return N([1,4,20,125,1000][comp]);
 			throw "Cannot access studies[1].reward("+num+")"
 		},
@@ -410,8 +412,8 @@ const studies = {
 };
 function researchPower(row,col) {
 	let out = N(1);
-	if (achievement.ownedInTier(5)>=21&&row==1) out = out.mul(achievement.owned()/1000+1);
-	if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(achievement.owned()/500+1);
+	if (achievement.ownedInTier(5)>=21&&row==1) out = out.mul(g.ownedAchievements.length/1000+1);
+	if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(g.ownedAchievements.length/500+1);
 	if (ResearchE("r8_11")&&row==1) out = out.mul(researchEffect(8,11).mul(g.stars).div(100).add(1));
 	return out;
 }
@@ -782,7 +784,7 @@ function fixMasteryArrays() {
 fixMasteryArrays();
 function deltaBaseMasteryPowerGain(time) {
 	let out = stat.tickspeed;
-	if (ResearchE("r6_5")) out = out.mul(researchEffect(6,5).mul(achievement.owned()).add(1));
+	if (ResearchE("r6_5")) out = out.mul(researchEffect(6,5).mul(g.ownedAchievements.length).add(1));
 	return out;
 }
 
@@ -1168,7 +1170,7 @@ function maxStars(row) {
 	return output;
 }
 function availableStarRow(row) {
-	return (maxStars(row)>(StarE(row*10+1)+StarE(row*10+2)+StarE(row*10+3)+StarE(row*10+4)));
+	return (maxStars(row)>[1,2,3,4].map(x=>StarE(x+10*row)?1:0).reduce((x,y)=>x+y));
 }
 const empowerableDarkAxis = [];
 function buyDarkAxis(x) {
@@ -1410,7 +1412,6 @@ function wormholeReset(x) {
 		if (x!=="force") for (let i of wormholeResetAchievements) addAchievement(i);
 		if (g.activeStudy!==0) {
 			if (totalAxis("dark").gte(studies[g.activeStudy].goal())) {
-				console.log("Yash");
 				g.studyCompletions[g.activeStudy]++;
 				respecResearch();
 				generateResearchCanvas();
@@ -1740,7 +1741,10 @@ function buySingleResearch(row,col) {
 		g.ownedResearch.push(id);
 		o.add("spentDiscoveries",cost);
 	}
-	if (research[id].type == "study") unlockFeature("Studies",true);
+	if (research[id].type == "study"){
+		unlockFeature("Studies",true);
+		updateAllStudyDivs()
+	}
 	let regenerateCanvas = false;
 	if (!g.researchVisibility.includes(id)) {
 		g.researchVisibility.push(id);
@@ -1763,7 +1767,7 @@ function buyResearch(row,col) {
 	}
 }
 function researchRow(code) {                 // gets the row number of a research code, eg "r5_7" returns 5
-	return Number(code.split("_")[0].substr(1));
+	return Number(code.split("_")[0].substring(1));
 }
 function researchCol(code) {                 // gets the column number of a research code, eg "r5_7" returns 7
 	return Number(code.split("_")[1]);
@@ -1836,7 +1840,7 @@ const researchLoadouts = {
 }
 function visibleStudies() {
 	let out = [];
-	for (let i of Object.keys(studies)) if ((g.studyCompletions[i]>0)||ResearchE(studies[i]["research"])) out.push(i);
+	for (let i of Object.keys(studies)) if ((g.studyCompletions[i]>0)||ResearchE(studies[i]["research"])) out.push(Number(i));
 	return out;
 }
 function StudyE(x) {
@@ -1861,16 +1865,14 @@ function updateAllStudyDivs() {
 	for (let i of Object.keys(studies)) {updateStudyDiv(i);}
 }
 function enterStudy(x) {
+	g.researchRespec=false
 	wormholeReset("force");
 	g.activeStudy=x;
-	updateStudyDiv(x);
+	updateAllStudyDivs();
 }
 
-var notify_fade = 0;
-function notify(x,color) {
-	document.getElementById("notify").innerHTML += "<br><span style=\"color:"+color+"\">"+x+"</span>";
-	document.getElementById("notify").style.opacity = 1;
-	notify_fade = Number(new Date())+5000;
+function notify(text,backgroundColor,textColor) {
+	document.getElementById("notifyDiv").innerHTML = "<button style=\"background-color:"+backgroundColor+";color:"+textColor+";left:700px\" class=\"notification\" data-in=\""+Date.now()+"\" data-out=\""+(Date.now()+6000)+"\" onClick=\"this.dataset.out=Math.min(Date.now(),this.dataset.out)\">"+text+"</button><br>"+document.getElementById("notifyDiv").innerHTML
 }
 /*
 List of popup data attributes:
@@ -2154,4 +2156,5 @@ function wipeSave(password) {
 }
 function halt() { // Terminates the game loop, used for debugging
 	clearInterval(gameloop);
+	clearInterval(fineGrainLoop)
 }

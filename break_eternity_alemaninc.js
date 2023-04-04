@@ -39,7 +39,7 @@
 			filled += filled;
 		}
 
-		var truncated = filled.length > fillLen ? filled.substr(0, fillLen) : filled;
+		var truncated = filled.length > fillLen ? filled.substring(0, fillLen) : filled;
 
 		return result + truncated;
 	};
@@ -1180,7 +1180,7 @@
   				else //we found the end of the layer count
   				{
   					this.layer = parseFloat(layerstring);
-  					this.mag = parseFloat(newparts[1].substr(i+1));
+  					this.mag = parseFloat(newparts[1].substring(i+1));
   					this.normalize();
   					return this;
   				}
@@ -3081,19 +3081,19 @@ function gformat(value,precision,notation) {
 			return Array(es+1).join("e")+format.engineering(x.layerplus(-es),es==0?2:3);
 		}
 		let height = x.quad_slog(10).floor().toNumber();
-		if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substr(0,5)+"#"+height.toLocaleString("en-US");
+		if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
 		return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#"+format.engineering(height,3);
 	} else if (notation=="Hyper-E") {
 		let height = x.quad_slog(10).floor().toNumber();
-		if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substr(0,5)+"#"+height.toLocaleString("en-US");
+		if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
 		return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#"+format.scientific(height,3);
 	} else if (notation=="Infinity") {
 		return x.quad_slog(10).log(2).div(1024).toNumber().toFixed(8)+"∞";
 	} else if (notation=="Logarithm") {
 		if (x.gt("10^^6")) {
 			let height = x.quad_slog(10).floor().toNumber();
-			if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substr(0,5)+"#"+height.toLocaleString("en-US");
-			return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#e"+Math.log10(height).toFixed(3).toString().substr(0,7);
+			if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
+			return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#e"+Math.log10(height).toFixed(3).toString().substring(0,7);
 		}
 		let es = x.layer-((x.mag<1e6)?0:-1);
 		return Array(es+1).join("e")+x.layerplus(-es).toFixed(3);
@@ -3103,7 +3103,7 @@ function gformat(value,precision,notation) {
 			return Array(es+1).join("e")+format.mixedscientific(x.layerplus(-es),es==0?2:3);
 		}
 		let height = x.quad_slog(10).floor().toNumber();
-		if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substr(0,5)+"#"+height.toLocaleString("en-US");
+		if (height<1e6) return "E"+x.layerf(x => x%1).mul(1e3).floor().div(1e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
 		return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#"+format.mixedscientific(height,3);
 	} else if (notation=="Scientific") {
 		if (x.gt("10^^6")) return gformat(x,0,"Hyper-E");
@@ -3182,7 +3182,7 @@ function halfFunction(x) {
 	return (typeof x == "function")?x():x;
 }
 function numword(x) {
-  if ((x>0)&&(x<1)) return " point "+String(x.toFixed(10)).substr(2).split("").map(x => (x==0)?"zero":(x==1)?"one":(x==2)?"two":(x==3)?"three":(x==4)?"four":(x==5)?"five":(x==6)?"six":(x==7)?"seven":(x==8)?"eight":(x==9)?"nine":"error").join(" ")
+  if ((x>0)&&(x<1)) return " point "+String(x.toFixed(10)).substring(2).split("").map(x => (x==0)?"zero":(x==1)?"one":(x==2)?"two":(x==3)?"three":(x==4)?"four":(x==5)?"five":(x==6)?"six":(x==7)?"seven":(x==8)?"eight":(x==9)?"nine":"error").join(" ")
   if (!(x%1==0)) return numword(Math.floor(x))+numword(x%1)
   if (x<20) return ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"][x]
   if (x<100) return ["twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"][Math.floor(x/10)-2]+((x%10==0)?"":"-"+numword(x%10))
@@ -3200,6 +3200,31 @@ function numword(x) {
   if ((x/1000**exponent)%1==0) return numword(x/1000**exponent)+" "+name
   return numword(Math.floor(x/1000**exponent))+" "+name+", "+numword(x-Math.floor(x/1000**exponent)*1000**exponent)
 }
-function countTo(x) {
-	return Array(x).fill(0).map((x,i)=>i+1)
+function pluralize(num,word) {
+  if (num==1) return "one "+word
+  return numword(num)+" "+word+"s"
+}
+function countTo(x,from0=false) {
+	return Array(x).fill(0).map((x,i)=>from0?i:(i+1))
+}
+function ranint(x,y,geo=false) {
+  if (geo) return Math.floor(x*(y/x)**Math.random())
+  else return Math.round(x+(y-x)*Math.random())
+}
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
 }

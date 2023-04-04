@@ -362,7 +362,7 @@ const research = {
 		effect:function(power){return power;}
 	},
 	r6_5: {
-		description:function(){return "Mastery power gain accelerates "+researchEffect(6,5).mul(100).format(1)+"% faster per achievement completed (current total: "+Decimal.product(researchEffect(6,5),achievement.owned(),100).format(2)+"%)";},
+		description:function(){return "Mastery power gain accelerates "+researchEffect(6,5).mul(100).format(1)+"% faster per achievement completed (current total: "+Decimal.product(researchEffect(6,5),g.ownedAchievements.length,100).format(2)+"%)";},
 		adjacent_req:["r6_6"],
 		condition:function(){return true;},
 		visibility:function(){return g.studyCompletions[1]>=2;},
@@ -372,7 +372,7 @@ const research = {
 		effect:function(power){return power.mul(0.02);}
 	},
 	r6_6: {
-		description:function(){return "Tickspeed is "+researchEffect(6,6).mul(100).format(1)+"% higher per achievement completed (current total: "+Decimal.product(researchEffect(6,6),achievement.owned(),100).format(2)+"%)";},
+		description:function(){return "Tickspeed is "+researchEffect(6,6).mul(100).format(1)+"% higher per achievement completed (current total: "+Decimal.product(researchEffect(6,6),g.ownedAchievements.length,100).format(2)+"%)";},
 		adjacent_req:["r4_6","r5_7"],
 		condition:function(){return true;},
 		visibility:function(){return g.studyCompletions[1]>=1;},
@@ -382,7 +382,7 @@ const research = {
 		effect:function(power){return power.mul(0.01);}
 	},
 	r6_8: {
-		description:function(){return "Hawking radiation gain is "+researchEffect(6,8).mul(100).format(1)+"% higher per achievement completed, per purchased star (current total: "+Decimal.product(researchEffect(6,8),achievement.owned(),g.stars,100).format(2)+"%)";},
+		description:function(){return "Hawking radiation gain is "+researchEffect(6,8).mul(100).format(1)+"% higher per achievement completed, per purchased star (current total: "+Decimal.product(researchEffect(6,8),g.ownedAchievements.length,g.stars,100).format(2)+"%)";},
 		adjacent_req:["r4_6","r4_10"],
 		condition:function(){return true;},
 		visibility:function(){return g.studyCompletions[1]>=1&&g.studyCompletions[2]>=1;},
@@ -481,7 +481,7 @@ const research = {
 		effect:function(power){return power.mul(7);}
 	},
 	r7_5: {
-		description:function(){return "Knowledge increases "+researchEffect(7,5).mul(100).format(2)+"% faster per achievement completed (current total: "+Decimal.product(researchEffect(7,5),achievement.owned(),100).format(1)+"%)";},
+		description:function(){return "Knowledge increases "+researchEffect(7,5).mul(100).format(2)+"% faster per achievement completed (current total: "+Decimal.product(researchEffect(7,5),g.ownedAchievements.length,100).format(1)+"%)";},
 		adjacent_req:["r6_5"],
 		condition:function(){return true;},
 		visibility:function(){return g.studyCompletions[1]>=3;},
@@ -498,7 +498,7 @@ const research = {
 		type:"normal",
 		basecost:"4",
 		icon:"<span style=\"color:#ffffff\">S</span><span class=\"stardusttextsmall\">$</span><sup>-A</sup>",
-		effect:function(power){return N(achievement.owned()/50).max(1).pow(power.mul(-0.5));}
+		effect:function(power){return N(g.ownedAchievements.length/50).max(1).pow(power.mul(-0.5));}
 	},
 	r7_11: {
 		description:function(){return "Each purchased dark star raises the normal star cost to the power of "+researchEffect(7,11).format(3)+" (current total: ^"+researchEffect(7,11).pow(g.darkstars).format(4)+")";},
@@ -551,7 +551,7 @@ const research = {
 		effect:function(power){return power.div(2);}
 	},
 	r8_5: {
-		description:function(){return "Energy increases "+researchEffect(8,5).mul(100).format(2)+"% faster per achievement completed (current total: "+Decimal.product(researchEffect(8,5),achievement.owned(),100).format(1)+"%)";},
+		description:function(){return "Energy increases "+researchEffect(8,5).mul(100).format(2)+"% faster per achievement completed (current total: "+Decimal.product(researchEffect(8,5),g.ownedAchievements.length,100).format(1)+"%)";},
 		adjacent_req:["r7_5"],
 		condition:function(){return true;},
 		visibility:function(){return g.studyCompletions[1]>=4;},

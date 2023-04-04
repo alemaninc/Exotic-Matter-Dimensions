@@ -90,6 +90,7 @@ function updateHTML() {
 		d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off");
 		d.innerHTML("span_completedAchievementTiersShown",g.completedAchievementTiersShown?"Showing":"Hiding");
 		d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
+		d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
 	}
 	if (tabOpen(["Statistics"])) {
 		d.display("button_previousPrestiges",unlocked("Stardust")?"inline-block":"none");
@@ -229,6 +230,7 @@ function updateHTML() {
 	if (tabOpen(["Stardust","Stars"])) {
 		d.innerHTML("span_starCost",BEformat(starCost()));
 		for (let i=11;i<15;i++) d.innerHTML("span_star"+i+"Effect",starEffect(i).format(2))
+		d.innerHTML("span_star42Effect",BEformat(1e18))
 		for (let i=61;i<64;i++) d.innerHTML("span_star"+i+"Effect",starEffect(60).format(2))
 		d.innerHTML("span_star64Effect",starEffect(64).format(3))
 		for (let i=71;i<75;i++) d.innerHTML("span_star"+i+"Effect",starEffect(i).format(2))
@@ -239,6 +241,7 @@ function updateHTML() {
 		let starRowsShown = Array.from(new Set(Array(40).fill(0).map((x,index) => starRow(index+1)))).slice(0,Math.min(g.stars+1,40)).sort(function(a,b){return a-b})
 		for (let row=1;row<11;row++) {
 			d.tr("starRow"+row,starRowsShown.includes(row))
+			d.innerHTML("span_row"+row+"StarsAvailable",maxStars(row)-[1,2,3,4].map(x=>StarE(x+10*row)?1:0).reduce((x,y)=>x+y))
 			for (let col=1;col<5;col++) {
 				let num = row*10+col
 				let classname = StarE(num)?("ownedstarbutton"+row):availableStarRow(row)?"availablestarbutton":"lockedstarbutton"
@@ -359,9 +362,6 @@ function tick(time) {                                                           
 	d.glow("button_automation",tabGlow("Automation"));
 	d.glow("button_stardust",["Stardust Boosts","Stars","Dark Matter"].map(x => tabGlow(x)).includes(true));
 	d.glow("button_wormhole",["Research"].map(x => tabGlow(x)).includes(true));
-	
-	d.element("notify").style.opacity = Math.max(0,Math.min(1,1-(Number(new Date())-notify_fade)/1e3));
-	if (d.element("notify").style.opacity == 0) d.innerHTML("notify","");
 
 
 	// Achievement section
@@ -454,4 +454,32 @@ function auto_tick() {
 	updateHTML();
 	timeSinceGameOpened+=deltatime;
 	g.timeLeft=Number(new Date());
+}
+var lastFineGrainFrame = Date.now()
+var fineGrainDelta = 0
+function fineGrainTick() {
+	fineGrainDelta = Date.now()-lastFineGrainFrame
+	lastFineGrainFrame += fineGrainDelta
+  if (g.newsTickerActive) {
+    d.display("newsticker","inline-block")
+    let transitionProgress = currentNewsOffset/(window.innerWidth+d.element("newsline").offsetWidth)
+    if (transitionProgress > 1) {
+      d.innerHTML("newsline",randomNewsItem())
+      currentNewsOffset = -g.newsTickerSpeed*4
+      d.element("newsline").style.left = "100vw"
+    } else {
+      currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001
+      d.element("newsline").style.left = (currentNewsOffset<0)?"100vw":("calc(100vw - "+currentNewsOffset+"px)")
+    }
+  } else {
+    d.display("newsticker","none")
+  }
+	let activeNotifications = document.getElementsByClassName("notification")
+	for (let i=activeNotifications.length-1;i>=0;i--) {
+		let element = activeNotifications[i]
+		let timeSinceIn = Date.now()-element.dataset.in
+		let timeSinceOut = Date.now()-element.dataset.out
+		element.style.left = (timeSinceIn<500)?(((1-4.8e-3*timeSinceIn+5.6e-6*timeSinceIn**2)*element.offsetWidth)+"px"):(timeSinceOut>0)?((element.offsetWidth*(timeSinceOut/500)**2)+"px"):"0px"
+		if (timeSinceOut>500) element.remove()
+	}
 }

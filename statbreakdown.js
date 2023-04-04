@@ -58,8 +58,8 @@ const mainStatistics = [
 		condition:function(){return g.fastestWormholeReset.neq(9e15);}
 	},{
 		name:"Achievements earned",
-		value:function(){return achievement.owned()+(achievement.ownedInTier("s")==0?"":(" (+ "+achievement.ownedInTier("s")+" secret)"));},
-		condition:function(){return g.ownedAchievements.length>0;}
+		value:function(){return g.ownedAchievements.length+(g.ownedSecretAchievements.length==0?"":(" (+ "+g.ownedSecretAchievements.length+" secret)"));},
+		condition:function(){return g.ownedAchievements.length+g.ownedSecretAchievements.length>0;}
 	}
 ];
 function generateMainStatTable() {
@@ -88,7 +88,7 @@ const hiddenStatistics = [
 		condition:function(){return g.starAutobuyerUpgrades>0;}
 	},{
 		name:"Delta Time",
-		value:function(){return (deltatime*1e3)+"ms";},
+		value:function(){return "Production loop: "+(deltatime*1e3)+"ms<br>Fine grained HTML loop: "+fineGrainDelta+"ms";},
 		condition:function(){return true;}
 	},{
 		name:"Stardust Resets",
@@ -611,9 +611,10 @@ breakdownStats.baseMasteryPowerExponent={
 		breakdownTemplates.masteryAdd(85),
 		{
 			label:"<span onMouseover=\"addAchievement('s09')\">Secret Achievements</span>",
-			func:function(prev){return prev.add(achievement.ownedInTier("s")/1e16);},
-			text:function(){return "<span onClick=\"addAchievement('s09')\">+ "+(achievement.ownedInTier("s")/1e16).toFixed(16)+"</span>";},
-			alwaysShow:function(){return achievement.ownedInTier("s")>0;}
+			mod:function(){return g.ownedSecretAchievements.map(x=>secretAchievementList[x].rarity).reduce((x,y)=>x+y)/1e16},
+			func:function(prev){return prev}, // the reward is a lie! how cruel of alemaninc.
+			text:function(){return "<span onClick=\"addAchievement('s09')\">+ "+this.mod().toFixed(16)+"</span>";},
+			alwaysShow:function(){return g.ownedSecretAchievements.length>0;}
 		}
 	]
 };
@@ -1363,7 +1364,7 @@ breakdownStats.energyGainSpeed={
 		},
 		{
 			label:"Research 8-5",
-			mod:function(){return researchEffect(8,5).mul(achievement.owned()).add(1)},
+			mod:function(){return researchEffect(8,5).mul(g.ownedAchievements.length).add(1)},
 			func:function(prev){return prev.mul(this.mod())},
 			text:function(){return "× "+this.mod().format(2)}
 		},
@@ -1400,7 +1401,7 @@ breakdownStats.tickspeed={
 		},
 		{
 			label:achievement.label(212,true),
-			mod:function(){return [212,213,214,215].map(x => AchievementE(x)?1.004:1).reduce((x,y)=>x*y);},
+			mod:function(){return 1.004**[212,213,214,215].map(x => AchievementE(x)?1:0).reduce((x,y)=>x+y);},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+BEformat(this.mod(),3);}
 		},
@@ -1436,7 +1437,7 @@ breakdownStats.tickspeed={
 		},
 		{
 			label:achievement.label(510),
-			mod:function(){return g.totalDiscoveries.min(250).div(1000).add(1);},
+			mod:function(){return AchievementE(510)?g.totalDiscoveries.min(250).div(1000).add(1):N(1)},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(3);}
 		},
@@ -1448,7 +1449,7 @@ breakdownStats.tickspeed={
 		},
 		{
 			label:"Research 6-6",
-			mod:function(){return ResearchE("r6_6")?researchEffect(6,6).mul(achievement.owned()).add(1):N(1);},
+			mod:function(){return ResearchE("r6_6")?researchEffect(6,6).mul(g.ownedAchievements.length).add(1):N(1);},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(3);}
 		},
@@ -1456,7 +1457,7 @@ breakdownStats.tickspeed={
 			label:"Wormhole Milestone 13",
 			mod:function(){
 				if (achievement.ownedInTier(5)<13) return 1;
-				return achievement.owned()/400+1;
+				return g.ownedAchievements.length/400+1;
 			},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().toFixed(4);}
@@ -1478,7 +1479,7 @@ breakdownStats.HRMultiplier={
 		breakdownTemplates.masteryMul(102),
 		{
 			label:"Research 6-8",
-			mod:function(){return ResearchE("r6_8")?Decimal.product(researchEffect(6,8),achievement.owned(),g.stars).add(1):N(1);},
+			mod:function(){return ResearchE("r6_8")?Decimal.product(researchEffect(6,8),g.ownedAchievements.length,g.stars).add(1):N(1);},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(2);}
 		},
@@ -1687,7 +1688,7 @@ breakdownStats.knowledgePerSec={
 		},
 		{
 			label:"Research 7-5",
-			mod:function(){return ResearchE("r7_5")?researchEffect(7,5).mul(achievement.owned()).add(1):N(1);},
+			mod:function(){return ResearchE("r7_5")?researchEffect(7,5).mul(g.ownedAchievements.length).add(1):N(1);},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(2);}
 		},

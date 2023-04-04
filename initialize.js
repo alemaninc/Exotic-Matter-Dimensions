@@ -1,14 +1,15 @@
 "use strict";
 var gameloop
+var fineGrainLoop
 var initComplete = false
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
   function(){load("normal");},
   function(){
-    let versionName = "𝕍1.1.14"
+    let versionName = "𝕍1.1.15"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000514
+    g.version = 1000515
   },
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
   function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
@@ -59,7 +60,10 @@ const initSteps = [
   function(){statBreakdownCategories();},
   function(){
     updateHTML();
+    fineGrainTick();
     gameloop = window.setInterval(auto_tick,50);
+    fineGrainLoop = window.setInterval(fineGrainTick,10);
+    d.innerHTML("newsline",randomNewsItem())
     openTopLevelDiv("game");
     initComplete = true;
   },

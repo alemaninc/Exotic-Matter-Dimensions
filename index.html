@@ -8,6 +8,7 @@
 	</head>
 	<body>
 		<div id="game" class="topleveldiv" style="display:none;padding-bottom:44px">
+			<div id="newsticker" style="display:none"><span id="newsline"></span></div>
 			<table>
 				<tr>
 					<td class="toptable" id="resourceModal"></td>
@@ -70,7 +71,7 @@
 				</div>
 				<div class="stardustTab" id="Stardust Boosts">
 					<p class="underline">Thanks to your Stardust:</p><br>
-					<div id="div_stardustBoostContainer"></div>
+					<div id="div_stardustBoostContainer"></div><br>
 					<div id="div_stardustUpgradeContainer"></div><br>
 					<button class="starbuybutton" onClick="stardustReset('force')">Reset with no reward (may be useful if you get stuck)</button>
 					<button class="starbuybutton" onClick="toggle('showingCappedStardustUpgrades');showingCappedStardustUpgradesOptionHTML()" id="button_showCappedStardustUpgrades"></button>
@@ -141,6 +142,7 @@
 					<button class="optionsbutton" onClick="toggle('completedAchievementTiersShown');updateAchievementsTab()"><span id="span_completedAchievementTiersShown"></span> completed achievement tiers</button>
 					<button class="optionsbutton" onClick="toggle('darkstarBulk')" id="button_bulkDarkStar">Dark star bulk buy: <span id="darkstarBulk"></span></button>
 					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','Only Axis tab','None'],'mode')" id="button_footerDisplay"></button>
+					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
 				</div>
 			</div>
 			<div class="tab" id="Statistics" style="display:none">
@@ -285,10 +287,10 @@
 		<div id="export" class="topleveldiv" style="display:none">
 			This is your export string:<br>
 			<textarea id="span_export" style="height:50vh;width:50vw"></textarea><br>
-			<button class="genericbutton" onClick="openTopLevelDiv('game')">Back to game</button>
+			<button class="genericbuntton" onClick="openTopLevelDiv('game')">Back to game</button>
 		</div>
 		<div id="wormholeAnimation" class="topleveldiv" style="display:none;opacity:0"></div>
-		<div id="notify" style="position: fixed;top: 0px;right: 2vw;width: 96vw;height: 24px;border: rgba(0,0,0,0);background: rgba(0,0,0,0);text-align:center"></div>
+		<div id="notifyDiv"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script type="text/javascript" src="researchtree.js"></script>
 		<script type="text/javascript" src="achievements.js"></script>
@@ -298,6 +300,7 @@
 		<script type="text/javascript" src="gameloop.js"></script>
 		<script type="text/javascript" src="oldsaves.js"></script>
 		<script type="text/javascript" src="howtoplay.js"></script>
+		<script type="text/javascript" src="newsticker.js"></script>
 		<script type="text/javascript" src="htmlgenerator.js"></script>
 		<script type="text/javascript" src="initialize.js"></script>
 		<script></script>
