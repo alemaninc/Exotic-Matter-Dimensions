@@ -1,6 +1,6 @@
 const newsSupport = {
   universeSize:function(){
-    let array = axisCodes.map(x=>[x,"dark"+x]).flat().map(x=>realAxis(x))
+    let array = fullAxisCodes.map(x=>realAxis(x))
     let num = array.map(x => x.max(1)).reduce((x,y)=>x.mul(y))
     let dimension = array.map(x=>x.eq(0)?0:1).reduce((x,y)=>x+y)
     if (dimension == 0) return "1. Just 1. No dimensions. Buy an axis to get a dimension!"
@@ -88,7 +88,10 @@ const newsSupport = {
     return (weight==undefined)?("{"+text+"}"):("{"+text+","+weight+"}")
   },
   secretAchievementHelp:function(){popup({text:"Here is the name of a Secret Achievement: "+secretAchievementList[Object.keys(secretAchievementList).filter(x=>!Object.keys(secretAchievementList).includes(Number(x)))[0]].name+".",buttons:[["Close",""]]})},
-  easterTime:function() {let Y = new Date().getUTCFullYear();let C = Math.floor(Y/100);let N = Y - 19*Math.floor(Y/19);let K = Math.floor((C - 17)/25);let I = C - Math.floor(C/4) - Math.floor((C - K)/3) + 19*N + 15;I = I - 30*Math.floor((I/30));I = I - Math.floor(I/28)*(1 - Math.floor(I/28)*Math.floor(29/(I + 1))*Math.floor((21 - N)/11));let J = Y + Math.floor(Y/4) + I + 2 - C + Math.floor(C/4);J = J - 7*Math.floor(J/7);let L = I - J;let M = 3 + Math.floor((L + 40)/44);let D = L + 28 - 31*Math.floor(M/4);return Math.abs((M*30+D)-((new Date().getUTCMonth()+1)*30+new Date().getUTCDate()))<7}
+  easterTime:function() {let Y = new Date().getUTCFullYear();let C = Math.floor(Y/100);let N = Y - 19*Math.floor(Y/19);let K = Math.floor((C - 17)/25);let I = C - Math.floor(C/4) - Math.floor((C - K)/3) + 19*N + 15;I = I - 30*Math.floor((I/30));I = I - Math.floor(I/28)*(1 - Math.floor(I/28)*Math.floor(29/(I + 1))*Math.floor((21 - N)/11));let J = Y + Math.floor(Y/4) + I + 2 - C + Math.floor(C/4);J = J - 7*Math.floor(J/7);let L = I - J;let M = 3 + Math.floor((L + 40)/44);let D = L + 28 - 31*Math.floor(M/4);return Math.abs((M*30+D)-((new Date().getUTCMonth()+1)*30+new Date().getUTCDate()))<7},
+  EMDevelopmentFactor:function(x){return N(x).add(10).quad_slog(10).mul(100)},
+  EMDevelopmentVariables:function(){return [g.exoticmatter,g.ownedAchievements.length,g.truetimePlayed,g.masteryPower,g.stardust,g.darkmatter,g.hawkingradiation]},
+  EMDevelopmentIndex:function(){return Decimal.sum(...newsSupport.EMDevelopmentVariables().map(x=>newsSupport.EMDevelopmentFactor(x)))}
 }
 const newsList = [
   {text:"This is not an <i>Antimatter Dimensions</i> clone."},
@@ -188,7 +191,33 @@ const newsList = [
   {text:"Welcome back to another episode of \"Exotic Math Dimensions\" by alemaninc! We all know that 2 + 2 = 5. But thereare still many people who unknowingly partake in logic denial by claiming that 2 + 2 = 4. In this episode I will prove onceand for all that 2 + 2 = 5. We all know that 9 + 10 = 21. If we subtract 0.5 from both sides, we get 9 + 9.5 = 20.5. Now,when we add 0.5 to both sides, we get 9.5 + 9.5 = 21. Now the two terms on the left side are equal. The next step is todivide both sides by 2 to produce 4.75 + 4.75 = 10.5. Now, we subtract 2.75 from both sides, getting 2 + 4.75 = 7.75.Finally, we subtract 2.75 from both sides again, and so we get our final answer of 2 + 2 = 5. Stay tuned for anotherepisode of \"Exotic Math Dimensions\" by alemaninc, where we will prove that quaternion multiplication is sorcery made up by communists."},
   {text:"This message was written by xhwzwka. Who's that, you may ask? Ask him! He's 324862 years old, his real name is <unknown>, his Discord number is xhwzwka#7155, he lives at 72 W Street and his credit card number is 72917164954."},
   {text:"Hello, dear players of \"Exotic Matter Dimensions\"! alemaninc left his computer unattended, so I thought I might have some fun with this. alemaninc's real name is [REDACTED], he lives at [REDACTED] in [REDACTED], [REDACTED] and he is [REDACTED] years old but still [REDACTED] and gets a suspicious amount of [REDACTED] from [REDACTED] who [REDACTED]. If you see this message, ping alemaninc [REDACTED] at [REDACTED] and post a screenshot in [REDACTED]."},
-  {get text(){return [Array.random(["black","silver","gray","white","maroon","red","purple","fuchsia","green","lime","olive","yellow","navy","blue","teal","aqua"])].map(x=>"<span style=\"color:"+x+"\">This news message is "+x+".</span>")[0]}}
+  {get text(){return [Array.random(["black","silver","gray","white","maroon","red","purple","fuchsia","green","lime","olive","yellow","navy","blue","teal","aqua"])].map(x=>"<span style=\"color:"+x+"\">This news message is "+x+".</span>")[0]}},
+  {text:"They say that stardust tastes like everything at once.",get weight(){return unlocked("Stardust")?1:0}},
+  {text:"If you dilate time fast enough, you can start to see blue sparks."},
+  {text:"This message is not helpful."},
+  {text:"It's $29 a gigajoule, people, so stop being cheap, stop trying to charge your phones with mastery power and stop blowing yourselves through the roof! If one more person comes in here with a burned forehead, I swear I won't treat him. It's $29 a gigajoule!",get weight(){return AchievementE(105)?1:0}},
+  {text:"In 5 hours, something will happen."},
+  {text:"Exponentiation is powerful. Just ask any incremental game player!",get weight(){return (g.stars>9||AchievementE(401)||unlocked("Energy"))?1:0}},
+  {text:["demons","angels","fallen angels","Satan","Lucifer","the seventh circle of Hell","fun"].map(x=>"If you're looking for "+x+", this is the wrong game. ").join("")+"If you're looking to waste time, this is the right game!"},
+  {text:"Normal energy isn't real. Stop trying to look for it.",get weight(){return g.stardustUpgrades[4]==stardustUpgradeCap(5)?1:0}},
+  {text:"Breaking news! Nothing has happened!"},
+  {text:"Click here to click here."},
+  {text:"One day, Supernova will return and the Phoenix Prophecy shall be fulfilled.",get weight(){return AchievementE(401)?1:0}},
+  {text:"I'm feeling quite energetic today.",get weight(){return unlocked("Energy")?1:0}},
+  {text:"They say that the W Axis is time.",get weight(){return AchievementE(102)?1:0}},
+  {text:"May the stars guide you.",get weight(){return g.stars>0?1:0}},
+  {text:"The news ticker is now empowered.",get weight(){return g.studyCompletions[1]>0?1:0}},
+  {text:"You have a strange feeling for a moment, then it passes."},
+  {text:"The biscuit is a lie."},
+  {text:"Antimatter ghosts do not exist. Just like matter ghosts. They don't have any matter, for that matter. Exotic matter ghosts, on the other hand, can be found in every respectable Hallowe'en store."},
+  {text:"Hydrogen fuel has been abandoned by the American space program in favor of exotic matter fuel."},
+  {text:"Theoretical physicists of the world discover new exotic matter producer - \"Oh boy, guess we were wrong all along!\""},
+  {get text(){return "In the news today, a new religion has been created, and it's spreading like wildfire. The believers of this religion worship the AleMan Incorporated Company, who claim to be the gods of exotic matter. They also claim that there are "+numword(this.dims)+" dimensions."},get weight(){return this.dims>3?1:0},get dims(){return fullAxisCodes.map(x=>g[x+"Axis"].eq(0)?0:1).reduce((x,y)=>x+y)}},
+  {text:"You made one exotic matter! Whatever that means."},
+  {text:"None of this matters."},
+  {get text(){return "Common sense confirms that the color of exotic matter is <div style=\"height:1em;width:1em;background-color:"+this.color+"\"></div>"},get color(){return getComputedStyle(document.body).getPropertyValue("--exoticmatter")}},
+  {get text(){return "A revolutionary new metric of quantifying <i>Exotic Matter Dimensions</i> savefiles has been invented called the \"Exotic Matter Progress "+newsSupport.EMDevelopmentVariables().length+" Development Index\". Your score in this index is: "+BEformat(newsSupport.EMDevelopmentIndex())+"!"}},
+  {get text(){return "Oh, so you like "+g.notation+" notation? Okay, then what number is "+N(10).quad_tetr(10**308**Math.random()).format()+" in "+g.notation+" notation?"}}
 ]
 var newsOrder = []
 function newsWeight(item) {

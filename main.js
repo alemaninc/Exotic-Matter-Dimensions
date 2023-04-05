@@ -133,7 +133,8 @@ var g = Object.assign({},basesave); // "game"
 var timeSinceGameOpened = 0;                 // "halted" achievements were being awarded randomly on load
 var screen = 1;    // 1:game      2:story
 var overclockSpeedupFactor = 1;
-const axisCodes = ["X","Y","Z","W","V","U","T","S"];
+const axisCodes = "XYZWVUTS".split("");
+const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x]).flat()
 var savecounter = 0; // will prevent save before load
 var oldframetime = new Date().getTime();
 var newframetime = new Date().getTime();
@@ -193,7 +194,7 @@ function openTab(id) {
 	for (let i of d.class("bigtab")) i.style.filter = "brightness(60%)"
 	d.element(dictionary(id,tier1NavTabToButtonDictionary)).style.filter = "brightness(100%)"
 }
-const tier2NavTabToButtonDictionary = [["tabAxis","button_mainaxis"],["tabMasteries","button_masteries"],["tabOfflineTime","button_offlineTimeTab"],["Stardust Boosts","button_stardustBoosts"],["Stars","button_stars"],["Dark Matter","button_darkmatter"],["Energy","button_energy"],["Research","button_research"],["Studies","button_studiesTab"],["Main Statistics","button_subtabStatistics"],["Hidden Statistics","button_subtabHiddenStatistics"],["Stat Breakdown","button_subtabStatBreakdown"],["Previous Prestiges","button_previousPrestiges"],["subtabAchievements","button_subtabAchievements"],["subtabSecretAchievements","button_subtabSecretAchievements"],["Wormhole Milestones","button_wormholeMilestones"]]
+const tier2NavTabToButtonDictionary = [["tabAxis","button_mainaxis"],["tabMasteries","button_masteries"],["tabOfflineTime","button_offlineTimeTab"],["Stardust Boosts","button_stardustBoosts"],["Stars","button_stars"],["Dark Matter","button_darkmatter"],["Energy","button_energy"],["Research","button_research"],["Studies","button_studiesTab"],["Main Statistics","button_subtabStatistics"],["Hidden Statistics","button_subtabHiddenStatistics"],["Large Number Visualization","button_subtabLargeNumberVisualization"],["Stat Breakdown","button_subtabStatBreakdown"],["Previous Prestiges","button_previousPrestiges"],["subtabAchievements","button_subtabAchievements"],["subtabSecretAchievements","button_subtabSecretAchievements"],["Wormhole Milestones","button_wormholeMilestones"]]
 function openSubTab(parentTab,id) {
 	for (let i of d.class(parentTab+"Tab")) i.style.display="none";
 	d.display(id,"inline-block");
@@ -355,7 +356,7 @@ function unempoweredAxis(axis) {
 	return realAxis(axis).sub(axisEmpowerment(axis));
 }
 function fullStudyName(x) {
-	return "Study "+roman(x)+":"+studies[x].name;
+	return "Study "+roman(x)+": "+studies[x].name;
 }
 function studyRewardHTML(studyNum,rewardNum,precision,completions) {
 	if (completions == undefined) completions = g.studyCompletions[studyNum];
@@ -859,15 +860,14 @@ function updateMasteryLayout() {
 	d.display("masteryContainerModern",g.masteryContainerStyle=="Modern"?"inline-block":"none")
 }
 function updateMasterySideTexts() {
-	/// FIX
-	for (let i of document.getElementsByClassName("masteryID"+g.masteryContainerStyle)) i.style.display=g.masteryIdsShown?"inline:block":"none"
-	for (let i of document.getElementsByClassName("masteryBoost"+g.masteryContainerStyle)) i.style.display=g.masteryBoostsShown?"inline:block":"none"
-	for (let i of document.getElementsByClassName("masteryActive"+g.masteryContainerStyle)) i.style.display=g.masteryActivityShown?"inline:block":"none"
+	for (let i of document.getElementsByClassName("masteryID"+g.masteryContainerStyle)) i.style.display=g.masteryIdsShown?"inline-block":"none"
+	for (let i of document.getElementsByClassName("masteryBoost"+g.masteryContainerStyle)) i.style.display=g.masteryBoostsShown?"inline-block":"none"
+	for (let i of document.getElementsByClassName("masteryActive"+g.masteryContainerStyle)) i.style.display=g.masteryActivityShown?"inline-block":"none"
 }
 function masteryOptions() {
 	updateMasterySideTexts()
 	popup({
-		text:"<button class=\"starbuybutton\" onClick=\"g.masteryContainerStyle=(g.masteryContainerStyle=='Modern'?'Legacy':'Modern');updateMasteryLayout();masteryOptions()\">Layout: "+g.masteryContainerStyle+"</button>" /*<button class=\"starbuybutton\" onClick=\"toggle('masteryIdsShown');masteryOptions()\">"+(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs</button><button class=\"starbuybutton\" onClick=\"toggle('masteryBoostsShown');masteryOptions()\">"+(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages</button><button class=\"starbuybutton\" onClick=\"toggle('masteryActivityShown');masteryOptions()\">"+(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states</button>"*/,
+		text:"<button class=\"starbuybutton\" onClick=\"g.masteryContainerStyle=(g.masteryContainerStyle=='Modern'?'Legacy':'Modern');updateMasteryLayout();masteryOptions()\">Layout: "+g.masteryContainerStyle+"</button><button class=\"starbuybutton\" onClick=\"toggle('masteryIdsShown');masteryOptions()\">"+(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs</button><button class=\"starbuybutton\" onClick=\"toggle('masteryBoostsShown');masteryOptions()\">"+(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages</button><button class=\"starbuybutton\" onClick=\"toggle('masteryActivityShown');masteryOptions()\">"+(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states</button>",
 		buttons:[["Close","updateMasterySideTexts()"]]
 	})
 }
@@ -1560,14 +1560,11 @@ function showResearchInfo(row,col) {
 	if (row==6&&col==9&&!ResearchE("r6_9")) return;
 	let out1 = [];
 	let out2 = [];
-	if (res.type=="normal") {
-		out1.push("<span style=\"font-size:10px;color:#00ff00\">Research "+row+"-"+col+"</span>");
-	} else if (res.type=="permanent") {
+	out1.push("<span style=\"font-size:10px;color:#00ff00\">Research "+row+"-"+col+"</span>");
+	if (res.type=="permanent") {
 		out1.push("<span style=\"font-size:10px;color:#ffff00\">Research "+row+"-"+col+"<br>This research will not be refunded upon respec.</span>");
 	} else if (res.type=="study") {
 		out1.push("<span style=\"font-size:10px;color:#ff0000\">Purchasing this will unlock a Study. If you can do a Wormhole reset under special restrictions, you will gain a permanent reward.</span>");
-	} else {
-		throw "Invalid value for research.r"+row+"_"+col+".type ("+res.type+")"
 	}
 	out1.push(res.description());
 	out2.push("Cost: "+researchCost("r"+row+"_"+col)+" Discover"+(researchCost("r"+row+"_"+col).eq(1)?"y":"ies"));
@@ -2037,9 +2034,8 @@ function load(type,str) {
 				g.colortheme = "Light"
 				theme()
 			}
-			for (let i of g.ownedAchievements.filter(x => x.substring(0,1)=="s")) g.ownedSecretAchievements.push(Number(i.substring(1)))
-			g.ownedSecretAchievements = Array.from(new Set(g.ownedSecretAchievements))
-			g.ownedAchievements = g.ownedAchievements.filter(x => x.substring(0,1)!=="s")
+			g.ownedAchievements = Array.from(new Set(g.ownedAchievements)).filter(x => validAchievement(x))
+			g.ownedSecretAchievements = Array.from(new Set(g.ownedSecretAchievements)).filter(x => secretAchievementList[x] !== undefined)
 			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}
 	}

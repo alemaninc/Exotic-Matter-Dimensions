@@ -56,6 +56,21 @@ const HTMLGenerator = {
     }
     d.innerHTML("div_dilationUpgrades",out)
   },
+  mainStatTable:function() {
+    let out = "";
+    for (let i=0;i<mainStatistics.length;i++) out+="<tr id=\"mainStatRow"+i+"\"><td class=\"tablecell\" style=\"width:40vw\">"+mainStatistics[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\" id=\"mainStatValue"+i+"\"></td></tr>";
+    d.innerHTML("mainstattable",out);
+  },
+  hiddenStatTable:function() {
+    let out = "";
+    for (let i=0;i<hiddenStatistics.length;i++) out+="<tr id=\"hiddenStatRow"+i+"\"><td class=\"tablecell\" style=\"width:40vw\">"+hiddenStatistics[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\" id=\"hiddenStatValue"+i+"\"></td></tr>";
+    d.innerHTML("hiddenstattable",out);
+  },
+  largeNumberVisualization() {
+    let out = ""
+    for (let i=0;i<largeNumberVisualizationVariables.length;i++) out+="<div class=\"largeNumberVisualization\" id=\"div_largeNumberVisualization"+i+"\">You have <span id=\"span_largeNumberVisualization"+i+"Value\" class=\""+largeNumberVisualizationVariables[i].class+"\"></span> "+largeNumberVisualizationVariables[i].label+". This is equal to <span id=\"span_largeNumberVisualization"+i+"Comparison\" class=\""+largeNumberVisualizationVariables[i].class+"\"></span></div>"
+    d.innerHTML("Large Number Visualization",out)
+  },
   previousPrestiges() {
     for (let i=1;i<11;i++) {
       d.element("table_last10StardustRuns").innerHTML += "<tr id=\"last10StardustRuns_row"+i+"\"><td style=\"width:30px\" class=\"tablecell\">"+i+"</td><td id=\"span_last10StardustRuns_time"+i+"\" style=\"width:calc(33vw - 30px)\" class=\"tablecell\"></td><td id=\"span_last10StardustRuns_gain"+i+"\" style=\"width:calc(33vw - 30px)\" class=\"tablecell\"></td><td style=\"width:calc(33vw - 30px)\" class=\"tablecell\"><button id=\"button_last10StardustRuns_build"+i+"\" onClick=\"previousPrestige.showBuild('stardust','last',"+i+")\">Show <span class=\"previousPrestigeBuildList\"></span> builds</button></td></tr>"

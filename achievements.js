@@ -1155,6 +1155,12 @@ function addAchievement(x) {
 		d.display("span_noAchievements","none")
 	}
 }
+function validAchievement(id) {
+	try {achievement(id)}
+	catch {return false}
+	if (achievement(id) == undefined) return false
+	return true
+}
 function showSecretAchievementInfo(id) {
 	let ach = secretAchievementList[id];
 	let textcolor = secretAchievementRarityColors[ach.rarity][0];

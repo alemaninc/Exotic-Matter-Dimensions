@@ -62,12 +62,6 @@ const mainStatistics = [
 		condition:function(){return g.ownedAchievements.length+g.ownedSecretAchievements.length>0;}
 	}
 ];
-function generateMainStatTable() {
-	let out = "";
-	for (let i=0;i<mainStatistics.length;i++) out+="<tr id=\"mainStatRow"+i+"\"><td class=\"tablecell\" style=\"width:40vw\">"+mainStatistics[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\" id=\"mainStatValue"+i+"\"></td></tr>";
-	d.innerHTML("mainstattable",out);
-}
-generateMainStatTable();
 
 const hiddenStatistics = [
 	{
@@ -112,12 +106,54 @@ const hiddenStatistics = [
 		condition:function(){return axisCodes.map(x => stat["free"+x+"Axis"].gt(g[x+"Axis"])||stat["freedark"+x+"Axis"].gt(g["dark"+x+"Axis"])).reduce((x,y)=>x||y);}
 	}
 ].sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
-function generateHiddenStatTable() {
-	let out = "";
-	for (let i=0;i<hiddenStatistics.length;i++) out+="<tr id=\"hiddenStatRow"+i+"\"><td class=\"tablecell\" style=\"width:40vw\">"+hiddenStatistics[i].name+"</td><td class=\"tablecell\" style=\"width:40vw\" id=\"hiddenStatValue"+i+"\"></td></tr>";
-	d.innerHTML("hiddenstattable",out);
+
+const largeNumberVisualizationVariables = [
+	{label:"exotic matter",class:"_exoticmatter",value:function(){return g.exoticmatter}},
+	{label:"stardust",class:"_stardust",value:function(){return g.stardust}},
+	{label:"dark matter",class:"_darkmatter",value:function(){return g.darkmatter}},
+	{label:"dark energy",class:"_energy",value:function(){return g.darkEnergy}},
+	{label:"hawking radiation",class:"_wormhole",value:function(){return g.hawkingradiation}}
+]
+const largeNumberVisualizationNumbers = [
+	[1e10,"Dialogue"],
+	[2**27*3**14*125*49*11,"the number of Rubik's cube combinations"],
+	[6.02214076e23,"Avogadro's number"],
+	[1.989e33,"solar mass / g"],
+	[7.401196841564901e45,"the number of 4<sup>3</sup> Rubik's cube combinations"],
+	[17*2**259,"the Eddington number"],
+	[1e100,"googol"],
+	[2**512,"4↑↑3"],
+	[8.4506e184,"volume of observable universe / l<xscript><sup>3</sup><sub>P</sub></xscript>"],
+	[2e223/9,"2.22×10<sup>222</sup>"],
+	[Number.MAX_VALUE,"Double floating-point Infinity"],
+	["1e1000","\"When will it be enough?\" achievement requirement"],
+	["1e3003","millillion"],
+	[N(2).pow(16384),"Quadruple floating-point Infinity"],
+	[N(2).pow(65536),"2↑↑5"],
+	["1e44031","\"OMCCDV\" achievement requirement"],
+	["2^276709","the Hitchhiker's number"],
+	["ee6","\"Millionaire\" achievement requirement"],
+	["e3000003","Micrillion"],
+	[Decimal.powerTower(Math.E,Math.PI,Math.E,Math.PI).mul(794843294078147843293.7+1/30),"Ballium's number"],
+	["2^82589933","largest known prime number as of February 2023"],
+	["e3000000003","Nanillion"],
+	["10^^3","Trialogue"],
+	["e3e12","Picillion"],
+	["e3e15","Femtillion"],
+	["e3e18","Attillion"],
+	["e3e21","Zeptillion"],
+	["e3e24","Yoctillion"],
+	["e3e27","Rontillion"],
+	["e3e30","Quectillion"],
+	[c.maxvalue,"Infinity"]
+].map(x=>[N(x[0]),x[1]]).sort((a,b)=>a[0].gt(b[0]))
+function visualiseLargeNumber(x) {
+	x=N(x)
+	let index = 0
+	while (largeNumberVisualizationNumbers[index+1][0].lt(x)) index++
+	if (x.gt(c.inf)) return "("+largeNumberVisualizationNumbers[index][1]+")<sup>"+Decimal.div(x.log10(),largeNumberVisualizationNumbers[index][0].log10()).format(3)
+	return "("+largeNumberVisualizationNumbers[index][1]+") × "+x.div(largeNumberVisualizationNumbers[index][0]).format(3)
 }
-generateHiddenStatTable();
 
 const breakdownTemplates = {
 	base:function(value){

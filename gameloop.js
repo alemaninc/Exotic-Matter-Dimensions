@@ -129,6 +129,17 @@ function updateHTML() {
 			}
 		}
 	}
+	if (tabOpen(["Statistics","Large Number Visualization"])) {
+		for (let i=0;i<largeNumberVisualizationVariables.length;i++) {
+			if (largeNumberVisualizationVariables[i].value().gt(1e10)) {
+				d.display("div_largeNumberVisualization"+i,"inline-block")
+				d.innerHTML("span_largeNumberVisualization"+i+"Value",largeNumberVisualizationVariables[i].value().format(2))
+				d.innerHTML("span_largeNumberVisualization"+i+"Comparison",visualiseLargeNumber(largeNumberVisualizationVariables[i].value()))
+			} else {
+				d.display("div_largeNumberVisualization"+i,"none")
+			}
+		}
+	}
 	if (tabOpen(["Statistics","Stat Breakdown"])) {
 		let categories = Object.keys(breakdownCategories)
 		for (let i=0;i<categories.length;i++) {

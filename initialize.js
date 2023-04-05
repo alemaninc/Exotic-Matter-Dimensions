@@ -6,10 +6,10 @@ var initComplete = false
 const initSteps = [
   function(){load("normal");},
   function(){
-    let versionName = "𝕍1.1.16"
+    let versionName = "𝕍1.1.18"
     d.innerHTML("span_currentVersion",versionName)
     document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
-    g.version = 1000516
+    g.version = 1000518
   },
   function(){for (let i of Object.keys(statGenerations)) statGeneration(i)},
   function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
@@ -35,6 +35,9 @@ const initSteps = [
     g.ownedSecretAchievements = g.ownedSecretAchievements.filter(x => secretAchievementList[x] !== undefined)
   },
   function(){HTMLGenerator.dilationUpgrades();},
+  function(){HTMLGenerator.mainStatTable()},
+  function(){HTMLGenerator.hiddenStatTable()},
+  function(){HTMLGenerator.largeNumberVisualization()},
   function(){HTMLGenerator.previousPrestiges();},
   function(){HTMLGenerator.stardustBoosts();},
   function(){HTMLGenerator.stardustUpgrades();},

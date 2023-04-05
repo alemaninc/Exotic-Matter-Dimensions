@@ -355,6 +355,10 @@ tab {
 .glownotify{
   box-shadow:0px 0px 20px 0px #ff0
 }
+.largeNumberVisualization {
+  width:40vw;
+  margin:20px;
+}
 .previousPrestige {
   height:200px;
   width:300px;
