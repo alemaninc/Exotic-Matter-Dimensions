@@ -142,7 +142,7 @@ const HTPtexts = [
     visibility:function(){return unlocked("Hawking Radiation")},
     paragraphs:[
       "Completing Tier 5 achievements unlocks Wormhole Milestones.",
-      "Wormhole Milestones make the game less tedious, for example by unlocking new automators and allowing some things to persist on Stardust and Wormhole reset. A few milestones also provide production boosts."
+      "Wormhole Milestones make the game less tedious, for r by unlocking new automators and allowing some things to persist on Stardust and Wormhole reset. A few milestones also provide production boosts."
     ]
   },
   {

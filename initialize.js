@@ -18,6 +18,7 @@ const initSteps = [
   function(){HTMLGenerator.axisTable();},
   function(){HTMLGenerator.darkAxisTable();},
   function(){HTMLGenerator.masteries();},
+  function(){updateMasteryLayout();updateMasterySideTexts()},
   function(){HTMLGenerator.achievements();},
   function(){updateAchievementsTab();},
   function(){HTMLGenerator.secretAchievements();},

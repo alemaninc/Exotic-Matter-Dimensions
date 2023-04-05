@@ -883,7 +883,7 @@ const secretAchievementRarityColors = [
 	["#ff6600","#000000"],
 	["#ff3333","#ffffff"],
 	["#ffff00","#000000"],
-	["#0000ff","#ffffff"]
+	["#3333ff;filter:contrast(50%)","#ffffff"]
 ]
 const secretAchievementList = {
 	1:{
@@ -1061,7 +1061,7 @@ const secretAchievementList = {
 			for (let i=1;i<5;i++) for (let j=0;j<dilationUpgrades[i].cap;j++) out+=dilationUpgrades[i].cost(j)
 			return out
 		},
-		get flavor(){return timeFormat(secretAchievementList[24].timeTaken())+" well spent."},
+		get flavor(){return timeFormat(this.timeTaken())+" well spent."},
 		rarity:6
 	},
 	25:{
@@ -1087,6 +1087,13 @@ const secretAchievementList = {
 		reward:"+1% productivity",
 		flavor:"The public have an insatiable curiosity to know everything, except what is worth knowing.",
 		rarity:2
+	},
+	28:{
+		name:"xhwzwka",
+		description:"Prove your status as a Distinguished Contributor",
+		check:function(){return newsSupport.xhwzwkaPhishing==5},
+		flavor:"\"WHO IS XHWZWKA\"<br>\"It's ill-defined!\"",
+		rarity:7
 	}
 }
 var axisBuyAchievements = [101,102,103,104,113,207,208,209,210,217,303,304,305,505,526,527];

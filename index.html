@@ -43,8 +43,9 @@
 					<p>You have <span class="_mastery" id="span_masteryPower"></span> mastery power.<br>
 					You are getting <span class="_mastery" id="span_masteryPowerPerSec"></span> mastery power per second (based on exotic matter and time since last mastery swap).<br>
 					You can activate 1 Mastery from each row. Unassigning a Mastery will reset your mastery power.</p>
-					<button style="height:50px;width:200px;border-radius:12px" onClick="g.activeMasteries.fill(0);masteryReset()">Unassign all Masteries (this will reset mastery power)</button>
-					<div id="masteryContainer"></div><br>
+					<button class="starbuybutton" onClick="g.activeMasteries.fill(0);masteryReset()">Unassign all Masteries (this will reset mastery power)</button>
+					<button class="starbuybutton" onClick="masteryOptions()">Show Mastery visual options</button>
+					<div id="masteryContainerLegacy"></div><div id="masteryContainerModern"></div><br>
 					<div id="masteryPanel">
 						<span id="span_shownMasteryText"></span><br>
 						<span id="button_enableShownMastery"></span>
@@ -141,7 +142,7 @@
 					<button class="optionsbutton" onClick="changeTheme()">Theme: <span id="colortheme"></span></button>
 					<button class="optionsbutton" onClick="toggle('completedAchievementTiersShown');updateAchievementsTab()"><span id="span_completedAchievementTiersShown"></span> completed achievement tiers</button>
 					<button class="optionsbutton" onClick="toggle('darkstarBulk')" id="button_bulkDarkStar">Dark star bulk buy: <span id="darkstarBulk"></span></button>
-					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','Only Axis tab','None'],'mode')" id="button_footerDisplay"></button>
+					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','None'],'mode')" id="button_footerDisplay"></button> <!-- /// "Only Axis tab" when tabOpen() is fixed -->
 					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
 					<button class="optionsbutton" onClick="selectOption('newsTickerSpeed',[40,60,80,120,160,200,300,400,500,750,999],'speed')">News ticker speed: <span id="span_newsTickerSpeed"></span> px·s<sup>-1</sup></button>
 				</div>
@@ -250,7 +251,7 @@
 					Interval: <span id="span_starAutobuyerInterval"></span><br>
 					<button id="button_starAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('star')">Reduce the interval by 5%<br>Cost: <span id="span_starAutobuyerCost"></span> stardust</button><br>
 					<label for="starAutobuyerMax">Max stars to buy:</label><input id="starAutobuyerMax" type="text"></input><br>
-					<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="starbuybutton" onClick="importStarAllocatorBuild()">Save your current star build to the allocator</button><br>The star allocator runs on the same interval as the autobuyer.</span>
+					<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="starbuybutton" onClick="g.starAllocatorBuild=g.ownedStars">Save your current star build to the allocator</button><br>The star allocator runs on the same interval as the autobuyer.</span>
 				</div>
 				<div class="automatordiv" id="stardustAutomator" style="display:none">
 					<h3>Stardust Reset Automator</h3>

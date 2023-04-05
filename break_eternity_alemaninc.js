@@ -3022,6 +3022,21 @@ Object.defineProperty(Array,"joinWithAnd",{
 		return out;
 	}
 });
+Object.defineProperty(Array,"shuffle",{
+	value:function shuffle(array) {
+		let currentIndex = array.length,  randomIndex;
+		// While there remain elements to shuffle.
+		while (currentIndex != 0) {
+			// Pick a remaining element.
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex--;
+			// And swap it with the current element.
+			[array[currentIndex], array[randomIndex]] = [
+				array[randomIndex], array[currentIndex]];
+		}
+		return array;
+	}
+})
 Object.defineProperty(JSON,"valid",{
 	value: function isJsonString(str) {
 		try {
@@ -3211,20 +3226,23 @@ function ranint(x,y,geo=false) {
   if (geo) return Math.floor(x*(y/x)**Math.random())
   else return Math.round(x+(y-x)*Math.random())
 }
-function shuffle(array) {
-  let currentIndex = array.length,  randomIndex;
-
-  // While there remain elements to shuffle.
-  while (currentIndex != 0) {
-
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+const base64 = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","+","/"]
+function alemanicHash(message) {
+  message=String(message)
+  let out = Array(512).fill(0)
+  for (let i=0;i<message.length;i++) {
+    let code = message.charCodeAt(i)
+    for (let j=0;j<512;j++) {
+      out[j]+=Math.PI*code*(Math.sqrt(i)+Math.sqrt(j))
+    }
   }
-
-  return array;
+  for (let i=0;i<512;i++) {
+    out[i]+=Math.sin(i)*512
+    out[i]*=Math.cos(i)
+    for (let j=1;j<512;j*=2) {
+      if (i%(j*2)>=j) out[i]+=out[i-j]
+      else out[i]-=out[i+j]
+    }
+  }
+  return out.map(x => base64[Math.floor(Math.abs(x))%64]).join("")
 }

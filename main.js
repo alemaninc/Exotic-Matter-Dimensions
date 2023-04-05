@@ -1,54 +1,57 @@
 "use strict";
 const basesave = {
-	exoticmatter: N(0),
-	exoticmatterThisStardustReset: N(0),
-	exoticmatterThisWormholeReset: N(0),
-	exoticmatterThisSpacetimeReset: N(0),
-	totalexoticmatter: N(0),
-	XAxis: N(0),
-	YAxis: N(0),
-	ZAxis: N(0),
-	WAxis: N(0),
-	VAxis: N(0),
-	UAxis: N(0),
-	TAxis: N(0),
-	SAxis: N(0),
-	masteryPower: N(0),
-	baseMasteryPowerGain: N(1),
-	activeMasteries: [null,0,0,0,0,0,0,0,0,0,0],
-	timePlayed: 0,
-	truetimePlayed: N(0),
-	HTPshown: ["Exotic Matter"],
-	featuresUnlocked: [],
-	colortheme: "Default",
-	footerDisplay: "All tabs",
-	timeThisStardustReset: 0,
-	truetimeThisStardustReset: N(0),
-	fastestStardustReset: N(9e15),
-	timeThisWormholeReset: 0,
-	truetimeThisWormholeReset: N(0),
-	fastestWormholeReset: N(9e15),
-	timeThisSpacetimeReset: 0,
-	truetimeThisSpacetimeReset: N(0),
-	fastestSpacetimeReset: N(9e15),
-	storySnippets: [],
-	timeLeft: 0,
-	dilatedTime: 0,
-	dilationPower: 1,
-	dilationUpgrades: [null,0,0,0,0],
-	dilationUpgradesUnlocked: 0,
-	notation: "Mixed scientific",
-	newsTickerActive: true,
-	newsTickerSpeed: 80,
+	exoticmatter:N(0),
+	exoticmatterThisStardustReset:N(0),
+	exoticmatterThisWormholeReset:N(0),
+	exoticmatterThisSpacetimeReset:N(0),
+	totalexoticmatter:N(0),
+	XAxis:N(0),
+	YAxis:N(0),
+	ZAxis:N(0),
+	WAxis:N(0),
+	VAxis:N(0),
+	UAxis:N(0),
+	TAxis:N(0),
+	SAxis:N(0),
+	masteryPower:N(0),
+	baseMasteryPowerGain:N(1),
+	activeMasteries:[null,0,0,0,0,0,0,0,0,0,0],
+	masteryContainerStyle:"Modern",
+	masteryIdsShown:true,
+	masteryBoostsShown:true,
+	masteryActivityShown:true,
+	timePlayed:0,
+	truetimePlayed:N(0),
+	featuresUnlocked:[],
+	colortheme:"Default",
+	footerDisplay:"All tabs",
+	timeThisStardustReset:0,
+	truetimeThisStardustReset:N(0),
+	fastestStardustReset:N(9e15),
+	timeThisWormholeReset:0,
+	truetimeThisWormholeReset:N(0),
+	fastestWormholeReset:N(9e15),
+	timeThisSpacetimeReset:0,
+	truetimeThisSpacetimeReset:N(0),
+	fastestSpacetimeReset:N(9e15),
+	storySnippets:[],
+	timeLeft:0,
+	dilatedTime:0,
+	dilationPower:1,
+	dilationUpgrades:[null,0,0,0,0],
+	dilationUpgradesUnlocked:0,
+	notation:"Mixed scientific",
+	newsTickerActive:true,
+	newsTickerSpeed:80,
 	version:null,
-	ownedAchievements: [],
-	ownedSecretAchievements: [],
-	completedAchievementTiersShown: true,
-	StardustResets: 0,
-	TotalStardustResets: 0,
-	previousStardustRuns: {last10: [],wormhole: {fastest: previousPrestige.baseStardust(),highest: previousPrestige.baseStardust()},spacetime: {fastest: previousPrestige.baseStardust(),highest: previousPrestige.baseStardust()},eternity: {fastest: previousPrestige.baseStardust(),highest: previousPrestige.baseStardust()}},
-	previousWormholeRuns: {last10: [],spacetime: {fastest: previousPrestige.baseWormhole(),highest: previousPrestige.baseWormhole(),efficientest: previousPrestige.baseWormhole()},eternity: {fastest: previousPrestige.baseWormhole(),highest: previousPrestige.baseWormhole(),efficientest: previousPrestige.baseWormhole()}},
-	stardust: N(0),
+	ownedAchievements:[],
+	ownedSecretAchievements:[],
+	completedAchievementTiersShown:true,
+	StardustResets:0,
+	TotalStardustResets:0,
+	previousStardustRuns:{last10:[],wormhole:{fastest:previousPrestige.baseStardust(),highest:previousPrestige.baseStardust()},spacetime:{fastest:previousPrestige.baseStardust(),highest:previousPrestige.baseStardust()},eternity:{fastest:previousPrestige.baseStardust(),highest:previousPrestige.baseStardust()}},
+	previousWormholeRuns:{last10:[],spacetime:{fastest:previousPrestige.baseWormhole(),highest:previousPrestige.baseWormhole(),efficientest:previousPrestige.baseWormhole()},eternity:{fastest:previousPrestige.baseWormhole(),highest:previousPrestige.baseWormhole(),efficientest:previousPrestige.baseWormhole()}},
+	stardust:N(0),
 	stardustThisWormholeReset:N(0),
 	stardustThisSpacetimeReset:N(0),
 	totalstardust:N(0),
@@ -177,13 +180,6 @@ function tabGlow(tab) {
 	}
 	return false;
 }
-const formattags = {
-	i:document.querySelectorAll("[data-i]"),     // innerHTML
-	d:document.querySelectorAll("[data-d]"),     // display
-	v:document.querySelectorAll("[data-v]"),     // visibility
-	c:document.querySelectorAll("[data-c]"),     // class
-	s:document.querySelectorAll("[data-s]")      // src
-};
 
 function openTopLevelDiv(id) {
 	let siblings = d.class("topleveldiv");
@@ -454,7 +450,7 @@ function theme() {
 		["Wormhole","color:#39f;background-image:repeating-radial-gradient(circle, #190033, #330066 10%, #190033 20%); background-size:cover"]
 	])
 	
-	document.getElementsByTagName("body")[0].style = scheme+";min-height:100vh;font-size: 15px;font-family:verdana;text-align:center;";
+	document.getElementsByTagName("body")[0].style = scheme+";min-height:100vh;font-size:15px;font-family:verdana;text-align:center;";
 	themeAchievementCount++;
 	addSecretAchievement(16);
 }
@@ -476,12 +472,12 @@ function unlocked(x) {
 }
 function openStory(x) {
 	let snippets = {
-		"Stardust": "<p>The universe has collapsed due to negative mass, yielding "+BEformat(g.stardust)+" atoms of <span class=\"_stardust\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
-		"Dark Matter": "<p>You have just condensed 500 billion Stardust atoms into a <span class=\"_darkmatter\">particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
-		"Energy": "<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log(1e80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class=\"_energy\">Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
-		"Black hole": "<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"_research\">science</span>'.</p>",
-		"Hawking Radiation": "<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"_wormhole\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"_research\">research</span>?</p>",
-		"Studies": "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"in which stars don't form easily":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you enlightenment.</p>"
+		"Stardust":"<p>The universe has collapsed due to negative mass, yielding "+BEformat(g.stardust)+" atoms of <span class=\"_stardust\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
+		"Dark Matter":"<p>You have just condensed 500 billion Stardust atoms into a <span class=\"_darkmatter\">particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
+		"Energy":"<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log(1e80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class=\"_energy\">Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
+		"Black hole":"<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"_research\">science</span>'.</p>",
+		"Hawking Radiation":"<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"_wormhole\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"_research\">research</span>?</p>",
+		"Studies":"<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"in which stars don't form easily":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you enlightenment.</p>"
 	};
 	if (snippets[x]!==undefined) {
 		d.innerHTML("storyTitle",x);
@@ -671,110 +667,32 @@ function totalAxis(type) {
 	return axisArray(type).reduce((x,y) => x.add(y));
 }
 const masteryData = {
-	11:{
-		icon:"<span class=\"_exoticmatter\">EM</span><sup>+</sup>",
-		subgroup:1
-	},
-	12:{
-		icon:"<span class=\"_exoticmatter\">A$</span><sup>-</sup>",
-		subgroup:1
-	},
-	21:{
-		icon:"<span class=\"_exoticmatter\">X</span><sup>+</sup>",
-		subgroup:1
-	},
-	22:{
-		icon:"<span class=\"_exoticmatter\">Y</span><sup>+</sup>",
-		subgroup:1
-	},
-	31:{
-		icon:"<span class=\"_exoticmatter\">Z</span><sup>+</sup>",
-		subgroup:1
-	},
-	32:{
-		icon:"<span class=\"_exoticmatter\">W</span><sup>+</sup>",
-		subgroup:1
-	},
-	41:{
-		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">x1</sub></span>",
-		subgroup:1
-	},
-	42:{
-		icon:"<span class=\"_stardust\">S</span><sup>+</sup>",
-		subgroup:2
-	},
-	43:{
-		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">x2</sub></span>",
-		subgroup:1
-	},
-	51:{
-		icon:"<span class=\"_exoticmatter\">X</span><sup>+</sup>",
-		subgroup:1
-	},
-	52:{
-		icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">1x</sub></span>",
-		subgroup:1
-	},
-	61:{
-		icon:"<span class=\"_darkmatter\">X</span><sup>+</sup>",
-		subgroup:1
-	},
-	62:{
-		icon:"<span class=\"_darkmatter\">A</span><sup>-</sup>",
-		subgroup:1
-	},
-	63:{
-		icon:"<span class=\"_darkmatter\">DS$</span><sup>-</sup>",
-		subgroup:1
-	},
-	71:{
-		icon:"<span class=\"_energy\">E</span><sup>+</sup>",
-		subgroup:1
-	},
-	72:{
-		icon:"<span class=\"_energy\">E</span><sup>^</sup>",
-		subgroup:1
-	},
-	81:{
-		icon:"<span class=\"_exoticmatter\">X</span>→<span class=\"_mastery\">MP</span>",
-		subgroup:1
-	},
-	82:{
-		icon:"<span class=\"_exoticmatter\">EM</span>→<span class=\"_mastery\">MP</span>",
-		subgroup:1
-	},
-	83:{
-		icon:"<span class=\"_darkmatter\">DM</span>→<span class=\"_mastery\">MP</span>",
-		subgroup:1
-	},
-	84:{
-		icon:"<span class=\"_stardust\">S</span>→<span class=\"_mastery\">MP</span>",
-		subgroup:1
-	},
-	85:{
-		icon:"<span class=\"_mastery\">MP</span><sup>+</sup>",
-		subgroup:1
-	},
-	91:{
-		icon:"<span class=\"_time\">T</span>→<span class=\"_mastery\">M<sub>8x</sub></span>",
-		subgroup:1
-	},
-	92:{
-		icon:"<span class=\"_time\">T</span><sup>-1</sup>→<span class=\"_mastery\">M<sub>8x</sub></span>",
-		subgroup:1
-	},
-	101:{
-		icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>",
-		subgroup:1
-	},
-	102:{
-		icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>",
-		subgroup:1
-	},
-	103:{
-		icon:"<span class=\"_research\">K</span><sup>+</sup>",
-		subgroup:1
-	}
+	11: {subgroup:1,icon:"<span class=\"_exoticmatter\">EM</span><sup>+</sup>"},
+	12: {subgroup:1,icon:"<span class=\"_exoticmatter\">A$</span><sup>-</sup>"},
+	21: {subgroup:1,icon:"<span class=\"_exoticmatter\">X</span><sup>+</sup>"},
+	22: {subgroup:1,icon:"<span class=\"_exoticmatter\">Y</span><sup>+</sup>"},
+	31: {subgroup:1,icon:"<span class=\"_exoticmatter\">Z</span><sup>+</sup>"},
+	32: {subgroup:1,icon:"<span class=\"_exoticmatter\">W</span><sup>+</sup>"},
+	41: {subgroup:1,icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">x1</sub></span>"},
+	42: {subgroup:2,icon:"<span class=\"_stardust\">S</span><sup>+</sup>"},
+	43: {subgroup:1,icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">x2</sub></span>"},
+	51: {subgroup:1,icon:"<span class=\"_exoticmatter\">X</span><sup>+</sup>"},
+	52: {subgroup:1,icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">1x</sub></span>"},
+	61: {subgroup:1,icon:"<span class=\"_darkmatter\">X</span><sup>+</sup>"},
+	62: {subgroup:1,icon:"<span class=\"_darkmatter\">A</span><sup>-</sup>"},
+	63: {subgroup:1,icon:"<span class=\"_darkmatter\">DS$</span><sup>-</sup>"},
+	71: {subgroup:1,icon:"<span class=\"_energy\">E</span><sup>+</sup>"},
+	72: {subgroup:1,icon:"<span class=\"_energy\">E</span><sup>^</sup>"},
+	81: {subgroup:1,icon:"<span class=\"_exoticmatter\">X</span>→<span class=\"_mastery\">MP</span>"},
+	82: {subgroup:1,icon:"<span class=\"_exoticmatter\">EM</span>→<span class=\"_mastery\">MP</span>"},
+	83: {subgroup:1,icon:"<span class=\"_darkmatter\">DM</span>→<span class=\"_mastery\">MP</span>"},
+	84: {subgroup:1,icon:"<span class=\"_stardust\">S</span>→<span class=\"_mastery\">MP</span>"},
+	85: {subgroup:1,icon:"<span class=\"_mastery\">MP</span><sup>+</sup>"},
+	91: {subgroup:1,icon:"<span class=\"_time\">T</span>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
+	92: {subgroup:1,icon:"<span class=\"_time\">T</span><sup>-1</sup>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
+	101:{subgroup:1,icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>"},
+	102:{subgroup:1,icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>"},
+	103:{subgroup:1,icon:"<span class=\"_research\">K</span><sup>+</sup>"}
 }
 const totalMasteryRows = Math.floor(Object.keys(masteryData).map(x => Number(x)).reduce((x,y) => Math.max(x,y))/10);
 function fixMasteryArrays() {
@@ -880,6 +798,7 @@ function masteryBoost(x) {
 	return b.fix(0);
 }
 function masteryText(x) {
+	x=Number(x)
 	if (x==11) return "Multiply exotic matter gain by "+masteryEffect(11).format(2);
 	if (x==12) return "All "+(unlocked("Dark Matter")?"normal axis":"axis")+" are "+masteryEffect(12).format(2)+"× cheaper";
 	if ([21,22].includes(x)) return "Multiply the "+["X","Y"][x-21]+" axis effect by "+masteryEffect(x).format(2);
@@ -918,21 +837,39 @@ function showMasteryInfo(x,mode) {  /* mode 1 = text; mode 2 = button */
 		let out2
 		if (masteredRow(row)) {
 			if (MasteryE(x)) {
-				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]=0\">Unassign Row "+row+" Masteries</button>"
+				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]=0;masteryReset()\">Unassign Row "+row+" Masteries</button>"
 			} else {
-				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]="+pos+";masteryReset()\">Activate Row "+row+" Masteries</button>"
+				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Activate Row "+row+" Masteries</button>"
 			}
 		} else {
 			if (MasteryE(x)) {
-				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]=0\">Unassign Mastery "+x+"</button>"
+				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]=0;masteryReset()\">Unassign Mastery "+x+"</button>"
 			} else if (g.activeMasteries[row]==0) {
-				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]="+pos+";masteryReset()\">Activate Mastery "+x+"</button>"
+				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Activate Mastery "+x+"</button>"
 			} else {
-				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]="+pos+";masteryReset()\">Switch from Mastery "+(row*10+g.activeMasteries[row])+" to "+x+"</button>"
+				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Switch from Mastery "+(row*10+g.activeMasteries[row])+" to "+x+"</button>"
 			}
 		}
 		d.innerHTML("button_enableShownMastery",out2)
 	}
+}
+function updateMasteryLayout() {
+	d.display("masteryPanel",g.masteryContainerStyle=="Modern"?"inline-block":"none")
+	d.display("masteryContainerLegacy",g.masteryContainerStyle=="Legacy"?"inline-block":"none")
+	d.display("masteryContainerModern",g.masteryContainerStyle=="Modern"?"inline-block":"none")
+}
+function updateMasterySideTexts() {
+	/// FIX
+	for (let i of document.getElementsByClassName("masteryID"+g.masteryContainerStyle)) i.style.display=g.masteryIdsShown?"inline:block":"none"
+	for (let i of document.getElementsByClassName("masteryBoost"+g.masteryContainerStyle)) i.style.display=g.masteryBoostsShown?"inline:block":"none"
+	for (let i of document.getElementsByClassName("masteryActive"+g.masteryContainerStyle)) i.style.display=g.masteryActivityShown?"inline:block":"none"
+}
+function masteryOptions() {
+	updateMasterySideTexts()
+	popup({
+		text:"<button class=\"starbuybutton\" onClick=\"g.masteryContainerStyle=(g.masteryContainerStyle=='Modern'?'Legacy':'Modern');updateMasteryLayout();masteryOptions()\">Layout: "+g.masteryContainerStyle+"</button>" /*<button class=\"starbuybutton\" onClick=\"toggle('masteryIdsShown');masteryOptions()\">"+(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs</button><button class=\"starbuybutton\" onClick=\"toggle('masteryBoostsShown');masteryOptions()\">"+(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages</button><button class=\"starbuybutton\" onClick=\"toggle('masteryActivityShown');masteryOptions()\">"+(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states</button>"*/,
+		buttons:[["Close","updateMasterySideTexts()"]]
+	})
 }
 function SSBsmall(x,y,hyper) {
 	let symbol=(hyper==2)?" × ":(hyper==3)?" ^ ":" ? ";
@@ -1409,7 +1346,10 @@ function wormholeReset(x) {
 		if (summary.gain.gt(g.previousWormholeRuns.eternity.highest.gain)) g.previousWormholeRuns.eternity.highest = summary
 		if (summary.efficiency.gt(g.previousWormholeRuns.spacetime.efficientest.efficiency)) g.previousWormholeRuns.spacetime.efficientest = summary
 		if (summary.efficiency.gt(g.previousWormholeRuns.eternity.efficientest.efficiency)) g.previousWormholeRuns.eternity.efficientest = summary
-		if (x!=="force") for (let i of wormholeResetAchievements) addAchievement(i);
+		if (x!=="force") {
+			for (let i of wormholeResetAchievements) addAchievement(i);
+			for (let i of wormholeResetSecretAchievements) addSecretAchievement(i);
+		}
 		if (g.activeStudy!==0) {
 			if (totalAxis("dark").gte(studies[g.activeStudy].goal())) {
 				g.studyCompletions[g.activeStudy]++;
@@ -1782,7 +1722,7 @@ var showingResearchLoadouts = false
 var researchLoadoutSelected = 1
 const researchLoadoutPopupText = "<button class=\"observation\" onClick=\"researchLoadouts.renameHTML()\">Rename this Loadout</button><button class=\"observation\" onClick=\"researchLoadouts.importHTML()\">Import into this Loadout</button><button class=\"observation\" onClick=\"researchLoadouts.export(true)\">Export this Loadout</button><button class=\"observation\" onClick=\"researchLoadouts.save()\">Save current build to this Loadout</button><button class=\"observation\" onClick=\"researchLoadouts.load()\">Load this Loadout</button>"
 const researchLoadouts = {
-	open: function() {
+	open:function() {
 		showingResearchLoadouts = true
 		let text = ""
 		for (let i=0;i<9;i++) {
@@ -1795,7 +1735,7 @@ const researchLoadouts = {
 			buttons:[["Close","showingResearchLoadouts=false"]]
 		})
 	},
-	renameHTML: function() {
+	renameHTML:function() {
 		showingResearchLoadouts=false
 		popup({
 			text:"What do you want to rename "+g.researchLoadouts[researchLoadoutSelected-1].name+" to?",

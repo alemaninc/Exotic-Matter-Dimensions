@@ -49,13 +49,26 @@ function updateHTML() {
 		showMasteryInfo(shownMastery,1)
 		d.innerHTML("span_masteryPower",BEformat(g.masteryPower));
 		d.innerHTML("span_masteryPowerPerSec",BEformat(stat.masteryPowerPerSec));
-		d.element("masteryContainer").style["padding-bottom"] = d.element("masteryPanel").clientHeight+"px"
-		for (let i=1;i<=Object.keys(masteryData).map(x=>Math.floor(Number(x)/10)).reduce((x,y)=>Math.max(x,y));i++) d.tr("masteryRow"+i,masteryRowsUnlocked(i)>0)
+		for (let i=1;i<=totalMasteryRows;i++) d.tr("masteryRow"+i+g.masteryContainerStyle,masteryRowsUnlocked(i)>0)
 		let list = Object.keys(masteryData)
-		for (let num of list) {
-			d.element("button_mastery"+num).style["background-color"] = MasteryE(num)?"rgba(0,255,0,0.3)":"rgba(128,128,128,0.2)"
-			d.innerHTML("span_mastery"+num+"Boost",masteryBoost(num).eq(1)?"":(masteryBoost(num).mul(100).format(3)+"%"))
-			d.innerHTML("span_mastery"+num+"Active",MasteryE(num)?"Active":"None")
+		if (g.masteryContainerStyle == "Legacy") {
+			for (let i of list) {
+				d.display("button_mastery"+i+"Legacy",(masteryRowsUnlocked(Math.floor(i/10))>=masteryData[i].subgroup)?"inline-block":"none")
+				d.element("button_mastery"+i+"Legacy").style["background-color"] = MasteryE(i)?"rgba(0,255,0,0.9)":"rgba(204,204,204,0.9)"
+				d.innerHTML("span_mastery"+i+"BoostLegacy",masteryBoost(i).eq(1)?"":(masteryBoost(i).mul(100).format(3)+"%"))
+				d.innerHTML("span_mastery"+i+"ActiveLegacy",MasteryE(i)?"Active":"None")
+				d.innerHTML("span_mastery"+i+"TextLegacy",masteryText(i))
+			}
+		} else if (g.masteryContainerStyle == "Modern") {
+			for (let i of list) {
+				d.display("button_mastery"+i+"Modern",(masteryRowsUnlocked(Math.floor(i/10))>=masteryData[i].subgroup)?"inline-block":"none")
+				d.element("button_mastery"+i+"Modern").style["background-color"] = MasteryE(i)?"rgba(0,255,0,0.3)":"rgba(128,128,128,0.2)"
+				d.innerHTML("span_mastery"+i+"BoostModern",masteryBoost(i).eq(1)?"":(masteryBoost(i).mul(100).format(3)+"%"))
+				d.innerHTML("span_mastery"+i+"ActiveModern",MasteryE(i)?"Active":"None")
+			}
+			d.element("masteryContainerModern").style["padding-bottom"] = d.element("masteryPanel").clientHeight+"px"
+		} else {
+			throw "g.masteryContainerStyle is set to the invalid value \""+g.masteryContainerStyle+"\"."
 		}
 	}
 	if (tabOpen(["Main","tabOfflineTime"])) {
@@ -467,10 +480,10 @@ function fineGrainTick() {
     let transitionProgress = currentNewsOffset/(window.innerWidth+d.element("newsline").offsetWidth)
     if (transitionProgress > 1) {
       d.innerHTML("newsline",randomNewsItem())
-      currentNewsOffset = -g.newsTickerSpeed
+      currentNewsOffset = 0
       d.element("newsline").style.left = "100vw"
     } else {
-      currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001
+      currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001,-g.newsTickerSpeed
       d.element("newsline").style.left = (currentNewsOffset<0)?"100vw":("calc(100vw - "+currentNewsOffset+"px)")
     }
   } else {
