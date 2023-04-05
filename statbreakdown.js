@@ -116,6 +116,7 @@ const largeNumberVisualizationVariables = [
 ]
 const largeNumberVisualizationNumbers = [
 	[1e10,"Dialogue"],
+	[3**27,"3↑↑3"],
 	[2**27*3**14*125*49*11,"the number of Rubik's cube combinations"],
 	[6.02214076e23,"Avogadro's number"],
 	[1.989e33,"solar mass / g"],
@@ -486,9 +487,9 @@ breakdownStats.pendingstardust={
 			func:function(){return g.exoticmatter.lt(stardustExoticMatterReq)?N(0):g.exoticmatter.div(stardustExoticMatterReq.div(10)).dilate(0.5);},
 			text:function(){return "("+g.exoticmatter.format(2)+" ÷ "+stardustExoticMatterReq.div(10).format(2)+") dilate 0.5";}
 		},
-		breakdownStats.stardustMultiplier.modifiers.slice(1),
-		breakdownStats.stardustExponent.modifiers.slice(1,breakdownStats.stardustExponent.modifiers.length-1)
-	].flat()
+		...breakdownStats.stardustMultiplier.modifiers.slice(1),
+		...breakdownStats.stardustExponent.modifiers.slice(1,breakdownStats.stardustExponent.modifiers.length-1)
+	]
 };
 breakdownStats.darkmatterPerSec={
 	label:"Dark Matter gain",
@@ -1574,9 +1575,9 @@ breakdownStats.pendinghr={
 			func:function(prev){return totalAxis("dark").lt(HRDarkAxisReq())?N(0):prev;},
 			text:function(){return "× 0";}
 		},
-		breakdownStats.HRMultiplier.modifiers.slice(1),
-		breakdownStats.HRExponent.modifiers.slice(1,breakdownStats.HRExponent.modifiers.length-1)
-	].flat()
+		...breakdownStats.HRMultiplier.modifiers.slice(1),
+		...breakdownStats.HRExponent.modifiers.slice(1,breakdownStats.HRExponent.modifiers.length-1)
+	]
 };
 breakdownStats.freedarkXAxis={
 	label:"Free Dark X axis",

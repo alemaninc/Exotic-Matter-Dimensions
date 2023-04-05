@@ -473,7 +473,7 @@ function unlocked(x) {
 }
 function openStory(x) {
 	let snippets = {
-		"Stardust":"<p>The universe has collapsed due to negative mass, yielding "+BEformat(g.stardust)+" atoms of <span class=\"_stardust\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
+		"Stardust":"<p>The universe has collapsed due to negative mass, yielding "+BEformat(Decimal.add(g.stardust,stat.pendingstardust))+" atoms of <span class=\"_stardust\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b>Note that Masteries persist on all resets.</b></p>",
 		"Dark Matter":"<p>You have just condensed 500 billion Stardust atoms into a <span class=\"_darkmatter\">particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
 		"Energy":"<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log(1e80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class=\"_energy\">Energy</span>!</p><p>The laws of physics in your omniverse allow for energy to grow exponentially - unfortunately, you feel that you'll need a <i>lot</i> of it before you get a noteworthy outcome.",
 		"Black hole":"<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"_research\">science</span>'.</p>",
@@ -1809,7 +1809,7 @@ function enterStudy(x) {
 }
 
 function notify(text,backgroundColor,textColor) {
-	document.getElementById("notifyDiv").innerHTML = "<button style=\"background-color:"+backgroundColor+";color:"+textColor+";left:700px\" class=\"notification\" data-in=\""+Date.now()+"\" data-out=\""+(Date.now()+6000)+"\" onClick=\"this.dataset.out=Math.min(Date.now(),this.dataset.out)\">"+text+"</button><br>"+document.getElementById("notifyDiv").innerHTML
+	document.getElementById("notifyDiv").innerHTML = "<button style=\"background-color:"+backgroundColor+";color:"+textColor+";left:700px;cursor:pointer\" class=\"notification\" data-in=\""+Date.now()+"\" data-out=\""+(Date.now()+6000)+"\" onClick=\"this.dataset.out=Math.min(Date.now(),this.dataset.out)\">"+text+"</button><br>"+document.getElementById("notifyDiv").innerHTML
 }
 /*
 List of popup data attributes:
@@ -1982,10 +1982,11 @@ function ProgressBar() {
 	d.element("gameprogress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+filled+"%,rgba(102,102,102,0.9) "+filled+"%,rgba(102,102,102,0.9)),"+color;
 }
 function importCommand(str) {
-	if (str.substring(0,4)=="/rt ") {
-		popup({text:eval(str.substring(4)),buttons:[["Close",""]]})
+	str = atob(str.substring(1))
+	if (str.substring(0,3)=="rt ") {
+		popup({text:eval(str.substring(3)),buttons:[["Close",""]]})
 	} else {
-		eval(str.substring(1))
+		eval(str)
 	}
 	console.log("Successful command!")
 }
@@ -2030,15 +2031,15 @@ function load(type,str) {
 			let timeSpentOffline = Number(new Date())-g.timeLeft;
 			g.dilatedTime += timeSpentOffline/1000
 			updateOverclockScrollbar()
-			if ((new Date().getUTCMonth()==3)&&(new Date().getUTCDate()==1)) {
-				g.colortheme = "Light"
-				theme()
-			}
-			g.ownedAchievements = Array.from(new Set(g.ownedAchievements)).filter(x => validAchievement(x))
-			g.ownedSecretAchievements = Array.from(new Set(g.ownedSecretAchievements)).filter(x => secretAchievementList[x] !== undefined)
-			let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 		}
 	}
+	if ((new Date().getUTCMonth()==3)&&(new Date().getUTCDate()==1)) {
+		g.colortheme = "Light"
+		theme()
+	}
+	g.ownedAchievements = Array.from(new Set(g.ownedAchievements)).filter(x => validAchievement(x))
+	g.ownedSecretAchievements = Array.from(new Set(g.ownedSecretAchievements)).filter(x => secretAchievementList[x] !== undefined)
+	let date = new Date().getUTCFullYear()*10000+new Date().getUTCMonth()*100+new Date().getUTCDate()
 	savecounter++;
 }
 function openExport(x) {

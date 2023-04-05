@@ -453,6 +453,13 @@ function tick(time) {                                                           
 	g.totalDiscoveries=discoveriesFromKnowledge().floor().max(g.totalDiscoveries);
 
 
+	// Study section
+	if (g.activeStudy !== 0) if (!ResearchE(studies[g.activeStudy].research)) {
+		popup({text:"You have been forcefully removed from "+fullStudyName(g.activeStudy)+" due to the presence of a bug. Sorry!",buttons:[["Close",""]]})
+		g.activeStudy=0
+	}
+
+
 	// Incrementer section - this comes last because otherwise resets don't work properly
 	incrementExoticMatter(stat.exoticmatterPerSec.mul(time));
 	g.exoticmatter = g.exoticmatter.max(stat.exoticmatterPerSec.mul(AchievementE(112)?60:AchievementE(111)?30:AchievementE(110)?15:0));
@@ -488,13 +495,15 @@ function fineGrainTick() {
 	lastFineGrainFrame += fineGrainDelta
   if (g.newsTickerActive) {
     d.display("newsticker","inline-block")
+		d.element("newsticker").style["background-color"] = (Date.now()<newsSupport.interestingTickerActiveUntil)?("hsl("+((Date.now()*0.06)%360)+" 100% "+(Math.min(newsSupport.interestingTickerActiveUntil-Date.now(),1e4-(newsSupport.interestingTickerActiveUntil-Date.now()))/100)+"%)"):""
+		d.element("newsticker").style["color"] = (Date.now()<newsSupport.interestingTickerActiveUntil)?("hsl("+((Date.now()*0.06+180)%360)+" 100% 50%)"):""
     let transitionProgress = currentNewsOffset/(window.innerWidth+d.element("newsline").offsetWidth)
-    if (transitionProgress > 1) {
+    if ((transitionProgress > 1)||(transitionProgress < 0)) {
       d.innerHTML("newsline",randomNewsItem())
-      currentNewsOffset = 0
-      d.element("newsline").style.left = "100vw"
+      currentNewsOffset = transitionProgress>1?0:(window.innerWidth+d.element("newsline").offsetWidth)
+      d.element("newsline").style.left = "calc(100vw - "+currentNewsOffset+"px)"
     } else {
-      currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001,-g.newsTickerSpeed
+      currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001*((Date.now()<newsSupport.interestingTickerActiveUntil)?Math.max((3*Math.sin(Date.now()/500)-1)*Math.tan(Date.now()/3000),-2):1)
       d.element("newsline").style.left = (currentNewsOffset<0)?"100vw":("calc(100vw - "+currentNewsOffset+"px)")
     }
   } else {
