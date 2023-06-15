@@ -1779,22 +1779,24 @@ function getSavedGame(saved, game, base=basesave) {
     if (saved.hasOwnProperty(prop)) {
       let savedValue = saved[prop];
       let gameValue = game[prop];
+			let baseValue = base[prop]
+			if (typeof baseValue == "undefined") continue
       
       if (typeof savedValue === 'object' && !Array.isArray(savedValue)) {
         if (game.hasOwnProperty(prop) && Object.prototype.toString.call(gameValue) === '[object Object]') {
-          getSavedGame(savedValue, gameValue, base[prop]);
+          getSavedGame(savedValue, gameValue, baseValue);
         } else if (!game.hasOwnProperty(prop)) {
           continue;
         } else {
           game[prop] = {};
-          getSavedGame(savedValue, game[prop], base[prop]);
+          getSavedGame(savedValue, game[prop], baseValue);
         }
 			} else if (savedValue instanceof Array) {
 				let out = []
-				for (let i=0;i<savedValue.length;i++) out.push((base[prop][i] instanceof Decimal)?N(savedValue[i]):savedValue[i])
+				for (let i=0;i<savedValue.length;i++) out.push((baseValue[i] instanceof Decimal)?N(savedValue[i]):savedValue[i])
 				game[prop] = out
 			} else if (game.hasOwnProperty(prop)) {
-        game[prop] = (base[prop] instanceof Decimal)?N(savedValue):savedValue
+        game[prop] = (baseValue instanceof Decimal)?N(savedValue):savedValue
       }
     }
   }
