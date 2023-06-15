@@ -408,7 +408,7 @@ const studies = [
 		difficultyConstant:function(){return [N(32),N(64),N(200),N(1000)][studyPower(5)]},
 		description:function(){return "Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."},
 		research:"r2_8",
-		goal:function(){return [c.e100,N(5000),c.e100,c.e100][studyPower(5)]},
+		goal:function(){return [N(4000),N(5000),c.e100,c.e100][studyPower(5)]},
 		reward:function(num,comp=g.studyCompletions[5]){
 			if (num==1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
 			if (num==2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(2)))
@@ -1728,10 +1728,10 @@ const progressMilestones = [
 	{
 		type:1,
 		label:"current endgame",
-		percent:function(){return 0;},
-		req:function(){return "Infinity";},
+		percent:function(){return g.studyCompletions.sum()/13;},
+		req:function(){return "13 Study completions";},
 		color:"endgame",
-		condition:function(){return false;}
+		condition:function(){return g.studyCompletions.sum()>12;}
 	},
 	{
 		type:3,
@@ -1755,12 +1755,22 @@ function ProgressBar() {
 		filled = 0;
 		color = "#000000"; // doesn't get used
 	} else if (data.type==3) {
-		label = "<span onClick=\"notify('Hevipelle should trademark',endgameColor(),blackOrWhiteContrast(endgameColor()))\">You are at the current endgame. Click for a clue of what the next update will bring...</span>";
+		label = "You are at the current endgame. Click for a clue of what the next update will bring";
 		filled = 100;
 		color =	endgameColor();
 	}
 	d.innerHTML("gameprogress",label);
 	d.element("gameprogress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+filled+"%,rgba(102,102,102,0.9) "+filled+"%,rgba(102,102,102,0.9)),"+color;
+}
+function progressBarOnClick() {
+	let data
+	for (let next of progressMilestones) {
+		if (!next.condition()) {
+			data = next;
+			break;
+		}
+	}
+	if (data.next==3) notify(version.nextUpdateHint,endgameColor(),blackOrWhiteContrast(endgameColor()))
 }
 function importCommand(str) {
 	str = atob(str.substring(1))

@@ -357,7 +357,9 @@ const newsList = [
 	{get text(){return "Fact: the average color of all your chroma is <span style=\"color:"+newsSupport.lightColor()+"\">"+newsSupport.lightColor()+"</span>."},get weight(){return unlocked("Light")?1:0}},
 	{text:"<span class=\"_time\">No cheating! Are you cheating?</span>",get weight(){return g.dilatedTime>((Date.now()-new Date("2023-02-14"))/1e3)?1:0}},
 	{get text(){return "Only "+g.knowledge.format()+" knowledge? You're not really smart."},get weight(){return g.knowledge.layer==0?0:1}},
-	{text:"So when will someone ask alemaninc why there's a stupid star hardcap anyways?",get weight(){return g.achievement[612]?1:0}}
+	{text:"So when will someone ask alemaninc why there's a stupid star hardcap anyways?",get weight(){return g.achievement[612]?1:0}},
+	{get text(){return "You've been lied to. There is no update, alemaninc is not real. <i>Exotic Matter Dimensions</i> is a lie fabricated by <i>Matter Dimensions</i>. Oh yeah, and something about the earth being flat and controlled by lizard people. But that's not important isn't it? What matters most is that the antimatter government is being taken over by the matter government, a silent coup, and has created this game to stop you from playing <i>Antimatter Dimensions</i>. Don't you realise you've not opened that game in over 4 weeks? Do you still remember your offline progress still being made to this moment? No, you have not, at least not until i have reminded you of it. The matter insurgency is using neurotoxin to poison your brains, causing the incremental cortex in your brain to be shut down. So, what can you do? Sadly, you can do nothing. If you have breathed any air for the past 4 weeks, I'm afraid there is little time left. Soon, you will forget about this entire genre and return to playing Valorant or Rainbow Six Siege or whatever it is these youngsters play these days. I'm sorry. You can not go back now. This is the end of your incremental game progress. Bravo Six, going dark."}},
+	{text:"If you're looking for a zero player game, I recommend Conway's Game of Life.",get weight(){return g.achievement[216]?1:0}},
 ]
 // bottom
 var newsOrder = []

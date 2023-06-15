@@ -1008,7 +1008,7 @@ const achievementList = {
 		609:{
 			name:"Black Hole Era II",
 			description:"Complete the fourth level of Study II without any stars",
-			check:function(){return (g.activeStudy==1)&(g.studyCompletions[1]>2)&&(g.stars==0)},
+			check:function(){return (g.activeStudy==2)&(g.studyCompletions[2]>2)&&(g.stars==0)},
 			progress:function(){return (g.studyCompletions[2]<3)?"Complete Study II 3 times first":(g.activeStudy!==2)?"Enter Study II first":(g.stars==0)?"Still possible":"Failed"},
 			visibility:function(){return true},
 			reward:"The third reward of Study II is 11.1% stronger",

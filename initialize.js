@@ -13,9 +13,8 @@ const initSteps = [
 	function(){HTMLGenerator()},
 	function(){load(JSON.parse(localStorage.getItem("save")));},
 	function(){
-		let versionName = "𝕍1.2.2"
-		d.innerHTML("span_currentVersion",versionName)
-		document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
+		d.innerHTML("span_currentVersion",version.current)
+		document.title="Exotic Matter Dimensions "+version.current+" by alemaninc"
 	},
 	function(){for (let i of countTo(8,true)) {updateLightCache(i)}},
 	function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type=="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}},
