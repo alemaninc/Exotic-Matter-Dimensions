@@ -141,7 +141,7 @@ const research = (function(){
 		r2_8: {
 			adjacent_req:["r1_8"],
 			condition:[{check:function(){return g.knowledge.gt(studies[5].unlockReq())},text:function(){return g.knowledge.format(2)+" / "+studies[5].unlockReq().format(2)+" knowledge"}},unconnectedResearchReq("r11_8")],
-			visibility:function(){return g.studyCompletions.sum()>5;},
+			visibility:function(){return g.research.r11_8;},
 			type:"study",
 			basecost:N(4000),
 			icon:icon.study([[50,10,4],[23,37,4],[50,37,4],[77,37,4],[50,90,4]])
