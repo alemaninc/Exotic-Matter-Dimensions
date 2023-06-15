@@ -408,7 +408,7 @@ const studies = [
 		difficultyConstant:function(){return [N(32),N(64),N(200),N(1000)][studyPower(5)]},
 		description:function(){return "Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."},
 		research:"r2_8",
-		goal:function(){return [N(4000),N(5000),c.e100,c.e100][studyPower(5)]},
+		goal:function(){return [c.e100,N(5000),c.e100,c.e100][studyPower(5)]},
 		reward:function(num,comp=g.studyCompletions[5]){
 			if (num==1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
 			if (num==2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(2)))

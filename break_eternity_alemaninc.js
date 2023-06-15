@@ -3188,6 +3188,7 @@ const c = deepFreeze({		 // c = "constant"
 	ee10      : N("ee10"),
 	ee12      : N("ee12"),
 	ee15      : N("ee15"),
+	ee100			: N("ee100"),
 	maxvalue	: Decimal.fromComponents(1,Number.MAX_VALUE,1), // highest possible BEA number
 });
 function validDecimal(x) {

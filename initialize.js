@@ -13,7 +13,7 @@ const initSteps = [
 	function(){HTMLGenerator()},
 	function(){load(JSON.parse(localStorage.getItem("save")));},
 	function(){
-		let versionName = "𝕍1.2"
+		let versionName = "𝕍1.2.2"
 		d.innerHTML("span_currentVersion",versionName)
 		document.title="Exotic Matter Dimensions "+versionName+" by alemaninc"
 	},

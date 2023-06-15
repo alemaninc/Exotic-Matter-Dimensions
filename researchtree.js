@@ -1012,7 +1012,7 @@ const baseObservationCostRatios = [
 	[c.d2,c.d1,c.d1]
 ];
 function observationCostRatios(type) {
-	let out = baseObservationCostRatios[type]
+	let out = [...baseObservationCostRatios[type]]
 	out[0] = out[0].pow(studies[5].reward(2))
 	return out
 }
