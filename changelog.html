@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <style>
+	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<style>
 		body {
 			color: #39f;
 			background: #190033;
@@ -46,30 +46,86 @@
 			border-color:rgba(0,0,0,0);
 		}
 		</style>
-    <meta charset="utf-8"/>
-    <title>Changelog</title>
-  </head>
+		<meta charset="utf-8"/>
+		<title>Changelog</title>
+	</head>
 	<body>
 		<h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
 		<a href="index.html"><button class="back">Back to game</button></a>
 		<div id="logContainer"></div>
 		<script>
 const logEntries = [
+	{name:"𝕍1.2 \"In Light of all the bugs...\" (2023-15-06)",changes:[
+		"...your saves are gone again. (ok, I didn't <i>actually</i> wipe them, but you might want to replay the tier you're in again anyways.)",
+		["BALANCE","Axis cost exponent now applies before axis cost divisor, but stars 82 and 84 nerfed from 4× to 3×"],
+		["BALANCE","Demoted the secret achievements 'Epsilon Time' and 'I am speed' from the Common tier to the Super Easy tier"],
+		["BALANCE","'Big Bang' requirement reduced from 5000 to 4800 in light of the relevant bugfix"],
+		["BALANCE","Research 7-13 is 7× weaker"],
+		["BALANCE","Removed the 'Eternal Inflation' reward. Instead, a bug that caused tickspeed to multiply energy gain twice has been turned into a feature through its new 'reward'."],
+		["BALANCE","Stars are now capped at 60 in preparation for an upcoming feature ;)"],
+		["BALANCE","Stardust Upgrade 1 now affects dark axis (I am SO sorry for everyone in the Iron Will V run)"],
+		["BUGFIX","Fixed one of the news messages being undefined"],
+		["BUGFIX","Dilated time can no longer become something like -(1 / 1.8e16) seconds"],
+		["BUGFIX","Fixed Mastery 103 being unaffected by knowledge"],
+		["BUGFIX","Fixed Mastery 52 being affected by the boost percentage of Mastery 51 instead of its own"],
+		["BUGFIX","Fixed Stardust Boost 12 being affected by the boost percentage for Stardust Boost 9 instead of its own"],
+		["BUGFIX","Fixed Wormhole reset resetting energies to 0 instead of 1"],
+		["BUGFIX","Fixed 'The Ultimate Upgrade' not working"],
+		["BUGFIX","'Big Bang' now accurately shows the amount of axis that can be purchased"],
+		["BUGFIX","The W axis effect no longer increases 30× faster with the 'Slow' achievement, but the effect is now approximately 12.5% higher to compensate"],
+		["BUGFIX","Research 8-5 no longer works if it's not purchased"],
+		["BUGFIX","Clicking stardust/wormhole reset buttons no longer adds to 'total reset' stats if no reset was done"],
+		["BUGFIX","Research 2-2 is no longer 100× stronger than displayed"],
+		["","(The full list of bugs can be found <a target=\"_blank\" href=\"https://libraryofbabel.info/random.cgi\" style=\"color:inherit\">here</a>.)"],
+		"Do you still have faith in this developer to make ten more content updates?",
+		["CONTENT","Research was expanded to 12 rows and 5 Studies"],
+		["CONTENT","Tier 6 achievements"],
+		["CONTENT","Light"],
+		["CONTENT","Added Zip Points"],
+		["INTERFACE","Added the option to only show the footer in the Axis tab"],
+		["INTERFACE","The Study research icons are now patterns of dots rather than Roman numerals"],
+		["INTERFACE","'Iron Will IV' now shows the reward it would give upon being unlocked"],
+		["INTERFACE","Achievement notifications are now darker"],
+		["INTERFACE","Progress bar now shows progress to dilation upgrade unlocks"],
+		["INTERFACE","Changed the research icons"],
+		["INTERFACE","Research icons which would otherwise overflow now automatically resize themselves"],
+		["INTERFACE","Achievement progress percentages no longer show decimal points for integer values"],
+		["INTERFACE","Moved a lot of feature-specific options to the relevant subtabs"],
+		["INTERFACE","Added an option to turn off tab glow for specific conditions"],
+		["INTERFACE","Added an option to show or hide important resources from the top"],
+		["INTERFACE","Stardust upgrade buttons look better"],
+		["INTERFACE","Observation buttons now darken if unaffordable"],
+		["INTERFACE","Swapped the Stardust and Automation tabs"],
+		["INTERFACE","Research should be more screen-reader accessible"],
+		["MISCELLANEOUS","The node documentary news message no longer formats the number of nodes as a word"],
+		["MISCELLANEOUS","Stardust upgrade #2 can no longer be purchased if it would have no effect (i.e. if the relevant axis is not unlocked)"],
+		["PERFORMANCE","Improved"],
+		["QOL","Overclock is automatically disabled when story screens show up"],
+		["QOL","Added an option to set Overclock to exactly the softcap"],
+		["QOL","Added an option to make the Offline Time tab glow during Overclock"],
+		["QOL","Added basic hotkeys"],
+		["QOL","Stardust upgrade autobuyer now buys max"],
+		["QOL","Added the option to force a Wormhole reset"],
+		["QOL","Added Time Loop"],
+		["WHAT","Fixed the footer having the wrong version number"],
+		["WHAT","Fixed the 𝕍1.1.19 changelog not being alphabetized"],
+		["WHAT","Fixed an undefined message in the 𝕍1.1.18 changelog"]
+	]},
 	{name:"𝕍1.1.19 (2023-04-05)",changes:[
 		["BALANCE","Discovery news tickers are now 2× rarer relative to normal news tickers (up from 10×)"],
 		["BUGFIX","If you manage to respec research upon entering a study you get automatically removed from your Study."],
 		["CHEATING","The in-game command terminal is now encrypted"],
 		["CONTENT","Lots of new news!"],
 		["TEXTFIX","Fixed the storyline entry for Stardust"],
+		["TEXTFIX","Fixed the news message that contains xhwzwka's personal information not showing his real name"],
+		["TEXTFIX","Fixed the node documentary news message saying 'one children'"],
 		["WHAT","Added an entry to the 𝕍1.1.18 changelog that alemaninc forgot to add before and corrected another entry"],
 		["WHAT","Fixed the 𝕍1.1.18 changelog having no date"],
-		["TEXTFIX","Fixed the news message that contains xhwzwka's personal information not showing his real name"],
-		["TEXTFIX","Fixed the node documentary news message saying 'one children'"]
 	]},
 	{name:"𝕍1.1.18 \"NEWS\" (2023-04-05)",changes:[
 		["BUGFIX","People that haven't opened the game since 𝕍1.0 can now open the game again"],
 		["CONTENT","Added lots of news"],
-		["CONTENT","Added the large number visualization"]
+		["CONTENT","Added the large number visualization"],
 		["INTERFACE","Added the option to turn off mastery ID/boost percentage/active state displays"],
 		["INTERFACE","Study researches now show their ID"],
 		["WHAT","Fixed the footer having the wrong version number"],
@@ -120,7 +176,7 @@ const logEntries = [
 		["BUGFIX<sup>2</sup>","Upgraded the in-game command terminal"],
 		["WHAT","The name of the tab is no longer 'Exotic Matter Dimensions 𝕍&lt;span style=\"filter:brightness(150%)\"&gt;1&lt;/span&gt;.&lt;span style=\"filter:brightness(150%)\"&gt;1&lt;/span&gt;.&lt;span style=\"filter:brightness(150%)\"&gt;11&lt;/span&gt;'"]
 	]},
-	{name:"𝕍<span style=\"filter:brightness(150%)\">1</span>.<span style=\"filter:brightness(150%)\">1</span>.<span style=\"filter:brightness(150%)\">11</span> \"NUM_MAX\" (<s>2023-04-02</s> <span style=\"filter:brightness(200%)\">23-3-33</span>)",changes:[
+	{name:"𝕍<span style=\"color:#ccf\">1</span>.<span style=\"color:#ccf\">1</span>.<span style=\"color:#ccf\">11</span> \"NUM_MAX\" (<s>2023-04-02</s> <span style=\"color:#ccf\">23-3-33</span>)",changes:[
 		["QOL","Added an option to turn off the footer"],
 		["WHAT","The footer now has the correct version number"]
 	]},
@@ -249,7 +305,7 @@ const logEntries = [
 		["WHAT","Changed the v1.0.8 entry incorrectly saying 2023-02-16"]
 	]},
 	{name:"v1.0.8 \"v1.0.7 v2\" (2023-02-17)",changes:[
-		["INTERFACE","Made  the dark star gain button smaller as the changes from v1.0.7 resulted in a lot of empty space"],
+		["INTERFACE","Made	the dark star gain button smaller as the changes from v1.0.7 resulted in a lot of empty space"],
 		["NO CHEATING ARE YOU CHEATING","Time will no longer reverse if the system clock is changed"],
 		["WHAT","Changed the v1.0.7 entry incorrectly saying 2023-02-17"]
 	]},
