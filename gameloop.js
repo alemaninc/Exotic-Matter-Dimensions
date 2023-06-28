@@ -2,7 +2,7 @@
 function updateHTML() {
 	if (wormholeAnimationActive) {
 		if (Date.now()-wormholeAnimationStart>16000) {
-			wormholeReset("normal");
+			wormholeReset();
 			d.display("wormholeAnimation","none");
 			wormholeAnimationActive=false;
 		} else if (Date.now()-wormholeAnimationStart>8000) {
@@ -93,7 +93,7 @@ function updateHTML() {
 				}
 				d.element("masteryContainerModern").style["padding-bottom"] = d.element("masteryPanel").clientHeight+"px"
 			} else {
-				error("g.masteryContainerStyle is set to the invalid value \""+g.masteryContainerStyle+"\"")
+				g.masteryContainerStyle = "Legacy"
 			}
 		} else if (activeSubtabs.main=="offlineTime") {
 			g.dilationPower = Number(d.element('dilationSpeedupFactor').value)
@@ -488,53 +488,6 @@ function tick(time) {																																		 // The game loop, which 
 	for (let ach of secretAchievementEvents.luckyGameloop) if (Math.random()<secretAchievementList[ach].chance(time)) addSecretAchievement(ach);
 	lagAchievementTicks = (deltatime>1)?(lagAchievementTicks+1):0;
 	fpsAchievementTicks = ((deltatime==0.05)&&(!StudyE(3)))?(fpsAchievementTicks+1):0;
-
-
-	// Automation section
-	if ((g.stardustUpgrades[1] > 0) && (g.axisAutobuyerOn)) axisAutobuyerProgress+=time/autobuyerMeta.interval("axis");
-	if (axisAutobuyerProgress > 1) {
-		buyMaxAxis(g.axisAutobuyerCaps);
-		axisAutobuyerProgress%=1;
-	}
-	if (achievement.ownedInTier(5)>=1 && (g.darkAxisAutobuyerOn)) darkAxisAutobuyerProgress+=time/autobuyerMeta.interval("darkAxis");
-	if (darkAxisAutobuyerProgress > 1) {
-		buyMaxDarkAxis(g.darkAxisAutobuyerCaps);
-		if (achievement.ownedInTier(5)>=2) gainDarkStar(g.darkAxisAutobuyerCaps[12]);
-		darkAxisAutobuyerProgress%=1;
-	}
-	if (achievement.ownedInTier(5)>=3 && g.stardustUpgradeAutobuyerOn) stardustUpgradeAutobuyerProgress+=time/autobuyerMeta.interval("stardustUpgrade");
-	if (stardustUpgradeAutobuyerProgress > 1) {
-		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
-		stardustUpgradeAutobuyerProgress%=1;
-	}
-	if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");
-	if (starAutobuyerProgress > 1) {
-		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap=="u"?Infinity:Number(g.starAutobuyerCap))) buyStar();}
-		if (unspentStars()>0&&g.starAllocatorOn&&(totalStars<g.starAllocatorBuild.length)) for (let i of g.starAllocatorBuild) buyStarUpgrade(i);
-		starAutobuyerProgress%=1;
-	}
-	if (achievement.ownedInTier(5)>=8 && g.stardustAutomatorOn) {
-		let doReset = false;
-		let mode = stardustAutomatorModes.indexOf(g.stardustAutomatorMode)
-		if (mode == 0) doReset = stat.pendingstardust.gte(g.stardustAutomatorValue);
-		else if (mode == 1) doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue);
-		else if (mode == 2) doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue));
-		else if (mode == 3) doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue));
-		else error("g.wormholeAutomatorModes has invalid value \""+g.stardustAutomatorMode+"\"")
-		if (doReset) stardustReset("normal");
-	}
-	g.stardustAutomatorValue=d.element("stardustAutomatorValue").value;
-	if (achievement.ownedInTier(5)>=12 && g.wormholeAutomatorOn) {
-		let doReset = false;
-		let mode = wormholeAutomatorModes.indexOf(g.wormholeAutomatorMode)
-		if (mode == 0) doReset = stat.pendinghr.gte(g.wormholeAutomatorValue);
-		else if (mode == 1) doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue);
-		else if (mode == 2) doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue));
-		else if (mode == 3) doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue));
-		else error("g.wormholeAutomatorModes has invalid value \""+g.wormholeAutomatorMode+"\"")
-		if (doReset) wormholeReset("normal");
-	}
-	g.wormholeAutomatorValue=d.element("wormholeAutomatorValue").value;
 	
 	
 	// Dark Matter section
@@ -580,6 +533,52 @@ function tick(time) {																																		 // The game loop, which 
 			}
 		}
 	}
+
+		// Automation section
+		if ((g.stardustUpgrades[1] > 0) && (g.axisAutobuyerOn)) axisAutobuyerProgress+=time/autobuyerMeta.interval("axis");
+		if (axisAutobuyerProgress > 1) {
+			buyMaxAxis(g.axisAutobuyerCaps);
+			axisAutobuyerProgress%=1;
+		}
+		if (achievement.ownedInTier(5)>=1 && (g.darkAxisAutobuyerOn)) darkAxisAutobuyerProgress+=time/autobuyerMeta.interval("darkAxis");
+		if (darkAxisAutobuyerProgress > 1) {
+			buyMaxDarkAxis(g.darkAxisAutobuyerCaps);
+			if (achievement.ownedInTier(5)>=2) gainDarkStar(g.darkAxisAutobuyerCaps[12]);
+			darkAxisAutobuyerProgress%=1;
+		}
+		if (achievement.ownedInTier(5)>=3 && g.stardustUpgradeAutobuyerOn) stardustUpgradeAutobuyerProgress+=time/autobuyerMeta.interval("stardustUpgrade");
+		if (stardustUpgradeAutobuyerProgress > 1) {
+			for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
+			stardustUpgradeAutobuyerProgress%=1;
+		}
+		if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");
+		if (starAutobuyerProgress > 1) {
+			if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap=="u"?Infinity:Number(g.starAutobuyerCap))) buyStar();}
+			if (unspentStars()>0&&g.starAllocatorOn&&(totalStars<g.starAllocatorBuild.length)) for (let i of g.starAllocatorBuild) buyStarUpgrade(i);
+			starAutobuyerProgress%=1;
+		}
+		if (achievement.ownedInTier(5)>=8 && g.stardustAutomatorOn) {
+			let doReset = false;
+			let mode = stardustAutomatorModes.indexOf(g.stardustAutomatorMode)
+			if (mode == 0) doReset = stat.pendingstardust.gte(g.stardustAutomatorValue);
+			else if (mode == 1) doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue);
+			else if (mode == 2) doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue));
+			else if (mode == 3) doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue));
+			else mode = 0
+			if (doReset) attemptStardustReset();
+		}
+		g.stardustAutomatorValue=d.element("stardustAutomatorValue").value;
+		if (achievement.ownedInTier(5)>=12 && g.wormholeAutomatorOn) {
+			let doReset = false;
+			let mode = wormholeAutomatorModes.indexOf(g.wormholeAutomatorMode)
+			if (mode == 0) doReset = stat.pendinghr.gte(g.wormholeAutomatorValue);
+			else if (mode == 1) doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue);
+			else if (mode == 2) doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue));
+			else if (mode == 3) doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue));
+			else mode = 0
+			if (doReset) attemptWormholeReset(false);
+		}
+		g.wormholeAutomatorValue=d.element("wormholeAutomatorValue").value;
 
 	if (g.autosaveIsOn && savecounter > 0) save();
 }

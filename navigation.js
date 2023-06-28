@@ -121,7 +121,7 @@ var activeSubtabs = Object.fromEntries(Object.entries(subtabList).map(x=>[x[0],x
 function openSubTab(parentTab,id) {
 	if (debugActive) {
 		if (!Object.keys(subtabList).includes(parentTab)) {error("Could not open subtab of tab \""+parentTab+"\"")}
-		if (!subtabList[parentTab].includes(id)) {error("Could not open subtab of tab \""+parentTab+"\"")}
+		if (!subtabList[parentTab].includes(id)) {error("Could not open subtab \""+id+"\" of tab \""+parentTab+"\"")}
 	}
 	for (let i of d.class("subtab "+parentTab)) i.style.display="none";
 	d.display("subtab_"+parentTab+"_"+id,"inline-block");

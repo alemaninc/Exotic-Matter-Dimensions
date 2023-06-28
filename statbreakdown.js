@@ -1061,7 +1061,7 @@ miscStats.SAxisEffect={
 	label:"S Axis effect",
 	visible:function(){return stat.axisUnlocked>=8;},
 	category:"Normal axis effects",
-	precision:2,
+	precision:4,
 	modifiers:[
 		statTemplates.base("1.025",c.d1_025,true),
 		...statTemplates.ach525_526Reward,

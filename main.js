@@ -16,7 +16,7 @@ const basesave = {
 	masteryPower:c.d0,
 	baseMasteryPowerGain:c.d1,
 	activeMasteries:[null,0,0,0,0,0,0,0,0,0,0],
-	masteryContainerStyle:"Modern",
+	masteryContainerStyle:"Legacy",
 	masteryIdsShown:true,
 	masteryBoostsShown:true,
 	masteryActivityShown:true,
@@ -65,6 +65,11 @@ const basesave = {
 		observe:true,
 		buyPermanentResearch:true,
 		noChromaGeneration:true,
+	},
+	confirmations:{
+		stardustReset:false,
+		ironWillStardustReset:true,
+		wormholeReset:false,
 	},
 	hotkeys:savefileHotkeyProperties(),
 	achievement:Object.fromEntries(achievement.all.map(x=>[x,false])),
@@ -809,38 +814,53 @@ function incrementStardust(x) {
 	x=x.fix(c.d0);
 	for (let i of stardustVariables) o.add(i,x)
 }
-function stardustReset(x) {
-	if (g.timeThisStardustReset==0) return
-	if ((stat.pendingstardust.gt(g.stardust))||(x=="force")) {
-		if (stat.pendingstardust.gt(g.stardust)) g.StardustResets++;
-		g.TotalStardustResets++;
-		unlockFeature("Stardust",true);
-		unlockFeature("Stars",true);
-		let summary = previousPrestige.generate(1)
-		if (stat.pendingstardust.gt(g.stardust)) {
-			g.previousStardustRuns.last10 = [summary].concat(g.previousStardustRuns.last10).slice(0,10)
-			if (summary.time < g.previousStardustRuns.wormhole.fastest.time) g.previousStardustRuns.wormhole.fastest = summary
-			if (summary.time < g.previousStardustRuns.spacetime.fastest.time) g.previousStardustRuns.spacetime.fastest = summary
-			if (summary.time < g.previousStardustRuns.eternity.fastest.time) g.previousStardustRuns.eternity.fastest = summary
-			if (summary.gain.gt(g.previousStardustRuns.wormhole.highest.gain)) g.previousStardustRuns.wormhole.highest = summary
-			if (summary.gain.gt(g.previousStardustRuns.spacetime.highest.gain)) g.previousStardustRuns.spacetime.highest = summary
-			if (summary.gain.gt(g.previousStardustRuns.eternity.highest.gain)) g.previousStardustRuns.eternity.highest = summary
+function attemptStardustReset(showPopups=false) {
+	if (stat.pendingstardust.gt(g.stardust)) {
+		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
+			popup({
+				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[501])?"forfeit your Iron Will run":"Stardust reset")+"?",
+				buttons:[["Confirm","if (stat.pendingstardust.gt(g.stardust)) {stardustReset()} else {notify('Insufficient exotic matter to stardust reset!','#ff9900','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
+			})
+		} else {
+			stardustReset()
 		}
-		addAchievement(201);
-		addAchievement(511);
-		incrementStardust(stat.pendingstardust.floor().sub(g.stardust).max(c.d0))
-		g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset);
-		g.exoticmatter=c.d0;
-		for (let i=0;i<8;i++) {
-			g[axisCodes[i]+"Axis"]=(g.stardustUpgrades[1]>=i+2)?(Decimal.mul(g[axisCodes[i]+"Axis"],stat.stardustUpgrade2AxisRetentionFactor).floor()):c.d0;
-		}
-		g.masteryPower=c.d1;
-		g.baseMasteryPowerGain=c.d1;
-		g.exoticmatterThisStardustReset=c.d0;
-		g.timeThisStardustReset=0;
-		g.truetimeThisStardustReset=c.d0;
-		for (let i of energyTypes.slice(0,6)) g[i+"Energy"] = StudyE(3)?c.d1:g[i+"Energy"].pow(studies[3].reward(2))
+	} else {
+		if (showPopups) popup({
+			text:"You must be able to gain stardust in order to reset!"
+		})
 	}
+}
+function stardustReset() {
+	if (g.timeThisStardustReset==0) return
+	let stardustGained = stat.pendingstardust.gt(g.stardust)
+	if (stardustGained) g.StardustResets++;
+	g.TotalStardustResets++;
+	unlockFeature("Stardust",true);
+	unlockFeature("Stars",true);
+	let summary = previousPrestige.generate(1)
+	if (stardustGained) {
+		g.previousStardustRuns.last10 = [summary].concat(g.previousStardustRuns.last10).slice(0,10)
+		if (summary.time < g.previousStardustRuns.wormhole.fastest.time) g.previousStardustRuns.wormhole.fastest = summary
+		if (summary.time < g.previousStardustRuns.spacetime.fastest.time) g.previousStardustRuns.spacetime.fastest = summary
+		if (summary.time < g.previousStardustRuns.eternity.fastest.time) g.previousStardustRuns.eternity.fastest = summary
+		if (summary.gain.gt(g.previousStardustRuns.wormhole.highest.gain)) g.previousStardustRuns.wormhole.highest = summary
+		if (summary.gain.gt(g.previousStardustRuns.spacetime.highest.gain)) g.previousStardustRuns.spacetime.highest = summary
+		if (summary.gain.gt(g.previousStardustRuns.eternity.highest.gain)) g.previousStardustRuns.eternity.highest = summary
+	}
+	addAchievement(201);
+	addAchievement(511);
+	incrementStardust(stat.pendingstardust.floor().sub(g.stardust).max(c.d0))
+	g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset);
+	g.exoticmatter=c.d0;
+	for (let i=0;i<8;i++) {
+		g[axisCodes[i]+"Axis"]=(g.stardustUpgrades[1]>=i+2)?(Decimal.mul(g[axisCodes[i]+"Axis"],stat.stardustUpgrade2AxisRetentionFactor).floor()):c.d0;
+	}
+	g.masteryPower=c.d1;
+	g.baseMasteryPowerGain=c.d1;
+	g.exoticmatterThisStardustReset=c.d0;
+	g.timeThisStardustReset=0;
+	g.truetimeThisStardustReset=c.d0;
+	for (let i of energyTypes.slice(0,6)) g[i+"Energy"] = StudyE(3)?c.d1:g[i+"Energy"].pow(studies[3].reward(2))
 	addSecretAchievement(1);
 }
 function stardustBoostBoost(x) {
@@ -954,7 +974,7 @@ function buyStarUpgrade(x) {
 	addAchievement(412);
 }
 function respecStars() {
-	stardustReset("force");
+	stardustReset();
 	for (let i of starList) g.star[i]=false;
 	totalStars=0
 }
@@ -1201,7 +1221,7 @@ function gainDarkStar(cap) {
 	if (gain.sub(g.darkstars).gte(c.d50)) addAchievement(515);
 	g.darkstars=gain;
 	if (achievement.ownedInTier(5)<7) {
-		stardustReset("force");
+		stardustReset();
 		g.darkmatter=c.d0;
 		for (let i=0;i<8;i++) g["dark"+axisCodes[i]+"Axis"]=c.d0;
 	}
@@ -1252,96 +1272,111 @@ function incrementHR(x) {
 	x=x.fix(c.d0);
 	for (let i of HRVariables) o.add(i,x)
 }
-function wormholeReset(x) {
+function attemptWormholeReset(showPopups=false) {
+	if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {
+		if (g.confirmations.wormholeReset&&showPopups) {
+			popup({
+				text:"Are you sure you want to Wormhole reset?",
+				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset()} else {notify('Insufficient dark axis to stardust reset!','#000066','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
+			})
+		} else {
+			wormholeReset()
+		}
+	} else {
+		if (showPopups) popup({
+			text:"You must be able to gain hawking radiation in order to reset!"
+		})
+	}
+}
+function wormholeReset() {
 	if (g.timeThisWormholeReset==0) return
-	if ((stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq))||(x=="force")) {
-		let timeLoopMult = 1
-		if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {
-			for (let i of achievementEvents.wormholeResetBefore) addAchievement(i);
-			for (let i of secretAchievementEvents.wormholeResetBefore) addSecretAchievement(i);
-			timeLoopMult = wormholeAmplificationMultiplier()
-			g.dilatedTime -= wormholeAmplificationCost()
-		}
-		if (g.wormholeResets==0) {
-			g.overclockActive=false
-			d.display("wormholeAnimation","inline-block");
-			let start = Date.now();
-			while (Date.now()-start<1e4) d.element("wormholeAnimation").style.opacity = (Date.now()-start)/1e4;
-		}
-		g.previousStardustRuns.last10 = [];
-		g.previousStardustRuns.wormhole = {fastest:previousPrestige.baseStardust(),highest:previousPrestige.baseStardust()}
-		let summary = previousPrestige.generate(2)
-		if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {
-			g.previousWormholeRuns.last10 = [summary].concat(g.previousWormholeRuns.last10).slice(0,10)
-			if (summary.time < g.previousWormholeRuns.spacetime.fastest.time) g.previousWormholeRuns.spacetime.fastest = summary
-			if (summary.time < g.previousWormholeRuns.eternity.fastest.time) g.previousWormholeRuns.eternity.fastest = summary
-			if (summary.gain.gt(g.previousWormholeRuns.spacetime.highest.gain)) g.previousWormholeRuns.spacetime.highest = summary
-			if (summary.gain.gt(g.previousWormholeRuns.eternity.highest.gain)) g.previousWormholeRuns.eternity.highest = summary
-			if (summary.efficiency.gt(g.previousWormholeRuns.spacetime.efficientest.efficiency)) g.previousWormholeRuns.spacetime.efficientest = summary
-			if (summary.efficiency.gt(g.previousWormholeRuns.eternity.efficientest.efficiency)) g.previousWormholeRuns.eternity.efficientest = summary
-		}
-		if (g.activeStudy!==0) {
-			if (stat.totalDarkAxis.gte(studies[g.activeStudy].goal())) {
-				g.studyCompletions[g.activeStudy]=Math.min(g.studyCompletions[g.activeStudy]+1,4);
-				respecResearch();
-				generateResearchCanvas();
-			}		
-			g.activeStudy=0;
-			updateAllStudyDivs();
-		}
-		incrementHR(stat.pendinghr.floor().mul(timeLoopMult));
-		g.exoticmatter=c.d0;
-		for (let i=0;i<8;i++) {
-			g[axisCodes[i]+"Axis"]=c.d0;
-			g["dark"+axisCodes[i]+"Axis"]=c.d0;
-		}
-		g.masteryPower=c.d1;
-		g.baseMasteryPowerGain=c.d0;
-		g.exoticmatterThisStardustReset=c.d0;
-		g.timeThisStardustReset=0;
-		g.truetimeThisStardustReset=c.d0;
-		g.fastestStardustReset=c.d9e15;
-		g.exoticmatterThisWormholeReset=c.d0;
-		if (stat.pendinghr.gt(c.d0)) g.fastestWormholeReset=Decimal.min(g.fastestWormholeReset,g.timeThisWormholeReset);
-		g.timeThisWormholeReset=0;
-		g.truetimeThisWormholeReset=c.d0;
-		g.stardust=c.d0;
-		g.stardustUpgrades=[0,1,0,5,0];
-		g.stars=0;
-		for (let i of starList) g.star[i] = false
-		totalStars=0
-		g.darkmatter=c.d0;
-		g.darkstars=c.d0;
-		g.darkEnergy=c.d1;
-		g.stelliferousEnergy=c.d1;
-		g.gravitationalEnergy=c.d1;
-		g.spatialEnergy=c.d1;
-		g.neuralEnergy=c.d1;
-		g.metaEnergy=c.d1;
-		g.vacuumEnergy=c.d1;
-		g.mentalEnergy=c.d1;
-		g.dimensionalEnergy=c.d1;
-		g.temporalEnergy=c.d1;
-		g.StardustResets=0;
-		g.TotalStardustResets=0;
-		g.shiningBrightTonight=true;
-		g.ach519possible=true;
-		g.ach524possible=achievement(524).active();
-		g.ach525possible=true;
-		g.ach526possible=true;
-		d.display("wormholeAnimation","none");
-		unlockFeature("Hawking Radiation",true);
-		if (g.researchRespec) {
+	let HRgained = stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)
+	let timeLoopMult = 1
+	if (HRgained) {
+		for (let i of achievementEvents.wormholeResetBefore) addAchievement(i);
+		for (let i of secretAchievementEvents.wormholeResetBefore) addSecretAchievement(i);
+		timeLoopMult = wormholeAmplificationMultiplier()
+		g.dilatedTime -= wormholeAmplificationCost()
+	}
+	if (g.wormholeResets==0) {
+		g.overclockActive=false
+		d.display("wormholeAnimation","inline-block");
+		let start = Date.now();
+		while (Date.now()-start<1e4) d.element("wormholeAnimation").style.opacity = (Date.now()-start)/1e4;
+	}
+	g.previousStardustRuns.last10 = [];
+	g.previousStardustRuns.wormhole = {fastest:previousPrestige.baseStardust(),highest:previousPrestige.baseStardust()}
+	let summary = previousPrestige.generate(2)
+	if (HRgained) {
+		g.previousWormholeRuns.last10 = [summary].concat(g.previousWormholeRuns.last10).slice(0,10)
+		if (summary.time < g.previousWormholeRuns.spacetime.fastest.time) g.previousWormholeRuns.spacetime.fastest = summary
+		if (summary.time < g.previousWormholeRuns.eternity.fastest.time) g.previousWormholeRuns.eternity.fastest = summary
+		if (summary.gain.gt(g.previousWormholeRuns.spacetime.highest.gain)) g.previousWormholeRuns.spacetime.highest = summary
+		if (summary.gain.gt(g.previousWormholeRuns.eternity.highest.gain)) g.previousWormholeRuns.eternity.highest = summary
+		if (summary.efficiency.gt(g.previousWormholeRuns.spacetime.efficientest.efficiency)) g.previousWormholeRuns.spacetime.efficientest = summary
+		if (summary.efficiency.gt(g.previousWormholeRuns.eternity.efficientest.efficiency)) g.previousWormholeRuns.eternity.efficientest = summary
+	}
+	if (g.activeStudy!==0) {
+		if (stat.totalDarkAxis.gte(studies[g.activeStudy].goal())) {
+			g.studyCompletions[g.activeStudy]=Math.min(g.studyCompletions[g.activeStudy]+1,4);
 			respecResearch();
-			g.researchRespec = false;
-		}
-		if (g.achievement[506]&&g.ach505Progress.lt(c.e3)) g.ach505Progress=c.e3;
-		if (stat.pendinghr.gt(c.d0)) g.WormholeResets+=timeLoopMult;
-		g.TotalWormholeResets+=timeLoopMult;
-		if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {
-			for (let i of achievementEvents.wormholeResetAfter) addAchievement(i);
-			for (let i of secretAchievementEvents.wormholeResetAfter) addSecretAchievement(i);
-		}
+			generateResearchCanvas();
+		}		
+		g.activeStudy=0;
+		updateAllStudyDivs();
+	}
+	incrementHR(stat.pendinghr.floor().mul(timeLoopMult));
+	g.exoticmatter=c.d0;
+	for (let i=0;i<8;i++) {
+		g[axisCodes[i]+"Axis"]=c.d0;
+		g["dark"+axisCodes[i]+"Axis"]=c.d0;
+	}
+	g.masteryPower=c.d1;
+	g.baseMasteryPowerGain=c.d0;
+	g.exoticmatterThisStardustReset=c.d0;
+	g.timeThisStardustReset=0;
+	g.truetimeThisStardustReset=c.d0;
+	g.fastestStardustReset=c.d9e15;
+	g.exoticmatterThisWormholeReset=c.d0;
+	if (stat.pendinghr.gt(c.d0)) g.fastestWormholeReset=Decimal.min(g.fastestWormholeReset,g.timeThisWormholeReset);
+	g.timeThisWormholeReset=0;
+	g.truetimeThisWormholeReset=c.d0;
+	g.stardust=c.d0;
+	g.stardustUpgrades=[0,1,0,5,0];
+	g.stars=0;
+	for (let i of starList) g.star[i] = false
+	totalStars=0
+	g.darkmatter=c.d0;
+	g.darkstars=c.d0;
+	g.darkEnergy=c.d1;
+	g.stelliferousEnergy=c.d1;
+	g.gravitationalEnergy=c.d1;
+	g.spatialEnergy=c.d1;
+	g.neuralEnergy=c.d1;
+	g.metaEnergy=c.d1;
+	g.vacuumEnergy=c.d1;
+	g.mentalEnergy=c.d1;
+	g.dimensionalEnergy=c.d1;
+	g.temporalEnergy=c.d1;
+	g.StardustResets=0;
+	g.TotalStardustResets=0;
+	g.shiningBrightTonight=true;
+	g.ach519possible=true;
+	g.ach524possible=achievement(524).active();
+	g.ach525possible=true;
+	g.ach526possible=true;
+	d.display("wormholeAnimation","none");
+	unlockFeature("Hawking Radiation",true);
+	if (g.researchRespec) {
+		respecResearch();
+		g.researchRespec = false;
+	}
+	if (g.achievement[506]&&g.ach505Progress.lt(c.e3)) g.ach505Progress=c.e3;
+	if (stat.pendinghr.gt(c.d0)) g.WormholeResets+=timeLoopMult;
+	g.TotalWormholeResets+=timeLoopMult;
+	if (HRgained) {
+		for (let i of achievementEvents.wormholeResetAfter) addAchievement(i);
+		for (let i of secretAchievementEvents.wormholeResetAfter) addSecretAchievement(i);
 	}
 }
 function wormholeResetButtonText() {
@@ -1437,7 +1472,7 @@ function updateAllStudyDivs() {
 }
 function enterStudy(x) {
 	g.researchRespec=false
-	wormholeReset("force");
+	wormholeReset();
 	g.activeStudy=x;
 	updateAllStudyDivs();
 	if (x==1) setTimeout(()=>g.clickedInStudy1=false,0) // gameClick() function runs after this, timeout to circumvent
@@ -1532,7 +1567,7 @@ function popup(data) {
 	d.innerHTML("span_fancyPopupText",data.text)
 	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
 	d.innerHTML("span_fancyPopupButtons","")
-	for (let i of data.buttons) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
+	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
 }
 function popupInput() {
 	return d.element("span_fancyPopupInput").value
@@ -1591,56 +1626,62 @@ function updateTopResourceModal() {
 }
 function showConfigModal(label,buttons){
 	popup({
-		text:"<span style=\"text-decoration:underline\">Here is a list of "+label+" options:</span><br>"+buttons.map(x=>"<button class=\"starbuybutton\" onClick=\""+x.onClick+";openConfig['"+label+"']()\">"+x.text+"</button>").join("")+"<br>",
+		text:"<span style=\"text-decoration:underline\">Here is a list of "+label+" options:</span><br>"+buttons.filter(x=>x.visible??true).map(x=>"<button class=\"starbuybutton\" onClick=\""+x.onClick+";openConfig['"+label+"']()\">"+x.text+"</button>").join("")+"<br>",
 		buttons:[["Close",""]]
 	})
 }
-const openConfig = {
-	"Axis":function(){showConfigModal("Axis",[
-		{text:"Exotic matter amount shown "+(g.topResourcesShown.exoticmatter?"on top of screen":"in Axis subtab"),onClick:"g.topResourcesShown.exoticmatter=!g.topResourcesShown.exoticmatter"},
-		{text:(g.glowOptions.buyAxis?"G":"No g")+"low if axis can be purchased",onClick:"g.glowOptions.buyAxis=!g.glowOptions.buyAxis"}
-	])},
-	"Mastery":function(){updateMasteryLayout();showConfigModal("Mastery",[
-		{text:"Mastery power amount shown "+(g.topResourcesShown.masteryPower?"on top of screen":"in Masteries subtab"),onClick:"g.topResourcesShown.masteryPower=!g.topResourcesShown.masteryPower"},
-		{text:"Mastery tab layout: "+g.masteryContainerStyle,onClick:"g.masteryContainerStyle=(g.masteryContainerStyle=='Modern'?'Legacy':'Modern')"},
-		{text:(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs",onClick:"toggle('masteryIdsShown')"},
-		{text:(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages",onClick:"toggle('masteryBoostsShown')"},
-		{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"}
-	])},
-	"Offline Time":function(){showConfigModal("Offline Time",[
-		{text:(g.glowOptions.overclock?"G":"No g")+"low during Overclock",onClick:"g.glowOptions.overclock=!g.glowOptions.overclock"}
-	])},
-	"Achievement":function(){updateAchievementsTab();showConfigModal("Achievement",[
-		{text:(g.completedAchievementTiersShown?"Show":"Hid")+"ing completed achievement tiers",onClick:"toggle('completedAchievementTiersShown')"}
-	])
-	},
-	"Stardust Boost":function(){showConfigModal("Stardust Boost",[
-		{text:"Stardust amount shown "+(g.topResourcesShown.stardust?"on top of screen":"in Stardust tab"),onClick:"g.topResourcesShown.stardust=!g.topResourcesShown.stardust"},
-		{text:(g.glowOptions.buyStardustUpgrade?"G":"No g")+"low if Stardust Upgrade can be purchased",onClick:"g.glowOptions.buyStardustUpgrade=!g.glowOptions.buyStardustUpgrade"},
-		{text:(g.showingCappedStardustUpgrades?"Show":"Hid")+"ing capped Stardust Upgrades",onClick:"toggle('showingCappedStardustUpgrades')"}
-	])},
-	"Star":function(){showConfigModal("Star",[
-		{text:(g.glowOptions.buyStar?"G":"No g")+"low if star can be purchased",onClick:"g.glowOptions.buyStar=!g.glowOptions.buyStar"},
-		{text:(g.glowOptions.assignStar?"G":"No g")+"low if star can be assigned",onClick:"g.glowOptions.assignStar=!g.glowOptions.assignStar"}
-	])},
-	"Dark Matter":function(){showConfigModal("Dark Matter",[
-		{text:"Dark matter amount shown "+(g.topResourcesShown.darkmatter?"on top of screen":"in Dark Matter subtab"),onClick:"g.topResourcesShown.darkmatter=!g.topResourcesShown.darkmatter"},
-		{text:(g.glowOptions.buyDarkAxis?"G":"No g")+"low if dark axis can be purchased",onClick:"g.glowOptions.buyDarkAxis=!g.glowOptions.buyDarkAxis"},
-		{text:(g.glowOptions.buyDarkStar?"G":"No g")+"low if dark stars can be gained",onClick:"g.glowOptions.gainDarkStar=!g.glowOptions.gainDarkStar"},
-		{text:"Dark star bulk buy "+(g.darkStarBulk?"en":"dis")+"abled",onClick:"toggle('darkStarBulk')"}
-	])},
-	"Research":function(){showConfigModal("Research",[
-		{text:"Hawking radiation amount shown "+(g.topResourcesShown.hr?"on top of screen":"in Wormhole tab"),onClick:"g.topResourcesShown.hr=!g.topResourcesShown.hr"},
-		{text:(g.glowOptions.observe?"G":"No g")+"low if can observe",onClick:"g.glowOptions.observe=!g.glowOptions.observe"},
-		{text:(g.glowOptions.buyPermanentResearch?"G":"No g")+"low if can buy permanent research",onClick:"g.glowOptions.buyPermanentResearch=!g.glowOptions.buyPermanentResearch"}
-	])},
-	"Study":function(){updateAllStudyDivs();showConfigModal("Study",[
-		{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with 4 completions",onClick:"toggle('completedStudiesShown')"}
-	])},
-	"Light":function(){showConfigModal("Light",[
-		{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:"g.glowOptions.noChromaGeneration=!g.glowOptions.noChromaGeneration"},
-	])}
-}
+const openConfig = (()=>{
+	function toggle(variable) {return variable+"=!"+variable}
+	return {
+		"Axis":function(){showConfigModal("Axis",[
+			{text:"Exotic matter amount shown "+(g.topResourcesShown.exoticmatter?"on top of screen":"in Axis subtab"),onClick:toggle("g.topResourcesShown.exoticmatter")},
+			{text:(g.glowOptions.buyAxis?"G":"No g")+"low if axis can be purchased",onClick:toggle("g.glowOptions.buyAxis")}
+		])},
+		"Mastery":function(){updateMasteryLayout();showConfigModal("Mastery",[
+			{text:"Mastery power amount shown "+(g.topResourcesShown.masteryPower?"on top of screen":"in Masteries subtab"),onClick:toggle("g.topResourcesShown.masteryPower")},
+			{text:"Mastery tab layout: "+g.masteryContainerStyle,onClick:"g.masteryContainerStyle=(g.masteryContainerStyle=='Modern'?'Legacy':'Modern')"},
+			{text:(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs",onClick:"toggle('masteryIdsShown')"},
+			{text:(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages",onClick:"toggle('masteryBoostsShown')"},
+			{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"}
+		])},
+		"Offline Time":function(){showConfigModal("Offline Time",[
+			{text:(g.glowOptions.overclock?"G":"No g")+"low during Overclock",onClick:toggle("g.glowOptions.overclock")}
+		])},
+		"Achievement":function(){updateAchievementsTab();showConfigModal("Achievement",[
+			{text:(g.completedAchievementTiersShown?"Show":"Hid")+"ing completed achievement tiers",onClick:"toggle('completedAchievementTiersShown')"}
+		])
+		},
+		"Stardust Boost":function(){showConfigModal("Stardust Boost",[
+			{text:"Stardust amount shown "+(g.topResourcesShown.stardust?"on top of screen":"in Stardust tab"),onClick:toggle("g.topResourcesShown.stardust")},
+			{text:"Stardust reset confirmation "+(g.confirmations.stardustReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.stardustReset")},
+			{text:"Stardust reset confirmation "+(g.confirmations.ironWillStardustReset?"en":"dis")+"abled in Iron Will",onClick:toggle("g.confirmations.ironWillStardustReset")},
+			{text:(g.glowOptions.buyStardustUpgrade?"G":"No g")+"low if Stardust Upgrade can be purchased",onClick:toggle("g.glowOptions.buyStardustUpgrade")},
+			{text:(g.showingCappedStardustUpgrades?"Show":"Hid")+"ing capped Stardust Upgrades",onClick:"toggle('showingCappedStardustUpgrades')"}
+		])},
+		"Star":function(){showConfigModal("Star",[
+			{text:(g.glowOptions.buyStar?"G":"No g")+"low if star can be purchased",onClick:toggle("g.glowOptions.buyStar")},
+			{text:(g.glowOptions.assignStar?"G":"No g")+"low if star can be assigned",onClick:toggle("g.glowOptions.assignStar")}
+		])},
+		"Dark Matter":function(){showConfigModal("Dark Matter",[
+			{text:"Dark matter amount shown "+(g.topResourcesShown.darkmatter?"on top of screen":"in Dark Matter subtab"),onClick:toggle("g.topResourcesShown.darkmatter")},
+			{text:(g.glowOptions.buyDarkAxis?"G":"No g")+"low if dark axis can be purchased",onClick:toggle("g.glowOptions.buyDarkAxis")},
+			{text:(g.glowOptions.buyDarkStar?"G":"No g")+"low if dark stars can be gained",onClick:toggle("g.glowOptions.gainDarkStar")},
+			{text:"Dark star bulk buy "+(g.darkStarBulk?"en":"dis")+"abled",onClick:"toggle('darkStarBulk')"}
+		])},
+		"Research":function(){showConfigModal("Research",[
+			{text:"Hawking radiation amount shown "+(g.topResourcesShown.hr?"on top of screen":"in Wormhole tab"),onClick:toggle("g.topResourcesShown.hr")},
+			{text:"Wormhole reset confirmation "+(g.confirmations.wormholeReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.wormholeReset")},
+			{text:(g.glowOptions.observe?"G":"No g")+"low if can observe",onClick:toggle("g.glowOptions.observe")},
+			{text:(g.glowOptions.buyPermanentResearch?"G":"No g")+"low if can buy permanent research",onClick:toggle("g.glowOptions.buyPermanentResearch")}
+		])},
+		"Study":function(){updateAllStudyDivs();showConfigModal("Study",[
+			{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with 4 completions",onClick:"toggle('completedStudiesShown')"}
+		])},
+		"Light":function(){showConfigModal("Light",[
+			{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:toggle("g.glowOptions.noChromaGeneration")},
+		])}
+	}
+})()
 function endgameColor() {
 	return "hsl("+((Date.now()/1e4)%360)+","+(90+Math.sin(Date.now()/1e6)*10)+"%,"+(50+Math.cos(Date.now()/1e8)*10)+"%)";				// random color that slowly changes over time
 }
@@ -1770,7 +1811,7 @@ function progressBarOnClick() {
 			break;
 		}
 	}
-	if (data.next==3) notify(version.nextUpdateHint,endgameColor(),blackOrWhiteContrast(endgameColor()))
+	if (data.type==3) notify(version.nextUpdateHint,endgameColor(),blackOrWhiteContrast(endgameColor()))
 }
 function importCommand(str) {
 	str = atob(str.substring(1))

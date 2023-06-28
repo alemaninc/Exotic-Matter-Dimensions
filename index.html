@@ -14,8 +14,8 @@
 					<td class="toptable" id="resourceModal" style="width:calc(100vw - 280px)"></td>
 					<td class="toptable" style="width:260px">
 						<table><tr>
-							<td><button onClick="stardustReset('normal')" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
-							<td><button onClick="unlocked('Hawking Radiation')?wormholeReset('normal'):wormholeAnimation()" id="button_wormholeReset"></button></td>
+							<td><button onClick="attemptStardustReset(true)" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
+							<td><button onClick="unlocked('Hawking Radiation')?attemptWormholeReset(true):wormholeAnimation()" id="button_wormholeReset"></button></td>
 						</tr></table>
 					</td>
 				</tr>
@@ -84,7 +84,7 @@
 					<button class="featureConfig stardust" onClick="openConfig['Stardust Boost']()"></button>
 					<div id="div_stardustBoostContainer"></div><br>
 					<div id="div_stardustUpgradeContainer"></div><br>
-					<button class="starbuybutton" onClick="stardustReset('force')">Reset with no reward (may be useful if you get stuck)</button>
+					<button class="starbuybutton" onClick="stardustReset()">Reset with no reward (may be useful if you get stuck)</button>
 				</div>
 				<div class="subtab stardust" id="subtab_stardust_stars" style="display:none">
 					<button class="featureConfig stardust" onClick="openConfig['Star']()"></button>
@@ -302,7 +302,7 @@
 				</div>
 			</div>
 			<div id="footer" style="z-index: 0">
-				<div id="gameprogress" class="progress"></div>
+				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
 				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | Version <span id="span_currentVersion"></span>
 			</div>
 		</div>
