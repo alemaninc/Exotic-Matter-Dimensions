@@ -875,6 +875,10 @@
 			if (x.abs().gt(1e17)) return Decimal.pow(10,x.div(10))
 			return Decimal.pow(10,x.div(10).floor()).mul([1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x.mod(10).toNumber()])
 		}
+
+		Decimal.valid = function (x) {
+			return !Object.values(x).includes(NaN)
+		}
 		
 		Decimal.prototype.normalize = function () {
 			/*
@@ -3191,14 +3195,16 @@ const c = deepFreeze({		 // c = "constant"
 	ee100			: N("ee100"),
 	maxvalue	: Decimal.fromComponents(1,Number.MAX_VALUE,1), // highest possible BEA number
 });
-function validDecimal(x) {
-	if (x instanceof Decimal) return true;
-	if (typeof x !== "string") return false;	// Regular numbers will remain numeric in JSON.
-	if (x=="0") return true;									// Special case for Decimal 0
-	if (N(x).isNaN()) return false;					 
-	if (N(x).eq(c.d0)) return false;					// If the variable evaluates to 0 but did not get stored as such, it's not a decimal.
-	return true;															// If all of the above tests were false, it's probably a Decimal.
-}
+Object.defineProperty(JSON,"validDecimal",{
+	value:function validDecimal(x) {
+		if (x instanceof Decimal) return true;
+		if (typeof x !== "string") return false;	// Regular numbers will remain numeric in JSON.
+		if (x=="0") return true;									// Special case for Decimal 0
+		if (N(x).isNaN()) return false;					 
+		if (N(x).eq(c.d0)) return false;					// If the variable evaluates to 0 but did not get stored as such, it's not a decimal.
+		return true;															// If all of the above tests were false, it's probably a Decimal.
+	}
+})
 
 const d = {		// d for "document"
 	element(elem) {
@@ -3230,22 +3236,22 @@ const d = {		// d for "document"
 };
 const o = {			// o = "operations"
 	add(variable,value) {
-		g[variable]=g[variable].add(N(value).fix(0));
+		g[variable]=g[variable].add(value).fix(0);
 	},
 	sub(variable,value) {
-		g[variable]=g[variable].sub(N(value).fix(0));
+		g[variable]=g[variable].sub(value).fix(0);
 	},
 	mul(variable,value) {
-		g[variable]=g[variable].mul(N(value).fix(1));
+		g[variable]=g[variable].mul(value).fix(1);
 	},
 	div(variable,value) {
-		g[variable]=g[variable].div(N(value).fix(1));
+		g[variable]=g[variable].div(value).fix(1);
 	},
 	pow(variable,value) {
-		g[variable]=g[variable].pow(N(value).fix(1));
+		g[variable]=g[variable].pow(value).fix(1);
 	},
 	root(variable,value) {
-		g[variable]=g[variable].root(N(value).fix(1));
+		g[variable]=g[variable].root(value).fix(1);
 	}
 };
 Object.defineProperty(Array,"random",{
@@ -3427,7 +3433,7 @@ function timeFormat(x) {
 }
 function rateFormat(x) {
 	x = N(x);
-	if (!validDecimal(x)) throw "Cannot access rateFormat("+x+")"
+	if (!Decimal.valid(x)) throw "Cannot access rateFormat("+x+")"
 	if (x.sign == 0) return "0 per second"
 	if (x.sign == -1) return "-"+rateFormat(x.neg())
 	if (x.eq(c.d1)) return "1 per second"

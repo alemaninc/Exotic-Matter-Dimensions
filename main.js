@@ -136,10 +136,10 @@ const basesave = {
 	starAllocatorOn:false,
 	starAllocatorBuild:[],
 	wormholeAutomatorOn:false,
-	wormholeAutomatorMode:"amount",
+	wormholeAutomatorMode:0,
 	wormholeAutomatorValue:"1",
 	stardustAutomatorOn:false,
-	stardustAutomatorMode:"amount",
+	stardustAutomatorMode:0,
 	stardustAutomatorValue:"1",
 	research:Object.fromEntries(Object.keys(research).map(x=>[x,false])),
 	researchVisibility:[],
@@ -1516,8 +1516,8 @@ function lumenReq(x){return lightData[x].baseScale.pow(g.lumens[x]).mul(lightDat
 function addLumens(x){
 	let added = affordableLumens(x)
 	if (added.neq(c.d0)) {
-		g.chroma[x] = g.chroma[x].sub(costOfAffordableLumens(x))
-		g.lumens[x] = g.lumens[x].add(added)
+		g.chroma[x] = g.chroma[x].sub(costOfAffordableLumens(x)).fix(c.d0)
+		g.lumens[x] = g.lumens[x].add(added).fix(c.d0)
 		updateLightCache(x)
 	}
 }
@@ -1847,7 +1847,7 @@ function getSavedGame(saved, game, base=basesave) {
 				for (let i=0;i<savedValue.length;i++) out.push((baseValue[i] instanceof Decimal)?N(savedValue[i]):savedValue[i])
 				game[prop] = out
 			} else if (game.hasOwnProperty(prop)) {
-        game[prop] = (baseValue instanceof Decimal)?N(savedValue):savedValue
+        game[prop] = (baseValue instanceof Decimal)?(Decimal.valid(savedValue)?N(savedValue):baseValue):savedValue
       }
     }
   }
@@ -1856,10 +1856,8 @@ function load(savegame) {
 	if ((typeof savegame == "object") && (savegame !== null)) {
 		g = decimalStructuredClone(basesave);
 		getSavedGame(savegame,g)
-		if (!stardustAutomatorModes.includes(g.stardustAutomatorMode)) {
-			g.stardustAutomatorMode = stardustAutomatorModes[["amount","time","mult","pow"].indexOf(g.stardustAutomatorMode)]
-			g.wormholeAutomatorMode = wormholeAutomatorModes[["amount","time","mult","pow"].indexOf(g.wormholeAutomatorMode)]
-		}
+		if (typeof g.stardustAutomatorMode !== "number") {g.stardustAutomatorMode = ["amount","time","mult","pow"].indexOf(g.stardustAutomatorMode)}
+		if (typeof g.wormholeAutomatorMode !== "number") {g.wormholeAutomatorMode = ["amount","time","mult","pow"].indexOf(g.wormholeAutomatorMode)}
 		if ((savegame.achievement==undefined)&&(savegame.ownedAchievements!==undefined)) {g.achievement = Object.fromEntries(achievement.all.map(x=>[x,savegame.ownedAchievements.map(x=>String(x)).includes(String(x))]))}
 		if ((savegame.secretAchievement==undefined)&&(savegame.ownedSecretAchievements!==undefined)) {g.secretAchievement = Object.fromEntries(Object.keys(secretAchievementList).map(x=>[x,savegame.ownedSecretAchievements.map(x=>String(x)).includes(String(x))]))}
 		totalAchievements = Object.values(g.achievement).map(x=>x?1:0).sum()
@@ -1871,8 +1869,8 @@ function load(savegame) {
 		totalResearch.temporary = nonPermanentResearchList.map(x=>g.research[x]?1:0).sum()
 		totalResearch.permanent = permanentResearchList.map(x=>g.research[x]?1:0).sum()
 		fixMasteryArrays();
-		for (let i=0; i<4; i++) g.observations[i]=N(g.observations[i]);
-		for (let i=0; i<8; i++) g.chroma[i]=N(g.chroma[i]);
+		for (let i=0; i<4; i++) g.observations[i]=N(g.observations[i]).fix(c.d0);
+		for (let i=0; i<8; i++) g.chroma[i]=N(g.chroma[i]).fix(c.d0);
 		g.TotalStardustResets=Math.max(g.StardustResets,g.TotalStardustResets);
 		g.TotalWormholeResets=Math.max(g.WormholeResets,g.TotalWormholeResets);
 		olddelta = Date.now()
