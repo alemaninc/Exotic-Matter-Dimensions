@@ -1,4 +1,4 @@
 const version = {
-	current:"𝕍1.2.6",
+	current:"𝕍1.2.7",
 	nextUpdateHint:"Hevipelle should trademark"
 }

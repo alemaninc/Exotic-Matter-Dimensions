@@ -329,7 +329,7 @@ const studies = [
 	{
 		name:"Autonomy",
 		unlockReq:function(){return c.e3.mul(studyPower(1)+1)},
-		description:function() {return "You can't enter the Main, Stardust or Automation tabs, nor do any hotkeys work. However, everything inside these tabs still works normally."},
+		description:function() {return "You can't enter the Stardust or Automation tabs, or any subtabs in Main except Offline Time. However, everything inside these tabs still works normally. Also, all hotkeys are disabled."},
 		research:"r5_7",
 		goal:function() {return this.unlockReq();},
 		reward:function(num,comp=g.studyCompletions[1]) {

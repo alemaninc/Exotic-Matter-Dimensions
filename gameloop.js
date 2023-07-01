@@ -46,7 +46,7 @@ function updateHTML() {
 		}
 	}
 	if (activeTab=="main") {
-		if (StudyE(1)) openTab("wormhole");
+		if (StudyE(1)) {if (activeSubtabs.main!=="offlineTime") openSubTab("main","offlineTime")};
 		if (activeSubtabs.main=="axis") {
 			d.display("div_exoticmatter_disabledTop",g.topResourcesShown.exoticmatter?"none":"inline-block")
 			if (!g.topResourcesShown.exoticmatter) {

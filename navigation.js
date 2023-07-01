@@ -16,9 +16,13 @@ const tabVisibility = {
 }
 function openTab(id) {
 	if (debugActive) {if (!tabList.includes(id)) {error("Could not open tab \""+id+"\"")}}
-	if (["main","stardust","automation"].includes(id)&&StudyE(1)) {
-		notify("You cannot. (Study I active)","#990000","#ffffff")
-		return
+	if (StudyE(1)) {
+		if (id=="main") {
+			openSubTab("main","offlineTime")
+		} else if (["stardust","automation"].includes(id)&&StudyE(1)) {
+			notify("This tab is disabled in Study I","#990000","#ffffff")
+			return
+		}
 	}
 	for (let i of d.class("tab")) i.style.display="none";
 	d.display("bigtab_"+id,"inline-block");
@@ -123,6 +127,10 @@ function openSubTab(parentTab,id) {
 		if (!Object.keys(subtabList).includes(parentTab)) {error("Could not open subtab of tab \""+parentTab+"\"")}
 		if (!subtabList[parentTab].includes(id)) {error("Could not open subtab \""+id+"\" of tab \""+parentTab+"\"")}
 	}
+	if (StudyE(1)&&(parentTab=="main")&&(id!=="offlineTime")) {
+		notify("This subtab is disabled in Study I","#990000","#ffffff")
+		return
+	}
 	for (let i of d.class("subtab "+parentTab)) i.style.display="none";
 	d.display("subtab_"+parentTab+"_"+id,"inline-block");
 	for (let i of d.class("tier2"+parentTab)) i.style.filter = "brightness(60%)"
@@ -166,7 +174,7 @@ document.addEventListener("keypress",function(e){
 	if (e.ctrlKey) return // if switching tab or whatever
 	if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) return // if inputting something
 	if (StudyE(1)) {	
-		notify("You cannot. (Study I active)","#990000","#ffffff")
+		notify("Hotkeys are disabled in Study I","#990000","#ffffff")
 		return
 	}
 	let key = (e.shiftKey?"shift+":"")+e.code
