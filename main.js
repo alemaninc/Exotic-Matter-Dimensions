@@ -444,10 +444,10 @@ function availableThemes() {
 	if (g.secretAchievement[16]) out.push("Wormhole");
 	return out;
 }
-function selectOption(variable,values,flavor="") {
+function selectOption(variable,values,flavor="mode",variableCallback=x=>x) {
 	popup({
-		text:"We're sorry to hear that you hate "+g[variable]+". Which "+flavor+" do you want to try on next?",
-		buttons:values.map(x => [x,"g."+variable+"='"+x+"'"])
+		text:"We're sorry to hear that you hate "+variableCallback(g[variable])+". Which "+flavor+" do you want to try on next?",
+		buttons:values.map(x => [variableCallback(x),"g."+variable+"="+x])
 	})
 }
 function changeTheme() {

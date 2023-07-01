@@ -165,14 +165,14 @@
 					<button class="tabtier2 tier2options" onClick="openSubTab('options','hotkeys')" id="button_subtab_options_hotkeys" style="filter:brightness(60%)">Hotkeys</button>
 				</div>
 				<div class="subtab options" id="subtab_options_options">
-					<button class="optionsbutton" onClick="selectOption('notation',['Alemaninc Ordinal','BE Default','Engineering','Hyper-E','Infinity','Logarithm','Mixed scientific','Scientific','Tetration'],'notation')">Notation: <span id="notation"></span></button>
+					<button class="optionsbutton" onClick="selectOption('notation',['\'Alemaninc Ordinal\'','\'BE Default\'','\'Engineering\'','\'Hyper-E\'','\'Infinity\'','\'Logarithm\'','\'Mixed scientific\'','\'Scientific\'','\'Tetration\''],'notation')">Notation: <span id="notation"></span></button>
 					<button class="optionsbutton" onClick="save()">Save</button>
 					<button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button>
 					<button class="optionsbutton" onClick="wipeSavePopup()" style="background-color:#000000;color:#ff0000;">WIPE SAVE</button>
 					<button class="optionsbutton" onClick="importSave()">Import save</button>
 					<button class="optionsbutton" onClick="exportSave()">Export save</button>
 					<button class="optionsbutton" onClick="changeTheme()">Theme: <span id="colortheme"></span></button>
-					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','Only Axis tab','None'],'mode')" id="button_footerDisplay"></button>
+					<button class="optionsbutton" onClick="selectOption('footerDisplay',['\'All tabs\'','\'Only Axis tab\'','\'None\''],'mode')" id="button_footerDisplay"></button>
 					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
 					<button class="optionsbutton" onClick="selectOption('newsTickerSpeed',[40,60,80,120,160,200,300,400,500,750,999],'speed')">News ticker speed: <span id="span_newsTickerSpeed"></span> px·s<sup>-1</sup></button>
 				</div>
@@ -290,13 +290,13 @@
 					<div class="automatordiv" id="stardustAutomator" style="display:none">
 						<h3>Stardust Reset Automator</h3>
 						<button class="automatortoggleon" id="button_stardustAutomatorToggle" onClick="toggle('stardustAutomatorOn')"></button><br>
-						<label for="stardustAutomatorMode">Setting:</label><button class="genericbutton" id="button_stardustAutomatorMode" onClick="selectOption('stardustAutomatorMode',stardustAutomatorModes,'mode')"></button><br>
+						<label for="stardustAutomatorMode">Setting:</label><button class="genericbutton" id="button_stardustAutomatorMode" onClick="selectOption('stardustAutomatorMode',countTo(4,true),'mode',x=>stardustAutomatorModes[x])"></button><br>
 						<input id="stardustAutomatorValue" type="text"></input>
 					</div>
 					<div class="automatordiv" id="wormholeAutomator" style="display:none">
 						<h3>Wormhole Reset Automator</h3>
 						<button class="automatortoggleon" id="button_wormholeAutomatorToggle" onClick="toggle('wormholeAutomatorOn')"></button><br>
-						<label for="wormholeAutomatorMode">Setting:</label><button class="genericbutton" id="button_wormholeAutomatorMode" onClick="selectOption('wormholeAutomatorMode',wormholeAutomatorModes,'mode')"></button><br>
+						<label for="wormholeAutomatorMode">Setting:</label><button class="genericbutton" id="button_wormholeAutomatorMode" onClick="selectOption('wormholeAutomatorMode',countTo(4,true),'mode',x=>wormholeAutomatorModes[x])"></button><br>
 						<input id="wormholeAutomatorValue" type="text"></input>
 					</div>
 				</div>

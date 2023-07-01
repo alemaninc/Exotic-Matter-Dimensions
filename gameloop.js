@@ -384,8 +384,8 @@ function updateHTML() {
 		d.display("wormholeMilestone5",achievement.ownedInTier(5)>=5?"inline-block":"none");
 		d.display("stardustAutomator",achievement.ownedInTier(5)>=8?"inline-block":"none");
 		d.display("wormholeAutomator",achievement.ownedInTier(5)>=12?"inline-block":"none");
-		d.innerHTML("button_stardustAutomatorMode",stardustAutomatorModes[g.stardustAutomatorMode]);
-		d.innerHTML("button_wormholeAutomatorMode",wormholeAutomatorModes[g.wormholeAutomatorMode]);
+		d.innerHTML("button_stardustAutomatorMode",stardustAutomatorModes[g.stardustAutomatorMode]??"Amount of stardust");
+		d.innerHTML("button_wormholeAutomatorMode",wormholeAutomatorModes[g.wormholeAutomatorMode]??"Amount of HR");
 		d.class("button_starAllocatorToggle",g.starAllocatorOn?"automatortoggleon":"automatortoggleoff");
 		d.innerHTML("button_starAllocatorToggle",g.starAllocatorOn?"On":"Off");
 		d.class("button_stardustAutomatorToggle",g.stardustAutomatorOn?"automatortoggleon":"automatortoggleoff");
@@ -560,22 +560,28 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=8 && g.stardustAutomatorOn) {
 		let doReset = false;
 		let mode = g.stardustAutomatorMode
-		if (mode == 0) doReset = stat.pendingstardust.gte(g.stardustAutomatorValue);
-		else if (mode == 1) doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue);
-		else if (mode == 2) doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue));
-		else if (mode == 3) doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue));
-		else g.stardustAutomatorMode = 0
+		if (mode == 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)}
+		else if (mode == 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)}
+		else if (mode == 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))}
+		else if (mode == 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))}
+		else {
+			if (achievement.ownedInTier(5)>=8) {popup({text:"Due to an error, stardust automator mode was reverted to the default value of amount of stardust."})}
+			g.stardustAutomatorMode = 0
+		}
 		if (doReset) attemptStardustReset();
 	}
 	g.stardustAutomatorValue=d.element("stardustAutomatorValue").value;
 	if (achievement.ownedInTier(5)>=12 && g.wormholeAutomatorOn) {
 		let doReset = false;
 		let mode = g.wormholeAutomatorMode
-		if (mode == 0) doReset = stat.pendinghr.gte(g.wormholeAutomatorValue);
-		else if (mode == 1) doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue);
-		else if (mode == 2) doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue));
-		else if (mode == 3) doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue));
-		else g.wormholeAutomatorMode = 0
+		if (mode == 0) {doReset = stat.pendinghr.gte(g.wormholeAutomatorValue)}
+		else if (mode == 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)}
+		else if (mode == 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))}
+		else if (mode == 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))}
+		else {
+			if (achievement.ownedInTier(5)>=12) {popup({text:"Due to an error, wormhole automator mode was reverted to the default value of amount of HR."})}
+			g.wormholeAutomatorMode = 0
+		}
 		if (doReset) attemptWormholeReset(false);
 	}
 	g.wormholeAutomatorValue=d.element("wormholeAutomatorValue").value;
