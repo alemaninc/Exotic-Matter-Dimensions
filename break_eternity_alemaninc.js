@@ -3254,52 +3254,8 @@ const o = {			// o = "operations"
 		g[variable]=g[variable].root(value).fix(1);
 	}
 };
-Object.defineProperty(Array,"random",{
-	value: function random(array) {
-		return array[Math.floor(Math.random()*array.length)];
-	}
-});
-Object.defineProperty(Array,"equal",{
-	value: function equal(a,b) {
-		return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
-	}
-});
-Object.defineProperty(Array.prototype,"joinWithAnd",{
-	value: function joinWithAnd(delimiter=",") {
-		if (this.length<3) return this.join(" and ");
-		let arr = structuredClone(this)
-		let out = arr.splice(0,1);
-		while (arr.length>1) out+=delimiter+" "+arr.splice(0,1);
-		out+=" and "+arr[0];
-		return out;
-	}
-})
-Object.defineProperty(Array.prototype,"shuffle",{
-	value:function shuffle() {
-		let numbers = countTo(this.length,true)
-		let out = []
-		while (numbers.length>0) {out.push(this[numbers.splice(Math.floor(Math.random()*numbers.length),1)])}
-		return out
-	}
-})
-Object.defineProperty(Array.prototype,"random",{
-	value:function random(){
-		return this[Math.floor(Math.random()*this.length)]
-	}
-})
-Object.defineProperty(Array.prototype,"select",{
-	value:function select(num=1){
-		return this.shuffle().slice(0,num)
-	}
-})
-Object.defineProperty(Array.prototype,"sum",{value:function sum() {
-	return this.reduce((x,y)=>x+y)
-}})
 Object.defineProperty(Array.prototype,"sumDecimals",{value:function sumDecimals() {
 	return this.reduce((x,y) => x.add(y))
-}})
-Object.defineProperty(Array.prototype,"product",{value:function product() {
-	return this.reduce((x,y)=>x*y)
 }})
 Object.defineProperty(Array.prototype,"productDecimals",{value:function productDecimals(){
 	return this.reduce((x,y) => x.mul(y));
@@ -3307,30 +3263,6 @@ Object.defineProperty(Array.prototype,"productDecimals",{value:function productD
 Object.defineProperty(Array.prototype,"decimalPowerTower",{value:function decimalPowerTower() {
 	return this.reduceRight((x,y) => y.pow(x));
 }})
-Object.defineProperty(Array,"removeDuplicates",{value:function removeDuplicates(x) {
-	return Array.from(new Set(x))
-}})
-Object.defineProperty(JSON,"valid",{
-	value: function isJsonString(str) {
-		try {
-			JSON.parse(str);
-		} catch (e) {
-			return false;
-		}
-		return true;
-	}
-});
-function deHTML(str) {
-	if ((str===null) || (str===''))
-			return false;
-	else
-			str = str.toString();
-				
-	// Regular expression to identify HTML tags in
-	// the input string. Replacing the identified
-	// HTML tag with a null string.
-	return str.replace( /(<([^>]+)>)/ig, '');
-}
 function BEformat(value,precision=0) {
 	return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");
 }

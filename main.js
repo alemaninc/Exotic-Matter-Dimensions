@@ -922,6 +922,23 @@ function upgradeAutobuyer(id) {
 }
 const stardustAutomatorModes = ["Amount of stardust","Real time in this Stardust","X times (current stardust)","(current stardust)<sup>X</sup>"]
 const wormholeAutomatorModes = ["Amount of HR","Real time in this Wormhole","X times (current HR)","(current HR)<sup>X</sup>"]
+function inputStarAllocatorBuild() {
+	inputStarAllocatorBuild.order =  []
+	popup({
+		text:"Select the stars in the order you want them autobought:<br><table>"+countTo(10).map(r=>"<tr>"+countTo(4).map(c=>"<td><button style=\"height:24px;width:24px;border-radius:50%;font-size:9px;padding:0px\" id=\"button_inputStarAllocatorBuild_"+(10*r+c)+"\" onClick=\"inputStarAllocatorBuild.toggle("+(10*r+c)+")\">"+(10*r+c)+"</button></td>").join("")+"</tr>").join("")+"</table>",
+		buttons:[["Confirm","g.starAllocatorBuild=structuredClone(inputStarAllocatorBuild.order);notify('Build saved successfully')"],["Cancel",""]]
+	})
+}
+inputStarAllocatorBuild.order = []
+inputStarAllocatorBuild.toggle = function(id){
+	if (inputStarAllocatorBuild.order.includes(id)) {
+		inputStarAllocatorBuild.order.remove(id)
+		d.element("button_inputStarAllocatorBuild_"+id).className = ""
+	} else {
+		inputStarAllocatorBuild.order.push(id)
+		d.element("button_inputStarAllocatorBuild_"+id).className = "ownedstarbutton"+Math.floor(id/10)
+	}
+}
 function importStarAllocatorBuild() {
 	popup({
 		text:"Paste your star build here:",

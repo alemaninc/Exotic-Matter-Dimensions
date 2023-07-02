@@ -285,7 +285,7 @@
 						Interval: <span id="span_starAutobuyerInterval"></span><br>
 						<button id="button_starAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('star')">Reduce the interval by 5%<br>Cost: <span id="span_starAutobuyerCost"></span> stardust</button><br>
 						<label for="starAutobuyerMax">Max stars to buy:</label><input id="starAutobuyerMax" type="text"></input><br>
-						<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="narrowbutton" onClick="g.starAllocatorBuild=starList.filter(x=>g.star[x]);notify('Successfully saved','#cccccc','#000000')">Save current build</button><br><button class="narrowbutton" onClick="importStarAllocatorBuild()">Import build</button><button class="narrowbutton" onClick="exportStarAllocatorBuild()">Export build</button><br>The star allocator runs on the same interval as the autobuyer.</span>
+						<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="narrowbutton" onClick="inputStarAllocatorBuild()">Input build</button><br><button class="narrowbutton" onClick="importStarAllocatorBuild()">Import build</button><button class="narrowbutton" onClick="exportStarAllocatorBuild()">Export build</button><br>The star allocator runs on the same interval as the autobuyer.</span>
 					</div>
 					<div class="automatordiv" id="stardustAutomator" style="display:none">
 						<h3>Stardust Reset Automator</h3>
@@ -329,8 +329,8 @@
 		<div id="wormholeAnimation" class="topleveldiv" style="display:none;opacity:0"></div>
 		<div id="notifyDiv"></div>
 		<div id="foo"></div>
-		<script type="text/javascript" src="utility.js"></script>
-		<script type="text/javascript" src="versiondata.js"></script>
+		<script type="text/javascript" src="alemaninc_utility.js"></script>
+		<script type="text/javascript" src="emd_utility.js"></script>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script type="text/javascript" src="researchtree.js"></script>
 		<script type="text/javascript" src="achievements.js"></script>
