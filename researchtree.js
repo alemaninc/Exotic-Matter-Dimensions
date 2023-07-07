@@ -1160,8 +1160,14 @@ const researchLoadouts = {
 	},
 	import: function(string) {
 		let parts = string.split("|")
-		researchLoadouts.rename(parts[0])
-		g.researchLoadouts[researchLoadoutSelected-1].savedResearch = parts[1].split(",")
+		if (parts.length==1) {
+			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = string.split(",")
+		} else if (parts.length==2) {
+			researchLoadouts.rename(parts[0])
+			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = parts[1].split(",")
+		} else {
+			notify("Invalid import.","var(--research)")
+		}
 	},
 	export: function(showPopup){
 		showingResearchLoadouts=false

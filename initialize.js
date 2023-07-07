@@ -39,6 +39,7 @@ const initSteps = [
 		d.element("darkAxisAutobuyerMax"+axisCodes[i]).value=g.darkAxisAutobuyerCaps[i];
 	};},
 	function(){d.element("darkAxisAutobuyerMaxStars").value=g.darkAxisAutobuyerCaps[12];},
+	function(){for (let i=0;i<5;i++) {d.element("stardustUpgradeAutobuyerMax"+(i+1)).value=g.stardustUpgradeAutobuyerCaps[i]}},
 	function(){d.element("starAutobuyerMax").value=g.starAutobuyerCap;},
 	function(){d.element("wormholeAutomatorValue").value=g.wormholeAutomatorValue;},
 	function(){d.element("stardustAutomatorValue").value=g.stardustAutomatorValue;},

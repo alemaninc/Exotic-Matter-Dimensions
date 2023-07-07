@@ -67,8 +67,10 @@ const basesave = {
 		noChromaGeneration:true,
 	},
 	confirmations:{
+		toggleMastery:false,
 		stardustReset:false,
 		ironWillStardustReset:true,
+		buyStardustUpgrade:false,   // not a confirmation but whatever
 		wormholeReset:false,
 	},
 	hotkeys:savefileHotkeyProperties(),
@@ -89,7 +91,7 @@ const basesave = {
 	showingCappedStardustUpgrades:true,
 	axisAutobuyerOn:false,
 	axisAutobuyerUpgrades:0,
-	axisAutobuyerCaps:["u","u","u","u","u","u","u","u","u","u","u","u"],
+	axisAutobuyerCaps:Array(12).fill("u"),
 	stars:0,
 	star:Object.fromEntries(starList.map(x=>[x,false])),
 	darkmatter:c.d0,
@@ -127,9 +129,10 @@ const basesave = {
 	ach526possible:true,
 	darkAxisAutobuyerOn:false,
 	darkAxisAutobuyerUpgrades:0,
-	darkAxisAutobuyerCaps:["u","u","u","u","u","u","u","u","u","u","u","u","u"],	// 13th item = dark stars
+	darkAxisAutobuyerCaps:Array(13).fill("u"),	// 13th item = dark stars
 	stardustUpgradeAutobuyerOn:false,
 	stardustUpgradeAutobuyerUpgrades:0,
+	stardustUpgradeAutobuyerCaps:Array(5).fill("u"),
 	starAutobuyerOn:false,
 	starAutobuyerUpgrades:0,
 	starAutobuyerCap:"u",
@@ -667,6 +670,16 @@ function masteredRow(x) {
 	if (x==1) return g.stardustUpgrades[3]>0;
 	if (x<=9) return g.star[[51,52,53,54,101,102,103,104][x-2]];
 	return false;
+}
+function tryToggleMastery(x) {
+	if (g.confirmations.toggleMastery&&(g.activeMasteries[row]>0)) {
+		popup({
+			text:"Are you sure you want to "+((x%10==0)?("unassign Row "+(x/10)+" Masteries"):("toggle Mastery "+x))+"?",
+			buttons:[["Confirm","toggleMastery("+x+")"],["Close",""]]
+		})
+	} else {
+		toggleMastery(x)
+	}
 }
 function toggleMastery(x) {
 	let row = Math.floor(x/10);
@@ -1290,8 +1303,8 @@ function incrementHR(x) {
 	for (let i of HRVariables) o.add(i,x)
 }
 function attemptWormholeReset(showPopups=false) {
-	if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {
-		if (g.confirmations.wormholeReset&&showPopups) {
+	if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)||(g.activeStudy!==0)) {
+		if (g.confirmations.wormholeReset&&showPopups&&(g.activeStudy==0)) {
 			popup({
 				text:"Are you sure you want to Wormhole reset?",
 				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset()} else {notify('Insufficient dark axis to stardust reset!','#000066','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
@@ -1412,27 +1425,28 @@ function wormholeResetButtonText() {
 	return out;
 }
 
-const wormholeMilestoneList = [
-	[1,"Unlock dark axis autobuyer"],
-	[2,"Unlock dark star autobuyer"],
-	[3,"Unlock stardust upgrade autobuyer"],
-	[4,"Unlock star autobuyer"],
-	[5,"Unlock automatic star allocation"],
-	[7,"Dark stars no longer reset dark matter"],
-	[8,"Unlock automatic Stardust resets"],
-	[9,"Stars and stardust upgrades cost less based on your hawking radiation<br>(formula: 10<sup>log(cost)<sup>{v}</sup></sup>)"],
-	[10,"Gain 1 stardust per second, unaffected by all multipliers except tickspeed"],
-	[11,"The third Stardust Upgrade can be purchased 4 additional times"],
-	[12,"Unlock automatic Wormhole resets"],
-	[13,"The game runs 0.25% faster per achievement unlocked"],
-	[15,"Unlock more research in row 4"],
-	[18,"Add {v} to the dark T axis timer (based on hawking radiation)"],
-	[20,"Unlock Time Loop in the Offline Time subtab"],
-	[21,"Research in the first row is 0.1% stronger per achievement unlocked in all tiers"],
-	[24,"Research in the second row is 0.2% stronger per achievement unlocked in all tiers"],
-	[27,"Row 10 Masteries are {v}% stronger (based on hawking radiation)"],
-	[30,"Gain all pending stardust immediately. Does not work in Studies."]
-];
+const wormholeMilestoneList = {
+	1:{text:"Unlock dark axis autobuyer",notification:"You have unlocked the dark axis autobuyer"},
+	2:{text:"Unlock dark star autobuyer",notification:"You have unlocked the dark star autobuyer"},
+	3:{text:"Unlock stardust upgrade autobuyer",notification:"You have unlocked the stardust upgrade autobuyer"},
+	4:{text:"Unlock star autobuyer",notification:"You have unlocked the star autobuyer"},
+	5:{text:"Unlock automatic star allocation",notification:"You have unlocked automatic star allocation"},
+	6:{text:"Unlock the ability to lock manual stardust upgrade purchasing",notification:"You can now lock buying stardust upgrades manually in the Automation tab"},
+	7:{text:"Dark stars no longer reset dark matter"},
+	8:{text:"Unlock automatic Stardust resets",notification:"You have unlocked automatic Stardust resets"},
+	9:{dynamic:"Stars and stardust upgrades cost less based on your hawking radiation<br>(formula: 10<sup>log(cost)<sup>{v}</sup></sup>)",static:"Stars and stardust upgrades cost less based on your hawking radiation"},
+	10:{text:"Gain 1 stardust per second, unaffected by all multipliers except tickspeed",notification:"You now automatically gain 1 stardust per second, unaffected by all multipliers except tickspeed"},
+	11:{text:"The third Stardust Upgrade can be purchased 4 additional times"},
+	12:{text:"Unlock automatic Wormhole resets",notification:"You have unlocked automatic Wormhole resets"},
+	13:{text:"The game runs 0.25% faster per achievement unlocked",notification:"The game now runs 0.25% faster per achievement unlocked"},
+	15:{text:"Unlock more research in row 4",notification:"You have unlocked six new Row 4 researches"},
+	18:{dynamic:"Add {v} to the dark T axis timer (based on hawking radiation)",static:"The dark T axis timer is increased based on hawking radiation"},
+	20:{text:"Unlock Time Loop in the Offline Time subtab",notification:"You have unlocked Time Loop in the Offline Time subtab"},
+	21:{text:"Research in the first row is 0.1% stronger per achievement unlocked in all tiers"},
+	24:{text:"Research in the second row is 0.2% stronger per achievement unlocked in all tiers"},
+	27:{dynamic:"Row 10 Masteries are {v}% stronger (based on hawking radiation)",static:"Row 10 Masteries are now stronger based on hawking radiation"},
+	30:{text:"Gain all pending stardust immediately. Does not work in Studies.",notification:"You now gain all pending stardust immediately as long as you are not in a Study. Congratulations on completing your collection!"}
+};
 function wormholeMilestone9Effect(x) {
 	x = (x==undefined)?g.hawkingradiation:N(x);
 	return c.e.pow(x.div(c.d10).add(c.d1).quad_slog().mul(c.dm0_1));
@@ -1657,6 +1671,7 @@ const openConfig = (()=>{
 		"Mastery":function(){updateMasteryLayout();showConfigModal("Mastery",[
 			{text:"Mastery power amount shown "+(g.topResourcesShown.masteryPower?"on top of screen":"in Masteries subtab"),onClick:toggle("g.topResourcesShown.masteryPower")},
 			{text:"Mastery tab layout: "+g.masteryContainerStyle,onClick:"g.masteryContainerStyle=(g.masteryContainerStyle=='Modern'?'Legacy':'Modern')"},
+			{text:"Mastery toggle confirmation "+(g.confirmations.stardustReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.toggleMastery")},
 			{text:(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs",onClick:"toggle('masteryIdsShown')"},
 			{text:(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages",onClick:"toggle('masteryBoostsShown')"},
 			{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"}

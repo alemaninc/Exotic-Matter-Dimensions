@@ -172,7 +172,10 @@ function formatHotkey(key) {
 }
 document.addEventListener("keypress",function(e){
 	if (e.ctrlKey) return // if switching tab or whatever
-	if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) return // if inputting something
+	if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) { // if inputting something
+		if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key=="9") addSecretAchievement(10)
+		return
+	}
 	if (StudyE(1)) {	
 		notify("Hotkeys are disabled in Study I","#990000","#ffffff")
 		return

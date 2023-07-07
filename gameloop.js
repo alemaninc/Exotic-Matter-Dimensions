@@ -257,14 +257,16 @@ function updateHTML() {
 			for (let i of Object.keys(achievementList)) d.innerHTML("span_perTier"+i+"AchievementReward",achievement.perAchievementReward[i].value())
 		} else if (activeSubtabs.achievements=="wormholeMilestones") {
 			d.innerHTML("span_wormholeMilestoneT5Achievements",achievement.ownedInTier(5))
-			let owned = wormholeMilestoneList.map(x => achievement.ownedInTier(5)>=x[0]?1:0).sum()
-			for (let i=0;i<wormholeMilestoneList.length;i++) {
-				d.display("div_wormholeMilestone"+wormholeMilestoneList[i][0],i<owned?"inline-block":"none")
+			let tier5achs = achievement.ownedInTier(5)
+			let nextMilestoneNum = achievement.ownedInTier(5)==30?undefined:Object.keys(wormholeMilestoneList).filter(x=>x>tier5achs)[0]
+			let nextMilestone = achievement.ownedInTier(5)==30?undefined:wormholeMilestoneList[nextMilestoneNum]
+			for (let i in wormholeMilestoneList) {
+				d.display("div_wormholeMilestone"+i,tier5achs>Number(i)?"inline-block":"none")
 			}
 			d.innerHTML("span_wormholeMilestone9Effect",wormholeMilestone9Effect().format(4))
 			d.innerHTML("span_wormholeMilestone18Effect",timeFormat(wormholeMilestone18Effect()))
 			d.innerHTML("span_wormholeMilestone27Effect",wormholeMilestone27Effect().format(2))
-			d.innerHTML("span_nextWormholeMilestone",(owned<wormholeMilestoneList.length)?("At "+wormholeMilestoneList[owned][0]+" achievements: "+wormholeMilestoneText(wormholeMilestoneList[owned][0])):"")
+			d.innerHTML("span_nextWormholeMilestone",(achievement.ownedInTier(5)==30)?"":("At "+nextMilestoneNum+" achievements: "+(nextMilestone.text??nextMilestone.static)))
 		}
 	}
 	if (activeTab=="stardust") {
@@ -291,7 +293,7 @@ function updateHTML() {
 			/* Stardust boost table */ for (let i=3;i<13;i++) d.display("div_stardustBoost"+i,((g.stardustUpgrades[2]>(i-3))?"inline-block":"none"));
 			/* Stardust upgrade buttons */
 			for (let i=1;i<6;i++) {
-				d.class("button_stardustUpgrade"+i,(g.stardustUpgrades[i-1]==stat["stardustUpgrade"+i+"Cap"])?"maxedstardustupgradebutton":stat["stardustUpgrade"+i+"Cost"].lte(g.stardust)?"stardustupgradebutton":"lockedaxisbutton")
+				d.class("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]==stat["stardustUpgrade"+i+"Cap"])||g.confirmations.buyStardustUpgrade)?"maxedstardustupgradebutton":stat["stardustUpgrade"+i+"Cost"].lte(g.stardust)?"stardustupgradebutton":"lockedaxisbutton")
 				d.innerHTML("span_stardustUpgrade"+i+"Tooltip",(g.stardustUpgrades[i-1]==stat["stardustUpgrade"+i+"Cap"])?(stardustUpgradeNames[i]+" Path has been maxed"):(stardustUpgradeTooltip[i]()+"<br><br>Cost: "+stat["stardustUpgrade"+i+"Cost"].format(0)+" stardust"))
 				d.innerHTML("span_stardustUpgrade"+i+"Level",g.stardustUpgrades[i-1])
 				d.display("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])||g.showingCappedStardustUpgrades)?"inline-block":"none")
@@ -380,8 +382,10 @@ function updateHTML() {
 			d.element("button_"+id+"AutobuyerUpgrade").style["background-color"]=autobuyerMeta.cost(id).gt(g[autobuyers[id].resource])?"#b2b2b2":"#cccccc";
 			d.innerHTML("span_"+id+"AutobuyerCost",autobuyerMeta.cost(id).format(2));
 		}
-		d.tr("span_wormholeMilestone2",achievement.ownedInTier(5)>=2);
+		d.tr("tr_darkAxisAutobuyerMaxStars",achievement.ownedInTier(5)>=2);
 		d.display("wormholeMilestone5",achievement.ownedInTier(5)>=5?"inline-block":"none");
+		if (achievement.ownedInTier(5)>=6) {d.display("button_lockManualStardustUpgrades","inline-block");d.innerHTML("button_lockManualStardustUpgrades","Manual buying of stardust upgrades "+(g.confirmations.buyStardustUpgrade?"dis":"en")+"abled")}
+		else {d.display("button_lockManualStardustUpgrades","none")}
 		d.display("stardustAutomator",achievement.ownedInTier(5)>=8?"inline-block":"none");
 		d.display("wormholeAutomator",achievement.ownedInTier(5)>=12?"inline-block":"none");
 		d.innerHTML("button_stardustAutomatorMode",stardustAutomatorModes[g.stardustAutomatorMode]??"Amount of stardust");
@@ -398,6 +402,7 @@ function updateHTML() {
 			g.darkAxisAutobuyerCaps[i]=d.element("darkAxisAutobuyerMax"+axisCodes[i]).value;
 		}
 		g.darkAxisAutobuyerCaps[12]=d.element("darkAxisAutobuyerMaxStars").value;
+		for (let i=0;i<5;i++) g.stardustUpgradeAutobuyerCaps[i]=d.element("stardustUpgradeAutobuyerMax"+(i+1)).value
 		g.starAutobuyerCap=d.element("starAutobuyerMax").value;
 	}
 	if (activeTab=="wormhole") {		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
@@ -548,7 +553,7 @@ function tick(time) {																																		 // The game loop, which 
 	}
 	if (achievement.ownedInTier(5)>=3 && g.stardustUpgradeAutobuyerOn) stardustUpgradeAutobuyerProgress+=time/autobuyerMeta.interval("stardustUpgrade");
 	if (stardustUpgradeAutobuyerProgress > 1) {
-		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
+		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]=="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
 		stardustUpgradeAutobuyerProgress%=1;
 	}
 	if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");

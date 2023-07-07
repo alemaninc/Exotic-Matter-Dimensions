@@ -5,12 +5,9 @@ Exotic Matter Dimensions is an incremental game *loosely* based on Antimatter Di
 * Something which makes energy not affect things below 1
 * "Axistential Dread" achievement
 ##### High priority
-* Fix star allocator
+* Fix research loadouts
 ##### Upper medium priority
-* Stardust upgrade autobuyer caps
-  * Lock manual buying of stardust upgrades
 ##### Lower medium priority
-* Mastery reset confirmation
 * Improved study buttons
 ##### Low priority
 * Star icons

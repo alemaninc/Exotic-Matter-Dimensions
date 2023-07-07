@@ -1115,8 +1115,8 @@ const secretAchievementList = {
 	},
 	10:{
 		name:"Nice",
-		description:"Input 69 as the cap of any normal axis for the autobuyer",
-		check:function(){return g.axisAutobuyerCaps.includes("69");},
+		description:"Input 69 into any input",
+		check:function(){return true;}, // checked locally
 		flavor:"Don't act like you don't know what you did.",
 		rarity:2
 	},
@@ -1270,7 +1270,7 @@ const achievementEvents = {
 	lumenGain:[603,607],
 }
 const secretAchievementEvents = {
-	gameloop:[3,4,5,6,10],
+	gameloop:[3,4,5,6],
 	luckyGameloop:[13,14,15],
 	starBuy:[23],
 	wormholeResetBefore:[11,12],
@@ -1354,11 +1354,15 @@ function addAchievement(x) {
 	if (achievement(x).check()&&(!g.achievement[x])) {
 		g.achievement[x]=true;
 		let colors = achievement.tierColors[String(x).substring(0,String(x).length-2)]
-		notify("Achievement Get! \""+achievement(x).name+"\"",colors.primary,blackOrWhiteContrast(colors.primary));
+		notify("Achievement Get! \""+achievement(x).name+"\"",colors.primary);
 		updateResearchTree();
 		updateAchievementsTab();
 		d.display("span_noAchievements","none")
 		totalAchievements = Object.values(g.achievement).map(x=>x?1:0).sum()
+		if (achievement.tierOf(x)==5) {if (wormholeMilestoneList[achievement.ownedInTier(5)]!==undefined) {
+			let milestone = wormholeMilestoneList[achievement.ownedInTier(5)]
+			notify("You have unlocked a new Wormhole Milestone! "+(milestone.notification??milestone.next??milestone.static)+".","#000099","#ffffff")
+		}}
 	}
 }
 function validAchievement(id) {

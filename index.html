@@ -29,7 +29,7 @@
 				<button id="button_bigtab_automation" onClick="openTab('automation')" class="bigtab" style="display:none;filter:brightness(60%)">Automation</button>
 				<button id="button_bigtab_wormhole" onClick="openTab('wormhole')" class="bigtab" style="display:none;filter:brightness(60%)">Wormhole</button>
 			</div><hr>
-			<div class="tab" id="bigtab_main">																																		 <!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
+			<div class="tab" id="bigtab_main">																																		<!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
 				<div class="mainNavigation globalnavigation">
 					<button class="tabtier2 tier2main" onClick="openSubTab('main','axis')" id="button_subtab_main_axis">Axis</button>
 					<button class="tabtier2 tier2main" onClick="openSubTab('main','masteries')" style="display:none;filter:brightness(60%)" id="button_subtab_main_masteries">Masteries</button>
@@ -241,43 +241,22 @@
 						<button class="automatortoggleon" id="button_axisAutobuyerToggle" onClick="toggle('axisAutobuyerOn')"></button><br>
 						Interval: <span id="span_axisAutobuyerInterval"></span><br>
 						<button id="button_axisAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('axis')">Reduce the interval by 5%<br>Cost: <span id="span_axisAutobuyerCost"></span> exotic matter</button><br>
-						<table>
-							<tr><th colspan="2">Axis limits:</th></tr>
-							<tr><td><label for="axisAutobuyerMaxX">X:</label></td><td><input id="axisAutobuyerMaxX" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxY">Y:</label></td><td><input id="axisAutobuyerMaxY" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxZ">Z:</label></td><td><input id="axisAutobuyerMaxZ" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxW">W:</label></td><td><input id="axisAutobuyerMaxW" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxV">V:</label></td><td><input id="axisAutobuyerMaxV" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxU">U:</label></td><td><input id="axisAutobuyerMaxU" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxT">T:</label></td><td><input id="axisAutobuyerMaxT" type="text"></input></td></tr>
-							<tr><td><label for="axisAutobuyerMaxS">S:</label></td><td><input id="axisAutobuyerMaxS" type="text"></input></td></tr>
-							<tr><td colspan="2">Input "u" for no limit</td></tr>
-						</table>
+						<table id="table_axisAutobuyerLimits"></table>
 					</div>
 					<div class="automatordiv" id="darkAxisAutobuyer" style="display:none">
 						<h3>Dark Axis Autobuyer</h3>
 						<button class="automatortoggleon" id="button_darkAxisAutobuyerToggle" onClick="toggle('darkAxisAutobuyerOn')"></button><br>
 						Interval: <span id="span_darkAxisAutobuyerInterval"></span><br>
 						<button id="button_darkAxisAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('darkAxis')">Reduce the interval by 5%<br>Cost: <span id="span_darkAxisAutobuyerCost"></span> dark matter</button><br>
-						<table>
-							<tr><th colspan="2">Axis limits:</th></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxX">X:</label></td><td><input id="darkAxisAutobuyerMaxX" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxY">Y:</label></td><td><input id="darkAxisAutobuyerMaxY" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxZ">Z:</label></td><td><input id="darkAxisAutobuyerMaxZ" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxW">W:</label></td><td><input id="darkAxisAutobuyerMaxW" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxV">V:</label></td><td><input id="darkAxisAutobuyerMaxV" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxU">U:</label></td><td><input id="darkAxisAutobuyerMaxU" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxT">T:</label></td><td><input id="darkAxisAutobuyerMaxT" type="text"></input></td></tr>
-							<tr><td><label for="darkAxisAutobuyerMaxS">S:</label></td><td><input id="darkAxisAutobuyerMaxS" type="text"></input></td></tr>
-							<tr id="span_wormholeMilestone2"><td><label for="darkAxisAutobuyerMaxStars">★:</label></td><td><input id="darkAxisAutobuyerMaxStars" type="text"></input></td></tr>
-							<tr><td colspan="2">Input "u" for no limit</td></tr>
-						</table>
+						<table id="table_darkAxisAutobuyerLimits"></table>
 					</div>
 					<div class="automatordiv" id="stardustUpgradeAutobuyer" style="display:none">
 						<h3>Stardust Upgrade Autobuyer</h3>
 						<button class="automatortoggleon" id="button_stardustUpgradeAutobuyerToggle" onClick="toggle('stardustUpgradeAutobuyerOn')"></button><br>
 						Interval: <span id="span_stardustUpgradeAutobuyerInterval"></span><br>
 						<button id="button_stardustUpgradeAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('stardustUpgrade')">Reduce the interval by 5%<br>Cost: <span id="span_stardustUpgradeAutobuyerCost"></span> stelliferous energy</button><br>
+						<table id="table_stardustUpgradeAutobuyerLimits"></table>
+						<button id="button_lockManualStardustUpgrades" class="starbuybutton" onClick="g.confirmations.buyStardustUpgrade=!g.confirmations.buyStardustUpgrade"></button>
 					</div>
 					<div class="automatordiv" id="starAutobuyer" style="display:none">
 						<h3>Star Autobuyer</h3>

@@ -175,7 +175,7 @@ const HTPtexts = [
 			"{1}"
 		],
 		dynamics:[
-			()=>knowledgeEffectCap().toFixed(1),
+			()=>stat.knowledgeEffectCap.noLeadFormat(1),
 			()=>g.research.r8_8?"Some Researches are permanent, and are unaffected by respec. These are distinguished with a white border around them.":""
 		]
 	},
