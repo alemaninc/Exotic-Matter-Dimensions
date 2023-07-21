@@ -1361,7 +1361,7 @@ function addAchievement(x) {
 		totalAchievements = Object.values(g.achievement).map(x=>x?1:0).sum()
 		if (achievement.tierOf(x)==5) {if (wormholeMilestoneList[achievement.ownedInTier(5)]!==undefined) {
 			let milestone = wormholeMilestoneList[achievement.ownedInTier(5)]
-			notify("You have unlocked a new Wormhole Milestone! "+(milestone.notification??milestone.next??milestone.static)+".","#000099","#ffffff")
+			notify("You have unlocked a new Wormhole Milestone! "+(milestone.notification??milestone.text??milestone.static)+".","#000099","#ffffff")
 		}}
 	}
 }

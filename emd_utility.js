@@ -1,6 +1,6 @@
 "use strict";
 const version = {
-	current:"𝕍1.2.9",
+	current:"𝕍1.2.10",
 	nextUpdateHint:"Hevipelle should trademark"
 }
 var gameHalted = false
@@ -26,4 +26,20 @@ function toggle(x) {
 }
 function multitoggle(variable,options) {
 	g[variable]=options[(options.indexOf(g[variable])+1)%options.length];
+}
+/*
+List of popup data attributes:
+text				 the text that appears
+input				an input field if this is applicable including a base value
+buttons			an array of buttons
+*/
+function popup(data) {
+	d.display("div_fancyPopupScreen","inline-block")
+	d.innerHTML("span_fancyPopupText",data.text)
+	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
+	d.innerHTML("span_fancyPopupButtons","")
+	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
+}
+function popupInput() {
+	return d.element("span_fancyPopupInput").value
 }

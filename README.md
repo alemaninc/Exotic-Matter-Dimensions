@@ -5,7 +5,6 @@ Exotic Matter Dimensions is an incremental game *loosely* based on Antimatter Di
 * Something which makes energy not affect things below 1
 * "Axistential Dread" achievement
 ##### High priority
-* Fix research loadouts
 ##### Upper medium priority
 ##### Lower medium priority
 * Improved study buttons

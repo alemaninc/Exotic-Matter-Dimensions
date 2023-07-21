@@ -261,7 +261,7 @@ function updateHTML() {
 			let nextMilestoneNum = achievement.ownedInTier(5)==30?undefined:Object.keys(wormholeMilestoneList).filter(x=>x>tier5achs)[0]
 			let nextMilestone = achievement.ownedInTier(5)==30?undefined:wormholeMilestoneList[nextMilestoneNum]
 			for (let i in wormholeMilestoneList) {
-				d.display("div_wormholeMilestone"+i,tier5achs>Number(i)?"inline-block":"none")
+				d.display("div_wormholeMilestone"+i,tier5achs>=Number(i)?"inline-block":"none")
 			}
 			d.innerHTML("span_wormholeMilestone9Effect",wormholeMilestone9Effect().format(4))
 			d.innerHTML("span_wormholeMilestone18Effect",timeFormat(wormholeMilestone18Effect()))

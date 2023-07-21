@@ -1586,23 +1586,6 @@ function reviewYellowLight(){
 		buttons:[["Close",""]]
 	})
 }
-
-/*
-List of popup data attributes:
-text				 the text that appears
-input				an input field if this is applicable including a base value
-buttons			an array of buttons
-*/
-function popup(data) {
-	d.display("div_fancyPopupScreen","inline-block")
-	d.innerHTML("span_fancyPopupText",data.text)
-	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
-	d.innerHTML("span_fancyPopupButtons","")
-	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
-}
-function popupInput() {
-	return d.element("span_fancyPopupInput").value
-}
 const topResources = [
 	{
 		text:function(){return "<span class=\"_exoticmatter\">"+g.exoticmatter.format()+"</span> exotic matter (<span class=\"_exoticmatter\">"+stat.exoticmatterPerSec.noLeadFormat(2)+"</span> / s)";},
