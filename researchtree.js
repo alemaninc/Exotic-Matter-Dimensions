@@ -810,6 +810,26 @@ const research = (function(){
 			basecost:N(2160),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:conic-gradient(rgba(255,255,255,0.5),rgba(0,0,0,0),rgba(0,0,0,0.5),rgba(0,0,0,0),rgba(255,255,255,0.5))\"></div>"
 		},
+		...(()=>{
+			let study5Research = {
+				r12_1:{comp:1,resInt:"exoticmatter",resOut:"exotic matter",amount:c.ee8},
+				r12_3:{comp:3,resInt:"darkmatter",resOut:"dark matter",amount:c.ee5},
+				r12_13:{comp:4,resInt:"masteryPower",resOut:"mastery power",amount:c.ee3},
+				r12_15:{comp:2,resInt:"stardust",resOut:"stardust",amount:c.ee5}
+			}
+			let out = {}
+			for (let i in study5Research) {out[i] = {
+				description:function(){let eff=researchEffect(researchRow(i),researchCol(i));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(2)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
+				adjacent_req:[],
+				condition:[studyReq(5,study5Research[i].comp)],
+				visibility:function(){return g.studyCompletions[5]>=study5Research[i].comp},
+				type:"normal",
+				basecost:c.d0,
+				icon:icon[study5Research[i].resInt]+icon.arr+classes.research("R$"),
+				effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.d10)).pow(power)}
+			}}
+			return out
+		})()
 	}
 })();
 const nonPermanentResearchList = Object.keys(research).filter(x=>research[x].type!=="permanent")
@@ -851,8 +871,20 @@ function resizeResearch(x){
 function ownedResearchInGroup(x) {
 	return researchGroupList[x].contents.filter(x=>g.research[x])
 }
+function researchPower(row,col) {
+	let out = c.d1;
+	if (achievement.ownedInTier(5)>=21&&row==1) out = out.mul(totalAchievements/1000+1);
+	if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(totalAchievements/500+1);
+	if (g.research.r8_11&&row==1) out = out.mul(researchEffect(8,11).mul(g.stars).div(c.e2).add(c.d1));
+	if (row==8&&col==2&&g.achievement[605]) out = out.mul(c.d1_1)
+	return out;
+}
+function researchEffect(row,col) {
+	return research["r"+row+"_"+col].effect(researchPower(row,col));
+}
 function researchCost(x) {
 	let output = N(research[x]["basecost"]);
+	// class modifiers
 	if (research[x].group=="energy") {
 		output=output.mul(c.d2.pow(ownedResearchInGroup("energy").length))
 	} else if (research[x].group=="stardust") {
@@ -861,10 +893,13 @@ function researchCost(x) {
 	} else if (research[x].group=="light") {
 		output=output.mul(c.d4.pow(ownedResearchInGroup("light").filter(i=>researchRow(i)==researchRow(x)).length))
 	}
+	// hyper 2
 	if ((researchRow(x)>7)&&(researchRow(x)<13)) output = output.mul(1-Math.floor(achievement.ownedInTier(6)*1.25)/100)
 	if (x=="r9_2") output = output.mul(2**studyPower(3))
 	if (x=="r9_14") output = output.mul(1.5**studyPower(4))
 	if (StudyE(5)&&research[x].type=="normal") output = output.mul(studies[5].difficultyConstant())
+	for (let i of ["r12_1","r12_3","r12_13","r12_15"]) if (g.research[i]) output = output.mul(researchEffect(12,researchCol(i)))
+	// hyper 1
 	output = output.sub(studies[5].reward(3))
 	return output.max(c.d0).ceil();
 }

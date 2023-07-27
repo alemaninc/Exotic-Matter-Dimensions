@@ -432,17 +432,6 @@ const studies = [
 	}
 ];
 const fullStudyNames = [null,...countTo(studies.length-1).map(x=>"Study "+roman(x)+": "+studies[x].name)]
-function researchPower(row,col) {
-	let out = c.d1;
-	if (achievement.ownedInTier(5)>=21&&row==1) out = out.mul(totalAchievements/1000+1);
-	if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(totalAchievements/500+1);
-	if (g.research.r8_11&&row==1) out = out.mul(researchEffect(8,11).mul(g.stars).div(c.e2).add(c.d1));
-	if (row==8&&col==2&&g.achievement[605]) out = out.mul(c.d1_1)
-	return out;
-}
-function researchEffect(row,col) {
-	return research["r"+row+"_"+col].effect(researchPower(row,col));
-}
 
 function availableThemes() {
 	let out = ["Default","Red","Green","Blue","Cyan","Magenta","Yellow","Light Gray","Dark Gray","Black","Light"];
@@ -1404,7 +1393,7 @@ function wormholeReset() {
 			g.studyCompletions[g.activeStudy]=Math.min(g.studyCompletions[g.activeStudy]+1,4);
 			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(x!==studies[g.activeStudy].research))
 			respecResearch();
-			if (restoreResearchAfterStudy) {for (let i of resbuild) {buySingleResearch(researchRow(i),researchCol(i))}}
+			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {buySingleResearch(researchRow(i),researchCol(i))}}
 			generateResearchCanvas();
 		}
 		g.activeStudy=0;
