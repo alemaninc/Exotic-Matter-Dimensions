@@ -299,26 +299,26 @@ function updateHTML() {
 				d.display("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])||g.showingCappedStardustUpgrades)?"inline-block":"none")
 			}
 		} else if (activeSubtabs.stardust=="stars") {
+			d.display("starContainerLegacy",g.starContainerStyle=="Legacy"?"inline-block":"none")
+			d.display("starContainerModern",g.starContainerStyle=="Modern"?"inline-block":"none")
 			d.innerHTML("span_starCost",BEformat(starCost()));
-			for (let i=11;i<15;i++) d.innerHTML("span_star"+i+"Effect",starEffect(i).format(2))
-			d.innerHTML("span_star42Effect",BEformat(1e18))
-			for (let i=61;i<64;i++) d.innerHTML("span_star"+i+"Effect",starEffect(60).format(2))
-			d.innerHTML("span_star64Effect",starEffect(64).format(3))
-			for (let i=71;i<75;i++) d.innerHTML("span_star"+i+"Effect",starEffect(i).format(2))
-			for (let i=91;i<95;i++) d.innerHTML("span_star"+i+"Effect",starEffect(90).format(2))
-			d.innerHTML("span_unspentStars",unspentStars()+" / "+g.stars);
-			d.display("button_maxFullStarRows",[1,2,3,4,5,6,7,8,9,10].map(x => maxStars(x)).includes(4)?"inline-block":"none");
-			d.innerHTML("span_nextStarRow",g.stars>=40?"":("The next star you buy will go in row <span class=\"big _stars\">"+starRow(g.stars+1)+"</span>"));
 			let rowsShown = starRowsShown()
+			if (g.starContainerStyle=="Legacy") {
+				for (let i of dynamicStars) {if (rowsShown.includes(Math.floor(i/10))) {d.innerHTML("span_star"+i+"EffectLegacy",formatStarEffect(i))}}
+			}
 			for (let row=1;row<11;row++) {
-				d.tr("starRow"+row,rowsShown.includes(row))
-				d.innerHTML("span_row"+row+"StarsAvailable",maxStars(row)-[1,2,3,4].map(x=>g.star[x+10*row]?1:0).sum())
+				d.tr("starRow"+row+g.starContainerStyle,rowsShown.includes(row))
+				d.innerHTML("span_row"+row+"StarsAvailable"+g.starContainerStyle,maxStars(row)-[1,2,3,4].map(x=>g.star[x+10*row]?1:0).sum())
 				for (let col=1;col<5;col++) {
 					let num = row*10+col
 					let classname = g.star[num]?("ownedstarbutton"+row):availableStarRow(row)?"availablestarbutton":"lockedstarbutton"
-					d.class("button_star"+num,"starbutton "+classname)
+					d.class("button_star"+num+g.starContainerStyle,["starbutton",classname,g.starContainerStyle.toLowerCase()].join(" "))
 				}
 			}
+			d.innerHTML("span_unspentStars",unspentStars()+" / "+g.stars);
+			d.display("button_maxFullStarRows",[1,2,3,4,5,6,7,8,9,10].map(x => maxStars(x)).includes(4)?"inline-block":"none");
+			d.innerHTML("span_nextStarRow",g.stars>=40?"":("The next star you buy will go in row <span class=\"big _stars\">"+starRow(g.stars+1)+"</span>"));
+			d.element("starContainerModern").style["padding-bottom"] = d.element("starPanel").clientHeight+"px"
 		} else if (activeSubtabs.stardust=="darkMatter") {
 			d.display("div_darkMatterUnlocked",g.stardustUpgrades[4]==0?"none":"inline-block")
 			d.display("div_darkMatterLocked",g.stardustUpgrades[4]==0?"inline-block":"none")
@@ -426,7 +426,11 @@ function updateHTML() {
 			let visible = visibleResearch()
 			for (let i of buyableResearchWithCondition) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
 		} else if (activeSubtabs.wormhole=="studies") {
-			for (let i of visibleStudies()) d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));
+			for (let i of visibleStudies()) {
+				d.innerHTML("button_study"+i,studyButtons.text(i))
+				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
+				d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));
+			}
 		} else if (activeSubtabs.wormhole=="light") {
 			d.innerHTML("span_chromaPerSec",stat.chromaPerSec.format(2))
 			d.innerHTML("span_unspentStarsLight",g.stars)

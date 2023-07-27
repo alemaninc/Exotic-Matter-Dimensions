@@ -7,19 +7,19 @@ function ranint(x,y,geo=false) {
 	else return Math.round(x+(y-x)*Math.random())
 }
 const base64 = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","+","/"]
-function alemanicHash(message) {
+function alemanicHash(message,length=512) {
 	message=String(message)
-	let out = Array(512).fill(0)
+	let out = Array(length).fill(0)
 	for (let i=0;i<message.length;i++) {
 		let code = message.charCodeAt(i)
-		for (let j=0;j<512;j++) {
+		for (let j=0;j<length;j++) {
 			out[j]+=Math.PI*code*(Math.sqrt(i)+Math.sqrt(j))
 		}
 	}
-	for (let i=0;i<512;i++) {
-		out[i]+=Math.sin(i)*512
+	for (let i=0;i<length;i++) {
+		out[i]+=Math.sin(i)*length
 		out[i]*=Math.cos(i)
-		for (let j=1;j<512;j*=2) {
+		for (let j=1;j<length;j*=2) {
 			if (i%(j*2)>=j) out[i]+=out[i-j]
 			else out[i]-=out[i+j]
 		}
@@ -93,8 +93,8 @@ Object.defineProperty(JSON,"valid",{
 	}
 });
 function deHTML(str) {
-	if ((str===null) || (str===''))
-			return false;
+	if (typeof str !== "string")
+			throw "Cannot access deHTML("+JSON.stringify(str)+")"
 	else
 			str = str.toString();
 				

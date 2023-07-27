@@ -36,7 +36,6 @@ const research = (function(){
 		sup:x=>"<sup>"+x+"</sup>",
 		sub:x=>"<sub>"+x+"</sub>",
 		xscript:(t,d)=>"<span class=\"xscript\"><sup>"+t+"</sup><sub>"+d+"</sub></span>",
-		stardust:x=>"<span class=\"_stardust"
 	}
 	let basicclasslist = ["exoticmatter","time","achievements","mastery","stardust","stars","darkmatter","energy","wormhole","research"]
 	for (let i of basicclasslist) classes[i] = function(x){return "<span class=\"_"+i+"\">"+x+"</span>"}

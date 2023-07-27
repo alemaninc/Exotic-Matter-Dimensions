@@ -3,7 +3,8 @@ var gameloop
 var fineGrainLoop
 var initComplete = false
 var debugActive
-try{debugActive=window.location.href.substring(0,7)=="file://"}catch{debugActive=false}
+try{debugActive=alemanicHash(window.location.href.substring(0,23),16)=="9N6fJbOtGsMg5k65"}catch{debugActive=false}
+var betaActive=debugActive
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
 	function(){if(debugActive){

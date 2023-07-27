@@ -1257,6 +1257,13 @@ const secretAchievementList = {
 		check:function(){return newsSupport.xhwzwkaPhishing==5},
 		flavor:"\"WHO IS XHWZWKA\"<br>\"It's ill-defined!\"",
 		rarity:7
+	},
+	29:{
+		name:"Dilated Eyes",
+		get description(){return "Reach "+BEformat(c.inf.pow10())+" of dilated exotic matter"},
+		check:function(){return g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)).log10().gt(c.inf)},
+		flavor:"Is that how long it'll take for you to stop clicking the news ticker?",
+		rarity:4
 	}
 }
 const achievementEvents = {

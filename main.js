@@ -94,6 +94,7 @@ const basesave = {
 	axisAutobuyerCaps:Array(12).fill("u"),
 	stars:0,
 	star:Object.fromEntries(starList.map(x=>[x,false])),
+	starContainerStyle:"Legacy",
 	darkmatter:c.d0,
 	darkXAxis:c.d0,
 	darkYAxis:c.d0,
@@ -163,6 +164,7 @@ const basesave = {
 	activeStudy:0,
 	studyCompletions:[null,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	completedStudiesShown:true,
+	restoreResearchAfterStudy:false,
 	chroma:Array(8).fill(c.d0),
 	lumens:Array(8).fill(c.d0),
 	activeChroma:null,
@@ -642,8 +644,8 @@ const masteryData = {
 	83:{icon:"<span class=\"_darkmatter\">DM</span>→<span class=\"_mastery\">MP</span>"},
 	84:{icon:"<span class=\"_stardust\">S</span>→<span class=\"_mastery\">MP</span>"},
 	85:{icon:"<span class=\"_mastery\">MP</span><sup>+</sup>"},
-	91:{icon:"<span class=\"_time\">T</span>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
-	92:{icon:"<span class=\"_time\">T</span><sup>-1</sup>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
+	91:{icon:"<span class=\"_time\">t</span>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
+	92:{icon:"<span class=\"_time\">t</span><sup>-1</sup>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
 	101:{icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>"},
 	102:{icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>"},
 	103:{icon:"<span class=\"_research\">K</span><sup>+</sup>"},
@@ -1024,6 +1026,7 @@ function exportStars() {
 function maxFullStarRows() {
 	for (let i=1;i<11;i++) if (maxStars(i)==4) for (let j=1;j<5;j++) buyStarUpgrade(i*10+j);
 }
+const dynamicStars = [11,12,13,14,42,61,62,63,64,71,72,73,74,91,92,93,94]
 function starEffect(x) {
 	if ([11,12,13,14].includes(x)) {
 		let exp = null;
@@ -1050,6 +1053,53 @@ function starEffect(x) {
 	if (x==90) return g.exoticmatter.add(c.d1).log10().pow(c.d0_75).div(c.e2).add(c.d1).pow(studies[2].reward(2));
 	error("Cannot access starEffect("+x+")")
 }
+function formatStarEffect(x) {
+	if (x==42) return c.e18.format()
+	if ([61,62,63].includes(x)) return starEffect(60).format(2)
+	if (Math.floor(x/10)==9) return starEffect(90).format(2)
+	return starEffect(x).format(x==64?3:2)
+}
+function showStarInfo(x) {d.innerHTML("starPanel",starText(x).replace("{x}",dynamicStars.includes(x)?formatStarEffect(x):null)+(g.star[x]?"":("<br><button class=\"genericbutton\" onClick=\"buyStarUpgrade("+x+");showStarInfo("+x+")\">Buy Star "+x+"</button>")))}
+const starIcons = (()=>{
+	let classes = {
+		sup:x=>"<sup>"+x+"</sup>",
+		sub:x=>"<sub>"+x+"</sub>",
+		xscript:(t,d)=>"<span class=\"xscript\"><sup>"+t+"</sup><sub>"+d+"</sub></span>",
+	}
+	let basicclasslist = ["exoticmatter","time","mastery","stardust","stars","darkmatter"]
+	for (let i of basicclasslist) classes[i] = function(x){return "<span class=\"_"+i+"\">"+x+"</span>"}
+	let icon = {
+		plus:classes.sup("+"),
+		minus:classes.sup("-"),
+		inv:classes.sup("-1"),
+		exoticmatter:classes.exoticmatter("EM"),
+		axis:x=>classes.exoticmatter(axisCodes[x]),
+		axiscost:classes.exoticmatter("A$"),
+		time:classes.time("t"),
+		tickspeed:classes.time("Δt"),
+		mastery:x=>classes.mastery("M"+classes.sub(x)),
+		masterypower:classes.mastery("MP"),
+		stardust:classes.stardust("S"),
+		star:x=>classes.stars("★"+classes.sub(x)),
+		darkaxis:x=>classes.darkmatter(axisCodes[x]),
+		darkaxiscost:classes.darkmatter("A$")
+	}
+	let out = []
+	for (let i=11;i<15;i++) out.push([i,(i>12?icon.time:icon.exoticmatter)+[icon.inv,""][i%2]+"→"+icon.exoticmatter])
+	for (let i=21;i<25;i++) out.push([i,icon.axis(i-21)+icon.plus])
+	for (let i=31;i<35;i++) out.push([i,icon.star("")+classes.xscript(icon.plus,classes.stars(i-20))])
+	for (let i=41;i<45;i++) out.push([i,(i>42?icon.stardust:icon.exoticmatter)+["+","^"][i%2]+"</sup>"])
+	for (let i=51;i<55;i++) out.push([i,icon.mastery(i-49)])
+	for (let i=61;i<65;i++) out.push([i,icon.exoticmatter+"→"+icon.axis(i-57)])
+	for (let i=71;i<75;i++) out.push([i,[icon.masterypower,icon.exoticmatter,icon.stardust,icon.time][i-71]+"→"+icon.tickspeed])
+	out.push([81,icon.darkaxiscost+icon.minus])
+	out.push([82,icon.darkaxis(1)+icon.plus])
+	out.push([83,icon.axiscost+icon.minus])
+	out.push([84,icon.axis(4)+icon.plus])
+	for (let i=91;i<95;i++) out.push([i,icon.exoticmatter+"→"+icon.star(i-80)])
+	for (let i=101;i<105;i++) out.push([i,icon.mastery(i-95)])
+	return Object.fromEntries(out)
+})()
 function starText(x) {
 	if ([11,12,13,14].includes(x)) return "Exotic matter gain is multiplied by {x} ("+["de","in"][x%2]+"creases with "+(x>12?"time in this stardust reset":"exotic matter")+")";
 	if ([21,22,23,24].includes(x)) return "Gain 3 free "+axisCodes[x-21]+" axis";
@@ -1244,7 +1294,10 @@ function maxAffordableDarkStars(x) {
 	return out.floor().add(c.d1);
 }
 function gainDarkStar(cap) {
-	let gain = (cap=="u")?stat.maxAffordableDarkStars:stat.maxAffordableDarkStars.min(N(cap));
+	if (cap=="u") cap = c.maxvalue
+	if (!(cap instanceof Decimal)) error("Cannot access gainDarkStar("+JSON.stringify(cap)+")")
+	let gain = stat.maxAffordableDarkStars.min(N(cap));
+	if (!g.darkStarBulk) gain = gain.min(g.darkstars.add(c.d1))
 	if (gain.lte(g.darkstars)) return;
 	if (gain.sub(g.darkstars).gte(c.d20)) addAchievement(513);
 	if (gain.sub(g.darkstars).gte(c.d35)) addAchievement(514);
@@ -1349,9 +1402,11 @@ function wormholeReset() {
 	if (g.activeStudy!==0) {
 		if (stat.totalDarkAxis.gte(studies[g.activeStudy].goal())) {
 			g.studyCompletions[g.activeStudy]=Math.min(g.studyCompletions[g.activeStudy]+1,4);
+			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(x!==studies[g.activeStudy].research))
 			respecResearch();
+			if (restoreResearchAfterStudy) {for (let i of resbuild) {buySingleResearch(researchRow(i),researchCol(i))}}
 			generateResearchCanvas();
-		}		
+		}
 		g.activeStudy=0;
 		updateAllStudyDivs();
 	}
@@ -1488,9 +1543,6 @@ function updateStudyDiv(index) {
 	if (visibleStudies().map(x => Number(x)).includes(Number(index))) {
 		d.display("div_study"+index,"inline-block");
 		d.class("div_study"+index,"study study"+g.studyCompletions[index])
-		let buttonState = [g.activeStudy==index,StudyE(index),g.research[studies[index]["research"]],g.activeStudy!==0,true].indexOf(true);
-		for (let i=0;i<5;i++) {d.display("button_study"+index+"_"+i,i==buttonState?"inline-block":"none");}
-		if (buttonState==3) {d.innerHTML("span_study"+index+"_button3ActiveStudy",roman(g.activeStudy));}
 		d.innerHTML("span_study"+index+"Goal",BEformat(studies[index].goal()));
 		d.innerHTML("span_study"+index+"Completions",g.studyCompletions[index]);
 		d.innerHTML("span_study"+index+"Reward",studies[index].reward_desc().join("<br><br>"));
@@ -1512,6 +1564,23 @@ function enterStudy(x) {
 		buySingleResearch(2,8,true)
 		updateResearchTree()
 	}
+}
+const studyButtons = {
+	state:function(x) {return [g.activeStudy==x,StudyE(x),g.research[studies[x]["research"]],g.activeStudy!==0,true].indexOf(true)},
+	click:function(x) {
+		let state = studyButtons.state(x)
+		if (state==0) {wormholeReset()}    // states 1, 3 and 4 do nothing
+		else if (state==2) {enterStudy(x)}
+	},
+	text:function(x) {
+		let state = studyButtons.state(x)
+		if (state==0) {return (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"Complete":"Abort")+"Study "}
+		if (state==1) {return "Trapped in"}
+		if (state==2) {return "Start"}
+		if (state==3) {return "Already in Study "+roman(g.activeStudy)}
+		if (state==4) {return "Need research "+researchOut(studies[x]["research"])}
+	},
+	class:function(x) {return ["enabled","trapped","enabled","disabled","disabled"][studyButtons.state(x)]}
 }
 function lightTiersUnlocked() {
 	if (g.research.r11_8) return 3
@@ -1674,6 +1743,7 @@ const openConfig = (()=>{
 			{text:(g.showingCappedStardustUpgrades?"Show":"Hid")+"ing capped Stardust Upgrades",onClick:"toggle('showingCappedStardustUpgrades')"}
 		])},
 		"Star":function(){showConfigModal("Star",[
+			{text:"Star tab layout: "+g.starContainerStyle,onClick:"g.starContainerStyle=(g.starContainerStyle=='Modern'?'Legacy':'Modern')"},
 			{text:(g.glowOptions.buyStar?"G":"No g")+"low if star can be purchased",onClick:toggle("g.glowOptions.buyStar")},
 			{text:(g.glowOptions.assignStar?"G":"No g")+"low if star can be assigned",onClick:toggle("g.glowOptions.assignStar")}
 		])},
@@ -1690,7 +1760,8 @@ const openConfig = (()=>{
 			{text:(g.glowOptions.buyPermanentResearch?"G":"No g")+"low if can buy permanent research",onClick:toggle("g.glowOptions.buyPermanentResearch")}
 		])},
 		"Study":function(){updateAllStudyDivs();showConfigModal("Study",[
-			{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with 4 completions",onClick:"toggle('completedStudiesShown')"}
+			{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with 4 completions",onClick:"toggle('completedStudiesShown')"},
+			{text:"Automatic research respec on Study completion "(g.restoreResearchAfterStudy?"dis":"en")+"abled",onClick:"toggle('restoreResearchAfterStudy')"}
 		])},
 		"Light":function(){showConfigModal("Light",[
 			{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:toggle("g.glowOptions.noChromaGeneration")},

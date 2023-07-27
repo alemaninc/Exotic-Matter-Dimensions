@@ -3,6 +3,14 @@ const version = {
 	current:"𝕍1.2.10",
 	nextUpdateHint:"Hevipelle should trademark"
 }
+/*
+  e event message
+	s file url
+	l line number
+	c column number
+	o error object
+*/
+window.onerror = (e,s,l,c,o)=>{error(e.replaceAll(".","")+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
 var gameHalted = false
 function halt() { // Terminates the game loop, used for debugging
 	clearInterval(gameloop);

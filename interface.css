@@ -378,16 +378,18 @@ tab {
 	color:inherit;
 	margin:4px;
 }
-#masteryPanel {
+.panel {
 	position:fixed;
 	bottom:0px;
 	left:0px;
-	min-height:75px;
 	width:100%;
+	z-index:1
+}
+#masteryPanel {
+	min-height:75px;
 	font-size:16px;
 	background:linear-gradient(180deg,rgba(72,0,24,0.95),rgba(72,0,24,1));
 	padding:5px;
-	z-index:1
 }
 .glownotify{
 	box-shadow:0px 0px 20px 0px #ff0
@@ -449,7 +451,7 @@ tab {
 	margin:4px;
 	filter:brightness(50%)
 }
-.starbutton {
+.starbutton.legacy {
 	font-size:12px;
 	width:120px;
 	height:120px;
@@ -457,54 +459,81 @@ tab {
 	border-radius:60px;
 	margin:8px;
 	position:relative;
+	color: inherit;
 }
-.availablestarbutton {
-	background-color:#cccccc;
+.availablestarbutton.legacy {
+	background-color: #ffffff;
 	color:#000000;
 }
-.lockedstarbutton {
+.lockedstarbutton.legacy {
 	background-color:#999999;
 	color:#000000;
 }
-.ownedstarbutton1 {
+.ownedstarbutton1.legacy {
 	background-color:#ff6600;
 	color:#000000;
 }
-.ownedstarbutton2 {
+.ownedstarbutton2.legacy {
 	background-color:#ff9900;
 	color:#000000;
 }
-.ownedstarbutton3 {
+.ownedstarbutton3.legacy {
 	background-color:#ffcc00;
 	color:#000000;
 }
-.ownedstarbutton4 {
+.ownedstarbutton4.legacy {
 	background-color:#ffff00;
 	color:#000000;
 }
-.ownedstarbutton5 {
+.ownedstarbutton5.legacy {
 	background-color:#ccff33;
 	color:#000000;
 }
-.ownedstarbutton6 {
+.ownedstarbutton6.legacy {
 	background-color:#99ff66;
 	color:#000000;
 }
-.ownedstarbutton7 {
+.ownedstarbutton7.legacy {
 	background-color:#66ff99;
 	color:#000000;
 }
-.ownedstarbutton8 {
+.ownedstarbutton8.legacy {
 	background-color:#33ffcc;
 	color:#000000;
 }
-.ownedstarbutton9 {
+.ownedstarbutton9.legacy {
 	background-color:#00ffff;
 	color:#000000;
 }
-.ownedstarbutton10 {
+.ownedstarbutton10.legacy {
 	background-image:radial-gradient(#ffffff, #000000);
 	color:#000000;
+}
+.starbutton.modern {
+	width:80px;
+	height:80px;
+	border-radius:40px;
+	margin:8px;
+	position:relative;
+	color:inherit;
+}
+.availablestarbutton.modern {background-color: rgba(255,255,255,0.3);}
+.lockedstarbutton.modern {background-color: rgba(102,102,102,0.3);}
+.ownedstarbutton1.modern {background-color:rgba(255,102,0,0.3);}
+.ownedstarbutton2.modern {background-color:rgba(255,153,0,0.3);}
+.ownedstarbutton3.modern {background-color:rgba(255,204,0,0.3);}
+.ownedstarbutton4.modern {background-color:rgba(255,255,0,0.3);}
+.ownedstarbutton5.modern {background-color:rgba(204,255,51,0.3);}
+.ownedstarbutton6.modern {background-color:rgba(153,255,102,0.3);}
+.ownedstarbutton7.modern {background-color:rgba(102,255,153,0.3);}
+.ownedstarbutton8.modern {background-color:rgba(51,255,204,0.3);}
+.ownedstarbutton9.modern {background-color:rgba(0,255,255,0.3);}
+.ownedstarbutton10.modern {background-image:radial-gradient(rgba(255,255,255,0.3),rgba(0,0,0,0.3));}
+#starPanel {
+	min-height:75px;
+	font-size:16px;
+	background:linear-gradient(180deg,rgba(51,51,51,0.95),rgba(51,51,51,1));
+	padding:5px;
 }
 .starbuybutton {
 	background-color:#cccccc;
@@ -770,33 +799,25 @@ tab {
 	background-color:rgba(68,0,102,0.9);
 	color:#8800cc;
 }
-.startStudyEnabled {
+.studyButton {
 	height:48px;
 	width:160px;
 	border-radius:8px;
+	border-style:solid;
+	border-width:2px;
+}
+.studyButton.enabled {
 	background-color:rgba(0,0,102,0.9);
-	border-style:solid;
-	border-width:2px;
 	border-color:rgba(0,68,170,0.9);
 	color:#ffffff;
 }
-.startStudyTrapped {
-	height:48px;
-	width:160px;
-	border-radius:8px;
+.studyButton.trapped {
 	background-color:rgba(15,30,114,0.9);
-	border-style:solid;
-	border-width:2px;
 	border-color:rgba(0,68,170,0.9);
 	color:#ffffff;
 }
-.startStudyDisabled {
-	height:48px;
-	width:160px;
-	border-radius:8px;
+.studyButton.disabled {
 	background-color:rgba(60,120,150,0.9);
-	border-style:solid;
-	border-width:2px;
 	border-color:rgba(0,68,170,0.9);
 }
 .wormholeMilestone {
@@ -838,14 +859,9 @@ tab {
 	margin:4px;
 }
 .achievementPanel {
-	position:fixed;
-	bottom:0px;
-	left:0px;
-	width:100%;
 	height:240px;
 	font-size:16px;
 	background:linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1));
-	z-index:1;
 }
 .dilationDiv {
 	width:450px;
