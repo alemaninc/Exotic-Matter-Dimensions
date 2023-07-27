@@ -131,7 +131,10 @@ const achievementList = {
 			check:function(){return stat.WAxisEffect.gt(4);},
 			progress:function(){return achievement.percent(stat.WAxisEffect,c.d4,1);},
 			visibility:function(){return g.achievement[104];},
-			reward:"Add 30 seconds to the W Axis timer per W Axis",
+			get reward(){return "Add 30 seconds to the W Axis timer per W Axis"+(this.yellowValue.eq(c.d0)?"":"<sup>{}</sup>")+(Decimal.eq(g.WAxis,stat.realWAxis)?"":" (including free)")},
+			effect:function(y=this.yellowValue){return y.add(c.d1)},
+			effectFormat:x=>x.noLeadFormat(3),
+			yellowBreakpoints:[c.d360,N(360000),1],
 			flavor:"Why has the pleasure of slowness disappeared? Ah, where have they gone, the amblers of yesteryear?"
 		},
 		110:{
@@ -826,7 +829,10 @@ const achievementList = {
 			check:function(){return this.owned()<=15;},
 			progress:function(){return this.owned()>15?"Failed":((15-this.owned())+" upgrade"+(this.owned()==14?"":"s")+" left");},
 			visibility:function(){return true;},
-			reward:"Square root the cost of the first level of each Stardust Upgrade",
+			get reward(){return (this.yellowValue.eq(c.d0)?"Square":"{}th")+" root the cost of the first level of each Stardust Upgrade"},
+			effect:function(y=this.yellowValue){return y.mul(c.d8).add(c.d2)},
+			effectFormat:x=>x.noLeadFormat(2),
+			yellowBreakpoints:[c.d200,c.e3,0],
 			flavor:"The worst advertisement for Socialism is its adherents.",
 			owned:function(){return g.stardustUpgrades.sum();}
 		},

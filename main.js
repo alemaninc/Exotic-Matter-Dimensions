@@ -309,7 +309,7 @@ function stardustUpgradeCost(x) {
 		[c.d5e11,c.e60,c.e96,c.e175,c.d2_2222e222,c.e270,c.inf,c.ee5,c.e2e5,c.e5e5,c.e1_5e6,c.maxvalue]][x-1][g.stardustUpgrades[x-1]];
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	if (g.achievement[602]&&x==3) cost = cost.pow(c.d0_9)
-	if (g.achievement[520]&&g.stardustUpgrades[x-1]==0) cost = cost.sqrt();
+	if (g.achievement[520]&&g.stardustUpgrades[x-1]==0) cost = cost.root(achievement(520).effect());
 	if (g.achievement[612]) cost = cost.pow(0.999**g.stars)
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stars));
 	return cost;
@@ -400,7 +400,7 @@ const studies = [
 		unlockReq:function() {return [N(1e144),c.inf,N("4.44e44444"),N("5.55e55555")][studyPower(4)]},
 		description:function(){return "Every Stardust reset you do raises stardust gain to the power of 0.5 for the rest of the Study."},
 		research:"r9_14",
-		goal:function(){return [N(3000),N(4000),c.e100,c.e100][studyPower(4)]},
+		goal:function(){return [N(3000),N(3700),c.e100,c.e100][studyPower(4)]},
 		reward:function(num,comp=g.studyCompletions[4]){
 			if (num==1) return N([0.5,0.514,0.527,0.539,0.55][comp])
 			if (num==2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
@@ -1283,7 +1283,7 @@ function maxAffordableDarkStars(x) {
 	return out.floor().add(c.d1);
 }
 function gainDarkStar(cap) {
-	if (cap=="u") cap = c.maxvalue
+	cap = (cap=="u")?c.maxvalue:N(cap)
 	if (!(cap instanceof Decimal)) error("Cannot access gainDarkStar("+JSON.stringify(cap)+")")
 	let gain = stat.maxAffordableDarkStars.min(N(cap));
 	if (!g.darkStarBulk) gain = gain.min(g.darkstars.add(c.d1))
@@ -1563,7 +1563,7 @@ const studyButtons = {
 	},
 	text:function(x) {
 		let state = studyButtons.state(x)
-		if (state==0) {return (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"Complete":"Abort")+"Study "}
+		if (state==0) {return (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"Complete":"Abort")+" Study"}
 		if (state==1) {return "Trapped in"}
 		if (state==2) {return "Start"}
 		if (state==3) {return "Already in Study "+roman(g.activeStudy)}
@@ -1595,7 +1595,7 @@ const lightData = [
 	{baseReq:c.e3,baseScale:c.d3,effect:"The base gain of hawking radiation is raised to the power of {x}"},
 	{baseReq:c.e5,baseScale:c.d1_5,effect:"Research 7-5 affects the base gain of knowledge with {x}% effect<br><span class=\"small\">(this is currently an approximate {e}× boost to knowledge gain if Research 7-5 is owned)</span>"},
 	{baseReq:c.e5,baseScale:c.d2_5,effect:"Increase the mastery power base gain exponent by {x}<br><span class=\"small\">(this is currently a {e}× boost to mastery power gain)</span>"},
-	{baseReq:c.e5,baseScale:c.d1_1,effect:"The rewards of {x} achievements will become stronger.<button class=\"genericbutton yellowChromaButton\" onClick=\"reviewYellowLight()\">Click for more detail</button>"},
+	{baseReq:c.e5,baseScale:c.d1_1,effect:"The rewards of {x} achievements will become stronger."+["See next effect","See all effects"].map((x,i)=>"<button class=\"genericbutton yellowChromaButton\" onClick=\"reviewYellowLight("+i+")\">"+x+"</button>").join("")},
 	{baseReq:c.e10,baseScale:c.d10,effect:"The star cost is raised to the power of {x}"},
 	{baseReq:c.e10,baseScale:c.d10,effect:"Chroma generation is {x}{s} cheaper"}
 ]
@@ -1633,11 +1633,14 @@ function chromaCostFactor(x) {
 	out = out.mul(lightCache.currentEffect[7])
 	return out
 }
-function reviewYellowLight(){
-	let out = []
-	for (let x of lightCache.currentEffect[5]) {
+function reviewYellowLight(mode){    // 0 = next, 1 = all effects
+	let shownAchievements,out=[]
+	if (mode==0) {shownAchievements = lightCache.currentEffect[5]}
+	else if (mode==1) {shownAchievements = yellowLight.affected.filter(x=>achievement(x).yellowBreakpoints[0].lte(g.lumens[5]))}
+	else {error("Cannot access reviewYellowLight("+value+")")}
+	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px;\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,achievement(x).yellowValue,achievement(x).nextYellowValue))+"</td></tr></table></div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px;\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,[achievement(x).yellowValue,c.d0][mode],achievement(x).nextYellowValue))+"</td></tr></table></div>")
 	}
 	popup({
 		text:out.join(""),

@@ -936,7 +936,7 @@ miscStats.WAxisEffect={
 			label:"Base",
 			time:function(){
 				let out = g.truetimeThisStardustReset;
-				if (g.achievement[109]) out = out.add(stat.realWAxis.mul(c.d30));
+				if (g.achievement[109]) out = out.add(stat.realWAxis.pow(achievement(109).effect()).mul(c.d30));
 				return out; 
 			},
 			func:function(){return this.time().pow(c.d0_75).add(c.e2).log10().quad_tetr(c.d1_15);},
