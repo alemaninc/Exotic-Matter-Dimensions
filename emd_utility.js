@@ -1,6 +1,6 @@
 "use strict";
 const version = {
-	current:"𝕍1.2.14",
+	current:"𝕍1.2.15",
 	nextUpdateHint:"Hevipelle should trademark"
 }
 /*
@@ -54,3 +54,4 @@ function popupInput() {
 function functionError(functionName,argumentList) {
 	error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")
 }
+function BEformat(value,precision=0) {return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");}

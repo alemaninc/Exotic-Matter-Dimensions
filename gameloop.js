@@ -58,13 +58,13 @@ function updateHTML() {
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
 				if (stat.axisUnlocked>i) {
 					d.class("button_"+type+"Axis",g.exoticmatter.gt(stat[type+"AxisCost"])?"axisbutton":"lockedaxisbutton");
-					d.innerHTML("span_"+type+"AxisAmount",BEformat(g[type+"Axis"])+((stat["free"+type+"Axis"].gt(0))?(" + "+stat["free"+type+"Axis"].noLeadFormat(2)):""));
+					d.innerHTML("span_"+type+"AxisAmount",BEformat(g[type+"Axis"])+((stat["free"+type+"Axis"].gt(c.d0))?(" + "+stat["free"+type+"Axis"].noLeadFormat(2)):""));
 					d.innerHTML("span_"+type+"AxisEffect",stat[type+"AxisEffect"].noLeadFormat([2,2,2,2,2,2,2,4][i]));
 					d.innerHTML("span_"+type+"AxisCost",BEformat(stat[type+"AxisCost"]));
 				}
 			}
 			for (let name of empowerableAxis) {
-				d.display("button_empowered"+name+"Axis",stat["empowered"+name+"Axis"].gt(0)?"inline-block":"none");
+				d.display("button_empowered"+name+"Axis",stat["empowered"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empowered"+name+"AxisAmount",stat["empowered"+name+"Axis"].noLeadFormat(2));
 			}
 		} else if (activeSubtabs.main=="masteries") {
@@ -428,6 +428,7 @@ function updateHTML() {
 			for (let i of buyableResearchWithCondition) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
 		} else if (activeSubtabs.wormhole=="studies") {
 			for (let i of visibleStudies()) {
+				d.innerHTML("span_study"+i+"Description",studies[i].description())
 				d.innerHTML("button_study"+i,studyButtons.text(i))
 				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
 				d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));

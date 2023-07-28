@@ -334,8 +334,9 @@ const achievementList = {
 		},
 		213:{
 			name:"Four Second Mile II",
-			get description(){return "Reach "+BEformat(1199169832)+" exotic matter within 4 seconds of stardust-resetting";},
-			check:function(){return g.exoticmatter.gt(1199169832)&&g.timeThisStardustReset<4;},
+			req:N(1199169832),
+			get description(){return "Reach "+BEformat(this.req)+" exotic matter within 4 seconds of stardust-resetting";},
+			check:function(){return g.exoticmatter.gt(this.req)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e9,0):"Failed";},
 			visibility:function(){return g.achievement[212];},
 			reward:"The game runs 0.4% faster",
@@ -343,8 +344,8 @@ const achievementList = {
 		},
 		214:{
 			name:"Four Second Mile III",
-			get description(){return "Reach "+BEformat(1e15)+" exotic matter within 4 seconds of stardust-resetting";},
-			check:function(){return g.exoticmatter.gt(1e15)&&g.timeThisStardustReset<4;},
+			get description(){return "Reach "+BEformat(c.e15)+" exotic matter within 4 seconds of stardust-resetting";},
+			check:function(){return g.exoticmatter.gt(c.e15)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e15,0):"Failed";},
 			visibility:function(){return g.achievement[213];},
 			reward:"The game runs 0.4% faster",
@@ -352,8 +353,8 @@ const achievementList = {
 		},
 		215:{
 			name:"Four Second Mile IV",
-			get description(){return "Reach "+BEformat(1e25)+" exotic matter within 4 seconds of stardust-resetting";},
-			check:function(){return g.exoticmatter.gt(1e25)&&g.timeThisStardustReset<4;},
+			get description(){return "Reach "+BEformat(c.e25)+" exotic matter within 4 seconds of stardust-resetting";},
+			check:function(){return g.exoticmatter.gt(c.e25)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e25,0):"Failed";},
 			visibility:function(){return g.achievement[214];},
 			reward:"The game runs 0.4% faster",
@@ -485,8 +486,8 @@ const achievementList = {
 		},
 		311:{
 			name:"When will it be enough?",
-			get description(){return "Reach "+BEformat("ee3")+" exotic matter";},
-			check:function(){return g.exoticmatter.gt("ee3");},
+			get description(){return "Reach "+BEformat(c.ee3)+" exotic matter";},
+			check:function(){return g.exoticmatter.gt(c.ee3);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.ee3,1);},
 			visibility:function(){return true;},
 			get reward(){return "Multiply exotic matter gain by {} (based on exotic matter)";},
@@ -632,8 +633,8 @@ const achievementList = {
 		},
 		413:{
 			name:"OMCCDV",
-			get description(){return "Reach "+BEformat("e44031")+" exotic matter";},
-			check:function(){return g.exoticmatter.gt("e44031");},
+			get description(){return "Reach "+BEformat(c.e44031)+" exotic matter";},
+			check:function(){return g.exoticmatter.gt(c.e44031);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.e44031,1);},
 			visibility:function(){return g.achievement[413];},	/* this is a secret achievement of sorts */
 			reward:"Increase mastery power gain by 19.07% per S axis and 20.20% per dark S axis",
@@ -652,8 +653,8 @@ const achievementList = {
 		},
 		502:{
 			name:"Iron Will",
-			get description(){return "Reach "+BEformat(1e50)+" exotic matter without stardust-resetting or having research in the current universe";},
-			check:function(){return g.exoticmatter.gt(1e50)&&stat.ironWill;},
+			get description(){return "Reach "+BEformat(c.e50)+" exotic matter without stardust-resetting or having research in the current universe";},
+			check:function(){return g.exoticmatter.gt(c.e50)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e50,1):"Failed";},
 			visibility:function(){return true;},
 			reward:"Dark axis cost scaling is 5% weaker",
@@ -661,8 +662,8 @@ const achievementList = {
 		},
 		503:{
 			name:"Iron Will II",
-			get description(){return "Reach "+BEformat(1e130)+" exotic matter without stardust-resetting or having research in the current universe";},
-			check:function(){return g.exoticmatter.gt(1e130)&&stat.ironWill;},
+			get description(){return "Reach "+BEformat(c.e130)+" exotic matter without stardust-resetting or having research in the current universe";},
+			check:function(){return g.exoticmatter.gt(c.e130)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e130,1):"Failed";},
 			visibility:function(){return g.achievement[502];},
 			reward:"Normal axis cost scaling is 5% weaker",
@@ -1211,7 +1212,7 @@ const secretAchievementList = {
 		name:"Empowered Exotic Matter Dimensions V",
 		description:"Try to buy an empowered axis 10,000 times in one session",
 		check:function(){return empoweredAxisBought>=10000;},
-		get flavor(){return (empoweredAxisBought>=1e5)?("THERE IS NO EMPOWERED EXOTIC MATTER DIMENSIONS VI<br>[cackles maniacally]"):("You've still "+BEformat(1e5-empoweredAxisBought)+" more clicks before the next one. Good luck!");},
+		get flavor(){return (empoweredAxisBought>=1e5)?("THERE IS NO EMPOWERED EXOTIC MATTER DIMENSIONS VI<br>[cackles maniacally]"):("You've still "+(1e5-empoweredAxisBought).toLocaleString("en-US")+" more clicks before the next one. Good luck!");},
 		rarity:4
 	},
 	23:{

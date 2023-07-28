@@ -86,11 +86,11 @@ const hiddenStatistics = [
 		condition:function(){return true;}
 	},{
 		name:"Stardust Resets",
-		value:function(){return BEformat(g.TotalStardustResets)+" total, "+BEformat(g.StardustResets)+" with reward";},
+		value:function(){return BEformat(N(g.TotalStardustResets))+" total, "+BEformat(N(g.StardustResets))+" with reward";},
 		condition:function(){return unlocked("Stardust");}
 	},{
 		name:"Wormhole Resets",
-		value:function(){return BEformat(g.TotalWormholeResets)+" total, "+BEformat(g.WormholeResets)+" with reward";},
+		value:function(){return BEformat(N(g.TotalWormholeResets))+" total, "+BEformat(N(g.WormholeResets))+" with reward";},
 		condition:function(){return unlocked("Hawking Radiation");}
 	},{
 		name:"Total Axis",

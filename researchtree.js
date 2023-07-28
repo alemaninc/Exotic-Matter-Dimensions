@@ -773,7 +773,7 @@ const research = (function(){
 		r10_11: {
 			description:function(){return "Unlock Mastery 104"},
 			adjacent_req:["r9_9"],
-			condition:[{check:function(){return g.masteryPower.gt("e1000")},text:function(){return g.masteryPower.format()+" / "+BEformat("e1000")+" mastery power"}}],
+			condition:[{check:function(){return g.masteryPower.gt("e1000")},text:function(){return g.masteryPower.format()+" / "+BEformat(c.ee3)+" mastery power"}}],
 			visibility:function(){return true},
 			type:"permanent",
 			basecost:N(600),
@@ -822,11 +822,11 @@ const research = (function(){
 				description:function(){let eff=researchEffect(researchRow(i),researchCol(i));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(2)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
 				adjacent_req:[],
 				condition:[studyReq(5,study5Research[i].comp)],
-				visibility:function(){return g.studyCompletions[5]>=study5Research[i].comp},
+				visibility:function(){return g.studyCompletions[5]>=study5Research[i].comp&&betaActive},
 				type:"normal",
 				basecost:c.d0,
 				icon:icon[study5Research[i].resInt]+icon.arr+classes.research("R$"),
-				effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.d10)).pow(power)}
+				effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.e3)).pow(power)}
 			}}
 			return out
 		})()

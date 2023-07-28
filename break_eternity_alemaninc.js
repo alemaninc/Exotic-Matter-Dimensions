@@ -3235,88 +3235,104 @@ Object.defineProperty(Array.prototype,"productDecimals",{value:function productD
 Object.defineProperty(Array.prototype,"decimalPowerTower",{value:function decimalPowerTower() {
 	return this.reduceRight((x,y) => y.pow(x));
 }})
-function BEformat(value,precision=0) {
-	return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");
+const notationSupport = {
+	formatSmall:function(x,p){
+		let y=Math.max(0,p-Math.floor(x.max(c.em10).min(c.e10).log(c.d10).toNumber()));
+		if (x.lt(1000)) return x.toNumber().toFixed(y);
+		if (x.lt(1000000)) return (Math.round(x.toNumber()*10**y)/10**y).toLocaleString("en-US");
+		functionError("formatSmall",arguments)
+	},
+	leadingEs:function(x){return x.layer-((x.mag<1e6)?1:0)}
 }
-const format = {		 // functions used in formatting
-	engineering(x,p) {
-		x=N(x);
-		x.mag+=Math.max(1e-8,x.mag/1e8); // rogue decimal prevention
-		let exponent = x.log10().div(c.d3).floor().mul(c.d3);
-		return x.div(c.d10.pow(exponent)).mul(10**p).floor().div(10**p).toPrecision(p+1)+"e"+exponent.toNumber().toLocaleString("en-US");
-	},
-	mixedscientific(x,p) {
-		x=N(x);
-		x.mag+=Math.max(1e-8,x.mag/1e8); // rogue decimal prevention
-		if (x.lt(c.e33)) { 
-			let thousand = x.log10().div(c.d3).floor().toNumber();
-			return x.div(c.e3.pow(thousand)).mul(10**p).floor().div(10**p).toPrecision(p+1)+" "+["","K","M","B","T","Qa","Qt","Sx","Sp","Oc","No"][thousand];
-		}
-		return format.scientific(x,p);
-	},
-	scientific(x,p) {
-		x=N(x);
-		x.mag+=Math.max(1e-8,x.mag/1e8); // rogue decimal prevention
-		return x.log10().mod(c.d1).pow10().mul(10**p).floor().div(10**p).toPrecision(p+1)+"e"+x.log10().floor().toNumber().toLocaleString("en-US");
-	}
-};
-function gformat(value,precision,notation) {
-	if ([value,precision,notation].includes(undefined)) functionError("gformat",arguments)
-	let x=N(value);
-	if (x.sign==-1) return "-"+gformat(x.abs(),precision,notation);
-	if (x.eq(c.maxvalue)) return "Infinite";
-	if (x.isNaN()) return "NaN";
-	if (x.eq(c.d0)) return "0";
-	if (x.lt(c.em5)) return "(1 / "+gformat(x.recip(),precision,notation)+")";
-	let y=Math.max(0,precision-Math.floor(x.max(c.em10).min(c.e10).log(c.d10).toNumber()));
-	if (x.lt(1000)) return x.toNumber().toFixed(y);
-	if (x.lt(1000000)) return (Math.round(x.toNumber()*10**y)/10**y).toLocaleString("en-US");
-	if (notation=="Alemaninc Ordinal") {
+const notations = {
+	"Alemaninc Ordinal":function(x){
 		let output=x.mul(c.e4).quad_slog().log(c.d2).log(c.d2).mul(c.d2_4);
+		if (output.gte(c.d24)) return "ω<sub>10,000,000,000</sub>"
 		let number=c.d10.quad_tetr(output.mod(c.d1).add(c.d1));
 		let precision=c.e4.div(number).log(c.d10).floor().max(c.d0).pow10();
 		return ["α","β","γ","δ","ε","ζ","η","θ","ι","κ","λ","μ","ν","ξ","ο","π","ρ","σ","τ","υ","φ","χ","ψ","ω"][output.floor().toNumber()]+"<sub>"+number.mul(precision).floor().div(precision).toNumber().toLocaleString("en-US")+"</sub>";
-	} else if (notation=="BE Default") {
-		return x.toExponential(3);
-	} else if (notation=="Engineering") {
-		if (x.lt("eeeee6")) {
-			let es = x.layer-((x.mag<1e6)?1:0);
-			return Array(es+1).join("e")+format.engineering(x.layerplus(-es),es==0?2:3);
+	},
+	"BE Default":function(x){return x.toExponential(3)},
+	"Engineering":function(x,sub="Engineering",p=2){
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
+		let leadingEs = notationSupport.leadingEs(x)
+		if (leadingEs==0) return x.log10().mod(c.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(c.d3).floor().mul(c.d3).toNumber().toLocaleString("en-US")
+		return Array(leadingEs+1).join("e")+notations["Engineering"](x.layerplus(-leadingEs),sub,3)
+	},
+	"Hyper-E":function(x,sub="Hyper-E"){
+		let height = Math.floor(x.slog().toNumber())
+		if (height>1e6) return "E#"+notations[sub](N(height),sub)
+		return "E"+((x.mag>=1e10)?Math.log10(Math.log10(x.mag)):Math.log10(x.mag)).toFixed(3)+"#"+height.toLocaleString("en-US")
+	},
+	"Infinity":function(x,sub="Infinity"){
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
+		let infinities = x.log(c.d2).div(c.d1024)
+		if (infinities.lt(c.d1)) return infinities.toFixed(6)+"∞"
+		if (infinities.lt(c.e6)) return infinities.toPrecision(6)+"∞"
+		return notations[sub](infinities,sub)+"∞"
+	},
+	"Logarithm":function(x,sub="Logarithm",p=3) {
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
+		let leadingEs = notationSupport.leadingEs(x)
+		if (leadingEs==0) return "e"+notationSupport.formatSmall(x.log10(),p)
+		return Array(leadingEs+1).join("e")+notations["Logarithm"](x.layerplus(-leadingEs),sub,4)
+	},
+	"Mixed scientific":function(x,sub="Mixed scientific",p=2){
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
+		let leadingEs = notationSupport.leadingEs(x)
+		if (leadingEs==0)	return notations[x.gt(c.e33)?"Scientific":"Standard"](x,p)
+		return Array(leadingEs+1).join("e")+notations["Mixed scientific"](x.layerplus(-leadingEs),sub,3)
+	},
+	"Scientific":function(x,sub="Scientific",p=2){
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
+		let leadingEs = notationSupport.leadingEs(x)
+		if (x.gte(c.ee4)) p--
+		if (x.gte(c.ee5)) p--
+		if (leadingEs==0) return x.log10().mod(c.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")
+		return Array(leadingEs+1).join("e")+notations["Scientific"](x.layerplus(-leadingEs),sub,3)
+	},
+	"Standard":function(x,sub="Standard",p=2){
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
+		let leadingEs = Math.max(x.layer-((x.mag>=33)?1:2),0)    // standard notation adds leading e's at ee33 rather than ee6
+		if (leadingEs==0) {
+			if (x.lt(c.e33)) return x.log10().mod(c.d3).pow10().toPrecision(p+1)+" "+["M","B","T","Qa","Qt","Sx","Sp","Oc","No"][Math.floor(x.log10().toNumber()/3-2)]
+			let e0 = ["","U","D","T","Qa","Qt","Sx","Sp","O","N"]
+			let e1 = ["","Dc","Vg","Tg","Qd","Qi","Se","St","Og","Nn"]
+			let e2 = ["","Ce","Dn","Tc","Qe","Qu","Sc","Si","Oe","Ne"]
+			let e3 = ["QC-","RN-","YC-","ZP-","AT-","FM-","PC-","NA-","MC-","MI-",""] // reverse order
+			let height = x.log10().div(c.d3).sub(c.d1).floor().toNumber()
+			let e3vals = [10,9,8,7,6,5,4,3,2,1,0].map(x=>Math.floor((height/1e3**x)%1e3))
+			let firste3 = e3vals.map(x=>x>0).indexOf(true)
+			let out = ""
+			for (let i=firste3;i<Math.min(firste3+3,11);i++) {
+				if (e3vals[i]==0) continue;
+				let values = String(e3vals[i]).padStart(3,"0").split("")
+				if (e3vals[i]>1||i==10) out+=e0[values[2]]+e1[values[1]]+e2[values[0]]
+				out+=e3[i]
+			}
+			if (out.substring(out.length-1)=="-") out = out.substring(0,out.length-1)
+			if (height>=1e7) out += "s"
+			else out = x.log10().mod(c.d3).pow10().toPrecision(p+1)+" "+out
+			return out
 		}
-		let height = x.quad_slog().floor().toNumber();
-		if (height<1e6) return "E"+x.layerf(x => x%1).mul(c.e3).floor().div(c.e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
-		return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#"+format.engineering(height,3);
-	} else if (notation=="Hyper-E") {
-		let height = x.quad_slog().floor().toNumber();
-		if (height<1e6) return "E"+x.layerf(x => x%1).mul(c.e3).floor().div(c.e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
-		return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#"+format.scientific(height,3);
-	} else if (notation=="Infinity") {
-		return x.quad_slog().log(c.d2).div(c.d1024).toNumber().toFixed(8)+"∞";
-	} else if (notation=="Logarithm") {
-		if (x.gt("10^^6")) {
-			let height = x.quad_slog().floor().toNumber();
-			if (height<1e6) return "E"+x.layerf(x => x%1).mul(c.e3).floor().div(c.e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
-			return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#e"+Math.log10(height).toFixed(3).toString().substring(0,7);
-		}
-		let es = x.layer-((x.mag<1e6)?0:-1);
-		return Array(es+1).join("e")+x.layerplus(-es).toFixed(3);
-	} else if (notation=="Mixed scientific") {
-		if (x.lt("eeeee6")) {
-			let es = x.layer-((x.mag<1e6)?1:0);
-			return Array(es+1).join("e")+format.mixedscientific(x.layerplus(-es),es==0?2:3);
-		}
-		let height = x.quad_slog().floor().toNumber();
-		if (height<1e6) return "E"+x.layerf(x => x%1).mul(c.e3).floor().div(c.e3).toString().substring(0,5)+"#"+height.toLocaleString("en-US");
-		return "E"+((height<1e12)?(gformat(x.layerf(x => x%1),3,"")):"")+"#"+format.mixedscientific(height,3);
-	} else if (notation=="Scientific") {
-		if (x.gt("10^^6")) return gformat(x,0,"Hyper-E");
-		let es = x.layer-((x.mag<1e6)?1:0);
-		return Array(es+1).join("e")+format.scientific(x.layerplus(-es),es==0?2:3);
-	} else if (notation=="Tetration") {
-		let height = x.quad_slog(c.e).toNumber();
-		return "e ⇈ "+String((height<1000)?height.toFixed(6):(height<1e6)?height.toLocaleString("en-US"):format.mixedscientific(height,3));
+		return Array(leadingEs+1).join("e")+notations["Standard"](x.layerplus(-leadingEs),sub,3)
+	},
+	"Tetration":function(x,sub="Tetration"){
+		let height = x.slog()
+		if (height<1e6) return "10 ⇈ "+height.toPrecision(6)
+		return "10 ⇈ "+notations[sub](height,sub,5)
 	}
-	throw "Invalid notation.";
+}
+function gformat(value,precision=0,notation="Scientific",subnotation="Scientific") {
+	if ([value,precision,notation,subnotation].includes(undefined)) functionError("gformat",arguments)
+	let x=N(value);
+	if (x.sign==-1) return "-"+gformat(x.abs(),precision,notation,subnotation);
+	if (x.eq(c.maxvalue)) return "Infinite";
+	if (x.isNaN()) return "NaN";
+	if (x.eq(c.d0)) return "0";
+	if (x.lt(c.em5)) return "(1 / "+gformat(x.recip(),precision,notation,subnotation)+")";
+	if (x.lt(c.e6)) return notationSupport.formatSmall(x,precision)
+	return notations[notation](value,subnotation)
 }
 function timeFormat(x) {
 	x = N(x);

@@ -166,7 +166,7 @@
 					<button class="tabtier2 tier2options" onClick="openSubTab('options','hotkeys')" id="button_subtab_options_hotkeys" style="filter:brightness(60%)">Hotkeys</button>
 				</div>
 				<div class="subtab options" id="subtab_options_options">
-					<button class="optionsbutton" onClick="selectOption('notation',['\'Alemaninc Ordinal\'','\'BE Default\'','\'Engineering\'','\'Hyper-E\'','\'Infinity\'','\'Logarithm\'','\'Mixed scientific\'','\'Scientific\'','\'Tetration\''],'notation',x=>x.substring(1,x.length-1))">Notation: <span id="notation"></span></button>
+					<button class="optionsbutton" onClick="selectOption('notation',Object.keys(notations),'notation')">Notation: <span id="notation"></span></button>
 					<button class="optionsbutton" onClick="save()">Save</button>
 					<button class="optionsbutton" onClick="toggle('autosaveIsOn')">Autosave: <span id="toggleAutosave"></span></button>
 					<button class="optionsbutton" onClick="wipeSavePopup()" style="background-color:#000000;color:#ff0000;">WIPE SAVE</button>
