@@ -3031,6 +3031,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_5			: N(1.5),
 	d1_75			: N(1.75),
 	d2				: N(2),
+	d2_4			: N(2.4),
 	d2_5			: N(2.5),
 	e					: N(2.7182818284590452),
 	d3				: N(3),
@@ -3260,7 +3261,7 @@ const format = {		 // functions used in formatting
 	}
 };
 function gformat(value,precision,notation) {
-	if ([value,precision,notation].includes(undefined)) throw "Cannot access gformat("+value+","+precision+","+notation+")"
+	if ([value,precision,notation].includes(undefined)) functionError("gformat",arguments)
 	let x=N(value);
 	if (x.sign==-1) return "-"+gformat(x.abs(),precision,notation);
 	if (x.eq(c.maxvalue)) return "Infinite";

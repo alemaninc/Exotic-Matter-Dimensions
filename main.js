@@ -95,6 +95,8 @@ const basesave = {
 	stars:0,
 	star:Object.fromEntries(starList.map(x=>[x,false])),
 	starContainerStyle:"Legacy",
+	starIdsShown:true,
+	starActivityShown:true,
 	darkmatter:c.d0,
 	darkXAxis:c.d0,
 	darkYAxis:c.d0,
@@ -675,10 +677,7 @@ function tryToggleMastery(x) {
 function toggleMastery(x) {
 	let row = Math.floor(x/10);
 	if (!(x==g.activeMasteries[row])) {
-		if ((![0,x%10].includes(g.activeMasteries[row]))&&(!masteredRow(row))) {
-			g.baseMasteryPowerGain=c.d1;
-			g.masteryPower=c.d1;
-		}
+		if ((![0,x%10].includes(g.activeMasteries[row]))&&(!masteredRow(row))) masteryReset()
 		g.activeMasteries[row]=x%10;
 	}
 	g.ach524possible=g.ach524possible&&achievement(524).active();
@@ -1049,6 +1048,13 @@ function formatStarEffect(x) {
 	return starEffect(x).format(x==64?3:2)
 }
 function showStarInfo(x) {d.innerHTML("starPanel",starText(x).replace("{x}",dynamicStars.includes(x)?formatStarEffect(x):null)+(g.star[x]?"":("<br><button class=\"genericbutton\" onClick=\"buyStarUpgrade("+x+");showStarInfo("+x+")\">Buy Star "+x+"</button>")))}
+function updateStarLayout() {
+	d.display("starPanel",g.starContainerStyle=="Modern"?"inline-block":"none")
+	d.display("starContainerLegacy",g.starContainerStyle=="Legacy"?"inline-block":"none")
+	d.display("starContainerModern",g.starContainerStyle=="Modern"?"inline-block":"none")
+	for (let i of document.getElementsByClassName("starID"+g.starContainerStyle)) i.style.display=g.starIdsShown?"inline-block":"none"
+	for (let i of document.getElementsByClassName("starActive"+g.starContainerStyle)) i.style.display=g.starActivityShown?"inline-block":"none"
+}
 const starIcons = (()=>{
 	let classes = {
 		sup:x=>"<sup>"+x+"</sup>",

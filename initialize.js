@@ -23,6 +23,7 @@ const initSteps = [
 	function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},
 	function(){updateStats()},
 	function(){updateMasteryLayout()},
+	function(){updateStarLayout()},
 	function(){updateAchievementsTab();},
 	function(){updateSecretAchievementsTab();},
 	function(){

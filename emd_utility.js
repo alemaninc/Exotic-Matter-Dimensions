@@ -1,6 +1,6 @@
 "use strict";
 const version = {
-	current:"𝕍1.2.13",
+	current:"𝕍1.2.14",
 	nextUpdateHint:"Hevipelle should trademark"
 }
 /*
@@ -50,4 +50,7 @@ function popup(data) {
 }
 function popupInput() {
 	return d.element("span_fancyPopupInput").value
+}
+function functionError(functionName,argumentList) {
+	error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")
 }

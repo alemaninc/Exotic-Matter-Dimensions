@@ -313,6 +313,7 @@ function updateHTML() {
 					let num = row*10+col
 					let classname = g.star[num]?("ownedstarbutton"+row):availableStarRow(row)?"availablestarbutton":"lockedstarbutton"
 					d.class("button_star"+num+g.starContainerStyle,["starbutton",classname,g.starContainerStyle.toLowerCase()].join(" "))
+					if (g.starActivityShown) d.innerHTML("span_star"+num+"Active"+g.starContainerStyle,g.star[num]?"Active":"Inactive")
 				}
 			}
 			d.innerHTML("span_unspentStars",unspentStars()+" / "+g.stars);
