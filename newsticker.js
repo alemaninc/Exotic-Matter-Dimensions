@@ -282,7 +282,7 @@ const newsList = [
 	{text:"You can waste up to H<sub>ω<sup>2</sup></sub>[10] years here if you want"},
 	{text:"Don't mind me, I'm just another random news message."},
 	{text:"Refreshing cures Light mode.",get weight(){return ((new Date().getUTCMonth()==3) && (new Date().getUTCDate()==1))?1:0}},
-	{get text(){return "Thank you for playing Exotic Matter Dimensions Version "+this.version()+"!"},version:function(){let out = version.current.split(".");out[out.length-1]++;return out.join(".")}},
+	{get text(){return "Thank you for playing Exotic Matter Dimensions Version "+this.version()+"!"},version:function(){if(version.current.substring(2).split(".").map(x=>Number(x)).includes(NaN)){return false};let out = version.current.split(".");out[Math.min(out.length-1,2)]++;return out.slice(0,3).join(".")},get weight(){return this.version()==false?0:1}},
 	{get text(){return "If I have bad $, I'll study $ until I have good $.".replaceAll("$",Array.random(["HTML","CSS","JavaScript"]))}},
 	{get text(){return "\"Because of this game I can now use the word '"+Array.random(["Stardust",...(unlocked("Hawking Radiation")?["Wormhole"]:[])])+"' as a verb\""},get weight(){return unlocked("Stardust")?1:0}},
 	{text:Array(33).join("A")+"lemaninc made Exotic Matter Dimensions. Therefore, "+Array(33).join("E")+"xotic Matter Dimensions was made by alemaninc."},
