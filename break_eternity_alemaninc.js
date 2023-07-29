@@ -3280,14 +3280,14 @@ const notations = {
 	"Mixed scientific":function(x,sub="Mixed scientific",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0)	return notations[x.gt(c.e33)?"Scientific":"Standard"](x,p)
+		if (leadingEs==0)	return notations[x.gt(c.e33)?"Scientific":"Standard"](x,sub,p)
 		return Array(leadingEs+1).join("e")+notations["Mixed scientific"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Scientific":function(x,sub="Scientific",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (x.gte(c.ee4)) p--
-		if (x.gte(c.ee5)) p--
+		if (x.layerplus(-leadingEs).gte(c.ee4)) p--
+		if (x.layerplus(-leadingEs).gte(c.ee5)) p--
 		if (leadingEs==0) return x.log10().mod(c.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")
 		return Array(leadingEs+1).join("e")+notations["Scientific"](x.layerplus(-leadingEs),sub,3)
 	},

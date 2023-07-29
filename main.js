@@ -443,7 +443,7 @@ function availableThemes() {
 function selectOption(variable,values,flavor="mode",variableCallback=x=>x) {
 	popup({
 		text:"We're sorry to hear that you hate "+variableCallback(g[variable])+". Which "+flavor+" do you want to try on next?",
-		buttons:values.map(x => [variableCallback(x),"g."+variable+"="+x])
+		buttons:values.map(x => [variableCallback(x),"g."+variable+"="+((typeof x=="string")?("'"+x+"'"):x)])
 	})
 }
 function changeTheme() {
@@ -1740,7 +1740,7 @@ const openConfig = (()=>{
 			{text:(g.glowOptions.buyStardustUpgrade?"G":"No g")+"low if Stardust Upgrade can be purchased",onClick:toggle("g.glowOptions.buyStardustUpgrade")},
 			{text:(g.showingCappedStardustUpgrades?"Show":"Hid")+"ing capped Stardust Upgrades",onClick:"toggle('showingCappedStardustUpgrades')"}
 		])},
-		"Star":function(){showConfigModal("Star",[
+		"Star":function(){updateStarLayout();showConfigModal("Star",[
 			{text:"Star tab layout: "+g.starContainerStyle,onClick:"g.starContainerStyle=(g.starContainerStyle=='Modern'?'Legacy':'Modern')"},
 			{text:(g.glowOptions.buyStar?"G":"No g")+"low if star can be purchased",onClick:toggle("g.glowOptions.buyStar")},
 			{text:(g.glowOptions.assignStar?"G":"No g")+"low if star can be assigned",onClick:toggle("g.glowOptions.assignStar")}
@@ -1759,7 +1759,7 @@ const openConfig = (()=>{
 		])},
 		"Study":function(){updateAllStudyDivs();showConfigModal("Study",[
 			{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with 4 completions",onClick:"toggle('completedStudiesShown')"},
-			{text:"Automatic research respec on Study completion "(g.restoreResearchAfterStudy?"dis":"en")+"abled",onClick:"toggle('restoreResearchAfterStudy')"}
+			{text:"Automatic research respec on Study completion "+(g.restoreResearchAfterStudy?"dis":"en")+"abled",onClick:"toggle('restoreResearchAfterStudy')"}
 		])},
 		"Light":function(){showConfigModal("Light",[
 			{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:toggle("g.glowOptions.noChromaGeneration")},

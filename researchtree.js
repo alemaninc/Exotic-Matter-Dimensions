@@ -18,17 +18,19 @@ const research = (function(){
 	function studyReq(i,num) {return {check:function(){return g.studyCompletions[i]>=num},text:function(){return g.studyCompletions[i]+" / "+num+" Study "+roman(i)+" completions"}}}
 	function totalStudyReq(num) {return {check:function(){return g.studyCompletions.sum()>=num},text:function(){return g.studyCompletions.sum()+" / "+num+" total Study completions"}}}
 	function unconnectedResearchReq(id) {return {check:function(){return g.research[id]},text:function(){return "Research "+researchOut(id)+" owned"}}}
-	function StudyVResearch(completions,condition,adjacent,resourceIcon) {return {
-		description:function(){return "All research is "+(this.effect().gt(c.d0_1)?(this.effect().recip().noLeadFormat(3)+"×"):(c.d1.sub(this.effect()).mul(c.e2).noLeadFormat(2)+"%"))+" cheaper";},
-		adjacent_req:adjacent,
-		condition:[condition,studyReq(5,completions)], 
-		visibility:function(){return g.studyCompletions[5]>=completions;},
-		type:"normal",
-		basecost:c.d0,
-		icon:resourceIcon+icon.arr+classes.research("R$"),
-		effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.d2e3)).pow(power);},
-		study5Unlock:true
-	}}
+	let betaReq = {check:function(){return false},text:function(){return "Play in Version 𝕍1.3 or higher"}}
+	function studyVResearch(pos,comp,resInt,resOut,amount) {
+		return {
+			description:function(){let eff=researchEffect(researchRow(pos),researchCol(pos));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(2)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
+			adjacent_req:[],
+			condition:[betaReq,studyReq(5,comp),{text:function(){return g[resInt].format()+" / "+amount.format()+" "+resOut},check:function(){return g[resInt].gte(amount)}}],
+			visibility:function(){return g.studyCompletions[5]>=comp&&betaActive},
+			type:"normal",
+			basecost:c.d0,
+			icon:icon[resInt]+icon.arr+classes.research("R$"),
+			effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.e3)).pow(power)}
+		}
+	}
 	function expFormat(exponent,precision) {
 		return exponent.eq(c.d1)?"":("<sup>"+exponent.noLeadFormat(precision)+"</sup>")
 	}
@@ -810,26 +812,10 @@ const research = (function(){
 			basecost:N(2160),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:conic-gradient(rgba(255,255,255,0.5),rgba(0,0,0,0),rgba(0,0,0,0.5),rgba(0,0,0,0),rgba(255,255,255,0.5))\"></div>"
 		},
-		...(()=>{
-			let study5Research = {
-				r12_1:{comp:1,resInt:"exoticmatter",resOut:"exotic matter",amount:c.ee8},
-				r12_3:{comp:3,resInt:"darkmatter",resOut:"dark matter",amount:c.ee5},
-				r12_13:{comp:4,resInt:"masteryPower",resOut:"mastery power",amount:c.ee3},
-				r12_15:{comp:2,resInt:"stardust",resOut:"stardust",amount:c.ee5}
-			}
-			let out = {}
-			for (let i in study5Research) {out[i] = {
-				description:function(){let eff=researchEffect(researchRow(i),researchCol(i));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(2)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
-				adjacent_req:[],
-				condition:[studyReq(5,study5Research[i].comp)],
-				visibility:function(){return g.studyCompletions[5]>=study5Research[i].comp&&betaActive},
-				type:"normal",
-				basecost:c.d0,
-				icon:icon[study5Research[i].resInt]+icon.arr+classes.research("R$"),
-				effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.e3)).pow(power)}
-			}}
-			return out
-		})()
+		r12_1:studyVResearch("r12_1",1,"exoticmatter","exotic matter",c.ee8),
+		r12_3:studyVResearch("r12_3",3,"darkmatter","dark matter",c.ee5),
+		r12_13:studyVResearch("r12_13",4,"masteryPower","mastery power",c.ee3),
+		r12_15:studyVResearch("r12_15",2,"stardust","stardust",c.ee5)
 	}
 })();
 const nonPermanentResearchList = Object.keys(research).filter(x=>research[x].type!=="permanent")
