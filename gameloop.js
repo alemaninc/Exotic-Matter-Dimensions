@@ -123,7 +123,7 @@ function updateHTML() {
 			if (achievement.ownedInTier(5)>19) {
 				d.display("div_timeLoop","inline-block")
 				d.innerHTML("span_wormholeAmplificationMult",wormholeAmplificationMultiplier())
-				d.innerHTML("span_wormholeAmplificationCost",BEformat(wormholeAmplificationCost(),2))
+				d.innerHTML("span_wormholeAmplificationCost",BEformat(N(wormholeAmplificationCost()),2))
 			} else {
 				d.display("div_timeLoop","none")
 			}

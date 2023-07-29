@@ -1,6 +1,6 @@
 "use strict";
 const version = {
-	current:"𝕍1.2.16.1",
+	current:"𝕍1.2.17",
 	nextUpdateHint:"Hevipelle should trademark"
 }
 /*

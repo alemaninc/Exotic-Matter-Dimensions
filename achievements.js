@@ -40,11 +40,14 @@ achievement.label = function(id,plural){
 }
 /*
 	name									the name of the achievement
-	description					 the listed condition of the achievement
-	check								 the function that tests if the condition of the achievement is fulfilled
+	description						the listed condition of the achievement
+	check									the function that tests if the condition of the achievement is fulfilled
 	progress							a message that shows how close the player is to obtaining the achievement. shown only if incomplete
-	visibility						whether or not the achievement is visible
+	[prevReq]							achievements which must be owned for this achievement to appear
 	reward								the listed reward of the achievement
+	[effect]							formula used to calculate the effect of the reward (for achievements with dynamic rewards)
+	[effectFormat]				formula used to display the value of the achievement reward (for achievements boosted by yellow light)
+	[yellowBreakpoints]		the range of yellow lumens which boosts the achievement reward
 	flavor								a flavor text shown at the bottom of the achievement panel. if this is undefined then nothing is shown
 */
 const achievementList = {
@@ -54,7 +57,6 @@ const achievementList = {
 			description:"Buy an X Axis",
 			check:function(){return g.XAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			reward:"+1% exotic matter",
 			flavor:"A Straight Line to the touch is worth a Circle to the sight"
 		},
@@ -63,7 +65,7 @@ const achievementList = {
 			description:"Buy a Y Axis",
 			check:function(){return g.YAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
+			prevReq:[101],
 			reward:"+2% exotic matter",
 			flavor:"Upward, not Northward"
 		},
@@ -72,7 +74,7 @@ const achievementList = {
 			description:"Buy a Z Axis",
 			check:function(){return g.ZAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[102];},
+			prevReq:[102],
 			reward:"+3% exotic matter",
 			flavor:"It is Knowledge; it is Three Dimensions: open your eye once again and try to look steadily."
 		},
@@ -81,7 +83,7 @@ const achievementList = {
 			description:"Buy a W Axis",
 			check:function(){return g.WAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[103];},
+			prevReq:[103],
 			reward:"+4% mastery power",
 			flavor:"Time is clearly not our natural dimension. Thus it is that we are never really at home in time."
 		},
@@ -90,7 +92,6 @@ const achievementList = {
 			get description(){return "Accumulate "+BEformat(c.e11)+" mastery power";},
 			check:function(){return g.masteryPower.gt(c.e11);},
 			progress:function(){return achievement.percent(g.masteryPower,c.e11,0);},
-			visibility:function(){return unlocked("Masteries");},
 			get reward(){return "Extremely small boost to first row Masteries based on time played (currently: "+this.effect().format(2)+"%)";},
 			flavor:"10,000 hours to master your craft.",
 			effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(c.e5).add(c.d10).log10().log10(),c.d0_75,c.d1).sqrt();},
@@ -100,7 +101,6 @@ const achievementList = {
 			description:"Play for a total of 10 hours",
 			check:function(){return g.truetimePlayed>36000;},
 			progress:function(){return achievement.percent(g.truetimePlayed.div(c.d3600),c.d10,0);},
-			visibility:function(){return true;},
 			reward:"Mastery power gain uses a slightly better formula (+0.001 formula exponent)",
 			flavor:"Every 10.000 hours in Africa, 600 minutes pass"
 		},
@@ -109,7 +109,7 @@ const achievementList = {
 			description:"Make the X Axis effect go above 4×",
 			check:function(){return stat.XAxisEffect.gt(c.d4);},
 			progress:function(){return achievement.percent(stat.XAxisEffect,c.d4,1);},
-			visibility:function(){return true;},
+			prevReq:[101],
 			reward:"1 free Y axis",
 			flavor:"Space is relative"
 		},
@@ -118,7 +118,7 @@ const achievementList = {
 			description:"Make the Z Axis effect go above 4×",
 			check:function(){return stat.ZAxisEffect.gt(c.d4);},
 			progress:function(){return achievement.percent(stat.ZAxisEffect,c.d4,1);},
-			visibility:function(){return g.achievement[103];},
+			prevReq:[103],
 			get reward(){return "Gain a free X Axis per {} purchased Z Axis (currently: "+g.ZAxis.mul(this.effect()).noLeadFormat(2)+")"},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d0_05:y.eq(c.d0)?c.d0_04:c.d0_2.div(c.d5.sub(y))},
 			flavor:"g.exoticmatter++",
@@ -130,7 +130,7 @@ const achievementList = {
 			description:"Make the W Axis effect go above 4×",
 			check:function(){return stat.WAxisEffect.gt(4);},
 			progress:function(){return achievement.percent(stat.WAxisEffect,c.d4,1);},
-			visibility:function(){return g.achievement[104];},
+			prevReq:[104],
 			get reward(){return "Add 30 seconds to the W Axis timer per W Axis"+(this.yellowValue.eq(c.d0)?"":"<sup>{}</sup>")+(Decimal.eq(g.WAxis,stat.realWAxis)?"":" (including free)")},
 			effect:function(y=this.yellowValue){return y.add(c.d1)},
 			effectFormat:x=>x.noLeadFormat(3),
@@ -142,7 +142,6 @@ const achievementList = {
 			description:"Store 24 hours worth of exotic matter production (hint: is there a way to decrease your production?)",
 			check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(c.d86400)&&timeSinceGameOpened>5;},
 			progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(c.d86400),0);},
-			visibility:function(){return true;},
 			reward:"If your exotic matter is less than 15 seconds worth of production, it will instantly increase to that amount",
 			flavor:"Be not afraid of going slowly, be afraid only of standing still."
 		},
@@ -151,7 +150,7 @@ const achievementList = {
 			get description(){return "Store "+timeFormat(c.e6)+" (1,000,000 seconds) worth of exotic matter production"},
 			check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(c.e6)&&timeSinceGameOpened>5;},
 			progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(c.e6),0);},
-			visibility:function(){return g.achievement[110];},
+			prevReq:[110],
 			reward:"If your exotic matter is less than 30 seconds worth of production, it will instantly increase to that amount",
 			flavor:"To feel the life, don’t stand still; to feel the universe, don’t move!"
 		},
@@ -160,7 +159,7 @@ const achievementList = {
 			get description(){return "Store "+timeFormat(c.e9)+" ("+BEformat(c.e9)+" seconds) worth of exotic matter production"},
 			check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(c.e9)&&timeSinceGameOpened>5;},
 			progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(c.e9),0);},
-			visibility:function(){return g.achievement[111];},
+			prevReq:[111],
 			reward:"If your exotic matter is less than 60 seconds worth of production, it will instantly increase to that amount",
 			flavor:"Integrity involves the ability to stand straight when you tell your truth, and still stand straight when the other person comes to talk!"
 		},
@@ -169,7 +168,7 @@ const achievementList = {
 			get description(){return "Have 9 purchased X Axis"},
 			check:function(){return g.XAxis.gte(c.d9);},
 			progress:function(){return achievement.percent(g.XAxis,c.d9,0);},
-			visibility:function(){return true;},
+			prevReq:[101],
 			reward:"+0.0004× Y Axis effect per Y Axis",
 			flavor:"6<sup>X<sup>2</sup></sup>"
 		},
@@ -179,7 +178,6 @@ const achievementList = {
 			check:function(){return MasteryE(11)&&MasteryE(21)&&MasteryE(31)&&MasteryE(41);},
 			progress:function(){return achievement.percent(N([11,21,31,41].map(x=>MasteryE(x)?1:0).sum()),c.d4,0);},
 			get reward(){return "+{}% exotic matter (based on mastery power)";},
-			visibility:function(){return unlocked("Masteries");},
 			flavor:"I'm not for the left wing or the right wing--I'm for the whole bird.",
 			effect:function(y=this.yellowValue){
 				let out = g.masteryPower.add(c.d1).log10().pow(c.d2).div(c.e3).add(c.d1)
@@ -189,11 +187,10 @@ const achievementList = {
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
 		115:{
-			name:"Cheap Knockoff",
+			name:"Original Replicas",
 			description:"Have free axis",
 			check:function(){return axisCodes.map(x => stat["free"+x+"Axis"]).reduce((x,y)=>x.max(y)).gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			reward:"+1 exotic matter",
 			flavor:"It’s morally wrong to allow a sucker to keep his money.",
 		}
@@ -204,7 +201,6 @@ const achievementList = {
 			description:"Generate stardust",
 			check:function(){return true;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			get reward(){return "Masteries in the fourth row are {}% stronger (based on total "+(g.achievement[301]?"normal ":"")+"axis)";},
 			flavor:"\"Look on my matter, ye Mighty, and despair!\"<br>Nothing beside remains.",
 			effect:function(y=this.yellowValue){
@@ -219,7 +215,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without W Axis";},
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.WAxis.eq(c.d0);},
 			progress:function(){return g.WAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			visibility:function(){return g.achievement[104];},
+			prevReq:[104],
 			reward:"+0.4% stardust per W Axis",
 			flavor:"Like all great art, it defies the tyrant Time."
 		},
@@ -228,7 +224,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without Z Axis";},
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.ZAxis.eq(c.d0);},
 			progress:function(){return g.ZAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			visibility:function(){return g.achievement[202];},
+			prevReq:[202],
 			reward:"+0.3% stardust per Z Axis",
 			flavor:"Four axis good, two axis better"
 		},
@@ -237,7 +233,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without Y Axis";},
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.YAxis.eq(c.d0);},
 			progress:function(){return g.YAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			visibility:function(){return g.achievement[203];},
+			prevReq:[203],
 			reward:"+0.2% stardust per Y Axis",
 			flavor:"It seemed that this poor ignorant Monarch — as he called himself — was persuaded that the Straight Line which he called his Kingdom, and in which he passed his existence, constituted the whole of the world"
 		},
@@ -246,7 +242,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without X Axis";},
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.XAxis.eq(c.d0);},
 			progress:function(){return g.XAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			visibility:function(){return g.achievement[204];},
+			prevReq:[204],
 			reward:"+0.1% stardust per X Axis",
 			flavor:"That Point is a Being like ourselves, but confined to the non-dimensional Gulf. He is himself his own World, his own Universe; of any other than himself he can form no conception; he knows not Length, nor Breadth, nor Height, for he has had no experience of them; he has no cognizance even of the number Two; nor has he a thought of Plurality; for he is himself his One and All, being really Nothing."
 		},
@@ -255,7 +251,7 @@ const achievementList = {
 			description:"Make the Y Axis effect go above 0.4×",
 			check:function(){return stat.YAxisEffect.gt(c.d0_4);},
 			progress:function(){return achievement.percent(stat.YAxisEffect,c.d0_4,0);},
-			visibility:function(){return g.achievement[102];},
+			prevReq:[102],
 			get reward(){return "{} free Y axis (based on mastery power)";},
 			flavor:"It’s almost impossible to prevent Y axis from breeding, but when a Y axis reproduces evolution is halted and devolution commences. Y axis truly are the missing link of society",
 			effect:function(y=this.yellowValue){
@@ -270,7 +266,7 @@ const achievementList = {
 			description:"Buy a V Axis",
 			check:function(){return g.VAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[104];},
+			prevReq:[104],
 			get reward(){return "All "+(unlocked("Dark Matter")?"normal axes":"axes")+" are {}% cheaper per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned";},
 			effect:function(y=this.yellowValue){return c.d0_99.div(N(2.2).pow(y))},
 			effectFormat:x=>c.d1.sub(x).mul(c.e2).noLeadFormat(2),
@@ -282,7 +278,7 @@ const achievementList = {
 			description:"Buy a U Axis",
 			check:function(){return g.UAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[207];},
+			prevReq:[207],
 			get reward(){return "Gain {}% more stardust per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned";},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d1_06:y.eq(c.d0)?c.d1_001:y.mul(c.d0_059).add(c.d1_001)},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(2),
@@ -294,7 +290,7 @@ const achievementList = {
 			description:"Buy a T Axis",
 			check:function(){return g.TAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[208];},
+			prevReq:[208],
 			get reward(){return "+{}× to the effects of the first seven "+(unlocked("Dark Matter")?"normal axis":"axis")+" per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned";},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d7em4:y.eq(c.d0)?c.em4:c.d7.pow(y).div(c.e4)},
 			effectFormat:x=>x.noLeadFormat(2),
@@ -306,7 +302,7 @@ const achievementList = {
 			description:"Buy a S Axis",
 			check:function(){return g.SAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[209];},
+			prevReq:[209],
 			get reward(){return "For every {} of each normal axis owned, gain a free axis of the previous type"+(Decimal.div(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)),achievement(210).effect()).gt(c.d80)?" (softcaps past 80)":"")},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d64:y.eq(c.d0)?c.d80:c.d80.sub(y.pow(c.d2div3).mul(c.d16))},
 			effectFormat:x=>x.noLeadFormat(3),
@@ -318,7 +314,6 @@ const achievementList = {
 			get description(){return "Accumulate "+BEformat(c.e80)+" exotic matter";},
 			check:function(){return g.exoticmatter.gt(c.e80);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.e80,1);},
-			visibility:function(){return true;},
 			reward:"Z axis effect uses a better formula",
 			flavor:"Not very pretty but we sure know how to run things"
 		},
@@ -328,7 +323,6 @@ const achievementList = {
 			req:N(1609.344),
 			check:function(){return g.exoticmatter.gt(this.req)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,this.req,0):"Failed";},
-			visibility:function(){return true;},
 			reward:"The game runs 0.4% faster",
 			flavor:"You think a five-minute mile is fast?"
 		},
@@ -338,7 +332,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(this.req)+" exotic matter within 4 seconds of stardust-resetting";},
 			check:function(){return g.exoticmatter.gt(this.req)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e9,0):"Failed";},
-			visibility:function(){return g.achievement[212];},
+			prevReq:[212],
 			reward:"The game runs 0.4% faster",
 			flavor:"Δt²+v²=c²"
 		},
@@ -347,7 +341,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e15)+" exotic matter within 4 seconds of stardust-resetting";},
 			check:function(){return g.exoticmatter.gt(c.e15)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e15,0):"Failed";},
-			visibility:function(){return g.achievement[213];},
+			prevReq:[213],
 			reward:"The game runs 0.4% faster",
 			flavor:"You're made for the mile, not the 400, and the sooner you realize that, the better off you're gonna be."
 		},
@@ -356,7 +350,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e25)+" exotic matter within 4 seconds of stardust-resetting";},
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.timeThisStardustReset<4;},
 			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e25,0):"Failed";},
-			visibility:function(){return g.achievement[214];},
+			prevReq:[214],
 			reward:"The game runs 0.4% faster",
 			flavor:"In skating over thin ice our safety is in our speed."
 		},
@@ -365,7 +359,6 @@ const achievementList = {
 			description:"Unlock the axis autobuyer",
 			check:function(){return g.stardustUpgrades[1]>0;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			reward:"A fading sense of accomplishment",
 			flavor:"A game becomes a game when it is played; until then it is only a set of rules and game props awaiting human engagement."
 		},
@@ -374,7 +367,7 @@ const achievementList = {
 			description:"Have exactly 1 X axis, 3 Y axis, 3 Z axis and 7 W axis. Does not include free axes.",
 			check:function(){return g.XAxis.eq(c.d1)&&g.YAxis.eq(c.d3)&&g.ZAxis.eq(c.d3)&&g.WAxis.eq(c.d7);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
+			prevReq:[104],
 			reward:"+33.7% stardust",
 			flavor:"x 4x15 Y 4X15 2 4X15 W 4x15"
 		}
@@ -385,7 +378,6 @@ const achievementList = {
 			description:"Unlock dark matter",
 			check:function(){return g.stardustUpgrades[4]>0;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			get reward(){return "+{}% stardust (based on dark matter)";},
 			flavor:"This is not your average, everyday darkness. This is... ADVANCED darkness.",
 			effect:function(y=this.yellowValue){
@@ -400,7 +392,6 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.inf)+" exotic matter with no partially filled star rows (all rows must be either full or empty)";},
 			check:function(){return g.exoticmatter.gt(c.inf)&&this.valence();},
 			progress:function(){return this.valence()?achievement.percent(g.exoticmatter,c.inf,1):"Failed";},
-			visibility:function(){return true;},
 			reward:"+30.8% dark matter per unassigned star",
 			flavor:"I made a noble gas joke, sadly nobody reacted",
 			valence:function(){return [1,2,3,4,5,6,7,8,9,10].map(x => [1,2,3,4].map(y => g.star[10*x+y]?1:0).sum()%4).sum()==0;}
@@ -410,7 +401,7 @@ const achievementList = {
 			description:"Have exactly 1 of each normal axis purchased",
 			check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(c.d1)).includes(false);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[210];},
+			prevReq:[210],
 			reward:"1 free dark X axis",
 			flavor:"It's odd, but even when you do nothing the numbers keep growing"
 		},
@@ -419,7 +410,7 @@ const achievementList = {
 			description:"Have exactly 3 of each normal axis purchased",
 			check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(c.d3)).includes(false);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[303];},
+			prevReq:[303],
 			reward:"1 free dark X and Y axis",
 			flavor:"Even when the odds are against you"
 		},
@@ -428,7 +419,7 @@ const achievementList = {
 			description:"Have exactly 5 of each normal axis purchased",
 			check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(c.d5)).includes(false);},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[304];},
+			prevReq:[304],
 			reward:"1 free dark X, Y and Z axis",
 			flavor:"May the odds be even in your favor"
 		},
@@ -437,7 +428,7 @@ const achievementList = {
 			description:"Make the V axis effect go above 44,444×",
 			check:function(){return stat.VAxisEffect.gt(c.d44444);},
 			progress:function(){return achievement.percent(stat.VAxisEffect,c.d44444,1);},
-			visibility:function(){return g.achievement[207];},
+			prevReq:[207],
 			reward:"1 free V axis",
 			flavor:"Original replicas!"
 		},
@@ -446,7 +437,7 @@ const achievementList = {
 			description:"Make the U axis effect go above 4×",
 			check:function(){return stat.UAxisEffect.gt(c.d4);},
 			progress:function(){return achievement.percent(stat.UAxisEffect,c.d4,1);},
-			visibility:function(){return g.achievement[208];},
+			prevReq:[208],
 			reward:"1 free U axis",
 			flavor:"What do creationists and neutron stars have in common?"
 		},
@@ -455,7 +446,7 @@ const achievementList = {
 			description:"Make the T axis effect go above 44,444×",
 			check:function(){return stat.TAxisEffect.gt(c.d44444);},
 			progress:function(){return achievement.percent(stat.TAxisEffect,c.d44444,1);},
-			visibility:function(){return g.achievement[209];},
+			prevReq:[209],
 			reward:"1 free T axis",
 			flavor:"(X+Y+Z+W+V+U+T)<sup>S</sup>"
 		},
@@ -464,7 +455,6 @@ const achievementList = {
 			description:"Have 10 Masteries active simultaneously",
 			check:function(){return this.active()>9;},
 			progress:function(){return achievement.percent(N(this.active()),c.d10,0);},
-			visibility:function(){return true;},
 			get reward(){return "Multiply exotic matter gain by mastery power<sup>{}</sup> (based on dark matter)";},
 			flavor:"Only one who devotes himself to a cause with his whole strength and soul can be a true grandmaster. For this reason grandmastery demands all of a person.",
 			effect:function(y=this.yellowValue){
@@ -472,7 +462,7 @@ const achievementList = {
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d0_5,c.d1):Decimal.logarithmicSoftcap(out,c.d1,c.d1)).fix(c.d0)
 			},
 			effectFormat:x=>x.format(3),
-			yellowBreakpoints:[c.d99,c.d100,0],
+			yellowBreakpoints:[c.d99,c.e2,0],
 			active:function(){return Object.keys(masteryData).map(x => MasteryE(x)?1:0).reduce((x,y) => x+y);}
 		},
 		310:{
@@ -480,7 +470,6 @@ const achievementList = {
 			description:"Reach 1,500% Mastery 11 efficiency",
 			check:function(){return masteryBoost(11).gte(c.d15);},
 			progress:function(){return achievement.percent(masteryBoost(11).mul(c.e2),c.d1500,0);},
-			visibility:function(){return true;},
 			reward:"Mastery 52 is 1% more effective",
 			flavor:"Mastery-Man, Mastery-Man<br>does whatever a master can"
 		},
@@ -489,7 +478,6 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.ee3)+" exotic matter";},
 			check:function(){return g.exoticmatter.gt(c.ee3);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.ee3,1);},
-			visibility:function(){return true;},
 			get reward(){return "Multiply exotic matter gain by {} (based on exotic matter)";},
 			flavor:"The number of Planck volumes in the observable universe is around 4.65×10<sup>185</sup>. Hence find the volume of 1 exotic matter if 1 observable universe = 10<sup>10<sup>3</sup></sup> exotic matters",
 			effect:function(y=this.yellowValue){
@@ -504,7 +492,6 @@ const achievementList = {
 			get description(){return "Make the X axis cost go below "+BEformat(c.em40);},
 			check:function(){return axisCost("X").lt(c.em40);},
 			progress:function(){return achievement.percent(axisCost("X"),c.em40,1);},
-			visibility:function(){return true;},
 			get reward(){return "Stardust Boost 5 affects Y axis with reduced effect (^0.04)"},
 			flavor:"As free as a bird"
 		}
@@ -515,7 +502,7 @@ const achievementList = {
 			description:"Have 24 stars",
 			check:function(){return g.stars>=24;},
 			progress:function(){return achievement.percent(N(g.stars),c.d24,0);},
-			visibility:function(){return g.achievement[201];},
+			prevReq:[201],
 			reward:"^1.05 exotic matter",
 			flavor:"Without exploding stars, perhaps there could be a heaven, but there is certainly no Earth."
 		},
@@ -524,7 +511,6 @@ const achievementList = {
 			description:"Unlock the first type of Energy",
 			check:function(){return energyTypesUnlocked()>=1;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			reward:"+3% all energy gain",
 			flavor:"We’re all going to be tested. The dark energy is going to knock on all of our doors"
 		},
@@ -533,7 +519,7 @@ const achievementList = {
 			description:"Unlock the second type of Energy",
 			check:function(){return energyTypesUnlocked()>=2;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
+			prevReq:[402],
 			reward:"+4% all energy gain",
 			flavor:"There was nowhere to go but everywhere, so just keep on going under the stars."
 		},
@@ -542,7 +528,7 @@ const achievementList = {
 			description:"Unlock the third type of Energy",
 			check:function(){return energyTypesUnlocked()>=3;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[403];},
+			prevReq:[403],
 			reward:"+5% all energy gain",
 			flavor:"You may hate gravity, but gravity doesn't care"
 		},
@@ -551,7 +537,7 @@ const achievementList = {
 			description:"Unlock the fourth type of Energy",
 			check:function(){return energyTypesUnlocked()>=4;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[404];},
+			prevReq:[404],
 			reward:"+6% all energy gain",
 			flavor:"This is what it's like when a species prepares to depart from hyperspace"
 		},
@@ -560,7 +546,7 @@ const achievementList = {
 			description:"Unlock the fifth type of Energy",
 			check:function(){return energyTypesUnlocked()>=5;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[405];},
+			prevReq:[405],
 			reward:"+7% all energy gain",
 			flavor:"The energy of the mind is the essence of life"
 		},
@@ -569,7 +555,7 @@ const achievementList = {
 			description:"Unlock the sixth type of Energy",
 			check:function(){return energyTypesUnlocked()>=6;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[406];},
+			prevReq:[406],
 			reward:"+8% all energy gain",
 			flavor:"Everything is energy"
 		},
@@ -578,7 +564,6 @@ const achievementList = {
 			description:"Make the dark energy effect exceed 1 within the first 4 minutes of a Stardust reset",
 			check:function(){return energyEffect(0).gt(1)&&g.timeThisStardustReset<240;},
 			progress:function(){return g.timeThisStardustReset<240?(timeFormat(240-g.timeThisStardustReset)+" left"):"Failed";},
-			visibility:function(){return true;},
 			get reward(){return "The effect of tickspeed on energy gain is "+(g.lumens[5].gte(this.yellowBreakpoints[0])?"raised to the power of {}":"squared");},
 			flavor:"I don't mind going back to daylight saving time. With inflation, the hour will be the only thing I've saved all year.",
 			effect:function(y=this.yellowValue){return y.add(c.d2)},
@@ -590,7 +575,6 @@ const achievementList = {
 			description:"Reach 2× tickspeed",
 			check:function(){return stat.tickspeed.gte(2);},
 			progress:function(){return achievement.percent(stat.tickspeed,c.d2,1);},
-			visibility:function(){return true;},
 			get reward(){return "Extremely small tickspeed boost based on exotic matter (currently: {}%)";},
 			flavor:"All the sounds of the night seemed to pass through a hollow tunnel of indefinite length.",
 			effect:function(y=this.yellowValue){return g.exoticmatter.add(c.e10).layerplus(-3).mul(c.d0_8).mul(y.add(c.d1)).fix(c.d0);},
@@ -602,7 +586,7 @@ const achievementList = {
 			description:"Reach 4× tickspeed",
 			check:function(){return stat.tickspeed.gte(4);},
 			progress:function(){return achievement.percent(stat.tickspeed,c.d4,1);},
-			visibility:function(){return g.achievement[409];},
+			prevReq:[409],
 			get reward(){return "Extremely small tickspeed boost based on mastery power (currently: {}%)";},
 			flavor:"If I get up early the day feels longer than if I get up late, even if I spend the same amount of time awake.",
 			effect:function(y=this.yellowValue){return g.masteryPower.add(c.e10).layerplus(-3).mul(c.d1_2).mul(y.add(c.d1)).fix(c.d0);},
@@ -614,7 +598,7 @@ const achievementList = {
 			description:"Reach 8× tickspeed",
 			check:function(){return stat.tickspeed.gte(8);},
 			progress:function(){return achievement.percent(stat.tickspeed,c.d8,1);},
-			visibility:function(){return g.achievement[410];},
+			prevReq:[410],
 			get reward(){return "Extremely small tickspeed boost based on stardust (currently: {}%)";},
 			flavor:"A mathematician makes plans to travel backwards in time through a wormhole to a parallel universe when he can't even make it to Mars with the fastest rocket on hand today.",
 			effect:function(y=this.yellowValue){return g.stardust.add(c.e10).layerplus(-3).mul(y.add(c.d1)).fix(c.d0);},
@@ -626,7 +610,7 @@ const achievementList = {
 			description:"Buy a star from the final row",
 			check:function(){return g.star[101]||g.star[102]||g.star[103]||g.star[104];},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return g.achievement[201];},
+			prevReq:[401],
 			get reward(){return "Multiply stardust gain by "+this.effect().format(2)+" (based on dark stars)";},
 			flavor:"More than a paradise",
 			effect:function(){return Decimal.logarithmicSoftcap([c.d1_125,g.darkstars,c.d2].decimalPowerTower(),c.inf,c.d1).fix(c.d1);}
@@ -636,7 +620,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e44031)+" exotic matter";},
 			check:function(){return g.exoticmatter.gt(c.e44031);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.e44031,1);},
-			visibility:function(){return g.achievement[413];},	/* this is a secret achievement of sorts */
+			prevReq:[413],	/* this is a secret achievement of sorts */
 			reward:"Increase mastery power gain by 19.07% per S axis and 20.20% per dark S axis",
 			flavor:"Here's my random number so call me maybe"
 		}
@@ -647,7 +631,6 @@ const achievementList = {
 			description:"Destroy the universe",
 			check:function(){return true;},
 			progress:function(){return "Not Completed!";},
-			visibility:function(){return true;},
 			get reward(){return "+0.01% to exotic matter, mastery power, stardust and dark matter gain per second spent in the current universe (current total: +"+g.truetimeThisWormholeReset.div(c.e2).format(2)+"%"+(MasteryE(101)?" before Mastery 101":"")+")"},
 			flavor:"The urge to destroy is also a creative urge."
 		},
@@ -656,7 +639,6 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e50)+" exotic matter without stardust-resetting or having research in the current universe";},
 			check:function(){return g.exoticmatter.gt(c.e50)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e50,1):"Failed";},
-			visibility:function(){return true;},
 			reward:"Dark axis cost scaling is 5% weaker",
 			flavor:"What does not kill you makes you stronger"
 		},
@@ -665,7 +647,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e130)+" exotic matter without stardust-resetting or having research in the current universe";},
 			check:function(){return g.exoticmatter.gt(c.e130)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e130,1):"Failed";},
-			visibility:function(){return g.achievement[502];},
+			prevReq:[502],
 			reward:"Normal axis cost scaling is 5% weaker",
 			flavor:"You're only given a little spark of madness. You mustn't lose it"
 		},
@@ -674,7 +656,7 @@ const achievementList = {
 			description:"Unlock Dark Matter without stardust-resetting or having research in the current universe",
 			check:function(){return g.stardustUpgrades[4]>0&&stat.ironWill;},
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
-			visibility:function(){return g.achievement[503];},
+			prevReq:[503],
 			reward:"Gain 5% more Discoveries from all sources",
 			flavor:"This is fine"
 		},
@@ -683,7 +665,7 @@ const achievementList = {
 			description:"Buy a dark X Axis without stardust-resetting or having research in the current universe",
 			check:function(){return g.darkXAxis.gt(0)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
-			visibility:function(){return g.achievement[504];},
+			prevReq:[504],
 			get reward(){return "Normal S axis are "+this.effect().sub(c.d1).mul(c.e2).toFixed(1)+"% stronger (increases at milestones of total dark axis reached in Iron Will mode. "+(this.milestones()==40?"All milestones have been reached!)":("Next milestone at "+this.effectBreakpoints[this.milestones()]+" total dark axis)"));},
 			flavor:"As a young man just starting out…<br>… I was very poor.<br>But, I never gave up. And today, after many years of hard work and perseverance…<br>… I am old.",
 			effectBreakpoints:[c.d2,c.d3,c.d4,c.d5,c.d6,c.d7,c.d8,c.d9,c.d10,c.d12,c.d15,c.d20,c.d25,c.d30,c.d40,c.d50,c.d60,c.d70,c.d80,c.d90,c.e2,c.d120,c.d140,c.d160,c.d180,c.d200,c.d225,c.d250,c.d275,c.d300,c.d325,c.d350,c.d400,c.d450,c.d500,c.d550,c.d600,c.d700,c.d800,c.d900],
@@ -695,7 +677,7 @@ const achievementList = {
 			description:"Destroy the universe without stardust-resetting or having research in the current universe",
 			check:function(){return stat.ironWill;},
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
-			visibility:function(){return g.achievement[505];},
+			prevReq:[505],
 			reward:"Hawking radiation gain ^1.1",
 			flavor:"A child ardent for some desperate glory"
 		},
@@ -704,7 +686,6 @@ const achievementList = {
 			description:"Destroy the universe within 5 hours of starting it",
 			check:function(){return g.timeThisWormholeReset<18000;},
 			progress:function(){return g.timeThisWormholeReset<18000?(timeFormat(18000-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			visibility:function(){return true;},
 			get reward(){return "Stardust Boost 1 is "+this.effect().noLeadFormat(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"N o t h i n g	 t r a v e l s	 f a s t e r	 t h a n	 t h e	 s p e e d	 o f	 l i g h t",
 			effect:function(){return c.d18000.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d2_5).fix(0);}
@@ -714,7 +695,7 @@ const achievementList = {
 			description:"Destroy the universe within 30 minutes of starting it",
 			check:function(){return g.timeThisWormholeReset<1800;},
 			progress:function(){return g.timeThisWormholeReset<1800?(timeFormat(1800-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			visibility:function(){return g.achievement[507];},
+			prevReq:[507],
 			get reward(){return "Stardust Boost 4 is "+this.effect().noLeadFormat(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"w	i	t	h		 t	h	e		 p	o	s	s	i	b	l	e		 e	x	c	e	p	t	i	o	n",
 			effect:function(){return c.d1800.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d10div3).fix(0);}
@@ -724,7 +705,7 @@ const achievementList = {
 			description:"Destroy the universe within 3 minutes of starting it",
 			check:function(){return g.timeThisWormholeReset<180;},
 			progress:function(){return g.timeThisWormholeReset<180?(timeFormat(180-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			visibility:function(){return g.achievement[508];},
+			prevReq:[508],
 			get reward(){return "Stardust Boost 7 is "+this.effect().noLeadFormat(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"o	 f			 b	 a	 d			 n	 e	 w	 s",
 			effect:function(){return c.d180.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d5).fix(0);}
@@ -734,7 +715,7 @@ const achievementList = {
 			description:"Destroy the universe within 18 seconds of starting it",
 			check:function(){return g.timeThisWormholeReset<18;},
 			progress:function(){return g.timeThisWormholeReset<18?(timeFormat(18-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			visibility:function(){return g.achievement[509];},
+			prevReq:[509],
 			reward:"The game runs 0.1% faster per total Discovery, up to 25%",
 			flavor:"w		 h		 i		 c		 h					 f		 o		 l		 l		 o		 w		 s					 i		 t		 s					 o		 w		 n					 s		 p		 e		 c		 i		 a		 l					 l		 a		 w		 s",
 		},
@@ -743,7 +724,6 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.d9_999e99)+" stardust first, then raise that to the power of 9 with a single reset";},
 			check:function(){return stat.pendingstardust.gt(g.stardust.pow(c.d9))&&g.stardust.gt(c.d9_999e99);},
 			progress:function(){return g.stardust.gt(c.d9_999e99)?achievement.percent(stat.pendingstardust,g.stardust.pow(c.d9),1):("(Progress: Reach "+BEformat(c.d9_999e99)+" stardust first)");},
-			visibility:function(){return true;},
 			reward:"Normal U axis is 0.9% stronger",
 			flavor:"Slabdrill?",
 		},
@@ -752,7 +732,6 @@ const achievementList = {
 			description:"Destroy the universe, never having more dark stars than normal stars (including allocated)",
 			check:function(){return g.shiningBrightTonight;},
 			progress:function(){return g.shiningBrightTonight?"Still possible":"Failed";},
-			visibility:function(){return true;},
 			reward:"Dark stars are 0.25% cheaper per normal star",
 			flavor:"Like diamonds in the sky"
 		},
@@ -761,7 +740,6 @@ const achievementList = {
 			description:"Bulk buy 20 dark stars at once",
 			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
 			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d20,0);},
-			visibility:function(){return true;},
 			reward:"2× dark matter per dark star",
 			flavor:"The greatest shortcoming of the human race is our inability to understand the exponential function."
 		},
@@ -770,7 +748,7 @@ const achievementList = {
 			description:"Bulk buy 35 dark stars at once",
 			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
 			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d35,0);},
-			visibility:function(){return g.achievement[513];},
+			prevReq:[513],
 			reward:"2× dark matter per dark star",
 			flavor:"Anyone who believes exponential growth can go on forever in a finite world is either a madman or an economist."
 		},
@@ -779,7 +757,7 @@ const achievementList = {
 			description:"Bulk buy 50 dark stars at once",
 			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
 			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d50,0);},
-			visibility:function(){return g.achievement[514];},
+			prevReq:[514],
 			reward:"2× dark matter per dark star",
 			flavor:"10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>"
 		},
@@ -788,7 +766,6 @@ const achievementList = {
 			description:"Destroy a universe that has no stars",
 			check:function(){return g.stars==0;},
 			progress:function(){return g.stars==0?"Still achievable":"Failed";},
-			visibility:function(){return true;},
 			reward:"Stars in the 5th and 10th rows additionally make the respective Masteries 1% stronger",
 			flavor:"Eyes as black and as shiny as chips of obsidian stared back into his. They were eyes like black holes, letting nothing out, not even information."
 		},
@@ -797,7 +774,6 @@ const achievementList = {
 			get description(){return "Make all normal axis costs go below "+BEformat(c.eme6);},
 			check:function(){return this.lowest().lt(c.eme6);},
 			progress:function(){return achievement.percent(this.lowest(),c.eme6,1);},
-			visibility:function(){return true;},
 			reward:"All normal axis costs ^0.95",
 			flavor:"Baby, I don't need matter bills to have fun tonight",
 			lowest:function(){return axisCodes.slice(0,8).map(x => axisCost(x)).reduce((x,y) => x.max(y));}
@@ -807,7 +783,6 @@ const achievementList = {
 			description:"Gain 696,342 hawking radiation from a single Wormhole reset",
 			check:function(){return stat.pendinghr.gt(696342);},
 			progress:function(){return achievement.percent(stat.pendinghr,c.d696342,0);},
-			visibility:function(){return true;},
 			get reward(){return "Exotic matter gain is multiplied by "+this.effect().format(2)+" (based on observations)";},
 			flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",
 			effect:function(){return g.observations.map(x=>[c.d2,x,c.d0_75].decimalPowerTower()).productDecimals().fix(c.d1);}
@@ -817,7 +792,6 @@ const achievementList = {
 			description:"Accumulate 40 stars without allocating any of them in the current universe",
 			check:function(){return g.stars>=40&&g.ach519possible;},
 			progress:function(){return g.ach519possible?achievement.percent(N(g.stars),c.d40,0):"Failed";},
-			visibility:function(){return true;},
 			get reward(){return "Stars are {}× cheaper per Stardust Upgrade owned. Stardust Upgrades are {}× cheaper per star owned."},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.inf:y.eq(c.d0)?c.d2:[c.d2,c.d1024,y].decimalPowerTower()},
 			effectFormat:x=>x.noLeadFormat(2),
@@ -829,7 +803,6 @@ const achievementList = {
 			description:"Destroy the universe with no more than 15 stardust upgrades",
 			check:function(){return this.owned()<=15;},
 			progress:function(){return this.owned()>15?"Failed":((15-this.owned())+" upgrade"+(this.owned()==14?"":"s")+" left");},
-			visibility:function(){return true;},
 			get reward(){return (this.yellowValue.eq(c.d0)?"Square":"{}th")+" root the cost of the first level of each Stardust Upgrade"},
 			effect:function(y=this.yellowValue){return y.mul(c.d8).add(c.d2)},
 			effectFormat:x=>x.noLeadFormat(2),
@@ -842,7 +815,6 @@ const achievementList = {
 			description:"Destroy the universe without unlocking neural energy",
 			check:function(){return energyTypesUnlocked()<5;},
 			progress:function(){return energyTypesUnlocked()<5?"Still achievable":"Failed";},
-			visibility:function(){return true;},
 			reward:"+50% neural and meta energy gain",
 			flavor:"5 hours of energy but you can eat it in 3 seconds"
 		},
@@ -851,7 +823,7 @@ const achievementList = {
 			description:"Destroy the universe without unlocking gravitational energy",
 			check:function(){return energyTypesUnlocked()<3;},
 			progress:function(){return energyTypesUnlocked()<3?"Still achievable":"Failed";},
-			visibility:function(){return g.achievement[521];},
+			prevReq:[521],
 			reward:"+50% gravitational and spatial energy gain",
 			flavor:"25-hour energy: for those who need an extra hour in the day"
 		},
@@ -860,7 +832,7 @@ const achievementList = {
 			description:"Destroy the universe without unlocking dark energy",
 			check:function(){return energyTypesUnlocked()<1;},
 			progress:function(){return energyTypesUnlocked()<1?"Still achievable":"Failed";},
-			visibility:function(){return g.achievement[522];},
+			prevReq:[522],
 			reward:"+50% dark and stelliferous energy gain",
 			flavor:"You still have six joules regardless."
 		},
@@ -869,7 +841,6 @@ const achievementList = {
 			description:"Destroy the universe without having active Masteries at any point",
 			check:function(){return g.ach524possible;},
 			progress:function(){return g.ach524possible?"Still achievable":"Failed";},
-			visibility:function(){return true;},
 			reward:"Unlock a new row of Masteries",
 			flavor:"Now with 270% more accidents involving falling objects",
 			active:function(){return !g.activeMasteries.map(x=>x==0).includes(false);}
@@ -879,7 +850,6 @@ const achievementList = {
 			description:"Destroy the universe without buying S axis of any kind",
 			check:function(){return g.ach525possible;},
 			progress:function(){return g.ach525possible?"Still achievable":"Failed";},
-			visibility:function(){return true;},
 			reward:"+0.0001 normal and dark S axis effect",
 			flavor:"Minimalism at its finest"
 		},
@@ -888,7 +858,7 @@ const achievementList = {
 			description:"Buy a dark X axis without buying normal axis in the current Wormhole reset",
 			check:function(){return g.ach526possible&&g.darkXAxis.gt(0)&&unlocked("Hawking Radiation");},
 			progress:function(){return g.ach526possible?"Still achievable":"Failed";},
-			visibility:function(){return g.achievement[525];},
+			prevReq:[525],
 			get reward(){return "+"+this.effect().format(3)+" normal and dark S axis effect (based on total normal axis)";},
 			flavor:"",		// intentionally left blank
 			effect:function(){return Decimal.convergentSoftcap(stat.totalAxis.add(c.d1).log10().div(c.e4),c.d0_0004,c.d0_0009)},
@@ -897,8 +867,7 @@ const achievementList = {
 			name:"The 4th dimension doesn't exist",
 			description:"Reach 160 total dark axis without more than 3 different types of dark axis",
 			check:function(){return stat.totalDarkAxis.gte(160)&&this.active()&&achievement.ownedInTier(5)>=7;},
-			progress:function(){return this.active()?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
-			visibility:function(){return achievement.ownedInTier(5)>=7;},
+			progress:function(){return achievement.ownedInTier(5)>=7?"You must have at least 7 other Tier 5 achievements to attempt this":this.active()?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
 			reward:"Dark star cost scaling starts 4 dark stars later",
 			flavor:"Einstein would agree",
 			active:function(){return axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()<=3;}
@@ -909,7 +878,6 @@ const achievementList = {
 			check:function(){return g.stars==40&&g.darkstars.eq(c.d40);},
 			progress:function(){return (g.stars<=40&&g.darkstars.lte(c.d40))?achievement.percent(Decimal.add(g.stars,g.darkstars),c.d80,0):"Failed";},
 			get reward(){return "For every 125 normal axis, gain 1 of the corresponding dark axis for free"+(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)).gt(12500)?" (softcaps past 100)":"")},
-			visibility:function(){return true;},
 			flavor:"Does not include neutron stars, protostars, white dwarf stars, blue hypergiant stars nor starfish"
 		},
 		529:{
@@ -917,7 +885,6 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.ee6)+" exotic matter";},
 			check:function(){return g.exoticmatter.gt(c.ee6);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.ee6,1);},
-			visibility:function(){return true;},
 			get reward(){return "The base value of the base mastery power exponent is multiplied by "+this.effect().format(4)+" (based on unspent hawking radiation)<br><span class=\"small\">(TL:DR - more mastery power)</span>";},
 			flavor:"Go become a millionaire in real life.",
 			effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(c.d10).dilate(c.d0_1).div(c.d10),c.d1_75,c.d2),g.hawkingradiation.add(c.e10).log10().log10()).fix(c.d1);}
@@ -927,7 +894,6 @@ const achievementList = {
 			description:"Bulk buy 4,800 normal axis at once",
 			check:function(){return unlocked("Hawking Radiation");},	 // checked locally by axis-buying function, but no spoilers
 			progress:function(){return achievement.percent(axisCodes.map(x => maxAffordableAxis(x)).reduce((x,y)=>x.add(y)).sub(stat.totalAxis),c.d4800,0);},
-			visibility:function(){return true;},
 			reward:"Dark axis cost scaling is 1% weaker",
 			flavor:"Did God create man or did man create God?"
 		}
@@ -938,7 +904,6 @@ const achievementList = {
 			description:"Unlock Light",
 			check:function(){return g.research.r8_8},
 			progress:function(){return "Not Completed!"},
-			visibility:function(){return g.researchVisibility.includes("r7_8");},
 			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% hawking radiation (based on exotic matter and stardust)"},
 			flavor:"Oh, how hard it is to be the only one who knows the truth!",
 			effect:function(){return [g.exoticmatter.add(c.d1).pow(c.em8).mul(c.d10).layerplus(-2),g.stardust.add(c.d1).pow(c.em5).mul(c.d10).layerplus(-2)].productDecimals().pow10()},
@@ -948,7 +913,6 @@ const achievementList = {
 			description:"Unlock 12 Stardust Boosts",
 			check:function(){return g.stardustUpgrades[2]>9},
 			progress:function(){return achievement.percent(N(g.stardustUpgrades[2]+2),c.d12,0)},
-			visibility:function(){return true;},
 			reward:"The cost of the third Stardust Upgrade is raised to the power of 0.9",
 			flavor:"Ladies and gentlemen... welcome to the 76th Hunger Games!",
 		},
@@ -957,7 +921,6 @@ const achievementList = {
 			description:"Get 1 of each primary lumen",
 			check:function(){return !g.lumens.slice(0,3).map(x=>x.eq(c.d0)).includes(true)},
 			progress:function(){return achievement.percent(g.lumens.slice(0,3).map(x=>x.min(c.d1)).sumDecimals(),c.d3,0)},
-			visibility:function(){return g.achievement[601];},
 			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format()+"% chroma gain (based on total lumens)"},
 			flavor:"The soul becomes dyed with the color of its thoughts.",
 			effect:function(){return g.lumens.sumDecimals().div(c.d100).add(c.d1)}
@@ -967,7 +930,6 @@ const achievementList = {
 			description:"Complete any Study four times",
 			check:function(){return g.studyCompletions.includes(4)},
 			progress:function(){return achievement.percent(N(g.studyCompletions.slice(1).reduce((x,y)=>Math.max(x,y))),c.d4,0)},
-			visibility:function(){return g.achievement[501];},
 			get reward(){return "Every Study completion gives 1% of the relevant Study's base cost as free Discoveries (current total: "+this.effValue().noLeadFormat(2)+")"},
 			flavor:"He would automatically begin to assume that specialists in all other fields were magicians, judging the depth of their wisdom by the breadth of his own ignorance...",
 			effValue:function(){return countTo(studies.length-1).map(x=>research[studies[x].research].basecost.mul(0.01*g.studyCompletions[x])).sumDecimals()}
@@ -977,7 +939,6 @@ const achievementList = {
 			description:"Reach 256× tickspeed",
 			check:function(){return stat.tickspeed.gte(c.d256)},
 			progress:function(){return achievement.percent(stat.tickspeed,c.d256,1)},
-			visibility:function(){return true;},
 			reward:"Research 8-2 is 10% stronger",
 			flavor:"To give somebody your time is the biggest gift you can give."
 		},
@@ -987,7 +948,6 @@ const achievementList = {
 			get description(){return "Reach "+this.req.format()+" (10^^π) dark energy"},
 			check:function(){return g.darkEnergy.gt(this.req)},
 			progress:function(){return achievement.percent(g.darkEnergy,this.req,1)},
-			visibility:function(){return true},
 			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% all energy gain (based on dark energy)"},
 			flavor:"Programming graphics in X is like finding the square root of π using Roman numerals",
 			effect:function(){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.d2)}
@@ -997,7 +957,6 @@ const achievementList = {
 			description:"Have at least 1 of four colors of lumen",
 			check:function(){return this.lumens()>3},
 			progress:function(){return achievement.percent(N(this.lumens()),c.d4,0)},
-			visibility:function(){return g.achievement[601]},
 			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% chroma gain (based on stars below 60)"},
 			flavor:"There are six lights. How many do you see now?",
 			effect:function(){return g.stars==60?c.d1:c.d1_01.pow(N(60-g.stars).simplex(2))},
@@ -1008,7 +967,6 @@ const achievementList = {
 			description:"Complete the fourth level of Study I without any clicks in the current Wormhole",
 			check:function(){return (g.activeStudy==1)&(g.studyCompletions[1]>2)&&(!g.clickedInStudy1)},
 			progress:function(){return (g.studyCompletions[1]<3)?"Complete Study I 3 times first":(g.activeStudy!==1)?"Enter Study I first":g.clickedInStudy1?"Failed":"Still possible"},
-			visibility:function(){return g.achievement[601]},
 			reward:"The third reward of Study I is 11.1% stronger",
 			flavor:"The only time a lazy man ever succeeds is when he tries to do nothing."
 		},
@@ -1017,7 +975,6 @@ const achievementList = {
 			description:"Complete the fourth level of Study II without any stars",
 			check:function(){return (g.activeStudy==2)&(g.studyCompletions[2]>2)&&(g.stars==0)},
 			progress:function(){return (g.studyCompletions[2]<3)?"Complete Study II 3 times first":(g.activeStudy!==2)?"Enter Study II first":(g.stars==0)?"Still possible":"Failed"},
-			visibility:function(){return true},
 			reward:"The third reward of Study II is 11.1% stronger",
 			flavor:"Let's not strive to be black holes in the meantime. Let's illuminate the world instead of darkening it, instead of tearing it to pieces. Let's prove we are worthy of being stardust."
 		},
@@ -1026,7 +983,6 @@ const achievementList = {
 			description:"Reach 999 Discoveries",
 			check:function(){return g.totalDiscoveries.gte(999)},
 			progress:function(){return achievement.percent(g.totalDiscoveries,N(999),0)},
-			visibility:function(){return g.achievement[501]},
 			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% hawking radiation (based on percentage of unspent Discoveries)"},
 			flavor:"\"999 Emergencies, what is your emergency?\"<br>\"MY FITBIT SAYS I’M ABOUT TO DIE!\"",
 			effect:function(){return unspentDiscoveries().div(g.totalDiscoveries.gte(999)?g.totalDiscoveries:g.totalDiscoveries.mul(999).sqrt().max(c.d1)).add(c.d1)},
@@ -1036,7 +992,7 @@ const achievementList = {
 			description:"Unlock 8 colors of Light",
 			check:function(){return g.research.r11_8},
 			progress:function(){return "Not Completed!"},
-			visibility:function(){return g.achievement[607]},
+			prevReq:[607],
 			reward:"+0.25% chroma gain per dark star",
 			flavor:"Stars, hide your fires, let not light see my black and deep desires",
 			effect:function(){return (g.darkstars.gte(c.e2)?c.d1_04.pow(g.darkstars.sub(c.e2)):g.darkstars.pow(c.d4).div(c.e8)).add(c.d1)}
@@ -1046,10 +1002,20 @@ const achievementList = {
 			description:"Buy the 60th star",
 			check:function(){return g.stars==60},
 			progress:function(){return achievement.percent(N(g.stars),c.d60,0)},
-			visibility:function(){return true},
-			reward:"Each stardust upgrade raises the star cost to the power of 0.999. Each star raises the stardust upgrade cost to the power of 0.999.",
+			reward:"Each stardust upgrade raises the star cost to the power of {}. Each star raises the stardust upgrade cost to the power of {}.",
+			effect:function(y=this.yellowValue){return 0.999-0.009*y.toNumber()},
+			effectFormat:x=>N(x).noLeadFormat(4),
+			yellowBreakpoints:[c.d900,c.d1800,0],
 			flavor:"<span style=\"color:#8a8767;text-shadow: 0px 1px 0px #a0a67c;\">(hardcapped)</span>"
-		}
+		},
+/*		613:{
+			name:"Antimatter Academia",
+			description:"Have research 9-7, 9-8 and 9-9 active simultaneously",
+			check:function(){return this.active()==3},
+			progress:function(){return achievement.percent(N(this.active()),c.d3,0)},
+			reward:""
+			active:function(){return [7,8,9].map(x=>g.research["r9_"+x]?1:0).sum()}
+		} */
 	}
 };
 achievement.all = Object.values(achievementList).map(x => Object.keys(x)).flat()
@@ -1266,8 +1232,8 @@ const secretAchievementList = {
 		rarity:7
 	},
 	29:{
-		name:"Dilated Eyes",
-		get description(){return "Reach "+BEformat(c.inf.pow10())+" of dilated exotic matter"},
+		name:"Dilated Pupils",
+		get description(){return "Reach "+timeFormat(c.inf.pow10())+" of dilated exotic matter"},
 		check:function(){return g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)).log10().gt(c.inf)},
 		flavor:"Is that how long it'll take for you to stop clicking the news ticker?",
 		rarity:4
@@ -1301,7 +1267,7 @@ function updateAchievementsTab() {
 			d.innerHTML("span_ownedTier"+tier+"Achievements",achievement.ownedInTier(tier).toFixed(0));
 			let list = Object.keys(achievementList[tier]);
 			for (let ach of list) {
-				let visible = g.achievement[ach] || (achievement(ach).visibility() && g.achievement[achievement.initial[tier]]);
+				let visible = g.achievement[ach] || ((achievement(ach).prevReq ?? []).map(x => g.achievement[x]).reduce((x,y)=>x&&y,true) && g.achievement[achievement.initial[tier]]);
 				if (!visible) {
 					d.display("div_achievement"+ach,"none");
 				} else {

@@ -312,7 +312,7 @@ function stardustUpgradeCost(x) {
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	if (g.achievement[602]&&x==3) cost = cost.pow(c.d0_9)
 	if (g.achievement[520]&&g.stardustUpgrades[x-1]==0) cost = cost.root(achievement(520).effect());
-	if (g.achievement[612]) cost = cost.pow(0.999**g.stars)
+	if (g.achievement[612]) cost = cost.pow(achievement(612).effect()**g.stars)
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stars));
 	return cost;
 }
@@ -375,7 +375,7 @@ const studies = [
 	},
 	{
 		name:"Analgesia",
-		unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e4e10")][studyPower(3)]},
+		unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e5e13")][studyPower(3)]},
 		energyGainConstant:function(){return [N(1000),N(2000),N(3000),N(4000)][studyPower(3)]},
 		energyPowerConstant:function(){return [c.dm1,c.dm2,c.dm5,N(-20)][studyPower(3)]},
 		description:function(){return "Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled. Energies severely reduce production instead of boosting it, and you start with all Energies unlocked. All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time."},
@@ -970,7 +970,7 @@ function starCost(x=g.stars) {
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	if (g.research.r6_2) cost = cost.root(stat.stelliferousEnergyEffect.pow(researchEffect(6,2)));
 	if (g.research.r7_11) cost = cost.pow(researchEffect(7,11).pow(g.darkstars));
-	if (g.achievement[612]) cost = cost.pow(0.999**g.stardustUpgrades.sum())
+	if (g.achievement[612]) cost = cost.pow(achievement(612).effect()**g.stardustUpgrades.sum())
 	cost = cost.pow(lightCache.currentEffect[6])
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stardustUpgrades.sum()));
 	return cost;
@@ -1524,9 +1524,11 @@ function ach501Effect() {
 function visibleStudies() {
 	let out = [];
 	for (let i=1;i<Object.keys(studies).length;i++) {
-		if ((g.studyCompletions[i]==4)&&(!g.completedStudiesShown)) {continue}
-		if (!((g.studyCompletions[i]>0)||g.research[studies[i]["research"]]||StudyE(i))) {continue}
-		 out.push(Number(i))
+		if (!g.research[studies[i].research]) {
+			if ((g.studyCompletions[i]==4)&&(!g.completedStudiesShown)) {continue}
+			if (!((g.studyCompletions[i]>0)||g.research[studies[i]["research"]]||StudyE(i))) {continue}
+		}
+		out.push(Number(i))
 	}
 	return out;
 }
