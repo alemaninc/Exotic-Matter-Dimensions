@@ -220,6 +220,6 @@ const d = {		// d for "document"
 };
 function blackOrWhiteContrast(hex) {
 	let rgb = [parseInt(hex.substring(1,3),16),parseInt(hex.substring(3,5),16),parseInt(hex.substring(5,7),16)]
-	var sum = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
+	let sum = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
 	return (sum >= 128) ? "#000000" : "#ffffff";
 }

@@ -1292,7 +1292,7 @@ function gainDarkStar(cap) {
 	cap = (cap=="u")?c.maxvalue:N(cap)
 	if (!(cap instanceof Decimal)) error("Cannot access gainDarkStar("+JSON.stringify(cap)+")")
 	let gain = stat.maxAffordableDarkStars.min(N(cap));
-	if (!g.darkStarBulk) gain = gain.min(g.darkstars.add(c.d1))
+	if (!g.darkstarBulk) gain = gain.min(g.darkstars.add(c.d1))
 	if (gain.lte(g.darkstars)) return;
 	if (gain.sub(g.darkstars).gte(c.d20)) addAchievement(513);
 	if (gain.sub(g.darkstars).gte(c.d35)) addAchievement(514);
@@ -1752,7 +1752,7 @@ const openConfig = (()=>{
 			{text:"Dark matter amount shown "+(g.topResourcesShown.darkmatter?"on top of screen":"in Dark Matter subtab"),onClick:toggle("g.topResourcesShown.darkmatter")},
 			{text:(g.glowOptions.buyDarkAxis?"G":"No g")+"low if dark axis can be purchased",onClick:toggle("g.glowOptions.buyDarkAxis")},
 			{text:(g.glowOptions.buyDarkStar?"G":"No g")+"low if dark stars can be gained",onClick:toggle("g.glowOptions.gainDarkStar")},
-			{text:"Dark star bulk buy "+(g.darkStarBulk?"en":"dis")+"abled",onClick:"toggle('darkStarBulk')"}
+			{text:"Dark star bulk buy "+(g.darkstarBulk?"en":"dis")+"abled",onClick:"toggle('darkstarBulk')"}
 		])},
 		"Research":function(){showConfigModal("Research",[
 			{text:"Hawking radiation amount shown "+(g.topResourcesShown.hr?"on top of screen":"in Wormhole tab"),onClick:toggle("g.topResourcesShown.hr")},

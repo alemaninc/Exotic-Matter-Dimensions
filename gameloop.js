@@ -334,7 +334,7 @@ function updateHTML() {
 				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(1)?"1":BEformat(stat.darkMatterFreeAxis.max(1),2));
 				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
 				let effect3diff = darkStarEffect3(stat.realDarkStars.add(c.d1)).sub(stat.darkStarEffect3);
-				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkStarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
+				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkstarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
 				darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(stat.maxAffordableDarkStars.max(g.darkstars)).format(0)+" dark axis)<br><br>"+darkStarEffectHTML();
 				d.innerHTML("span_darkstars",BEformat(g.darkstars)+((stat.realDarkStars.neq(g.darkstars))?("<span class=\"small\"> (effective "+stat.realDarkStars.noLeadFormat(3)+")</span>"):""));
 				d.innerHTML("button_darkstar",darkStarButtonText);
