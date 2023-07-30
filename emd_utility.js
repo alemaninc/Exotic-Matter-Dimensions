@@ -1,6 +1,6 @@
 "use strict";
 const version = {
-	current:"𝕍1.2.17",
+	current:"𝕍1.2.18",
 	nextUpdateHint:"Hevipelle should trademark"
 }
 /*
@@ -10,7 +10,7 @@ const version = {
 	c column number
 	o error object
 */
-window.onerror = (e,s,l,c,o)=>{error(e.replaceAll(".","")+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
+window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
 var gameHalted = false
 function halt() { // Terminates the game loop, used for debugging
 	clearInterval(gameloop);

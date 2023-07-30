@@ -1518,7 +1518,8 @@ function wormholeMilestoneText(x) {
 }
 function ach501Effect() {
 	let out = g.truetimeThisWormholeReset.div(c.e4).add(c.d1);
-	if (MasteryE(101)) out = out.pow(masteryEffect(101));
+	if (MasteryE(101)) {out = out.pow(masteryEffect(101));}
+	else if (g.achievement[515]) {out = out.pow(masteryEffect(101).sqrt())}
 	return out;
 }
 function visibleStudies() {

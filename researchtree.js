@@ -767,7 +767,11 @@ const research = (function(){
 				type:"normal",
 				basecost:c.d360,
 				icon:"<span class=\""+["cyan","magenta","yellow"][i]+"\">C</span>→<span class=\"_stars\">L</span>",
-				effect:function(power){return Decimal.div(g.chroma[i+3].div(c.e3).add(c.d1).log10().pow(3),g.chroma[i+3].div(c.e3).add(c.d1).log(lightData[i].baseScale).add(c.d0_5).pow(c.d2).div(c.d2).add(7/8)).add(c.d1).pow(power.mul(c.d2))},
+				effect:function(power){
+					let out = Decimal.div(g.chroma[i+3].div(c.e3).add(c.d1).log10().pow(3),g.chroma[i+3].div(c.e3).add(c.d1).log(lightData[i].baseScale).add(c.d0_5).pow(c.d2).div(c.d2).add(7/8)).add(c.d1).pow(power.mul(c.d2))
+					if (g.achievement[613]) out = out.add(c.d3)
+					return out
+				},
 				group:"light"
 			}])
 			return Object.fromEntries(out)
@@ -1198,7 +1202,7 @@ const researchLoadouts = {
 	},
 	save:function(){
 		showingResearchLoadouts=false
-		g.researchLoadouts[researchLoadoutSelected-1].savedResearch = Object.keys(nonPermanentResearchList).filter(x=>g.research[x]).join(",")
+		g.researchLoadouts[researchLoadoutSelected-1].savedResearch = nonPermanentResearchList.filter(x=>g.research[x])
 		popup({text:"Successfully saved!",buttons:[["Close","researchLoadouts.open()"]]})
 	},
 	load:function(string){

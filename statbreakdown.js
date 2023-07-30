@@ -218,11 +218,12 @@ const statTemplates = {
 			show:function(){return MasteryE(id)}
 		};
 	},
-	achievementMul:function(id){
+	achievementMul:function(id,plural=false,dependencies=[]){
 		return {
-			label:achievement.label(id),
+			label:achievement.label(id,plural),
 			func:function(prev){return g.achievement[id]?prev.mul(achievement(id).effect()):prev},
 			text:function(){return "× "+achievement(id).effect().format(2)},
+			dependencies:dependencies,
 			show:function(){return g.achievement[id]&&achievement(id).effect().neq(c.d1)},
 		}
 	},
@@ -1636,6 +1637,13 @@ miscStats.tickspeed={
 			show:function(){return achievement.ownedInTier(5)>12}
 		},
 		{
+			label:achievement.label(614),
+			mod:function(){return achievement(614).effect().div(c.e2).add(c.d1)},
+			func:function(prev){return g.achievement[614]?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)},
+			show:function(){return g.achievement[614]}
+		},
+		{
 			label:"Temporal Energy",
 			func:function(prev){return prev.mul(stat.temporalEnergyEffect)},
 			text:function(){return "× "+stat.temporalEnergyEffect.format(4)},
@@ -1694,18 +1702,7 @@ miscStats.HRMultiplier={
 			text:function(){return "× "+studies[1].reward(3).noLeadFormat(2);},
 			show:function(){return g.studyCompletions[1]>0}
 		},
-		{
-			label:achievement.label(601),
-			func:function(prev){return g.achievement[601]?prev.mul(achievement(601).effect()):prev},
-			text:function(){return "× "+achievement(601).effect().format(2)},
-			show:function(){return g.achievement[601]}
-		},
-		{
-			label:achievement.label(610),
-			func:function(prev){return g.achievement[610]?prev.mul(achievement(610).effect()):prev},
-			text:function(){return "× "+achievement(610).effect().format(2)},
-			show:function(){return g.achievement[610]}
-		}
+		...[601,610].map(x=>statTemplates.achievementMul(x))
 	]
 };
 miscStats.HRExponent={
@@ -1995,8 +1992,9 @@ miscStats.chromaPerSec={
 	modifiers:[
 		{
 			label:"Base",
-			func:function(){return c.d3.pow(g.stars-60)},
-			text:function(){return"3 ^ "+unbreak("("+g.stars+" - 60)")},
+			func:function(){return stat.chromaGainBase.pow(g.stars-60)},
+			text:function(){return stat.chromaGainBase.noLeadFormat(2)+" ^ "+unbreak("("+g.stars+" - 60)")},
+			dependencies:["chromaGainBase"],
 			show:function(){return true}
 		},
 		...(()=>{
@@ -2009,7 +2007,7 @@ miscStats.chromaPerSec={
 			})
 			return out
 		})(),
-		...[603,607].map(x=>statTemplates.achievementMul(x)),
+		statTemplates.achievementMul(603),
 		{
 			label:achievement.label(611),
 			mod:function(){return N(1.0025).pow(g.darkstars)},
@@ -2317,6 +2315,7 @@ miscStats.extraDiscoveries_mul={type:"combined",value:function(){
 	if (g.achievement[504]) out = out.mul(c.d1_05)
 	return out
 }}
+miscStats.chromaGainBase={type:"combined",value:function(){return g.achievement[607]?N(2.8):c.d3}}
 
 const statGenerations = {}
 const stat = {}

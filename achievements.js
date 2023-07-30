@@ -49,6 +49,7 @@ achievement.label = function(id,plural){
 	[effectFormat]				formula used to display the value of the achievement reward (for achievements boosted by yellow light)
 	[yellowBreakpoints]		the range of yellow lumens which boosts the achievement reward
 	flavor								a flavor text shown at the bottom of the achievement panel. if this is undefined then nothing is shown
+	[beta]								if set to true will be unobtainable unless beta is active
 */
 const achievementList = {
 	1:{
@@ -957,7 +958,7 @@ const achievementList = {
 			description:"Have at least 1 of four colors of lumen",
 			check:function(){return this.lumens()>3},
 			progress:function(){return achievement.percent(N(this.lumens()),c.d4,0)},
-			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% chroma gain (based on stars below 60)"},
+			get reward(){return "Each star below 60 divides chroma gain by 2.8 rather than 3"},
 			flavor:"There are six lights. How many do you see now?",
 			effect:function(){return g.stars==60?c.d1:c.d1_01.pow(N(60-g.stars).simplex(2))},
 			lumens:function(){return countTo(6,true).map(x=>g.lumens[x].gt(c.d0)?1:0).sum()},
@@ -994,8 +995,7 @@ const achievementList = {
 			progress:function(){return "Not Completed!"},
 			prevReq:[607],
 			reward:"+0.25% chroma gain per dark star",
-			flavor:"Stars, hide your fires, let not light see my black and deep desires",
-			effect:function(){return (g.darkstars.gte(c.e2)?c.d1_04.pow(g.darkstars.sub(c.e2)):g.darkstars.pow(c.d4).div(c.e8)).add(c.d1)}
+			flavor:"Stars, hide your fires, let not light see my black and deep desires"
 		},
 		612:{
 			name:"Star-Spangled Banner",
@@ -1008,14 +1008,36 @@ const achievementList = {
 			yellowBreakpoints:[c.d900,c.d1800,0],
 			flavor:"<span style=\"color:#8a8767;text-shadow: 0px 1px 0px #a0a67c;\">(hardcapped)</span>"
 		},
-/*		613:{
+		613:{
 			name:"Antimatter Academia",
 			description:"Have research 9-7, 9-8 and 9-9 active simultaneously",
 			check:function(){return this.active()==3},
 			progress:function(){return achievement.percent(N(this.active()),c.d3,0)},
-			reward:""
-			active:function(){return [7,8,9].map(x=>g.research["r9_"+x]?1:0).sum()}
-		} */
+			active:function(){return [7,8,9].map(x=>g.research["r9_"+x]?1:0).sum()},
+			reward:"+3× to the effects of research 10-7, 10-8 and 10-9",
+			flavor:"Injustice in the Antimatter Academia: Beginners are only allowed to choose one field of study while the elite can pick all three. \"Its just not fair, man. How come they can do it?\" Questions frustrated student.",
+			beta:true,
+		},
+		614:{
+			name:"Redstone Clock",
+			description:"Have each of the last 10 Wormhole resets be less than 1 second long",
+			check:function(){return !g.previousWormholeRuns.last10.map(x=>x.time<1).includes(false)},
+			progress:function(){return "Slowest run is "+timeFormat(g.previousWormholeRuns.last10.map(x=>x.time).reduce((x,y)=>Math.max(x,y)))},
+			get reward(){return "+1% tickspeed per number of digits in the time in seconds spent in the current Wormhole (currently: "+this.effect().format()+"%, next increase in "+timeFormat(this.effect().pow10().sub(g.truetimeThisWormholeReset))+")"},
+			effect:function(){return g.truetimeThisWormholeReset.gte(c.d10)?g.truetimeThisWormholeReset.log10().floor().add(c.d1):c.d1},
+			flavor:"I'd tell a joke about redstone delay but then I'd just be repeating myself",
+			beta:true,
+		},
+		615:{
+			name:"Twosday",
+			req:N("2.22e2222"),
+			get description(){return "Accumulate "+this.req.format()+" mastery power"},
+			check:function(){return g.masteryPower.gte(this.req)},
+			progress:function(){return achievement.percent(g.masteryPower,this.req,1)},
+			get reward(){return "Mastery 101 works with square-rooted effect even when inactive (currently: ^"+masteryEffect(101).sqrt().format(3)+")"},
+			get flavor(){return "But Twosday was like "+Math.round((Date.now()-1645488000000)/86400).toLocaleString("en-US")+" days ago!"},
+			beta:true
+		}
 	}
 };
 achievement.all = Object.values(achievementList).map(x => Object.keys(x)).flat()
@@ -1241,12 +1263,12 @@ const secretAchievementList = {
 }
 const achievementEvents = {
 	axisBuy:[101,102,103,104,113,207,208,209,210,217,303,304,305,505,526,527],
-	gameloop:[105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529,605,606,610],
+	gameloop:[105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529,605,606,610,615],
 	stardustUpgrade:[216,301,402,403,404,405,406,407,602],
 	starBuy:[401,519,528,612],
 	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609],
-	wormholeResetAfter:[604],
-	researchBuy:[601,611],
+	wormholeResetAfter:[604,614],
+	researchBuy:[601,611,613],
 	lumenGain:[603,607],
 }
 const secretAchievementEvents = {
@@ -1267,7 +1289,7 @@ function updateAchievementsTab() {
 			d.innerHTML("span_ownedTier"+tier+"Achievements",achievement.ownedInTier(tier).toFixed(0));
 			let list = Object.keys(achievementList[tier]);
 			for (let ach of list) {
-				let visible = g.achievement[ach] || ((achievement(ach).prevReq ?? []).map(x => g.achievement[x]).reduce((x,y)=>x&&y,true) && g.achievement[achievement.initial[tier]]);
+				let visible = g.achievement[ach] || ((achievement(ach).prevReq ?? []).map(x => g.achievement[x]).reduce((x,y)=>x&&y,true) && g.achievement[achievement.initial[tier]] && ((achievement(ach).beta!==true)||betaActive));
 				if (!visible) {
 					d.display("div_achievement"+ach,"none");
 				} else {
@@ -1325,12 +1347,8 @@ function showAchievementInfo(id) {
 	if (ach.flavor!==undefined&&g.achievement[id]) out += "<p style=\"font-size:10px;color:#ffffff;white-space:break-spaces\">\""+ach.flavor+"\"</p>";
 	d.innerHTML("achievementPanel",out);	
 }
-function blackOrWhiteContrast(hex) {
-	let rgb = [parseInt(hex.substring(1,3),16),parseInt(hex.substring(3,5),16),parseInt(hex.substring(5,7),16)]
-	var sum = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
-	return (sum > 128) ? "#000000" : "#ffffff";
-}
 function addAchievement(x) {
+	if (achievement(x).beta&&(!betaActive)) return
 	if (achievement(x).check()&&(!g.achievement[x])) {
 		g.achievement[x]=true;
 		let colors = achievement.tierColors[String(x).substring(0,String(x).length-2)]

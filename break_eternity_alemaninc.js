@@ -3323,6 +3323,12 @@ const notations = {
 		let height = x.slog()
 		if (height<1e6) return "10 ⇈ "+height.toPrecision(6)
 		return "10 ⇈ "+notations[sub](height,sub,5)
+	},
+	"Time":function(x){
+		let hours=x.mul(c.e4).quad_slog().log(c.d2).log(c.d2).mul(c.d2_4);
+		let minutes=hours.mod(c.d1).mul(c.d60)
+		let seconds=minutes.mod(c.d1).mul(c.d60)
+		return [hours,minutes,seconds].map(x=>x.floor().toString().padStart(2,"0")).join(":")
 	}
 }
 function gformat(value,precision=0,notation="Scientific",subnotation="Scientific") {
@@ -3334,7 +3340,7 @@ function gformat(value,precision=0,notation="Scientific",subnotation="Scientific
 	if (x.eq(c.d0)) return "0";
 	if (x.lt(c.em5)) return "(1 / "+gformat(x.recip(),precision,notation,subnotation)+")";
 	if (x.lt(c.e6)) return notationSupport.formatSmall(x,precision)
-	return notations[notation](value,subnotation)
+	return notations[notation](x,subnotation)
 }
 function timeFormat(x) {
 	x = N(x);
