@@ -121,6 +121,7 @@
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','research');updateResearchTree()" id="button_subtab_wormhole_research">Research</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','studies')" id="button_subtab_wormhole_studies" style="display:none;filter:brightness(60%)">Studies</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','light')" id="button_subtab_wormhole_light" style="display:none;filter:brightness(60%)">Light</button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','galaxies')" id="button_subtab_wormhole_galaxies" style="display:none;filter:brightness(60%)">Galaxies</button>
 				</div>
 				<p id="div_hr_disabledTop">You have <span id="span_hr_disabledTop" class="big _wormhole"></span> Hawking radiation</p>
 				<div class="subtab wormhole" id="subtab_wormhole_research">
@@ -158,6 +159,10 @@
 					<p>You can generate <span id="span_chromaPerSec" class="big _stars"></span> chroma per second.</p>
 					<p>You have <span id="span_unspentStarsLight" class="big _stars"></span> stars, allowing you to generate a base of <span id="span_baseChroma" class="big _stars"></span> chroma per second.</p>
 					<div id="lightContainer1"></div><div id="lightContainer2"></div><div id="lightContainer3"></div>
+				</div>
+				<div class="subtab wormhole" id="subtab_wormhole_light" style="display:none">
+					<p>You have <span class="big _stars" id="span_galaxies"></span> galaxies.</p>
+					<p>The 60th star will cost <span class="big _stars" id="span_nextGalaxyStarCost"></span></p>
 				</div>
 			</div>
 			<div class="tab" id="bigtab_options" style="display:none;font-size:0;">

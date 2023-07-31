@@ -2022,6 +2022,12 @@ miscStats.chromaPerSec={
 			text:function(){return "× "+researchEffect(9,15).format(2)},
 			show:function(){return g.research.r9_15}
 		},
+		{
+			label:"Galaxy Boost 1",
+			func:function(prev){return galaxyEffects[1].boost.effect().pow(g.stars)},
+			text:function(){return "× "+galaxyEffects[1].boost.effect().pow(g.stars).format(2)+SSBsmall(galaxyEffects[1].boost.effect().noLeadFormat(3),g.stars,3)},
+			show:function(){return g.galaxies>0&&g.stars>0}
+		},
 		statTemplates.tickspeed
 	]
 }

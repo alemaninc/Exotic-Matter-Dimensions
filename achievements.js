@@ -12,12 +12,13 @@ achievement.ownedInTier = function(tier){
 	return Object.keys(achievementList[tier]).map(x=>g.achievement[x]?1:0).sum();
 }
 achievement.tierColors = {
-	1:{primary:"#009900",secondary:"#00ff00",complete:"#000000",incomplete:"#000000",notification:"#000000"},
-	2:{primary:"#aa6600",secondary:"#ff9900",complete:"#000000",incomplete:"#000000",notification:"#000000"},
-	3:{primary:"#660066",secondary:"#cc66ff",complete:"#000000",incomplete:"#000000",notification:"#000000"},
-	4:{primary:"#009999",secondary:"#00ffff",complete:"#000000",incomplete:"#000000",notification:"#000000"},
-	5:{primary:"#000080",secondary:"#6699ff",complete:"#000000",incomplete:"#ffffff",notification:"#000000"},
-	6:{primary:"#000000",secondary:"#ffffff",complete:"#ffffff",incomplete:"#ffffff",notification:"#ffffff"}
+	1:{primary:"#009900",secondary:"#00ff00"},
+	2:{primary:"#aa6600",secondary:"#ff9900"},
+	3:{primary:"#660066",secondary:"#cc66ff"},
+	4:{primary:"#009999",secondary:"#00ffff"},
+	5:{primary:"#000080",secondary:"#6699ff"},
+	6:{primary:"#000000",secondary:"#ffffff"},
+	7:{primary:"#999900",secondary:"#ffff00"}
 }
 achievement.perAchievementReward = {
 	1:{text:"+0.02× X axis effect per achievement in this tier (currently: +{}×)",value:()=>(achievement.ownedInTier(1)/50).toFixed(2)},
@@ -25,7 +26,8 @@ achievement.perAchievementReward = {
 	3:{text:"Gain 1% more free axis from dark matter per achievement in this tier (currently: {}%)",value:()=>achievement.ownedInTier(3)},
 	4:{text:"Energy effects are 0.1% stronger per achievement in this tier (currently: {}%)",value:()=>(achievement.ownedInTier(4)/10).toFixed(1)},
 	5:{text:"Base knowledge gain is multiplied by achievements in this tier (currently: ×{}). In addition, gain increasing quality-of-life bonuses as more achievements in this tier are unlocked",value:()=>achievement.ownedInTier(5)},
-	6:{text:"Research in rows 8-12 is 1% cheaper per achievement in this tier, plus an extra 1% reduction for every 4 achievements (currently: {}%)",value:()=>Math.floor(achievement.ownedInTier(6)*1.25)}
+	6:{text:"Research in rows 8-12 is 1% cheaper per achievement in this tier, plus an extra 1% reduction for every 4 achievements (currently: {}%)",value:()=>Math.floor(achievement.ownedInTier(6)*1.25)},
+	7:{text:"The base of the first galaxy penalty is reduced by 2× per achievement in this tier excluding the first (currently: -{}×)",value:()=>(achievement.ownedInTier(7)*2)}
 }
 achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601}
 achievement.percent = function(value,needed,log){
@@ -1037,6 +1039,26 @@ const achievementList = {
 			get reward(){return "Mastery 101 works with square-rooted effect even when inactive (currently: ^"+masteryEffect(101).sqrt().format(3)+")"},
 			get flavor(){return "But Twosday was like "+Math.round((Date.now()-1645488000000)/86400).toLocaleString("en-US")+" days ago!"},
 			beta:true
+		},
+		616:{
+			name:"Pseudoscience",
+			description:"Have 32 researches with no spent Discoveries",
+			check:function(){return (totalResearch.overall>=32)&&g.spentDiscoveries.eq(c.d0)},
+			progress:function(){return g.spentDiscoveries.eq(c.d0)?achievement.percent(N(totalResearch.overall),c.d32,0):"Failed"},
+			reward:"Research 7-5 is 0.33% stronger per research owned",
+			flavor:"These mysteries about <i>how</i> we evolved should not distract us from the indisputable fact that we <i>did</i> evolve.",
+			beta:true
+		}
+	},
+	7:{
+		701:{
+			name:"Arquillian Galaxy",
+			description:"Create a galaxy",
+			check:function(){return true},  // checked locally
+			progress:function(){return "Not Completed!"},
+			reward:"The first 40 stars cost less (-^0.01 per star below 40)",
+			flavor:"",
+			beta:true
 		}
 	}
 };
@@ -1163,8 +1185,8 @@ const secretAchievementList = {
 	},
 	17:{
 		name:"Go research in real life instead.",
-		description:"Buy the secret research.",
-		check:function(){return g.research.r6_9;},
+		description:"Try to buy research 6-9.",
+		check:function(){return true;}, // checked locally
 		flavor:"<b>its not Free, Its Negative free, and Negative free is expensive.</b> - Stat Mark",
 		rarity:2
 	},
@@ -1268,7 +1290,7 @@ const achievementEvents = {
 	starBuy:[401,519,528,612],
 	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609],
 	wormholeResetAfter:[604,614],
-	researchBuy:[601,611,613],
+	researchBuy:[601,611,613,616],
 	lumenGain:[603,607],
 }
 const secretAchievementEvents = {
@@ -1295,7 +1317,9 @@ function updateAchievementsTab() {
 				} else {
 					d.display("div_achievement"+ach,"inline-block");
 					d.element("div_achievement"+ach).style["background-color"] = g.achievement[ach]?"rgba(0,255,0,0.5)":"rgba(102,102,102,0.2)";
-					d.element("div_achievement"+ach).style.color = achievement.tierColors[tier][g.achievement[ach]?"complete":"incomplete"];
+					let bgcolor=[[1,3],[3,5],[5,7]].map(x=>achievement.tierColors[tier].primary.substring(x[0],x[1]))
+					let realbgcolor=g.achievement[ach]?[bgcolor[0]/2,bgcolor[1]/2+128,bgcolor[2]/2]:bgcolor.map(x=>x*0.8+20.4)
+					d.element("div_achievement"+ach).style.color = blackOrWhiteContrast("#"+realbgcolor.map(x=>x.toString(16).padStart(2,"0")));
 					d.element("div_achievement"+ach).style["border-color"] = g.achievement[ach]?"rgba(0,255,0,0.8)":"rgba(0,0,0,0.2)";
 				}
 			}

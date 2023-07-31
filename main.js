@@ -170,6 +170,7 @@ const basesave = {
 	chroma:Array(8).fill(c.d0),
 	lumens:Array(8).fill(c.d0),
 	activeChroma:null,
+	galaxies:0,
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const axisCodes = "XYZWVUTS".split("");
@@ -956,7 +957,7 @@ function exportStarAllocatorBuild() {
 		buttons:[["Close",""]]
 	})
 }
-function starCost(x=g.stars) {
+function starCost(x=g.stars,gal=g.galaxies) {
 	if (x>=60) return c.maxvalue
 	x=N(x)
 	if (g.research.r8_14) x = x.sub(researchEffect(8,14).toNumber());
@@ -966,12 +967,16 @@ function starCost(x=g.stars) {
 	scaling_power = scaling_power.mul(c.d1.sub(studies[2].reward(1).div(c.e2)));
 	if (g.research.r7_8) scaling_power = scaling_power.mul(researchEffect(7,8));
 	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(x,c.d25,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(x.gte(c.d10)?c.d1_5:c.d1);
-	// cost reductions start here
+	cost = cost.pow(galaxyEffects[1].penalty.effect(gal))
+	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
+	// hyper-3 cost reductions
 	if (g.research.r6_2) cost = cost.root(stat.stelliferousEnergyEffect.pow(researchEffect(6,2)));
 	if (g.research.r7_11) cost = cost.pow(researchEffect(7,11).pow(g.darkstars));
 	if (g.achievement[612]) cost = cost.pow(achievement(612).effect()**g.stardustUpgrades.sum())
 	cost = cost.pow(lightCache.currentEffect[6])
+	if (g.achievement[701]&&x<40) cost = cost.pow(0.6+x/100)
+	// hyper-2 cost reductions
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stardustUpgrades.sum()));
 	return cost;
 }
@@ -1656,6 +1661,22 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 		buttons:[["Close",""]]
 	})
 }
+const galaxyEffects = [
+	null,
+	{
+		req:1,
+		boost:{
+			effect:function(n=g.galaxies){return c.d1_05.pow(n)},
+			text:function(){return "+{}% chroma gain per star"},
+			format:function(e){return e.sub(c.d1).mul(c.e2).noLeadFormat(2)}
+		},
+		penalty:{
+			effect:function(n=g.galaxies){return c.e2.pow(n)},
+			text:function(){return "Star costs are raised to the power of {}"},
+			format:function(e){return e.format()}
+		}
+	}
+]
 const topResources = [
 	{
 		text:function(){return "<span class=\"_exoticmatter\">"+g.exoticmatter.format()+"</span> exotic matter (<span class=\"_exoticmatter\">"+stat.exoticmatterPerSec.noLeadFormat(2)+"</span> / s)";},
@@ -1953,7 +1974,7 @@ function load(savegame) {
 		if ((savegame.research==undefined)&&(savegame.ownedResearch!==undefined)&&(savegame.permanentResearch!==undefined)) {g.research = Object.fromEntries(Object.keys(research).map(x=>[x,savegame.ownedResearch.includes(x)||savegame.permanentResearch.includes(x)]))}
 		if (savegame.lumens==undefined) {for (let i=0;i<8;i++) addLumens(i)}
 		totalStars = Object.values(g.star).map(x=>x?1:0).sum()
-		totalResearch.temporary = nonPermanentResearchList.map(x=>g.research[x]?1:0).sum()
+		totalResearch.temporary = nonPermanentResearchList.map(x=>((g.research[x])&&(x!=="r6_9"))?1:0).sum()
 		totalResearch.permanent = permanentResearchList.map(x=>g.research[x]?1:0).sum()
 		fixMasteryArrays();
 		for (let i=0; i<4; i++) g.observations[i]=N(g.observations[i]).fix(c.d0);

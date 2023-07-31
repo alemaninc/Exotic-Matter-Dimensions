@@ -818,6 +818,15 @@ const research = (function(){
 		},
 		r12_1:studyVResearch("r12_1",1,"exoticmatter","exotic matter",c.ee8),
 		r12_3:studyVResearch("r12_3",3,"darkmatter","dark matter",c.ee5),
+		r12_8:{
+			description:function(){return "Unlock Galaxies"},
+			adjacent_req:["r11_8"],
+			condition:[{check:function(){return g.stars>=60},text:function(){return g.stars+" / 60 stars"}},{check:function(){return g.ach519possible},text:function(){return "without allocating any of them in the current universe"},joinWithPrevious:true}],
+			visibility:function(){return g.achievement[612]&&betaActive},
+			type:"permanent",
+			basecost:N(5250),
+			icon:""
+		},
 		r12_13:studyVResearch("r12_13",4,"masteryPower","mastery power",c.ee3),
 		r12_15:studyVResearch("r12_15",2,"stardust","stardust",c.ee5)
 	}
@@ -867,6 +876,7 @@ function researchPower(row,col) {
 	if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(totalAchievements/500+1);
 	if (g.research.r8_11&&row==1) out = out.mul(researchEffect(8,11).mul(g.stars).div(c.e2).add(c.d1));
 	if (row==8&&col==2&&g.achievement[605]) out = out.mul(c.d1_1)
+	if (row==7&&col==5&&g.achievement[616]) out = out.mul(1+totalResearch.overall/300)
 	return out;
 }
 function researchEffect(row,col) {
@@ -1106,7 +1116,7 @@ function buySingleResearch(row,col,force=false) {
 	} else {
 		if (cost.gt(unspentDiscoveries())) return;	// research too expensive
 		o.add("spentDiscoveries",cost);
-		totalResearch.temporary++
+		if (id!=="r6_9") totalResearch.temporary++
 	}
 	g.research[id] = true
 	if (research[id].type == "study"){
@@ -1122,9 +1132,9 @@ function buySingleResearch(row,col,force=false) {
 	for (let ach of secretAchievementEvents.researchBuy) addSecretAchievement(ach);
 	return regenerateCanvas;
 }
-function buyResearch(row,col) {
+function buyResearch(row,col,max=g.buyMaxResearch) {
 	let regenerateCanvas = false
-	if (g.buyMaxResearch) {
+	if (max) {
 		let toBePurchased = allParentResearch(row,col).filter(x => (!g.research[x] && research[x].type == "normal") || (x == "r"+row+"_"+col));
 		for (let i of toBePurchased) regenerateCanvas = regenerateCanvas || buySingleResearch(researchRow(i),researchCol(i));
 	} else {
@@ -1207,7 +1217,7 @@ const researchLoadouts = {
 	},
 	load:function(string){
 		showingResearchLoadouts=false
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buyResearch(researchRow(i),researchCol(i))
+		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buyResearch(researchRow(i),researchCol(i),true)
 		popup({text:"Successfully loaded!",buttons:[["Close",""]]})
 	}
 }

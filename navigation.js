@@ -116,6 +116,9 @@ const subtabProperties = {
 				if (lightTiersUnlocked()==0) {return false}
 				if (g.glowOptions.noChromaGeneration&&(typeof g.activeChroma!=="number")) {return true}
 			}
+		},
+		galaxies:{
+			visible:function(){return unlocked("Galaxies")}
 		}
 	}
 }
