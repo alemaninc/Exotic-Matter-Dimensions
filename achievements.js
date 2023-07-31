@@ -1057,7 +1057,7 @@ const achievementList = {
 			check:function(){return true},  // checked locally
 			progress:function(){return "Not Completed!"},
 			reward:"The first 40 stars cost less (-^0.01 per star below 40)",
-			flavor:"",
+			flavor:"Did you know you can play <i>Exotic Matter Dimensions</i> on <a href=\"https://galaxy.click/play/129\">galaxy.click</a>? Try it!",
 			beta:true
 		}
 	}

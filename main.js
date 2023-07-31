@@ -1677,6 +1677,18 @@ const galaxyEffects = [
 		}
 	}
 ]
+function gainGalaxy() {
+	if (g.stars==60) {
+		wormholeReset()
+		g.galaxies++
+	}
+}
+function loseGalaxy() {
+	if (g.galaxies>0) {
+		wormholeReset()
+		g.galaxies--
+	}
+}
 const topResources = [
 	{
 		text:function(){return "<span class=\"_exoticmatter\">"+g.exoticmatter.format()+"</span> exotic matter (<span class=\"_exoticmatter\">"+stat.exoticmatterPerSec.noLeadFormat(2)+"</span> / s)";},

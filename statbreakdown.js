@@ -2024,7 +2024,7 @@ miscStats.chromaPerSec={
 		},
 		{
 			label:"Galaxy Boost 1",
-			func:function(prev){return galaxyEffects[1].boost.effect().pow(g.stars)},
+			func:function(prev){return prev.mul(galaxyEffects[1].boost.effect().pow(g.stars))},
 			text:function(){return "× "+galaxyEffects[1].boost.effect().pow(g.stars).format(2)+SSBsmall(galaxyEffects[1].boost.effect().noLeadFormat(3),g.stars,3)},
 			show:function(){return g.galaxies>0&&g.stars>0}
 		},
