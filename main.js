@@ -1772,7 +1772,7 @@ function loseGalaxyPopup() {
 	}
 }
 function loseGalaxy(lost) {
-	if (typeof lost!=="number") {notify("Invalid number.","#ffff00","#000000")}
+	if (isNaN(lost)) {notify("Invalid number.","#ffff00","#000000")}
 	else if (lost==0) {notify("No galaxies lost","#ffff00","#000000")}
 	else if (lost>g.galaxies) {notify("Not enough galaxies.","#ffff00","#000000")}
 	else if (lost%1>0) {notify("Input an integer.","#ffff00","#000000")}
@@ -2066,15 +2066,18 @@ function getSavedGame(saved, game, base=basesave) {
 				for (let i=0;i<savedValue.length;i++) out.push((baseValue[i] instanceof Decimal)?N(savedValue[i]):savedValue[i])
 				game[prop] = out
 			} else if (game.hasOwnProperty(prop)) {
-        game[prop] = (baseValue instanceof Decimal)?(Decimal.valid(savedValue)?N(savedValue):baseValue):savedValue
+				if (baseValue instanceof Decimal) game[prop] = (Decimal.valid(savedValue)?N(savedValue):baseValue)
+				else game[prop] = savedValue
       }
     }
   }
 }
 function load(savegame) {
 	if ((typeof savegame == "object") && (savegame !== null)) {
+		// game load
 		g = decimalStructuredClone(basesave);
 		getSavedGame(savegame,g)
+		// previous version continuity
 		if (typeof g.stardustAutomatorMode !== "number") {g.stardustAutomatorMode = ["amount","time","mult","pow"].indexOf(g.stardustAutomatorMode)}
 		if (typeof g.wormholeAutomatorMode !== "number") {g.wormholeAutomatorMode = ["amount","time","mult","pow"].indexOf(g.wormholeAutomatorMode)}
 		if ((savegame.achievement==undefined)&&(savegame.ownedAchievements!==undefined)) {g.achievement = Object.fromEntries(achievement.all.map(x=>[x,savegame.ownedAchievements.map(x=>String(x)).includes(String(x))]))}
@@ -2092,6 +2095,9 @@ function load(savegame) {
 		for (let i=0; i<8; i++) g.chroma[i]=N(g.chroma[i]).fix(c.d0);
 		g.TotalStardustResets=Math.max(g.StardustResets,g.TotalStardustResets);
 		g.TotalWormholeResets=Math.max(g.WormholeResets,g.TotalWormholeResets);
+		// savefixer
+		if (typeof g.galaxies !== "number") g.galaxies = 0             // < 1.3.2
+		// initialize
 		olddelta = Date.now()
 		g.dilatedTime += (olddelta-g.timeLeft)/1000
 		updateOverclockScrollbar()

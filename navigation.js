@@ -148,8 +148,8 @@ const hotkeys = {
 	hotkeyList:{
 		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),action:()=>openTab(x),visible:()=>tabVisibility[x]()}])),
 		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["action",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
-		"Stardust reset":{baseKey:"KeyS",action:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")},
-		"Wormhole reset":{baseKey:"KeyW",action:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")},
+		"Stardust reset":{baseKey:"KeyS",action:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
+		"Wormhole reset":{baseKey:"KeyW",action:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
 	},
 	toBeChanged:null,
 	isChanging:false
