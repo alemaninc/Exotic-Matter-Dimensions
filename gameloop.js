@@ -81,7 +81,7 @@ function updateHTML() {
 					d.display("button_mastery"+i+"Legacy",(stat["masteryRow"+Math.floor(i/10)+"Unlocked"]&&((masteryData[i].req==undefined)?true:masteryData[i].req()))?"inline-block":"none")
 					d.element("button_mastery"+i+"Legacy").style["background-color"] = MasteryE(i)?"rgba(0,255,0,0.9)":"rgba(204,204,204,0.9)"
 					d.innerHTML("span_mastery"+i+"BoostLegacy",masteryBoost(i).eq(c.d1)?"":(masteryBoost(i).mul(c.e2).noLeadFormat(3)+"%"))
-					d.innerHTML("span_mastery"+i+"ActiveLegacy",MasteryE(i)?"Active":"None")
+					d.innerHTML("span_mastery"+i+"ActiveLegacy",MasteryE(i)?"Active":"Inactive")
 					d.innerHTML("span_mastery"+i+"TextLegacy",masteryText(i))
 				}
 			} else if (g.masteryContainerStyle == "Modern") {
@@ -89,7 +89,7 @@ function updateHTML() {
 					d.display("button_mastery"+i+"Modern",(stat["masteryRow"+Math.floor(i/10)+"Unlocked"]&&((masteryData[i].req==undefined)?true:masteryData[i].req()))?"inline-block":"none")
 					d.element("button_mastery"+i+"Modern").style["background-color"] = MasteryE(i)?"rgba(0,255,0,0.3)":"rgba(128,128,128,0.2)"
 					d.innerHTML("span_mastery"+i+"BoostModern",masteryBoost(i).eq(c.d1)?"":(masteryBoost(i).mul(c.e2).noLeadFormat(3)+"%"))
-					d.innerHTML("span_mastery"+i+"ActiveModern",MasteryE(i)?"Active":"None")
+					d.innerHTML("span_mastery"+i+"ActiveModern",MasteryE(i)?"Active":"Inactive")
 				}
 				d.element("masteryContainerModern").style["padding-bottom"] = d.element("masteryPanel").clientHeight+"px"
 			} else {
@@ -97,7 +97,7 @@ function updateHTML() {
 			}
 		} else if (activeSubtabs.main=="offlineTime") {
 			g.dilationPower = Number(d.element('dilationSpeedupFactor').value)
-			d.innerHTML("span_dilatedTime",(Math.abs(g.dilatedTime)<1e-12)?"0 seconds":timeFormat(g.dilatedTime))
+			d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 			d.innerHTML("span_overclockSpeedupFactor",N(stat.baseOverclockSpeedup).noLeadFormat(3))
 			d.innerHTML("span_overclockCost",N(stat.overclockCost).noLeadFormat(3))
 			d.class("span_overclockCost",stat.baseOverclockSpeedup>stat.overclockSoftcap?"big _time2":"big _time")
@@ -128,8 +128,7 @@ function updateHTML() {
 				d.display("div_timeLoop","none")
 			}
 		}
-	}
-	if (activeTab=="options") {
+	} else if (activeTab=="options") {
 		if (activeSubtabs.options=="options") {
 			d.innerHTML("colortheme",g.colortheme);
 			d.innerHTML("notation",g.notation);
@@ -148,8 +147,7 @@ function updateHTML() {
 				}
 			}
 		}
-	}
-	if (activeTab=="statistics") {
+	} else if (activeTab=="statistics") {
 		d.display("button_subtab_statistics_previousPrestiges",unlocked("Stardust")?"inline-block":"none");
 		if (activeSubtabs.statistics=="mainStatistics") {
 			for (let i=0;i<mainStatistics.length;i++) {
@@ -284,7 +282,7 @@ function updateHTML() {
 			d.innerHTML("span_stardustBoost8Value",stat.stardustBoost8.sub(c.d1).mul(c.e2).format(2));
 			d.innerHTML("span_stardustBoost9Value",stat.stardustBoost9.format(3));
 			d.innerHTML("span_stardustBoost10Value",stat.stardustBoost10.format(4));
-			d.innerHTML("span_stardustBoost11Value",stat.stardustBoost11.format(2));
+			d.innerHTML("span_stardustBoost11Value",stat.stardustBoost11.sub(c.d1).mul(c.e2).format(2));
 			d.innerHTML("span_stardustBoost12Value",stat.stardustBoost12.format(4));
 			d.innerHTML("span_stardustBoost4Tooltip",g.masteryPower.add(c.d1).pow(stat.stardustBoost4).format(2));
 			d.innerHTML("span_stardustBoost5Tooltip",stat.stardustBoost5.pow(g.XAxis).format(2));
@@ -406,7 +404,8 @@ function updateHTML() {
 		for (let i=0;i<5;i++) g.stardustUpgradeAutobuyerCaps[i]=d.element("stardustUpgradeAutobuyerMax"+(i+1)).value
 		g.starAutobuyerCap=d.element("starAutobuyerMax").value;
 	}
-	if (activeTab=="wormhole") {		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
+	if (activeTab=="wormhole") {
+		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
 		if (activeSubtabs.wormhole=="research") {
 			d.innerHTML("span_discoveryDisplay",BEformat(unspentDiscoveries())+" / "+BEformat(g.totalDiscoveries));
@@ -436,7 +435,7 @@ function updateHTML() {
 		} else if (activeSubtabs.wormhole=="light") {
 			d.innerHTML("span_chromaPerSec",stat.chromaPerSec.format(2))
 			d.innerHTML("span_unspentStarsLight",g.stars)
-			d.innerHTML("span_baseChroma",c.d3.pow(g.stars-60).noLeadFormat(2))
+			d.innerHTML("span_baseChroma",stat.chromaGainBase.pow(g.stars-60).noLeadFormat(2))
 			d.display("lightContainer2",lightTiersUnlocked()>1?"inline-block":"none")
 			d.display("lightContainer3",lightTiersUnlocked()>2?"inline-block":"none")
 			for (let i=0;i<[0,3,6,8][lightTiersUnlocked()];i++) {
@@ -455,10 +454,42 @@ function updateHTML() {
 			if (lightTiersUnlocked()>1) {
 				d.innerHTML("span_cyanLightBoost",arrowJoin(researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.currentEffect[3].mul(stat.observationEffect)).format(2),researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.nextEffect[3].mul(stat.observationEffect)).format(2)))
 				d.innerHTML("span_magentaLightBoost",arrowJoin(g.baseMasteryPowerGain.pow(lightCache.currentEffect[4]).format(2),g.baseMasteryPowerGain.pow(lightCache.nextEffect[4]).format(2)))
+				d.innerHTML("button_reviewYellowLight0",g.lumens[5].gte(c.d200)?"See currently affected":"See next effect")
 			}
+			d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
+		} else if (activeSubtabs.wormhole=="galaxies") {
+			d.innerHTML("span_galaxies",g.galaxies)
+			d.innerHTML("span_galaxyPlural",g.galaxies==1?"y":"ies")
+			d.innerHTML("span_highestGalaxies",g.highestGalaxies)
+			d.innerHTML("span_currentGalaxyStarCost",starCost(59).format())
+			d.innerHTML("span_nextGalaxyStarCost",starCost(59,g.galaxies+1).format())
+			let affCur=0,affNext=0
+			for (let i=0;i<60;i++) {
+				if (starCost(i).lt(g.stardust)) affCur=i+1
+				if (starCost(i,g.galaxies+1).lt(g.stardust)) affNext=i+1
+			}
+			d.innerHTML("span_currentGalaxyAffordableStars",affCur)
+			d.innerHTML("span_nextGalaxyAffordableStars",affNext)
+			d.class("button_gainGalaxy","galaxyButton "+(g.stars==60?"active":"locked"))
+			d.class("button_destroyGalaxies","galaxyButton "+(g.galaxies==0?"locked":"active"))
+			for (let i=1;i<galaxyEffects.length;i++) {
+				if (g.highestGalaxies+1>=galaxyEffects[i].req) {
+					d.tr("tr_galaxyEffects"+i,true)
+					d.innerHTML("span_galaxyBoost"+i,galaxyEffects[i].boost.text().replace("{}",arrowJoin(formatGalaxyEffect(i,"boost"),formatGalaxyEffect(i,"boost",g.galaxies+1))))
+					d.innerHTML("span_galaxyPenalty"+i,galaxyEffects[i].penalty.text().replace("{}",arrowJoin(formatGalaxyEffect(i,"penalty"),formatGalaxyEffect(i,"penalty",g.galaxies+1))))
+				} else {
+					d.tr("tr_galaxyEffects"+i,false)
+				}
+			}
+			let tooltip = "All effects unlocked."
+			for (let i=1;i<galaxyEffects.length;i++) if (g.highestGalaxies+1<galaxyEffects[i].req) {
+				tooltip = "Next pair of effects at "+(galaxyEffects[i].req-1)+" galaxies"
+				break
+			}
+			d.innerHTML("span_galaxyEffectTooltip",tooltip)
 		}
-		d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
 	}
+	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
 	if (StudyE(3)) {
@@ -477,12 +508,12 @@ function tick(time) {																																		 // The game loop, which 
 
 
 	// Options & Display section
-	d.element("storyTitle").style = "text-decoration:underline;font-size:100px;background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;-webkit-text-fill-color: transparent;";
 	unlockFeature("Masteries",g.XAxis.gt(0));
 	unlockFeature("Dark Matter",g.stardustUpgrades[4]>0);
 	unlockFeature("Energy",g.stardustUpgrades[4]>1);
 	if (stat.totalDarkAxis.gte(1000)&&!g.storySnippets.includes("Black hole")) openStory("Black hole");
 	unlockFeature("Light",g.research.r8_8)
+	unlockFeature("Galaxies",g.research.r12_8)
 	g.timePlayed+=time;
 	o.add("truetimePlayed",stat.tickspeed.mul(time));
 	g.timeThisStardustReset+=time;
@@ -499,10 +530,11 @@ function tick(time) {																																		 // The game loop, which 
 	for (let ach of secretAchievementEvents.luckyGameloop) if (Math.random()<secretAchievementList[ach].chance(time)) addSecretAchievement(ach);
 	lagAchievementTicks = (deltatime>1)?(lagAchievementTicks+1):0;
 	fpsAchievementTicks = ((deltatime==0.05)&&(!StudyE(3)))?(fpsAchievementTicks+1):0;
+	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
+	if (stat.chromaPerSec.gte(c.d1)) g.ach711Progress = Math.min(g.ach711Progress,g.stars)
 	
 	
 	// Dark Matter section
-	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
 
 
 	// Research section

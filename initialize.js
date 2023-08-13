@@ -1,7 +1,6 @@
 "use strict";
 var gameloop
 var fineGrainLoop
-var initComplete = false
 var debugActive
 try{debugActive=alemanicHash(window.location.href.substring(0,23),16)=="9N6fJbOtGsMg5k65"}catch{debugActive=false}
 var betaActive=debugActive
@@ -18,6 +17,7 @@ const initSteps = [
 		document.title="Exotic Matter Dimensions "+version.current+" by alemaninc"
 	},
 	function(){for (let i of countTo(8,true)) {updateLightCache(i)}},
+	function(){for (let tier of Object.keys(achievementList)) {achievement.perAchievementReward[tier].currentVal = achievement.perAchievementReward[tier].calc(achievement.ownedInTier(tier))}},
 	function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type=="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}},
 	function(){for (let i of Object.keys(miscStats)) statGeneration(i)},
 	function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])},

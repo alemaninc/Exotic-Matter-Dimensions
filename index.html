@@ -104,7 +104,7 @@
 					<button class="featureConfig stardust" onClick="openConfig['Dark Matter']()"></button>
 					<div id="div_darkMatterUnlocked">
 						<p><span id="div_darkmatter_disabledTop">You have <span class="big _darkmatter" id="span_darkmatter_disabledTop"></span> dark matter<br>You are gaining <span class="big _darkmatter" id="span_darkmatterPerSec_disabledTop"></span> dark matter per second</span><br id="br_darkmatter_disabledTop">Dark matter gain is multiplied by <span class="big _darkmatter" id="span_baseDarkMatterGain"></span> (based on stardust)<br>For every <span class="big _darkmatter" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="big _darkmatter" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free</p>
-						<button class="maxdarkaxisbutton" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis</button><br>
+						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis</button><br>
 						<div id="div_darkAxisContainer" style="width:900px"></div>
 						<div>You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
 						<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')"></button></div>
@@ -160,9 +160,18 @@
 					<p>You have <span id="span_unspentStarsLight" class="big _stars"></span> stars, allowing you to generate a base of <span id="span_baseChroma" class="big _stars"></span> chroma per second.</p>
 					<div id="lightContainer1"></div><div id="lightContainer2"></div><div id="lightContainer3"></div>
 				</div>
-				<div class="subtab wormhole" id="subtab_wormhole_light" style="display:none">
-					<p>You have <span class="big _stars" id="span_galaxies"></span> galaxies.</p>
-					<p>The 60th star will cost <span class="big _stars" id="span_nextGalaxyStarCost"></span></p>
+				<div class="subtab wormhole" id="subtab_wormhole_galaxies" style="display:none">
+					<p>You have <span class="big _galaxies" id="span_galaxies"></span> galax<span id="span_galaxyPlural"></span>. The highest number you have ever had is <span class="big _galaxies" id="span_highestGalaxies"></span>.<br>
+					The 60th star currently costs <span class="big _galaxies" id="span_currentGalaxyStarCost"></span> stardust, and will cost <span class="big _galaxies" id="span_nextGalaxyStarCost"></span> in the next galaxy.<br>
+					At your current amount of stardust you can afford <span class="big _galaxies" id="span_currentGalaxyAffordableStars"></span> stars, and will be able to afford <span class="big _galaxies" id="span_nextGalaxyAffordableStars"></span> in the next galaxy.<br>
+					Gaining or losing galaxies forces a Wormhole reset.</p>
+					<button onClick="gainGalaxy()" id="button_gainGalaxy">Gain a galaxy (requires 60 stars)</button>
+					<button onClick="loseGalaxyPopup()" id="button_destroyGalaxies">Destroy galaxies</button><br>
+					<div id="div_galaxyEffects">
+						<h4 style="text-decoration:underline;color:rgba(255,255,0,0.9);">Galaxy Effects</h4>
+						<table id="table_galaxyEffects"></table>
+						<p id="span_galaxyEffectTooltip"></p>
+					</div>
 				</div>
 			</div>
 			<div class="tab" id="bigtab_options" style="display:none;font-size:0;">
@@ -178,7 +187,7 @@
 					<button class="optionsbutton" onClick="importSave()">Import save</button>
 					<button class="optionsbutton" onClick="exportSave()">Export save</button>
 					<button class="optionsbutton" onClick="changeTheme()">Theme: <span id="colortheme"></span></button>
-					<button class="optionsbutton" onClick="selectOption('footerDisplay',['\'All tabs\'','\'Only Axis tab\'','\'None\''],'mode')" id="button_footerDisplay"></button>
+					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','Only Axis tab','None'],'mode')" id="button_footerDisplay"></button>
 					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
 					<button class="optionsbutton" onClick="selectOption('newsTickerSpeed',[40,60,80,120,160,200,300,400,500,750,999],'speed')">News ticker speed: <span id="span_newsTickerSpeed"></span> px·s<sup>-1</sup></button>
 				</div>
@@ -298,11 +307,6 @@
 				<span id="span_fancyPopupButtons"></span>
 			</div>
 		</div>
-		<div id="story" class="topleveldiv" style="display:none">
-			<h1 id="storyTitle">Story Screen</h1>	 <!-- Rainbow text -->
-			<p><span id="storyText" style="font-size:18px;color:#fff">If you are seeing this text, the game is in an error state. Reload the page and inform <i>AleManInc</i> if it persists</span></p>
-			<p><button onClick="openTopLevelDiv('game')" class="genericbutton">Back to game</button></p>
-		</div>
 		<div id="loadScreen" class="topleveldiv">		<!-- This gets hidden when the game finishes loading -->
 			<h1>Loading game...</h1><div class="progress" id="loadprogress"><span id="span_loadPercentage"></span>%</div>
 		</div>
@@ -315,8 +319,8 @@
 		<div id="notifyDiv"></div>
 		<div id="foo"></div>
 		<script type="text/javascript" src="alemaninc_utility.js"></script>
-		<script type="text/javascript" src="emd_utility.js"></script>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
+		<script type="text/javascript" src="emd_utility.js"></script>
 		<script type="text/javascript" src="researchtree.js"></script>
 		<script type="text/javascript" src="achievements.js"></script>
 		<script type="text/javascript" src="previousprestige.js"></script>

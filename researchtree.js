@@ -18,13 +18,21 @@ const research = (function(){
 	function studyReq(i,num) {return {check:function(){return g.studyCompletions[i]>=num},text:function(){return g.studyCompletions[i]+" / "+num+" Study "+roman(i)+" completions"}}}
 	function totalStudyReq(num) {return {check:function(){return g.studyCompletions.sum()>=num},text:function(){return g.studyCompletions.sum()+" / "+num+" total Study completions"}}}
 	function unconnectedResearchReq(id) {return {check:function(){return g.research[id]},text:function(){return "Research "+researchOut(id)+" owned"}}}
-	let betaReq = {check:function(){return false},text:function(){return "Play in Version 𝕍1.3 or higher"}}
+	function lumenReq(index,num) {return {check:function(){return g.lumens[index].gte(num)},text:function(){return g.lumens[index].format()+" / "+num.format()+" "+lightNames[index]+" lumens"}}}
+	function lightAugmentReq(i) {
+		return {
+			req:function(){let x = ownedResearchInGroup("lightaugment").length;return Decimal.affordGeometricSeries(Decimal.fromComponents(1,1,21+x**3/3+x**2/2+x/6),lightData[i].baseReq,lightData[i].baseScale,0)},
+			check:function(){return g.lumens[i].gte(this.req())},
+			text:function(){return g.lumens[i].format()+" / "+this.req().format()+" "+lightNames[i]+" lumens"}
+		}
+	}
+	let betaReq = {check:function(){return betaActive},text:function(){return "Play in Version 𝕍1.3 or higher"}}
 	function studyVResearch(pos,comp,resInt,resOut,amount) {
 		return {
 			description:function(){let eff=researchEffect(researchRow(pos),researchCol(pos));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(2)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
 			adjacent_req:[],
-			condition:[betaReq,studyReq(5,comp),{text:function(){return g[resInt].format()+" / "+amount.format()+" "+resOut},check:function(){return g[resInt].gte(amount)}}],
-			visibility:function(){return g.studyCompletions[5]>=comp&&betaActive},
+			condition:[studyReq(5,comp),{text:function(){return g[resInt].format()+" / "+amount.format()+" "+resOut},check:function(){return g[resInt].gte(amount)}}],
+			visibility:function(){return g.studyCompletions[5]>=comp},
 			type:"normal",
 			basecost:c.d0,
 			icon:icon[resInt]+icon.arr+classes.research("R$"),
@@ -34,12 +42,13 @@ const research = (function(){
 	function expFormat(exponent,precision) {
 		return exponent.eq(c.d1)?"":("<sup>"+exponent.noLeadFormat(precision)+"</sup>")
 	}
+	function timeResearchDesc(row,col,res){return function(){return "+"+(researchEffect(row,col).gte(c.d0_01)?(researchEffect(row,col).mul(c.e2).noLeadFormat(2)+"% "+res+" per second"):("1% "+res+" per "+researchEffect(row,col).mul(c.e2).recip().noLeadFormat(2)+" seconds"))+" in the current Wormhole (currently: "+percentOrMult(researchEffect(row,col).mul(g.truetimeThisWormholeReset).add(c.d1),2)+")"}}
 	let classes = {
 		sup:x=>"<sup>"+x+"</sup>",
 		sub:x=>"<sub>"+x+"</sub>",
 		xscript:(t,d)=>"<span class=\"xscript\"><sup>"+t+"</sup><sub>"+d+"</sub></span>",
 	}
-	let basicclasslist = ["exoticmatter","time","achievements","mastery","stardust","stars","darkmatter","energy","wormhole","research"]
+	let basicclasslist = ["exoticmatter","time","achievements","mastery","stardust","stars","darkmatter","energy","wormhole","research","galaxies"]
 	for (let i of basicclasslist) classes[i] = function(x){return "<span class=\"_"+i+"\">"+x+"</span>"}
 	let icon = {
 		arr:"→",
@@ -47,13 +56,8 @@ const research = (function(){
 		plus:classes.sup("+"),
 		minus:classes.sup("-"),
 		normalaxis:classes.exoticmatter("A"),
-		XAxis:classes.exoticmatter("X"),
-		ZAxis:classes.exoticmatter("Z"),
-		VAxis:classes.exoticmatter("V"),
-		UAxis:classes.exoticmatter("U"),
-		TAxis:classes.exoticmatter("T"),
-		SAxis:classes.exoticmatter("S"),
 		exoticmatter:classes.exoticmatter("EM"),
+		...Object.fromEntries(axisCodes.map(x=>[x+"Axis",classes.exoticmatter(x)])),
 		time:classes.time("t"),
 		tickspeed:classes.time("Δt"),
 		achievements:classes.achievements("A"),
@@ -62,10 +66,7 @@ const research = (function(){
 		stardust:classes.stardust("S"),
 		star:function(x=""){return classes.stars("★"+classes.sub(x))},
 		darkaxis:classes.darkmatter("A"),
-		darkXAxis:classes.darkmatter("X"),
-		darkWAxis:classes.darkmatter("W"),
-		darkUAxis:classes.darkmatter("U"),
-		darkSAxis:classes.darkmatter("S"),
+		...Object.fromEntries(axisCodes.map(x=>["dark"+x+"Axis",classes.darkmatter(x)])),
 		darkstar:classes.darkmatter("★"),
 		darkmatter:classes.darkmatter("DM"),
 		energy:classes.energy("E"),
@@ -76,7 +77,12 @@ const research = (function(){
 		knowledge:classes.research("K"),
 		discovery:classes.research("D"),
 		study:arr=>arr.map(x=>"<div class=\"studyDot\" style=\"height:"+x[2]+"px;width:"+x[2]+"px;left:calc("+x[0]+"% - "+(x[2]/2)+"px);top:calc("+x[1]+"% - "+(x[2]/2)+"px)\"></div>").join(""),
-		chroma:classes.stars("C"),
+		chroma:x=>("<span class=\""+lightNames[x]+"\">C</span>"),
+		lumen:x=>("<span class=\""+lightNames[x]+"\">L</span>"),
+		galaxy:classes.galaxies("G")
+	}
+	function gradientText(text,gradient) {
+		return "<span style=\"background:"+gradient+";-webkit-background-clip:text;-webkit-text-fill-color:transparent;\">"+text+"</span>"
 	}
 	return {
 		r1_3: {
@@ -89,6 +95,8 @@ const research = (function(){
 			icon:icon.normalaxis+icon.arr+icon.exoticmatter,
 			effect:function(power){return c.d1_5.pow(power);}
 		},
+		r1_5:studyVResearch("r1_5",1,"exoticmatter","exotic matter",c.ee8),
+		r1_6:studyVResearch("r1_6",3,"darkmatter","dark matter",c.ee5),
 		r1_8: {
 			description:function(){return "Multiply the effects of the first seven normal axis by "+researchEffect(1,8).noLeadFormat(2);},
 			adjacent_req:[],
@@ -99,6 +107,8 @@ const research = (function(){
 			icon:icon.normalaxis+icon.plus,
 			effect:function(power){return c.d1_5.pow(power);}
 		},
+		r1_10:studyVResearch("r1_10",4,"masteryPower","mastery power",c.ee3),
+		r1_11:studyVResearch("r1_11",2,"stardust","stardust",c.ee5),
 		r1_13: {
 			description:function(){return "Gain "+researchEffect(1,13).noLeadFormat(2)+"× more dark matter per dark axis owned (current total: "+researchEffect(1,13).pow(stat.totalDarkAxis).format(2)+"×)";},
 			adjacent_req:[],
@@ -444,7 +454,7 @@ const research = (function(){
 			effect:function(power){return power.div(c.e2);}
 		},
 		r6_8: {
-			description:function(){return "Hawking radiation gain is "+researchEffect(6,8).mul(c.e2).noLeadFormat(1)+"% higher per achievement completed, per purchased star (current total: "+[researchEffect(6,8),totalAchievements,g.stars,c.e2].productDecimals().noLeadFormat(2)+"%)";},
+			description:function(){return "Hawking radiation gain is "+researchEffect(6,8).mul(c.e2).noLeadFormat(1)+"% higher per achievement completed, per purchased star (current total: "+percentOrMult([researchEffect(6,8),totalAchievements,g.stars].productDecimals().add(c.d1))+")";},
 			adjacent_req:["r5_7","r5_9"],
 			condition:[studyReq(1,1),studyReq(2,1)],
 			visibility:function(){return g.studyCompletions[1]>=1&&g.studyCompletions[2]>=1;},
@@ -559,7 +569,7 @@ const research = (function(){
 			visibility:function(){return g.studyCompletions[1]>=2&&g.studyCompletions[2]>=2;},
 			type:"normal",
 			basecost:c.d4,
-			icon:icon.star()+classes.stars("$")+icon.minus,
+			icon:icon.achievements+icon.arr+icon.star()+classes.stars("$"),
 			effect:function(power){return N((totalAchievements>60?totalAchievements:(50+totalAchievements**6/4.6656e9))/50).max(c.d1).pow(power.mul(c.dm0_5));}
 		},
 		r7_11: {
@@ -686,11 +696,11 @@ const research = (function(){
 			for (let i=0;i<3;i++) out.push(["r9_"+(i+7),{
 				description:function(){return "Chroma increases "+researchEffect(9,i+7).noLeadFormat(2)+"× faster (based on "+lightNames[i]+" lumens)"},
 				adjacent_req:["r8_8"],
-				condition:[{check:function(){return g.lumens[i].gt(c.d0)},text:function(){return g.lumens[i].format()+" / 1 "+lightNames[i]+" lumens"}}],
+				condition:[lumenReq(i,c.d1)],
 				visibility:function(){return true},
 				type:"normal",
 				basecost:c.d360,
-				icon:"<span class=\""+["red","green","blue"][i]+"\">L</span>→<span class=\"_stars\">L</span>",
+				icon:icon.lumen(i)+icon.arr+icon.chroma(6),
 				effect:function(power){return g.lumens[i].simplex(2).add(c.d1).pow(power)},
 				group:"light"
 			}])
@@ -722,7 +732,7 @@ const research = (function(){
 			visibility:function(){return g.studyCompletions[4]>0},
 			type:"normal",
 			basecost:N(200),
-			icon:icon.stardust+icon.arr+icon.chroma,
+			icon:icon.stardust+icon.arr+icon.chroma(6),
 			effect:function(power){return [g.stardust.add(c.d10).log10().pow(0.2).sub(c.d1),N(0.05),power].productDecimals().pow10()},
 			group:"stardust"
 		},
@@ -766,7 +776,7 @@ const research = (function(){
 				visibility:function(){return g.research.r10_5},
 				type:"normal",
 				basecost:c.d360,
-				icon:"<span class=\""+["cyan","magenta","yellow"][i]+"\">C</span>→<span class=\"_stars\">L</span>",
+				icon:icon.chroma(i+3)+icon.arr+icon.chroma(6),
 				effect:function(power){
 					let out = Decimal.div(g.chroma[i+3].div(c.e3).add(c.d1).log10().pow(3),g.chroma[i+3].div(c.e3).add(c.d1).log(lightData[i].baseScale).add(c.d0_5).pow(c.d2).div(c.d2).add(7/8)).add(c.d1).pow(power.mul(c.d2))
 					if (g.achievement[613]) out = out.add(c.d3)
@@ -816,19 +826,230 @@ const research = (function(){
 			basecost:N(2160),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:conic-gradient(rgba(255,255,255,0.5),rgba(0,0,0,0),rgba(0,0,0,0.5),rgba(0,0,0,0),rgba(255,255,255,0.5))\"></div>"
 		},
-		r12_1:studyVResearch("r12_1",1,"exoticmatter","exotic matter",c.ee8),
-		r12_3:studyVResearch("r12_3",3,"darkmatter","dark matter",c.ee5),
 		r12_8:{
 			description:function(){return "Unlock Galaxies"},
 			adjacent_req:["r11_8"],
 			condition:[{check:function(){return g.stars>=60},text:function(){return g.stars+" / 60 stars"}},{check:function(){return g.ach519possible},text:function(){return "without allocating any of them in the current universe"},joinWithPrevious:true}],
-			visibility:function(){return g.achievement[612]&&betaActive},
+			visibility:function(){return g.achievement[612]},
 			type:"permanent",
 			basecost:N(5250),
-			icon:""
+			icon:"<span style=\"font-size:40px;color:#ffffff\">𖦹</span>"
 		},
-		r12_13:studyVResearch("r12_13",4,"masteryPower","mastery power",c.ee3),
-		r12_15:studyVResearch("r12_15",2,"stardust","stardust",c.ee5)
+		r13_5:{
+			description:function(){return "Yellow light weakens the second galaxy penalty (currently: ^"+researchEffect(13,5).format(3)+")"},
+			adjacent_req:["r13_7"],
+			condition:[lightAugmentReq(5)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.lumen(5)+icon.arr+icon.galaxy+classes.xscript("-","<span class=\"_galaxypenalties\">2</span>"),
+			effect:function(power){return g.lumens[5].add(c.d1).log10().pow(c.d2).div(c.e2).add(c.d1).pow(power.neg())},
+			group:"lightaugment"
+		},
+		r13_7:{
+			description:function(){return "White lumens reduce star costs even further (currently: ^"+researchEffect(13,7).noLeadFormat(3)+")"},
+			adjacent_req:["r12_8"],
+			condition:[lightAugmentReq(6)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			effect:function(power){return g.lumens[6].log10().pow(power.neg())},
+			icon:icon.lumen(6)+icon.arr+classes.stars(icon.star()+"$"),
+			group:"lightaugment"
+		},
+		r13_8:{
+			description:function(){return "Multiply chroma gain by "+researchEffect(13,8).noLeadFormat(2)+"× (based on black and white lumens)"},
+			adjacent_req:["r12_8"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1760),
+			effect:function(power){return c.d2.pow(Decimal.mul(g.lumens[6],g.lumens[7]).pow(c.d1div3).mul(power))},
+			icon:gradientText("L","-webkit-linear-gradient(90deg,#000000,#ffffff)")+icon.arr+icon.chroma(6)
+		},
+		r13_9:{
+			description:function(){return "Black lumens reduce chroma costs even further (currently: ÷"+researchEffect(13,9).noLeadFormat(3)+")"},
+			adjacent_req:["r12_8"],
+			condition:[lightAugmentReq(7)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			effect:function(power){return g.lumens[7].log10().pow(power)},
+			icon:icon.lumen(7)+icon.arr+classes.stars(icon.chroma(6)+"$"),
+			group:"lightaugment"
+		},
+		r13_11:{
+			description:function(){return "Red lumens boost Stardust Boosts divisible by 3 (currently: "+researchEffect(13,11).sub(c.d1).mul(c.e2).format(2)+"%)"},
+			adjacent_req:["r13_9"],
+			condition:[lightAugmentReq(0)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.lumen(0)+icon.arr+classes.stardust("SB"),
+			effect:function(power){return Decimal.convergentSoftcap(g.lumens[0].add(c.d10).log10().log10().mul(c.d2).mul(power),c.d0,c.d1).div(c.d5).add(c.d1)},
+			group:"lightaugment"
+		},
+		r14_6:{
+			description:function(){return "Green lumens boost tickspeed (currently: "+percentOrMult(researchEffect(14,6),2)+")"},
+			adjacent_req:["r13_7"],
+			condition:[lightAugmentReq(1)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.lumen(1)+icon.arr+icon.tickspeed,
+			effect:function(power){return g.lumens[1].add(c.d1).log10().pow(c.d2).div(c.d32).add(c.d1).pow(power)},
+			group:"lightaugment"
+		},
+		r14_10:{
+			description:function(){return "Magenta lumens boost dark Y axis (currently: ^"+researchEffect(14,10).format(4)+")"},
+			adjacent_req:["r13_9"],
+			condition:[lightAugmentReq(4)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.lumen(4)+icon.arr+icon.darkYAxis,
+			effect:function(power){return g.lumens[4].add(c.d1).log10().sqrt().div(c.d2).mul(power).pow10()},
+			group:"lightaugment"
+		},
+		...(()=>{
+			let out = {}
+			for (let i of [5,11]) out["r15_"+i] = {
+				description:function(){return (i==11?"Black":"White")+" lumens boost research 13-8 even further (currently: "+researchEffect(15,i).mul(c.e2).format(2)+"% stronger, additive with 15-"+(i==11?"5":"11")+")"},
+				adjacent_req:(i==11)?["r13_11","r14_10","r15_9"]:["r13_5","r14_6","r15_7"],
+				condition:[{check:function(){return achievement.ownedInTier(7)>=7},text:function(){return achievement.ownedInTier(7)+" / 7 Tier 7 achievements"}}],
+				visibility:function(){return true},
+				type:"normal",
+				basecost:N(1760),
+				icon:icon.lumen(i==11?7:6)+icon.arr+icon.chroma(6),
+				effect:function(power){return g.lumens[i==11?7:6].add(c.d10).log10().log10().mul(power)}
+			}
+			return out
+		})(),
+		r15_7:{
+			description:function(){return "Cyan lumens boost energy gain (currently: "+researchEffect(15,7).format(2)+"×)"},
+			adjacent_req:["r13_7"],
+			condition:[lightAugmentReq(3)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.lumen(3)+icon.arr+icon.energy,
+			effect:function(power){return g.lumens[3].add(c.d1).log10().sqrt().mul(c.d2div3).mul(power).pow10()},
+			group:"lightaugment"
+		},
+		r15_9:{
+			description:function(){return "Blue lumens boost hawking radiation gain (currently: "+researchEffect(15,9).format(2)+"×)"},
+			adjacent_req:["r13_9"],
+			condition:[lightAugmentReq(2)],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.lumen(2)+icon.arr+icon.hr,
+			effect:function(power){return c.d2.pow(g.lumens[2].cbrt()).sub(c.d1).pow(power)},
+			group:"lightaugment"
+		},
+		...(()=>{
+			let out = {}
+			function pos(num,dark) {
+				let row = Math.min(Math.max(17-num,8+num),16)
+				let col = (num==0)?4:(num<5)?2:1
+				if (dark) col = 16-col
+				return "r"+row+"_"+col
+			}
+			for (let i=0;i<8;i++) {
+				let common = {
+					condition:[],
+					visibility:function(){return true},
+					type:"normal",
+					basecost:N(300+i*(25+i*5)),
+					effect:function(power){return c.d0_8.pow(power)}
+				}
+				out[pos(i+1,false)] = {
+					description:function(){return "The "+axisCodes[i]+" axis cost is raised to the power of "+researchEffect(researchRow(pos(i+1,false)),researchCol(pos(i+1,false))).noLeadFormat(3)},
+					adjacent_req:[pos(i,false)],
+					icon:icon[axisCodes[i]+"Axis"]+classes.exoticmatter("$")+icon.minus,
+					...common
+				}
+				out[pos(i+1,true)] = {
+					description:function(){return "The dark "+axisCodes[i]+" axis cost is raised to the power of "+researchEffect(researchRow(pos(i+1,true)),researchCol(pos(i+1,true))).noLeadFormat(3)},
+					adjacent_req:[pos(i,true)],
+					icon:icon["dark"+axisCodes[i]+"Axis"]+classes.darkmatter("$")+icon.minus,
+					...common
+				}
+			}
+			return out
+		})(),
+		r16_4:{
+			description:function(){return "The S axis effect"+expFormat(researchEffect(16,4))+" affects the Z axis effect"},
+			adjacent_req:["r15_5"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1500),
+			icon:icon.SAxis+icon.arr+icon.ZAxis,
+			effect:function(power){return power}
+		},
+		r16_6:{
+			description:timeResearchDesc(16,6,"chroma"),
+			adjacent_req:["r16_7"],
+			condition:[studyReq(6,2)],
+			visibility:function(){return g.studyCompletions[6]>=2},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.time+icon.arr+icon.chroma(6),
+			effect:function(power){return power.div(8.64e6)},
+			group:"time"
+		},
+		r16_7:{
+			description:timeResearchDesc(16,7,"hawking radiation"),
+			adjacent_req:["r16_8"],
+			condition:[studyReq(6,1)],
+			visibility:function(){return g.studyCompletions[6]>=1},
+			type:"normal",
+			basecost:N(720),
+			icon:icon.time+icon.arr+icon.hr,
+			effect:function(power){return power.div(3.6e5)},
+			group:"time"
+		},
+		r16_8: {
+			adjacent_req:["r13_8"],
+			condition:[{check:function(){return stat.tickspeed.gt(studies[6].unlockReq())},text:function(){return stat.tickspeed.format(3)+" / "+studies[6].unlockReq().format()+"× tickspeed"}}],
+			visibility:function(){return true;},
+			type:"study",
+			basecost:N(1550),
+			icon:icon.study([[10,15,4],[35,30,5],[50,50,6],[65,30,5],[90,15,4],[50,80,7]])
+		},
+		r16_9:{
+			description:timeResearchDesc(16,9,"dark X axis effect"),
+			adjacent_req:["r16_8"],
+			condition:[studyReq(6,1)],
+			visibility:function(){return g.studyCompletions[6]>=1},
+			type:"normal",
+			basecost:N(720),
+			icon:icon.time+icon.arr+icon.darkXAxis,
+			effect:function(power){return power.div(3.6e5)},
+			group:"time"
+		},
+		r16_10:{
+			description:timeResearchDesc(16,10,"W axis effect"),
+			adjacent_req:["r16_9"],
+			condition:[studyReq(6,2)],
+			visibility:function(){return g.studyCompletions[6]>=2},
+			type:"normal",
+			basecost:N(1440),
+			icon:icon.time+icon.arr+icon.WAxis,
+			effect:function(power){return power.div(8.64e6)},
+			group:"time"
+		},
+		r16_12:{
+			description:function(){return "Dark stars are "+researchEffect(16,12).noLeadFormat(2)+"× cheaper"},
+			adjacent_req:["r15_11"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(1500),
+			icon:icon.darkstar+classes.darkmatter("$")+icon.minus,
+			effect:function(power){return c.d2.pow(power)}
+		}
 	}
 })();
 const nonPermanentResearchList = Object.keys(research).filter(x=>research[x].type!=="permanent")
@@ -841,7 +1062,12 @@ function validateResearch(x) {
 	else{if(typeof res.description!=="function")out("description")}
 	if(typeof res.adjacent_req!=="object"){out("adjacent_req")}
 	if(typeof res.condition!=="object"){out("condition")}
-	for(let i=0;i<res.condition.length;i++){let j=res.condition[i];if(typeof j!=="object"){out("condition["+i+"]")};if(typeof j.check!=="function"){out("condition["+i+"].check")};if(typeof j.text!=="function"){out("condition["+i+"].text")}}
+	for(let i=0;i<res.condition.length;i++){
+		let j=res.condition[i]
+		if(typeof j!=="object"){out("condition["+i+"]")}
+		if(typeof j.check!=="function"){out("condition["+i+"].check")}
+		if(typeof j.text!=="function"){out("condition["+i+"].text")}
+	}
 	if(typeof res.visibility!=="function"){out("visibility")}
 	if(typeof res.visibility()!=="boolean"){out("visibility")}
 	if(!(res.basecost instanceof Decimal)){out("basecost")}
@@ -849,8 +1075,10 @@ function validateResearch(x) {
 }
 const researchGroupList = {
 	energy:{label:"Energy",description:"Each Energy research owned doubles the cost of all other Energy research.",color:"var(--energy)",icon:"E"},
-	light:{label:"Light",description:"Each Light research owned quadruples the cost of all other Light research in the same row.",color:"#ffff00",icon:"L"},
-	stardust:{label:"Stardust",get description(){return "Each Stardust research owned doubles the cost of all other Stardust research. If your number of Stardust research is greater than or equal to your Study IV completions ("+g.studyCompletions[4]+") their cost is increased even further."},color:"#ff9900",icon:"S"}
+	light:{label:"Light",get description(){return "Each Light research owned multiplies the cost of all other Light research in the same row by "+(g.achievement[713]?achievement(713).effectFormat(achievement(713).effect()):"4")+"."},color:"#ffff00",icon:"L"},
+	stardust:{label:"Stardust",get description(){return "Each Stardust research owned doubles the cost of all other Stardust research."+((g.studyCompletions[4]==4)?"":(" If your number of Stardust research is greater than or equal to your Study IV completions ("+g.studyCompletions[4]+") their cost is increased even further."))},color:"#ff9900",icon:"S"},
+	lightaugment:{label:"Light Augmentation",description:"Each Light Augmentation multiplies the cost of all other Light Augmentation research by the number already owned, and increases the lumen requirements to buy them.",color:"#cccc00",icon:"LA"},
+	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:"var(--time)",icon:"t"}
 }
 function resizeResearch(x){
 	let size = 15
@@ -872,17 +1100,31 @@ function ownedResearchInGroup(x) {
 }
 function researchPower(row,col) {
 	let out = c.d1;
-	if (achievement.ownedInTier(5)>=21&&row==1) out = out.mul(totalAchievements/1000+1);
+	if (row==1&&[3,8,13].includes(col)) { // prevent targeting study V research
+		if (achievement.ownedInTier(5)>=21) out = out.mul(totalAchievements/1000+1)
+		if (g.research.r8_11) out = out.mul(researchEffect(8,11).mul(g.stars).div(c.e2).add(c.d1))
+	}
 	if (achievement.ownedInTier(5)>=24&&row==2) out = out.mul(totalAchievements/500+1);
-	if (g.research.r8_11&&row==1) out = out.mul(researchEffect(8,11).mul(g.stars).div(c.e2).add(c.d1));
-	if (row==8&&col==2&&g.achievement[605]) out = out.mul(c.d1_1)
+	if (row==8&&col==2) {
+		if (g.achievement[605]) out = out.mul(c.d1_1)
+		if (g.studyCompletions[6]>0) out = out.mul(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))
+	}
 	if (row==7&&col==5&&g.achievement[616]) out = out.mul(1+totalResearch.overall/300)
+	if (row==13&&col==8) {
+		let mult = c.d1
+		if (g.research.r15_5) mult = mult.add(researchEffect(15,5))
+		if (g.research.r15_11) mult = mult.add(researchEffect(15,11))
+		out = out.mul(mult)
+	}
 	return out;
 }
 function researchEffect(row,col) {
 	return research["r"+row+"_"+col].effect(researchPower(row,col));
 }
 function researchCost(x) {
+	// locking
+	if (research[x].group=="time") if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
+	// base
 	let output = N(research[x]["basecost"]);
 	// class modifiers
 	if (research[x].group=="energy") {
@@ -891,16 +1133,22 @@ function researchCost(x) {
 		let base = (x=>x<0?c.d2:[c.d4,c.d7,c.d11,c.d16,c.d24][x])(ownedResearchInGroup("stardust").length-g.studyCompletions[4])
 		output=output.mul(base.pow(ownedResearchInGroup("stardust").length))
 	} else if (research[x].group=="light") {
-		output=output.mul(c.d4.pow(ownedResearchInGroup("light").filter(i=>researchRow(i)==researchRow(x)).length))
+		let mult = g.achievement[713]?achievement(713).effect():c.d4
+		output=output.mul(mult.pow(ownedResearchInGroup("light").filter(i=>researchRow(i)==researchRow(x)).length))
+	} else if (research[x].group=="lightaugment") {
+		let mult = 1
+		for (let i=2;i<=ownedResearchInGroup("lightaugment").length;i++) mult*=i
+		output=output.mul(mult)
 	}
 	// hyper 2
-	if ((researchRow(x)>7)&&(researchRow(x)<13)) output = output.mul(1-Math.floor(achievement.ownedInTier(6)*1.25)/100)
+	if ((researchRow(x)>7)&&(researchRow(x)<13)) output = output.mul(achievement.perAchievementReward[6].currentVal)
 	if (x=="r9_2") output = output.mul(2**studyPower(3))
 	if (x=="r9_14") output = output.mul(1.5**studyPower(4))
 	if (StudyE(5)&&research[x].type=="normal") output = output.mul(studies[5].difficultyConstant())
-	for (let i of ["r12_1","r12_3","r12_13","r12_15"]) if (g.research[i]) output = output.mul(researchEffect(12,researchCol(i)))
+	for (let i of ["r1_5","r1_6","r1_10","r1_11"]) if (g.research[i]) output = output.mul(researchEffect(1,researchCol(i)))
 	// hyper 1
 	output = output.sub(studies[5].reward(3))
+	if (research[x].group=="lightaugment"&&g.achievement[712]) output = output.sub(ownedResearchInGroup("lightaugment").length*35)
 	return output.max(c.d0).ceil();
 }
 const researchRows = Object.keys(research).map(x => researchRow(x)).reduce((x,y)=>Math.max(x,y));
@@ -954,9 +1202,9 @@ function generateResearchCanvas() {
 	researchCanvas.height = researchRowsUnlocked()*74;
 	researchContext.clearRect(0, 0, researchCanvas.width, researchCanvas.height);
 	let count = 0;
-	for (let res of unknownResearch()) {
+	for (let res of visibleResearch()) {
 		if (res=="r6_9") continue;
-		for (let res2 of research[res].adjacent_req) if (unknownResearch().includes(res2)) {
+		for (let res2 of research[res].adjacent_req) if (visibleResearch().includes(res2)) {
 			if (res2=="r6_9") continue;
 			researchContext.moveTo(researchCol(res)*74-37,researchRow(res)*74-37);
 			researchContext.lineTo(researchCol(res2)*74-37,researchRow(res2)*74-37);

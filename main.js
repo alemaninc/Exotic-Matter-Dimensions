@@ -171,10 +171,11 @@ const basesave = {
 	lumens:Array(8).fill(c.d0),
 	activeChroma:null,
 	galaxies:0,
+	highestGalaxies:0,
+	highestGalaxiesSpacetime:0,
+	ach711Progress:61,
 };
 var g = decimalStructuredClone(basesave); // "game"}
-const axisCodes = "XYZWVUTS".split("");
-const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x]).flat()
 const empowerableAxis = ["Y"]
 var timeSinceGameOpened = 0;								 // "halted" achievements were being awarded randomly on load
 var totalAchievements = 0;
@@ -273,6 +274,7 @@ function getRealOverclockSpeedup() {
 		let affordable = Math.min(1,g.dilatedTime/cost)
 		overclockSpeedupFactor = 1+added*affordable
 		g.dilatedTime -= cost*affordable
+		if (Math.abs(g.dilatedTime)<1e-12) g.dilatedTime = 0
 		if (affordable<1) overclockActive = false
 	} else {
 		overclockSpeedupFactor = 1
@@ -307,7 +309,7 @@ function stardustUpgradeCost(x) {
 	if (g.stardustUpgrades[x-1]>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
 	let cost = [[c.d1_5e6,c.d4_5e10,c.e14,c.e20,c.maxvalue],
 		[c.d50,c.e2,c.e4,c.e6,c.e8,c.e12,c.e16,c.e24,c.e100,c.maxvalue],
-		[c.d3_3333e9,c.d1_5e16,c.e43,c.e75,c.e140,c.inf,c.ee4,c.ee5,c.ee6,c.ee7,c.maxvalue],
+		[c.d3_3333e9,c.d1_5e16,c.e43,c.e75,c.e140,c.inf,c.ee4,c.ee5,c.ee6,N("6.66e6666666"),c.maxvalue],
 		[c.d125,c.d2e7,c.d5e18,c.d1_5e61,c.e115,c.maxvalue],
 		[c.d5e11,c.e60,c.e96,c.e175,c.d2_2222e222,c.e270,c.inf,c.ee5,c.e2e5,c.e5e5,c.e1_5e6,c.maxvalue]][x-1][g.stardustUpgrades[x-1]];
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
@@ -327,7 +329,7 @@ function studyRewardBoost(studyNum,rewardNum) {
 	let out = c.d1
 	if (rewardNum==3) {
 		out = out.mul(lightCache.currentEffect[0])
-		let studyAchievements = [null,608,609]
+		let studyAchievements = [null,608,609,705]
 		if (typeof studyAchievements[studyNum] == "number") if (g.achievement[studyAchievements[studyNum]]) out = out.div(c.d0_9)
 	}
 	return out
@@ -348,7 +350,7 @@ const studies = [
 				return 10*(comp-countTo(comp).map(x=>achievementFactor**(x-5)).sum())*studyRewardBoost(1,2).toNumber()
 			}
 			if (num==3) return [c.d1,c.d4,c.d20,c.d125,c.e3][comp].pow(studyRewardBoost(1,3));
-			error("Cannot access studies[1].reward("+num+")")
+			functionError("studies[1].reward",arguments)
 		},
 		reward_desc:function() {return [
 			"Empower "+studyRewardHTML(1,1,1)+"% of your Y axis",
@@ -366,7 +368,7 @@ const studies = [
 			if (num==1) return [c.d0,c.d9,c.d16,c.d21,c.d25][comp];
 			if (num==2) return [c.d0,c.d0_07,c.d0_12,c.d0_16,c.d0_2][comp].mul(studyRewardBoost(2,2)).add(c.d1);
 			if (num==3) return [c.d0,c.d0_25,c.d0_45,c.d0_6,c.d0_75][comp].mul(studyRewardBoost(2,3));
-			error("Cannot access studies[2].reward("+num+")")
+			functionError("studies[2].reward",arguments)
 		},
 		reward_desc:function() {return [
 			"The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
@@ -376,7 +378,7 @@ const studies = [
 	},
 	{
 		name:"Analgesia",
-		unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e5e13")][studyPower(3)]},
+		unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e1e12")][studyPower(3)]},
 		energyGainConstant:function(){return [N(1000),N(2000),N(3000),N(4000)][studyPower(3)]},
 		energyPowerConstant:function(){return [c.dm1,c.dm2,c.dm5,N(-20)][studyPower(3)]},
 		description:function(){return "Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled. Energies severely reduce production instead of boosting it, and you start with all Energies unlocked. All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time."},
@@ -390,7 +392,7 @@ const studies = [
 				for (let i=0;i<comp;i++) out = out.add(g.truetimeThisWormholeReset.div(c.d10.pow(i)).pow(i==0?0.5:i))
 				return out.pow(studyRewardBoost(3,3))
 			}
-			error("Cannot access studies[3].reward("+num+")")
+			functionError("studies[3].reward",arguments)
 		},
 		reward_desc:function(){return [
 			"Increase the cap of Stardust Upgrade #5 by "+studyRewardHTML(3,1,0),
@@ -400,14 +402,15 @@ const studies = [
 	},
 	{
 		name:"Vacuum Decay",
-		unlockReq:function() {return [N(1e144),c.inf,N("4.44e44444"),N("5.55e55555")][studyPower(4)]},
+		unlockReq:function() {return [N(1e144),c.inf,N("4.44e444"),c.inf.pow(c.d2)][studyPower(4)]},
 		description:function(){return "Every Stardust reset you do raises stardust gain to the power of 0.5 for the rest of the Study."},
 		research:"r9_14",
-		goal:function(){return [N(3000),N(3700),c.e100,c.e100][studyPower(4)]},
+		goal:function(){return [N(3000),N(3700),N(4500),N(5400)][studyPower(4)]},
 		reward:function(num,comp=g.studyCompletions[4]){
 			if (num==1) return N([0.5,0.514,0.527,0.539,0.55][comp])
 			if (num==2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
-			if (num==3) return N([1,2.5,5,10,20][comp]).pow(studyRewardBoost(4,3).mul(c.d0_3))
+			if (num==3) return [c.d1,c.d2_5,c.d5,c.d10,c.d20][comp].pow(studyRewardBoost(4,3).mul(c.d0_3))
+			functionError("studies[4].reward",arguments)
 		},
 		reward_desc:function(){return [
 			"Base stardust gain formula exponent "+studyRewardHTML(4,1,2),
@@ -417,21 +420,41 @@ const studies = [
 	},
 	{
 		name:"Scientific Illiteracy",
-		unlockReq:function(){return [N("e4000"),c.ee100,c.ee100,c.ee100][studyPower(5)]},
-		difficultyConstant:function(){return [N(32),N(64),N(200),N(1000)][studyPower(5)]},
+		unlockReq:function(){return [N("e4000"),N("e5880"),c.ee100,c.ee100][studyPower(5)]},
+		difficultyConstant:function(){return [c.d32,N(64),N(128),N(256)][studyPower(5)]},
 		description:function(){return "Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."},
 		research:"r2_8",
-		goal:function(){return [N(4000),N(5000),c.e100,c.e100][studyPower(5)]},
+		goal:function(){return [N(4000),N(4000),c.e100,c.e100][studyPower(5)]},
 		reward:function(num,comp=g.studyCompletions[5]){
 			if (num==1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
 			if (num==2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(2)))
-			if (num==3) return [c.d0,c.d2,c.d7,c.d16,c.d30][comp].mul(studyRewardBoost(5,3))
+			if (num==3) return [c.d0,N(2.5),N(10),N(30),N(60)][comp].mul(studyRewardBoost(5,3))
+			functionError("studies[5].reward",arguments)
 		},
 		reward_desc:function(){return [
 			"Research unlocked by Study V works at "+studyRewardHTML(5,1,0)+"% efficiency",
 			"Observation costs are raised to the power of "+studyRewardHTML(5,2,4),
 			"Subtract "+studyRewardHTML(5,3,2)+" from the cost of all research (cannot go below 0)"
 		]}
+	},
+	{
+		name:"Event Horizon",
+		unlockReq:function(){return [N(500),N(1000),N(2000),N(4000)][studyPower(6)]},
+		effect:function(p=stat.totalDarkAxis.div(studies[6].goal()).min(c.d1)){return N(27+3*studyPower(6)).pow(c.d1.sub(p)).pow10()},
+		description:function(){return "The game runs "+this.effect(c.d0).format()+"× slower. However, as you get closer to the goal of the Study this penalty gradually reduces up to a minimum of 10×."},
+		research:"r16_8",
+		goal:function(){return [N(4500),N(4800),c.e100,c.e100][studyPower(6)]},
+		reward:function(num,comp=g.studyCompletions[6]){
+			if (num==1) return N(1+comp/4)
+			if (num==2) return N(comp/20).mul(studyRewardBoost(6,2))
+			if (num==3) return N(0.0075*comp).mul(studyRewardBoost(6,3))
+			functionError("studies[6].reward",arguments)
+		},
+		reward_desc:function(){return [
+			"The effect of tickspeed on chroma gain is raised to the power of "+studyRewardHTML(6,1,4),
+			"Tickspeed<sup>"+studyRewardHTML(6,2,3)+"</sup> affects the base gain of knowledge",
+			"Research 8-2 is "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned"
+		]},
 	}
 ];
 const fullStudyNames = [null,...countTo(studies.length-1).map(x=>"Study "+roman(x)+": "+studies[x].name)]
@@ -496,15 +519,14 @@ const storyEntries = {
 	"Black hole":"<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"_research\">science</span>'.</p>",
 	"Hawking Radiation":"<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"_wormhole\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"_research\">research</span>?</p>",
 	get ["Studies"](){return "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"in which stars don't form easily":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you enlightenment.</p>"},
-	get ["Light"](){return "<p>Having traversed "+BEformat(N(g.TotalWormholeResets))+" universes, it's easy to feel as if you've \"seen it all\". You take a moment to appreciate the simple things in your existence, like the color of exotic matter... and you realise that it doesn't seem to have one. Everything is illuminated by the same constant gray light.</p><p>Surely there is a way to create color in this place?</p>"}
+	get ["Light"](){return "<p>Having traversed "+BEformat(N(g.TotalWormholeResets))+" universes, it's easy to feel as if you've \"seen it all\". You take a moment to appreciate the simple things in your existence, like the color of exotic matter... and you realise that it doesn't seem to have one. Everything is illuminated by the same constant gray light.</p><p>Surely there is a way to create color in this place?</p>"},
+	get ["Galaxies"](){return "<p>The dark matter has made your stars unstable, and now if you have more than 60 in close proximity to each other they'll all collapse.</p><p>You'll need to practice working with stronger, smaller galaxies to succeed.</p>"}
 }
 function openStory(x) {
 	if (storyEntries[x]!==undefined) {
 		g.overclockActive=false
-		d.innerHTML("storyTitle",x);
-		d.innerHTML("storyText",storyEntries[x]);
 		if (!g.storySnippets.includes(x)) g.storySnippets.push(x);
-		openTopLevelDiv("story");
+		popup({text:"<h1 id=\"storyTitle\">"+x+"</h1>"+storyEntries[x],buttons:[["Close",""]]})
 	}
 }
 const axisEffectHTML = {
@@ -530,7 +552,7 @@ const axisEffectHTML = {
 function axisArray(type) {
 	if (type=="normal") return [g.XAxis,g.YAxis,g.ZAxis,g.WAxis,g.VAxis,g.UAxis,g.TAxis,g.SAxis];
 	if (type=="dark") return [g.darkXAxis,g.darkYAxis,g.darkZAxis,g.darkWAxis,g.darkVAxis,g.darkUAxis,g.darkTAxis,g.darkSAxis];
-	return "Cannot access axisArray("+type+")"
+	functionError("axisArray",arguments)
 }
 function realAxisCostDivisor(type) {
 	let output = stat.axisCostDivisor;
@@ -541,6 +563,8 @@ function realAxisCostDivisor(type) {
 function realAxisCostExponent(type) {
 	let output = stat.axisCostExponent;
 	if (type=="S"&&g.research.r3_5) output = output.mul(researchEffect(3,5));
+	let tier7res = ["r16_2","r15_2","r14_2","r13_2","r13_1","r14_1","r15_1","r16_1"]
+	if (g.research[tier7res]) output = output.mul(researchEffect(researchRow(tier7res),researchCol(tier7res)))
 	return output;
 }
 function realAxisScalePower(type){return stat.axisScalingPower}
@@ -562,7 +586,7 @@ function axisCost(type,axis) {
 	else if (type=="U") cost = c.d10.pow(axis.pow(c.d1_5)).mul(c.e100);
 	else if (type=="T") cost = axis.mul(c.d10).add(c.d180).pow10();
 	else if (type=="S") cost = c.inf.pow(c.d1_25.pow(axis));
-	else error("Cannot access axisCost("+type+")")
+	else functionError("axisCost",type)
 	cost = cost.pow(realAxisCostExponent(type));
 	cost = cost.div(realAxisCostDivisor(type));
 	return cost;
@@ -579,7 +603,7 @@ function maxAffordableAxis(type) {
 	else if (type=="U") axis = effective_EM.lte(c.e100)?c.dm1:effective_EM.log10().sub(c.e2).pow(c.d2div3);
 	else if (type=="T") axis = effective_EM.lte(c.e180)?c.dm1:effective_EM.log10().sub(c.d180).div(c.d10);
 	else if (type=="S") axis = effective_EM.lte(c.inf)?c.dm1:effective_EM.log(c.d2).div(c.d1024).log(c.d1_25);
-	else error("Cannot access maxAffordableAxis("+type+")");
+	else functionError("maxAffordableAxis",arguments);
 	axis = Decimal.linearSoftcap(axis,stat.axisScalingStart,realAxisScalePower(type));
 	axis = Decimal.semilogSoftcap(axis,stat.axisSuperscalingStart,realAxisSuperscalePower(type));
 	return axis.floor().add(c.d1);
@@ -641,7 +665,8 @@ const masteryData = {
 	101:{icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>"},
 	102:{icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>"},
 	103:{icon:"<span class=\"_research\">K</span><sup>+</sup>"},
-	104:{icon:"<span class=\"_stars\">L</span><sup>+</sup>",req:function(){return g.research.r10_11}}
+	104:{icon:"<span class=\"_stars\">L</span><sup>+</sup>",req:function(){return g.research.r10_11}},
+	105:{icon:"<span class=\"_stars\">S$</span><sup>-</sup>",req:function(){return g.achievement[711]}}
 }
 const totalMasteryRows = Math.floor(Object.keys(masteryData).map(x => Number(x)).reduce((x,y) => Math.max(x,y))/10);
 function fixMasteryArrays() {
@@ -656,9 +681,11 @@ function deltaBaseMasteryPowerGain(time) {
 }
 
 function MasteryE(x) {
+	x=Number(x)
 	let row = Math.floor(x/10);
-	if (g.activeMasteries[row]==0) return 0;
-	return ((g.activeMasteries[row]==(x%10))||masteredRow(row))?1:0;
+	if (g.activeMasteries[row]==0) return false;
+	if (g.achievement[708]&&row==10&&[101,103].includes(x)&&[1,3].includes(g.activeMasteries[10])) return true
+	return (g.activeMasteries[row]==(x%10))||masteredRow(row);
 }
 function masteredRow(x) {
 	if (x==1) return g.stardustUpgrades[3]>0;
@@ -713,34 +740,47 @@ function masteryEffect(x) {
 	if (x==102) return g.masteryPower.add(c.d1).dilate(c.d2div3).pow(masteryBoost(102).mul(c.d0_0175));
 	if (x==103) return g.masteryPower.add(c.d10).dilate(c.d0_2).sub(c.d9).pow(masteryBoost(103));
 	if (x==104) return masteryBoost(104).mul(g.masteryPower.gt(c.ee3)?g.masteryPower.log10().sub(c.d500):g.masteryPower.add(c.d1).log10().pow(c.d2).div(2000)).div(500).pow10()
-	error("Cannot access masteryEffect("+x+")")
+	if (x==105) return g.masteryPower.add(c.d1).log10().div(c.e2).add(c.d10).log10().pow(c.d0_5).sub(c.d1).neg().mul(masteryBoost(105)).pow10()
+	functionError("masteryEffect",arguments)
 }
 function masteryBoost(x) {
 	x=Number(x)
 	let row = Math.floor(x/10);
-	let b=c.d1;
-	if (row==1&&g.achievement[105]) b = b.mul(achievement(105).effect().div(c.e2).add(c.d1));
+	let b=stat.knowledgeEffect.div(c.e2).add(c.d1);
+	// inter-row effects
 	if ([11,21,31].includes(x)&&MasteryE(41)) b = b.mul(masteryEffect(41));
 	if ([12,22,32].includes(x)&&MasteryE(43)) b = b.mul(masteryEffect(43));
-	if (row==4&&g.achievement[201]) b = b.mul(achievement(201).effect().div(c.e2).add(c.d1));
-	if (row==1&&MasteryE(52)) b = b.mul(masteryEffect(52));
-	if (row==8&&MasteryE(91)) b = b.mul(masteryEffect(91));
-	if (row==8&&MasteryE(92)) b = b.mul(masteryEffect(92));
-	if (x==52&&g.achievement[310]) b = b.mul(c.d1_01);
-	if (row==10) b = b.mul(stat.stardustBoost11.div(c.e2).add(c.d1));
 	if (g.achievement[516]&&row>=2&&row<=9) if (g.star[[51,52,53,54,101,102,103,104][row-2]]) b = b.mul(c.d1_01);
-	b = b.mul(stat.knowledgeEffect.div(c.e2).add(c.d1));
-	if (achievement.ownedInTier(5)>=27&&row==10) b = b.mul(wormholeMilestone27Effect().div(c.e2).add(c.d1));
-	if ((x==11)&&g.research.r4_6) b = b.mul(researchEffect(4,6));
-	if ((x==12)&&g.research.r4_10) b = b.mul(researchEffect(4,10));
-	if (row==2&&g.research.r5_13) b = b.mul(stat.spatialEnergyEffect.pow(researchEffect(5,13)));
 	if (g.research.r6_11) {
 		let row = Math.floor(x/10);
 		let owned = 0
 		for (let i=1;i<5;i++) if (g.star[row*10+i]) owned++;
 		b = b.mul(researchEffect(6,11).div(c.e2).mul(owned).add(c.d1));
 	}
-	if (x==42) b = b.mul(studies[4].reward(2))
+	// single row effects
+	if (row==1) {
+		if (g.achievement[105]) b = b.mul(achievement(105).effect().div(c.e2).add(c.d1));
+		if (MasteryE(52)) b = b.mul(masteryEffect(52))
+		if ((x==11)&&g.research.r4_6) b = b.mul(researchEffect(4,6));
+		if ((x==12)&&g.research.r4_10) b = b.mul(researchEffect(4,10));
+	}
+	if (row==2) {
+		if (g.research.r5_13) b = b.mul(stat.spatialEnergyEffect.pow(researchEffect(5,13)));
+	}
+	if (row==4) {
+		if (g.achievement[201]) b = b.mul(achievement(201).effect().div(c.e2).add(c.d1));
+		if (x==42) b = b.mul(studies[4].reward(2))
+	}
+	if (x==52&&g.achievement[310]) b = b.mul(c.d1_01);
+	if (row==8) {
+		for (let i of [91,92]) if (MasteryE(i)) b = b.mul(masteryEffect(i))
+	}
+	if (row==10) {
+		b = b.mul(stat.stardustBoost11);
+		if (achievement.ownedInTier(5)>=27) b = b.mul(wormholeMilestone27Effect().div(c.e2).add(c.d1));
+		if (g.achievement[710]&&x==104) b = b.mul(c.d4);
+		if (x==105) b = b.mul(achievement(711).effect())
+	}
 	return b.fix(c.d0);
 }
 function masteryText(x) {
@@ -767,7 +807,8 @@ function masteryText(x) {
 	if (x==102) return "Multiply Hawking radiation gain by "+masteryEffect(102).format(2);
 	if (x==103) return "Multiply knowledge gain by "+masteryEffect(103).format(2);
 	if (x==104) return "Multiply chroma gain by "+masteryEffect(104).format(2);
-	error("Cannot access masteryText("+x+")")
+	if (x==105) return "The star cost is raised to the power "+masteryEffect(105).format(3);
+	functionError("masteryText",arguments)
 }
 function masteryReset() {
 	g.masteryPower=c.d0;
@@ -829,9 +870,7 @@ function attemptStardustReset(showPopups=false) {
 			stardustReset()
 		}
 	} else {
-		if (showPopups) popup({
-			text:"You must be able to gain stardust in order to reset!"
-		})
+		if (showPopups) notify("You must be able to gain stardust in order to reset!","#ff6600","#000000")
 	}
 }
 function stardustReset() {
@@ -875,6 +914,7 @@ function stardustBoostBoost(x) {
 		if (g.achievement[509]) out=out.mul(achievement(509).effect().div(c.e2).add(c.d1));
 		if (g.research.r5_14) out=out.mul(Decimal.pow(stat.neuralEnergyEffect,researchEffect(5,14)))
 	}
+	if (x%3==0) if (g.research.r13_11) out = out.mul(researchEffect(13,11))
 	return out;
 }
 const stardustBoostText = [
@@ -894,7 +934,7 @@ const stardustBoostText = [
 ]
 function stardustBoost7Exp(x) {
 	x=(x==undefined)?g.truetimeThisStardustReset:N(x)
-	return Decimal.logarithmicSoftcap(x.sqrt(),c.e3,c.d4,c.d1)
+	return Decimal.logarithmicSoftcap(x.pow(c.d0_5),c.e3,c.d4,c.d1)
 }
 function stardustBoost7IsSoftcapped(){
 	return g.truetimeThisStardustReset.gt(c.e6)
@@ -966,18 +1006,22 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	let scaling_power = c.d2_5;
 	scaling_power = scaling_power.mul(c.d1.sub(studies[2].reward(1).div(c.e2)));
 	if (g.research.r7_8) scaling_power = scaling_power.mul(researchEffect(7,8));
-	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(x,c.d25,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(x.gte(c.d10)?c.d1_5:c.d1);
-	cost = cost.pow(galaxyEffects[1].penalty.effect(gal))
+	let scaling_start = g.achievement[703]?achievement(703).effect():c.d25
+	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(x,scaling_start,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(x.gte(c.d10)?c.d1_5:c.d1);
+	cost = cost.mul(galaxyEffects[3].penalty.value(gal).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
 	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	// hyper-3 cost reductions
 	if (g.research.r6_2) cost = cost.root(stat.stelliferousEnergyEffect.pow(researchEffect(6,2)));
 	if (g.research.r7_11) cost = cost.pow(researchEffect(7,11).pow(g.darkstars));
+	if (g.research.r13_7) cost = cost.pow(researchEffect(13,7))
 	if (g.achievement[612]) cost = cost.pow(achievement(612).effect()**g.stardustUpgrades.sum())
 	cost = cost.pow(lightCache.currentEffect[6])
 	if (g.achievement[701]&&x<40) cost = cost.pow(0.6+x/100)
+	if (MasteryE(105)) cost = cost.pow(masteryEffect(105))
 	// hyper-2 cost reductions
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stardustUpgrades.sum()));
+	if (g.achievement[702]) cost = cost.div(achievement(702).effect().pow(x**2))
 	return cost;
 }
 function buyStar() {
@@ -1029,7 +1073,8 @@ function starEffect(x) {
 		else if (x==14) exp = g.truetimeThisStardustReset.div(c.e3).add(c.d1).pow(c.dm1);
 		if (g.star[x+20]) exp = exp.mul(c.d3);
 		if (g.star[x+80]) exp = exp.mul(starEffect(90));
-		exp = exp.mul(achievement.ownedInTier(2)/100+1);
+		exp = exp.mul(achievement.perAchievementReward[2].currentVal);
+		exp = exp.mul(galaxyEffects[1].boost.value())
 		return exp.mul(c.d3).pow10();
 	}
 	if (x==60) return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(g.exoticmatter.pow(c.d0_02).add(c.d10).log10().pow(c.d0_7),c.e3,c.d0_5),c.d7e3,c.d8e3);
@@ -1044,7 +1089,7 @@ function starEffect(x) {
 		return Decimal.convergentSoftcap(ef,c.d75,c.e2);
 	}
 	if (x==90) return g.exoticmatter.add(c.d1).log10().pow(c.d0_75).div(c.e2).add(c.d1).pow(studies[2].reward(2));
-	error("Cannot access starEffect("+x+")")
+	functionError("starEffect",arguments)
 }
 function formatStarEffect(x) {
 	if (x==42) return c.e18.format()
@@ -1116,7 +1161,7 @@ function starText(x) {
 	if ([82,84].includes(x)) return (x==84?"Dark Y":"Normal V")+" axis is 3 times stronger";
 	if ([91,92,93,94].includes(x)) return "The effect of star "+(x-80)+" is raised to the power of {x} (based on exotic matter)";
 	if ([101,102,103,104].includes(x)) return "You can activate all "+["sixth","seventh","eighth","ninth"][x-101]+" row Masteries";
-	error("Cannot access starText("+x+")")
+	functionError("starText",arguments)
 }
 function starRowsShown() {
 	return Array.removeDuplicates(countTo(40).map(x=>starRow(x))).slice(0,Array.removeDuplicates(countTo(Math.min(g.stars,40)).map(x=>starRow(x))).length+1).sort((a,b)=>a-b)
@@ -1214,6 +1259,8 @@ function realDarkAxisCostDivisor(type) {
 function realDarkAxisCostExponent(type) {
 	let output = stat.darkAxisCostExponent;
 	if (type=="S"&&g.research.r3_11) output = output.mul(researchEffect(3,11));
+	let tier7res = ["r16_14","r15_14","r14_14","r13_14","r13_15","r14_15","r15_15","r16_15"]
+	if (g.research[tier7res]) output = output.mul(researchEffect(researchRow(tier7res),researchCol(tier7res)))
 	return output;
 }
 function maxAffordableDarkAxis(type) {
@@ -1242,6 +1289,7 @@ function darkStarPriceMod(type) {
 		output=stat.stardustBoost9;
 		if (g.achievement[512]) output=output.div(0.9975**g.stars);
 		if (g.research.r6_3) output=output.mul(stat.gravitationalEnergyEffect.pow(researchEffect(6,3)));
+		if (g.research.r16_12) output=output.mul(researchEffect(16,12))
 	} else {
 		error("Cannot access darkStarPriceMod("+type+")")
 	}
@@ -1320,7 +1368,7 @@ function energyEffect(x) {
 	let type=g[energyTypes[x]+"Energy"];
 	let resource=[g.exoticmatter,g.stardust,g.darkmatter,g.XAxis,g.masteryPower,c.d10,g.hawkingradiation,g.knowledge,c.d10,c.d10][x];
 	let softcap=[c.d0_25,c.d0_25,c.d0_25,c.d4,c.d0_25,c.inf,c.d0_25,c.d0_25,c.d0_5,c.d1][x];
-	let inc=[c.d0_1,c.d0_1,c.d0_1,c.d0_5,c.d0_1,c.d0_25,c.d0_05,c.d0_025,c.d0_1,c.d0_25][x];
+	let inc=[c.d0_1,c.d0_1,c.d0_1,c.d0_5,c.d0_1,c.d0_25,c.d0_05,c.d0_025,c.d0_1,c.d0_1][x];
 	let eff=((type.gt(resource))&&(resource.gt(c.d1))) ? type.log(resource).log10().mul(StudyE(3)?c.d1:stat.energyEffectBoost).mul(inc).add(c.d1) : c.d1;
 	if (eff.gt(softcap.add(c.d1))&&(!StudyE(3))) eff=softcap.mul(eff.sub(c.d1).div(softcap).ln().div(c.d10).add(c.d1)).add(c.d1);
 	if (x==8) eff = eff.recip()
@@ -1343,7 +1391,7 @@ function energySpeedMult(x) {
 }
 function energyPerSec(x) {
 	let resource = [g.exoticmatter,g.stardust,g.darkmatter,g.XAxis,g.masteryPower,energyTypes.map(x=>g[x+"Energy"].add(c.d10).log10()).productDecimals().pow(c.d0_1),g.hawkingradiation,g.knowledge,fullAxisCodes.map(x=>g[x+"Axis"].add(c.d10).log10()).productDecimals().pow(c.d0_1),stat.tickspeed][x];
-	let divisor = [c.d200,c.d350,c.d500,c.d350,c.d200,c.d50,c.e8,c.e10,c.d5e4,c.d2pow31][x];
+	let divisor = [c.d200,c.d350,c.d500,c.d350,c.d200,c.d50,c.e8,c.e10,c.d5e4,N(3e13)][x];
 	let mult = energySpeedMult(x)
 	return resource.add(c.d10).dilate(c.d0_9).pow(mult.div(divisor));
 }
@@ -1366,9 +1414,7 @@ function attemptWormholeReset(showPopups=false) {
 			wormholeReset()
 		}
 	} else {
-		if (showPopups) popup({
-			text:"You must be able to gain hawking radiation in order to reset!"
-		})
+		if (showPopups) notify("You must be able to gain hawking radiation in order to reset!","#000099","#ffffff")
 	}
 }
 function wormholeReset() {
@@ -1380,6 +1426,9 @@ function wormholeReset() {
 		for (let i of secretAchievementEvents.wormholeResetBefore) addSecretAchievement(i);
 		timeLoopMult = wormholeAmplificationMultiplier()
 		g.dilatedTime -= wormholeAmplificationCost()
+		incrementHR(stat.pendinghr.floor().mul(timeLoopMult));
+		g.WormholeResets+=timeLoopMult
+		g.fastestWormholeReset=Decimal.min(g.fastestWormholeReset,g.timeThisWormholeReset);
 	}
 	if (g.wormholeResets==0) {
 		g.overclockActive=false
@@ -1389,8 +1438,8 @@ function wormholeReset() {
 	}
 	g.previousStardustRuns.last10 = [];
 	g.previousStardustRuns.wormhole = {fastest:previousPrestige.baseStardust(),highest:previousPrestige.baseStardust()}
-	let summary = previousPrestige.generate(2)
 	if (HRgained) {
+		let summary = previousPrestige.generate(2)
 		g.previousWormholeRuns.last10 = [summary].concat(g.previousWormholeRuns.last10).slice(0,10)
 		if (summary.time < g.previousWormholeRuns.spacetime.fastest.time) g.previousWormholeRuns.spacetime.fastest = summary
 		if (summary.time < g.previousWormholeRuns.eternity.fastest.time) g.previousWormholeRuns.eternity.fastest = summary
@@ -1410,23 +1459,22 @@ function wormholeReset() {
 		g.activeStudy=0;
 		updateAllStudyDivs();
 	}
-	incrementHR(stat.pendinghr.floor().mul(timeLoopMult));
 	g.exoticmatter=c.d0;
 	for (let i=0;i<8;i++) {
 		g[axisCodes[i]+"Axis"]=c.d0;
 		g["dark"+axisCodes[i]+"Axis"]=c.d0;
 	}
 	g.masteryPower=c.d1;
-	g.baseMasteryPowerGain=c.d0;
+	g.baseMasteryPowerGain=c.d1;
 	g.exoticmatterThisStardustReset=c.d0;
 	g.timeThisStardustReset=0;
 	g.truetimeThisStardustReset=c.d0;
 	g.fastestStardustReset=c.d9e15;
 	g.exoticmatterThisWormholeReset=c.d0;
-	if (stat.pendinghr.gt(c.d0)) g.fastestWormholeReset=Decimal.min(g.fastestWormholeReset,g.timeThisWormholeReset);
 	g.timeThisWormholeReset=0;
 	g.truetimeThisWormholeReset=c.d0;
 	g.stardust=c.d0;
+	g.stardustThisWormholeReset=c.d0;
 	g.stardustUpgrades=[0,1,0,5,0];
 	g.stars=0;
 	for (let i of starList) g.star[i] = false
@@ -1457,7 +1505,6 @@ function wormholeReset() {
 		g.researchRespec = false;
 	}
 	if (g.achievement[506]&&g.ach505Progress.lt(c.e3)) g.ach505Progress=c.e3;
-	if (stat.pendinghr.gt(c.d0)) g.WormholeResets+=timeLoopMult;
 	g.TotalWormholeResets+=timeLoopMult;
 	if (HRgained) {
 		for (let i of achievementEvents.wormholeResetAfter) addAchievement(i);
@@ -1520,12 +1567,6 @@ function wormholeMilestoneText(x) {
 	if (x==18) return "Add extra time to the dark T axis timer based on your hawking radiation"
 	if (x==27) return "Row 10 Masteries are stronger based on your hawking radiation"
 	return wormholeMilestoneList[wormholeMilestoneList.map(x => x[0]).indexOf(x)][1]
-}
-function ach501Effect() {
-	let out = g.truetimeThisWormholeReset.div(c.e4).add(c.d1);
-	if (MasteryE(101)) {out = out.pow(masteryEffect(101));}
-	else if (g.achievement[515]) {out = out.pow(masteryEffect(101).sqrt())}
-	return out;
 }
 function visibleStudies() {
 	let out = [];
@@ -1591,7 +1632,6 @@ function lightTiersUnlocked() {
 	if (g.research.r8_8) return 1
 	return 0
 }
-const lightNames = ["red","green","blue","cyan","magenta","yellow","white","black"]
 const lightComponents = [null,null,null,[1,2],[0,2],[0,1],[3,4,5],[3,4,5]]
 function updateLightCache(i){
 	lightCache.currentEffect[i] = lightEffect[i].value()
@@ -1609,7 +1649,7 @@ const lightData = [
 	{baseReq:c.e3,baseScale:c.d3,effect:"The base gain of hawking radiation is raised to the power of {x}"},
 	{baseReq:c.e5,baseScale:c.d1_5,effect:"Research 7-5 affects the base gain of knowledge with {x}% effect<br><span class=\"small\">(this is currently an approximate {e}× boost to knowledge gain if Research 7-5 is owned)</span>"},
 	{baseReq:c.e5,baseScale:c.d2_5,effect:"Increase the mastery power base gain exponent by {x}<br><span class=\"small\">(this is currently a {e}× boost to mastery power gain)</span>"},
-	{baseReq:c.e5,baseScale:c.d1_1,effect:"The rewards of {x} achievements will become stronger."+["See next effect","See all effects"].map((x,i)=>"<button class=\"genericbutton yellowChromaButton\" onClick=\"reviewYellowLight("+i+")\">"+x+"</button>").join("")},
+	{baseReq:c.e5,baseScale:c.d1_1,effect:"The rewards of {x} achievements will become stronger."+["See next effect","See all effects"].map((x,i)=>"<button class=\"genericbutton yellowChromaButton\" onClick=\"reviewYellowLight("+i+")\" id=\"button_reviewYellowLight"+i+"\">"+x+"</button>").join("")},
 	{baseReq:c.e10,baseScale:c.d10,effect:"The star cost is raised to the power of {x}"},
 	{baseReq:c.e10,baseScale:c.d10,effect:"Chroma generation is {x}{s} cheaper"}
 ]
@@ -1645,6 +1685,7 @@ function chromaCostFactor(x) {
 	if (!(lightComponents[x] instanceof Array)) return
 	let out = c.d1.div(lightComponents[x].length)
 	out = out.mul(lightCache.currentEffect[7])
+	if (g.research.r13_9) out = out.div(researchEffect(13,9))
 	return out
 }
 function reviewYellowLight(mode){    // 0 = next, 1 = all effects
@@ -1654,40 +1695,94 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	else {error("Cannot access reviewYellowLight("+value+")")}
 	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px;\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,[achievement(x).yellowValue,c.d0][mode],achievement(x).nextYellowValue))+"</td></tr></table></div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px;\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).yellowValue:c.d0,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).nextYellowValue:achievement(x).yellowValue))+"</td></tr></table></div>")
 	}
 	popup({
 		text:out.join(""),
 		buttons:[["Close",""]]
 	})
 }
+function effectiveGalaxies(effNum,owned=g.galaxies) {
+	return (owned>=galaxyEffects[effNum].req)?N(owned-galaxyEffects[effNum].req+1):c.d0
+}
 const galaxyEffects = [
 	null,
 	{
 		req:1,
 		boost:{
-			effect:function(n=g.galaxies){return c.d1_05.pow(n)},
-			text:function(){return "+{}% chroma gain per star"},
-			format:function(e){return e.sub(c.d1).mul(c.e2).noLeadFormat(2)}
+			value:function(n=g.galaxies){return N((1+n/100)*(2-(82/101)**n))},
+			text:function(){return "Row 1 stars are "+(this.value().gt(c.d10)?"{}×":"{}%")+" stronger"},
+			format:function(e){return this.value().gte(c.d10)?e.noLeadFormat(3):e.sub(c.d1).mul(c.e2).noLeadFormat(2)}
 		},
 		penalty:{
-			effect:function(n=g.galaxies){return c.e2.pow(n)},
-			text:function(){return "Star costs are raised to the power of {}"},
+			value:function(n=g.galaxies){return achievement.perAchievementReward[7].currentVal.pow(n)},
+			text:function(){return "The base cost of stars is raised to the power of {}"},
+			format:function(e){return e.format()}
+		}
+	},
+	{
+		req:2,
+		boost:{
+			value:function(n=g.galaxies){return [c.d1_15,effectiveGalaxies(2,n),c.d0_9].decimalPowerTower()},
+			text:function(){return (this.value().gt(c.d10)?"{}×":"+{}%")+" chroma gain per star"},
+			format:function(e){return this.value().gte(c.d10)?e.noLeadFormat(3):e.sub(c.d1).mul(c.e2).noLeadFormat(2)}
+		},
+		penalty:{
+			value:function(n=g.galaxies){
+				let out = c.d0_99.pow(effectiveGalaxies(2,n))
+				if (g.research.r13_5) out = out.pow(researchEffect(13,5))
+				return out
+			},
+			text:function(){return "Stardust gain is raised to the power of {} per star below 40 (currently: ^"+((g.stars<40)?this.value().pow(40-g.stars).format(3):"1")+")"},
+			format:function(e){return e.noLeadFormat(3)}
+		}
+	},
+	{
+		req:4,
+		boost:{
+			value:function(n=g.galaxies){return effectiveGalaxies(3,n).div(c.e2).add(c.d1)},
+			text:function(){return "U axis effect is "+(this.value().gt(c.d10)?"multiplied by {}":"increased by {}%")+" per star"},
+			format:function(e){return this.value().gte(c.d10)?e.noLeadFormat(3):e.sub(c.d1).mul(c.e2).noLeadFormat(2)}
+		},
+		penalty:{
+			value:function(n=g.galaxies){return [c.inf,effectiveGalaxies(3,n),c.d3].decimalPowerTower()},
+			text:function(){return "Each star multiplies the star cost by {} (applied before the first penalty)"},
 			format:function(e){return e.format()}
 		}
 	}
 ]
 function gainGalaxy() {
 	if (g.stars==60) {
-		wormholeReset()
 		g.galaxies++
+		if (g.galaxies>g.highestGalaxies) g.highestGalaxies=g.galaxies
+		if (g.galaxies>g.highestGalaxiesSpacetime) g.highestGalaxiesSpacetime=g.galaxies
+		for (let i of achievementEvents.galaxyGain) addAchievement(i)
+		wormholeReset()
 	}
 }
-function loseGalaxy() {
-	if (g.galaxies>0) {
-		wormholeReset()
-		g.galaxies--
+function loseGalaxyPopup() {
+	if (g.galaxies==0) {
+		notify("You have no galaxies to lose!","#ffff00","#000000")
+	} else {
+		popup({
+			text:"How many galaxies do you want to lose?",
+			input:"",
+			buttons:[["Confirm","loseGalaxy(Number(popupInput()))"],["Cancel",""]]
+		})
 	}
+}
+function loseGalaxy(lost) {
+	if (typeof lost!=="number") {notify("Invalid number.","#ffff00","#000000")}
+	else if (lost==0) {notify("No galaxies lost","#ffff00","#000000")}
+	else if (lost>g.galaxies) {notify("Not enough galaxies.","#ffff00","#000000")}
+	else if (lost%1>0) {notify("Input an integer.","#ffff00","#000000")}
+	else {
+		g.galaxies-=lost
+		wormholeReset()
+	}
+}
+function formatGalaxyEffect(num,type,gal=g.galaxies) {
+	return textFormat(galaxyEffects[num][type].format(galaxyEffects[num][type].value(gal)),"_galaxies")
 }
 const topResources = [
 	{
@@ -1729,7 +1824,11 @@ const topResources = [
 	{
 		text:function(){return studies[4].name+": ^<span class=\"red\">"+c.d0_5.pow(g.TotalStardustResets).noLeadFormat(3)+"</span>"},
 		condition:function(){return StudyE(4);}
-	}
+	},
+	{
+		text:function(){return studies[6].name+" divisor: <span class=\"red\">"+studies[6].effect().noLeadFormat(3)+"</span>"},
+		condition:function(){return StudyE(6);}
+	},
 ];
 function updateTopResourceModal() {
 	for (let i=0;i<topResources.length;i++) {
@@ -2028,6 +2127,8 @@ function processImport(string) {
 		addSecretAchievement(7)
 	} else if (string=="alemaninc") {
 		addSecretAchievement(8)
+	} else if (string=="i contribute a blob") {
+		addSecretAchievement(30)
 	} else {
 		load(JSON.parse(atob(string)))
 		generateResearchCanvas()
@@ -2036,7 +2137,7 @@ function processImport(string) {
 function exportSave() {
 	openExport(btoa(localStorage.getItem("save")));
 }
-const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","AleManInc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me","CONFIRM","CORNFIRM","CRONFIRM","statrnark","zenrnoroni","Antimatter Dimensions is better.","Incredibly slow start","Surprised there isn't something to speed this up","alemaninc impressively deploys broken code to production multiple times per week"]);
+const wipeSavePassword = Array.random(["Shrek is love, Shrek is life","To confirm that you want to wipe your save, input.","foo","YES","yes","96","g.exoticmatter++","alemaninc, this is the worst idea ever.","This is the worst game ever.","M > O > U","44031","X > Y > Z","Save Selector","This is a randomly generated phrase","Maya hee maya hoo","WIPE SAVE","Please don't delete me","CONFIRM","CORNFIRM","CRONFIRM","statrnark","zenrnoroni","Antimatter Dimensions is better.","Incredibly slow start","Surprised there isn't something to speed this up","alemaninc impressively deploys broken code to production multiple times per week"]);
 function stringSimplify(x) {
 	return String(x).replace(/[^A-Za-z0-9]/g,"").toLowerCase();
 }

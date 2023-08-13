@@ -1,6 +1,6 @@
 function howToPlay(x) {
 	let htp = HTPtexts[HTPtexts.map(x => x.name).indexOf(x)]
-	let text = "<h1>"+htp.name+"</h1>"+htp.paragraphs.map(x => "<p>"+x+"</p>").join("")
+	let text = "<h1>"+(htp.name=="Galaxies"?"<span onClick=\"secretAchievementList[31].click()\">The Hitchhiker's Guide to the Galaxies</span>":htp.name)+"</h1>"+htp.paragraphs.map(x => "<p>"+x+"</p>").join("")
 	if (htp.dynamics !== undefined) for (let i=0;i<htp.dynamics.length;i++) text = text.replace("{"+i+"}",htp.dynamics[i]())
 	popup({
 		text:text,
@@ -197,6 +197,14 @@ const HTPtexts = [
 			"In Light, you can generate different colors of chroma. The amount of chroma gained is based on how many stars you have: if you have 60 stars (the maximum), a base of 1 chroma per second is gained. However, if you have less than 60 stars, chroma gain is divided by 3 for every star below 60.",
 			"If you gain sufficient chroma of a type, you gain a lumen, giving one of a variety of boosts. The requirement to gain lumens grows exponentially, but the factor by which it increases varies between colors.",
 			"Red, green and blue chroma can be generated for free. However, other colors of chroma must instead be created from other colors, using their chroma in the process."
+		]
+	},
+	{
+		name:"Galaxies",
+		visibility:function(){return unlocked("Galaxies")},
+		paragraphs:[
+			"Once you reach 60 stars, it is impossible to buy more. Instead, you can gain Galaxies.",
+			"Galaxies dramatically increase star costs, but give new boosts in return."
 		]
 	}
 ].sort((a,b)=>(a.name>b.name)?1:-1)

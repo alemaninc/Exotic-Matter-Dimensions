@@ -789,6 +789,10 @@
 		};
 
 		// ALEMANINC FUNCTIONS START HERE
+		Decimal.FC_NN = function (sign, layer, mag) {
+			return Decimal.fromComponents_noNormalize(sign,layer,mag)
+		};
+
 		Decimal.linearSoftcap = function (value,start,power,layer=0) {
 			if (Decimal.lt(value,start)) return N(value);
 			value=value.layerplus(-layer);
@@ -814,7 +818,7 @@
 			if (Decimal.lt(value,start)) return N(value);
 			value=value.layerplus(-layer);
 			start=start.layerplus(-layer);
-			return value.div(start).pow(power).quad_slog(c.e).add(c.d1).root(power).mul(start).layerplus(layer);
+			return value.div(start).pow(power).quad_slog(constant.e).add(constant.d1).root(power).mul(start).layerplus(layer);
 		};
 
 		Decimal.convergentSoftcap = function (value,start,limit,layer=0) {
@@ -830,14 +834,14 @@
 			if (Decimal.lt(value,start)) return N(value);
 			value=value.layerplus(-layer);
 			start=start.layerplus(-layer);
-			return start.div(power.add(c.d1)).mul(power.add((value.div(start)).pow(power.add(c.d1)))).layerplus(layer);
+			return start.div(power.add(constant.d1)).mul(power.add((value.div(start)).pow(power.add(constant.d1)))).layerplus(layer);
 		};
 
 		Decimal.semiexpScaling = function (value,start,power,layer=0) {
 			if (Decimal.lt(value,start)) return N(value);
 			value=value.layerplus(-layer);
 			start=start.layerplus(-layer);
-			return start.pow(value.log(start).pow(power.add(c.d1))).div(power.add(c.d1)).add(start.mul(FC_NN(1,0,1).sub(power.add(c.d1).pow(-1)))).layerplus(layer);
+			return start.pow(value.log(start).pow(power.add(constant.d1))).div(power.add(constant.d1)).add(start.mul(FC_NN(1,0,1).sub(power.add(constant.d1).pow(-1)))).layerplus(layer);
 		};
 
 		Decimal.exponentialScaling = function (value,start,power,layer=0) {
@@ -851,7 +855,7 @@
 			if (Decimal.lt(value,start)) return value;
 			value=value.layerplus(-layer);
 			start=start.layerplus(-layer);
-			return c.e.quad_tetr(value.div(start).pow(power).sub(1)).root(power).mul(start).layerplus(layer);
+			return constant.e.quad_tetr(value.div(start).pow(power).sub(1)).root(power).mul(start).layerplus(layer);
 		};
 
 		Decimal.divergentScaling = function (value,start,limit,layer=0) {
@@ -860,7 +864,7 @@
 			start=start.layerplus(-layer);
 			limit=limit.layerplus(-layer);
 			let output=limit.sub(start).mul(limit.sub(start).div(limit.sub(value)).sub(1)).add(start).layerplus(layer);
-			if (output==FC_NN(1,0,1).div(0)) return c.maxvalue;
+			if (output==FC_NN(1,0,1).div(0)) return constant.maxvalue;
 			return output;
 		};
 		
@@ -2887,14 +2891,14 @@ for (var i = 0; i < 10; ++i)
 
 		Decimal.prototype.tetr_coefficient = function(x) {			// Linear to quadratic tetration height
 			x=N(x);
-			if (x.eq(c.e)) return this;
+			if (x.eq(constant.e)) return this;
 			let coefficient = x.ln().mul(2).div(x.ln().add(1));
 			return this.floor().add(coefficient.sub(coefficient.pow(2).sub(coefficient.mul(this.mod(1)).mul(4)).add(this.mod(1).mul(4)).sqrt()).div(coefficient.sub(1).mul(2)));
 		};
 
 		Decimal.prototype.slog_coefficient = function(x) {			// Linear to quadratic superlogarithm
 			x=N(x);
-			if (x.eq(c.e)) return this;
+			if (x.eq(constant.e)) return this;
 			let coefficient = x.ln().mul(2).div(x.ln().add(1));
 			return this.floor().add(this.mod(1).mul(coefficient)).add(this.mod(1).pow(2).mul(1-coefficient));
 		};
@@ -2946,265 +2950,41 @@ function deepFreeze(obj) {
 	});
 	return Object.freeze(obj);
 };
-const c = deepFreeze({		 // c = "constant"
-	dm16			: N(-16),
-	dm5				: N(-5),
-	dm2				: N(-2),
-	dm1				: N(-1),
-	dm0_5			: N(-0.5),
-	dm0_1			: N(-0.1),
-	dm0_03		: N(-0.03),
-	eme6			: N("e-1e6"),
-	d0				: N(0),
-	em40			: N(1e-40),
-	em30			: N(1e-30),
-	em10			: N(1e-10),
-	em8				: N(1e-8),
-	em5				: N(1e-5),
-	em4       : N(1e-4),
-	d0_0004		: N(0.0004),
-	d7em4 	  : N(0.0007),
-	d0_0009		: N(0.0009),
-	em3       : N(0.001),
-	d0_001    : N(0.001),
-	d0_003		: N(0.003),
-	d0_005		: N(0.005),
-	d0_009		: N(0.009),
-	d0_01			: N(0.01),
-	d0_0175		: N(0.0175),
-	d0_02			: N(0.02),
-	d0_025		: N(0.025),
-	d0_03			: N(0.03),
-	d0_035		: N(0.035),
-	d0_04			: N(0.04),
-	d0_045		: N(0.045),
-	d0_05     : N(0.05),
-	d0_059    : N(0.059),
-	d0_07			: N(0.07),
-	d0_075		: N(0.075),
-	d0_085		: N(0.085),
-	d0_1			: N(0.1),
-	d0_12			: N(0.12),
-	d0_15			: N(0.15),
-	d0_16			: N(0.16),
-	d0_18			: N(0.18),
-	d0_2			: N(0.2),
-	d0_24			: N(0.24),
-	d0_25			: N(0.25),
-	d0_3			: N(0.3),
-	sqrt0_1		: N(0.31622776601683794),
-	d0_33			: N(0.33),
-	d1div3		: N(1/3),
-	d0_4			: N(0.4),
-	d0_42			: N(0.42),
-	d0_45			: N(0.45),
-	d0_5			 : N(0.5),
-	d0_6			 : N(0.6),
-	d2div3		 : N(2/3),
-	d0_7			 : N(0.7),
-	d0_7248191884897692:N(0.7248191884897692),
-	d0_75			: N(0.75),
-	d0_8			: N(0.8),
-	d5div6		: N(5/6),
-	d0_9			: N(0.9),
-	d0_95     : N(0.95),
-	d0_99     : N(0.99),
-	d0_999		: N(0.999),
-	d1				: N(1),
-	d1_001    : N(1.001),
-	d1_009		: N(1.009),
-	d1_01			: N(1.01),
-	d1_02			: N(1.02),
-	d1_025    : N(1.025),
-	d1_04			: N(1.04),
-	d1_05			: N(1.05),
-	d1_06     : N(1.06),
-	d1_08			: N(1.08),
-	d1_1			: N(1.1),
-	d1_125		: N(1.125),
-	d1_15			: N(1.15),
-	d1_1907		: N(1.1907),
-	d1_2			: N(1.2),
-	d1_202		: N(1.202),
-	d1_25			: N(1.25),
-	d1_308		: N(1.308),
-	d1_337		: N(1.337),
-	d1_379654224:N(1.379654224),
-	d1_5			: N(1.5),
-	d1_75			: N(1.75),
-	d2				: N(2),
-	d2_4			: N(2.4),
-	d2_5			: N(2.5),
-	e					: N(2.7182818284590452),
-	d3				: N(3),
-	pi				: N(3.1415926535897932),
-	d3_3			: N(3.3),
-	d10div3		: N(10/3),
-	d4				: N(4),
-	d5				: N(5),
-	d5_5      : N(5.5),
-	d6				: N(6),
-	d7				: N(7),
-	d7_5			: N(7.5),
-	d8				: N(8),
-	d8_5			: N(8.5),
-	d9				: N(9),
-	d10				: N(10),
-	d11				: N(11),
-	d12				: N(12),
-	d13				: N(13),
-	d14				: N(14),
-	d15				: N(15),
-	d16				: N(16),
-	d18				: N(18),
-	d20				: N(20),
-	d21				: N(21),
-	d22				: N(22),
-	d22_5			: N(22.5),
-	d24				: N(24),
-	d25				: N(25),
-	d27				: N(27),
-	d30				: N(30),
-	d32				: N(32),
-	d35				: N(35),
-	d36       : N(36),
-	d40				: N(40),
-	d45				: N(45),
-	d48				: N(48),
-	d49				: N(49),
-	d50				: N(50),
-	d60				: N(60),
-	d64				: N(64),
-	d70				: N(70),
-	d75				: N(75),
-	d80				: N(80),
-	d90				: N(90),
-	d99				: N(99),
-	d100			: N(100),
-	e2				: N(100),
-	d110			: N(110),
-	d120			: N(120),
-	d125			: N(125),
-	d140			: N(140),
-	d150			: N(150),
-	d160			: N(160),
-	d180			: N(180),
-	d199			: N(199),
-	d200			: N(200),
-	d225			: N(225),
-	d250			: N(250),
-	d256      : N(256),
-	d275			: N(275),
-	d300			: N(300),
-	inflog		: N(Math.log10(2)*1024), // 308.254
-	d320			: N(320),
-	d325			: N(325),
-	d350			: N(350),
-	d360			: N(360),
-	d400			: N(400),
-	d450			: N(450),
-	d480			: N(480),
-	d500			: N(500),
-	d512			: N(512),
-	d550			: N(550),
-	d600			: N(600),
-	d700			: N(700),
-	d750			: N(750),
-	d800			: N(800),
-	d900			: N(900),
-	d950			: N(950),
-	e3				: N(1000),
-	d1024			: N(1024),
-	d1100			: N(1100),
-	d1500			: N(1500),
-	d1609_344	: N(1609.344),
-	d1800			: N(1800),
-	d2e3			: N(2e3),
-	d2350			: N(2350),
-	d3600			: N(3600),
-	d4800			: N(4800),
-	d7e3			: N(7e3),
-	d8e3			: N(8e3),
-	e4				: N(1e4),
-	d18000		: N(18000),
-	d44444		: N(44444),
-	d5e4			: N(5e4),
-	d86400		: N(86400),
-	e5				: N(1e5),
-	d172800		: N(172800),
-	d696342		: N(696342),
-	e6				: N(1e6),
-	d1_5e6		: N(1.5e6),
-	e7        : N(1e7),
-	d31556926	: N(31556926),
-	d2e7			: N(2e7),
-	d5e7			: N(5e7),
-	e8				: N(1e8),
-	d2e8			: N(2e8),
-	e9				: N(1e9),
-	d2pow31		: N(2147483648),
-	d3155692599:N(3155692599),
-	d3_3333e9	: N(3.3333e9),
-	e10				: N(1e10),
-	d4_5e10		: N(4.5e10),
-	e11				: N(1e11),
-	d5e11			: N(5e11),
-	e12				: N(1e12),
-	e14				: N(1e14),
-	e15				: N(1e15),
-	d9e15			: N(9e15),
-	e16				: N(1e16),
-	d1_5e16		: N(1.5e16),
-	e18				: N(1e18),
-	d5e18			: N(5e18),
-	e20				: N(1e20),
-	e24				: N(1e24),
-	e25				: N(1e25),
-	e30				: N(1e30),
-	e33				: N(1e33),
-	e43				: N(1e43),
-	e45				: N(1e45),
-	e50				: N(1e50),
-	e60				: N(1e60),
-	e64       : N(1e64),
-	d1_5e61		: N(1.5e61),
-	e75				: N(1e75),
-	e80				: N(1e80),
-	e96				: N(1e96),
-	d9_999e99	: N(9.999e99),
-	e100			: N(1e100),
-	e115			: N(1e115),
-	e130			: N(1e130),
-	e140			: N(1e140),
-	e175			: N(1e175),
-	e180			: N(1e180),
-	d2_2222e222:N(2.2222e222),
-	e270			: N(1e270),
-	inf				: N("2^1024"), // 1.8e308
-	ee3				: N("ee3"),
-	ee4				: N("ee4"),
-	e44031		: N("e44031"),
-	ee5				: N("ee5"),
-	e2e5			: N("e2e5"),
-	e5e5			: N("e5e5"),
-	ee6				: N("ee6"),
-	e1_5e6		: N("1.5e6"),
-	ee7				: N("ee7"),
-	ee8				: N("ee8"),
-	ee9       : N("ee9"),
-	ee10      : N("ee10"),
-	ee12      : N("ee12"),
-	ee15      : N("ee15"),
-	ee100			: N("ee100"),
-	maxvalue	: Decimal.fromComponents(1,Number.MAX_VALUE,1), // highest possible BEA number
-});
+const constant = deepFreeze({
+	d0				: Decimal.FC_NN(0,0,0),
+	em30			: Decimal.FC_NN(1,1,-30),
+	em10			: Decimal.FC_NN(1,0,1e-10),
+	em5				: Decimal.FC_NN(1,0,1e-5),
+	d1				: Decimal.FC_NN(1,0,1),
+	d2				: Decimal.FC_NN(1,0,2),
+	d2_4			: Decimal.FC_NN(1,0,2.4),
+	e					: Decimal.FC_NN(1,0,2.7182818284590452),
+	d3				: Decimal.FC_NN(1,0,3),
+	d10				: Decimal.FC_NN(1,0,10),
+	d24				: Decimal.FC_NN(1,0,24),
+	d60				: Decimal.FC_NN(1,0,60),
+	e3				: Decimal.FC_NN(1,0,1e3),
+	d1024			: Decimal.FC_NN(1,0,1024),
+	d3600			: Decimal.FC_NN(1,0,3600),
+	e4				: Decimal.FC_NN(1,0,1e4),
+	d86400		: Decimal.FC_NN(1,0,86400),
+	d172800		: Decimal.FC_NN(1,0,172800),
+	e6				: Decimal.FC_NN(1,0,1e6),
+	d31556926	: Decimal.FC_NN(1,0,31556926),
+	e9				: Decimal.FC_NN(1,0,1e9),
+	e10				: Decimal.FC_NN(1,0,1e10),
+	e33				: Decimal.FC_NN(1,1,33),
+	ee4				: Decimal.FC_NN(1,1,1e4),
+	ee5				: Decimal.FC_NN(1,1,1e5),
+	maxvalue	: Decimal.FC_NN(1,Number.MAX_VALUE,1e10)
+})
 Object.defineProperty(JSON,"validDecimal",{
 	value:function validDecimal(x) {
 		if (x instanceof Decimal) return true;
 		if (typeof x !== "string") return false;	// Regular numbers will remain numeric in JSON.
 		if (x=="0") return true;									// Special case for Decimal 0
 		if (N(x).isNaN()) return false;					 
-		if (N(x).eq(c.d0)) return false;					// If the variable evaluates to 0 but did not get stored as such, it's not a decimal.
+		if (N(x).eq(constant.d0)) return false;					// If the variable evaluates to 0 but did not get stored as such, it's not a decimal.
 		return true;															// If all of the above tests were false, it's probably a Decimal.
 	}
 })
@@ -3239,7 +3019,7 @@ Object.defineProperty(Array.prototype,"decimalPowerTower",{value:function decima
 }})
 const notationSupport = {
 	formatSmall:function(x,p){
-		let y=Math.max(0,p-Math.floor(x.max(c.em10).min(c.e10).log(c.d10).toNumber()));
+		let y=Math.max(0,p-Math.floor(x.max(constant.em10).min(constant.e10).log(constant.d10).toNumber()));
 		if (x.lt(1000)) return x.toNumber().toFixed(y);
 		if (x.lt(1000000)) return (Math.round(x.toNumber()*10**y)/10**y).toLocaleString("en-US");
 		functionError("formatSmall",arguments)
@@ -3248,17 +3028,17 @@ const notationSupport = {
 }
 const notations = {
 	"Alemaninc Ordinal":function(x){
-		let output=x.mul(c.e4).quad_slog().log(c.d2).log(c.d2).mul(c.d2_4);
-		if (output.gte(c.d24)) return "ω<sub>10,000,000,000</sub>"
-		let number=c.d10.quad_tetr(output.mod(c.d1).add(c.d1));
-		let precision=c.e4.div(number).log(c.d10).floor().max(c.d0).pow10();
+		let output=x.mul(constant.e4).quad_slog().log(constant.d2).log(constant.d2).mul(constant.d2_4);
+		if (output.gte(constant.d24)) return "ω<sub>10,000,000,000</sub>"
+		let number=constant.d10.quad_tetr(output.mod(constant.d1).add(constant.d1));
+		let precision=constant.e4.div(number).log(constant.d10).floor().max(constant.d0).pow10();
 		return ["α","β","γ","δ","ε","ζ","η","θ","ι","κ","λ","μ","ν","ξ","ο","π","ρ","σ","τ","υ","φ","χ","ψ","ω"][output.floor().toNumber()]+"<sub>"+number.mul(precision).floor().div(precision).toNumber().toLocaleString("en-US")+"</sub>";
 	},
 	"BE Default":function(x){return x.toExponential(3)},
 	"Engineering":function(x,sub="Engineering",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0) return x.log10().mod(c.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(c.d3).floor().mul(c.d3).toNumber().toLocaleString("en-US")
+		if (leadingEs==0) {x=x.mul(1.0000001);return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(constant.d3).floor().mul(constant.d3).toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Engineering"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Hyper-E":function(x,sub="Hyper-E"){
@@ -3268,41 +3048,41 @@ const notations = {
 	},
 	"Infinity":function(x,sub="Infinity"){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
-		let infinities = x.log(c.d2).div(c.d1024)
-		if (infinities.lt(c.d1)) return infinities.toFixed(6)+"∞"
-		if (infinities.lt(c.e6)) return infinities.toPrecision(6)+"∞"
+		let infinities = x.log(constant.d2).div(constant.d1024)
+		if (infinities.lt(constant.d1)) return infinities.toFixed(6)+"∞"
+		if (infinities.lt(constant.e6)) return infinities.toPrecision(6)+"∞"
 		return notations[sub](infinities,sub)+"∞"
 	},
 	"Logarithm":function(x,sub="Logarithm",p=3) {
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0) return "e"+notationSupport.formatSmall(x.log10(),p)
+		if (leadingEs==0) {x=x.mul(1.0000001);return "e"+notationSupport.formatSmall(x.log10(),p)}
 		return Array(leadingEs+1).join("e")+notations["Logarithm"](x.layerplus(-leadingEs),sub,4)
 	},
 	"Mixed scientific":function(x,sub="Mixed scientific",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0)	return notations[x.gt(c.e33)?"Scientific":"Standard"](x,sub,p)
+		if (leadingEs==0)	return notations[x.gt(constant.e33)?"Scientific":"Standard"](x,sub,p)
 		return Array(leadingEs+1).join("e")+notations["Mixed scientific"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Scientific":function(x,sub="Scientific",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (x.layerplus(-leadingEs).gte(c.ee4)) p--
-		if (x.layerplus(-leadingEs).gte(c.ee5)) p--
-		if (leadingEs==0) return x.log10().mod(c.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")
+		if (x.layerplus(-leadingEs).gte(constant.ee4)) p--
+		if (x.layerplus(-leadingEs).gte(constant.ee5)) p--
+		if (leadingEs==0) {x=x.mul(1.0000001);return x.log10().mod(constant.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Scientific"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Standard":function(x,sub="Standard",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = Math.max(x.layer-((x.mag>=33)?1:2),0)    // standard notation adds leading e's at ee33 rather than ee6
 		if (leadingEs==0) {
-			if (x.lt(c.e33)) return x.log10().mod(c.d3).pow10().toPrecision(p+1)+" "+["M","B","T","Qa","Qt","Sx","Sp","Oc","No"][Math.floor(x.log10().toNumber()/3-2)]
+			if (x.lt(constant.e33)) return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+["M","B","T","Qa","Qt","Sx","Sp","Oc","No"][Math.floor(x.log10().toNumber()/3-2)]
 			let e0 = ["","U","D","T","Qa","Qt","Sx","Sp","O","N"]
 			let e1 = ["","Dc","Vg","Tg","Qd","Qi","Se","St","Og","Nn"]
 			let e2 = ["","Ce","Dn","Tc","Qe","Qu","Sc","Si","Oe","Ne"]
 			let e3 = ["QC-","RN-","YC-","ZP-","AT-","FM-","PC-","NA-","MC-","MI-",""] // reverse order
-			let height = x.log10().div(c.d3).sub(c.d1).floor().toNumber()
+			let height = x.log10().div(constant.d3).sub(constant.d1).floor().toNumber()
 			let e3vals = [10,9,8,7,6,5,4,3,2,1,0].map(x=>Math.floor((height/1e3**x)%1e3))
 			let firste3 = e3vals.map(x=>x>0).indexOf(true)
 			let out = ""
@@ -3314,7 +3094,7 @@ const notations = {
 			}
 			if (out.substring(out.length-1)=="-") out = out.substring(0,out.length-1)
 			if (height>=1e7) out += "s"
-			else out = x.log10().mod(c.d3).pow10().toPrecision(p+1)+" "+out
+			else out = x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+out
 			return out
 		}
 		return Array(leadingEs+1).join("e")+notations["Standard"](x.layerplus(-leadingEs),sub,3)
@@ -3325,9 +3105,9 @@ const notations = {
 		return "10 ⇈ "+notations[sub](height,sub,5)
 	},
 	"Time":function(x){
-		let hours=x.mul(c.e4).quad_slog().log(c.d2).log(c.d2).mul(c.d2_4);
-		let minutes=hours.mod(c.d1).mul(c.d60)
-		let seconds=minutes.mod(c.d1).mul(c.d60)
+		let hours=x.mul(constant.e4).quad_slog().log(constant.d2).log(constant.d2).mul(constant.d2_4);
+		let minutes=hours.mod(constant.d1).mul(constant.d60)
+		let seconds=minutes.mod(constant.d1).mul(constant.d60)
 		return [hours,minutes,seconds].map(x=>x.floor().toString().padStart(2,"0")).join(":")
 	}
 }
@@ -3335,38 +3115,39 @@ function gformat(value,precision=0,notation="Scientific",subnotation="Scientific
 	if ([value,precision,notation,subnotation].includes(undefined)) functionError("gformat",arguments)
 	let x=N(value);
 	if (x.sign==-1) return "-"+gformat(x.abs(),precision,notation,subnotation);
-	if (x.eq(c.maxvalue)) return "Infinite";
+	if (x.eq(constant.maxvalue)) return "Infinite";
+	if (x.eq(constant.maxvalue.recip())) return "0"
 	if (x.isNaN()) return "NaN";
-	if (x.eq(c.d0)) return "0";
-	if (x.lt(c.em5)) return "(1 / "+gformat(x.recip(),precision,notation,subnotation)+")";
-	if (x.lt(c.e6)) return notationSupport.formatSmall(x,precision)
+	if (x.eq(constant.d0)) return "0";
+	if (x.lt(constant.em5)) return "(1 / "+gformat(x.recip(),precision,notation,subnotation)+")";
+	if (x.lt(constant.e6)) return notationSupport.formatSmall(x,precision)
 	return notations[notation](x,subnotation)
 }
 function timeFormat(x) {
 	x = N(x);
-	if (x.eq(c.d0)) return "0 seconds";
+	if (x.eq(constant.d0)) return "0 seconds";
 	if (x.eq(Infinity)) return "Infinite time";
-	if (x.lt(c.d0)) return "-"+timeFormat(x.neg())
-	if (x.lt(c.em30)) return "1 / "+x.recip().noLeadFormat(2)+" seconds";
-	if (x.lt(c.d1)) {
-		let exp = x.log10().div(c.d3).neg().ceil();
+	if (x.lt(constant.d0)) return "-"+timeFormat(x.neg())
+	if (x.lt(constant.em30)) return "1 / "+x.recip().noLeadFormat(2)+" seconds";
+	if (x.lt(constant.d1)) {
+		let exp = x.log10().div(constant.d3).neg().ceil();
 		let unit = ["milli","micro","nano","pico","femto","atto","zepto","yocto","ronto","quecto"][exp.toNumber()-1]+"seconds";
-		return x.mul(c.e3.pow(exp)).noLeadFormat(2)+" "+unit;
+		return x.mul(constant.e3.pow(exp)).noLeadFormat(2)+" "+unit;
 	}
-	if (x.lt(c.d60)) return x.noLeadFormat(2)+" seconds";
-	if (x.lt(c.d3600)) return x.div(c.d60).digits(2)+":"+x.mod(c.d60).digits(2);
-	if (x.lt(c.d86400)) return x.div(c.d3600).digits(2)+":"+x.div(c.d60).mod(c.d60).digits(2)+":"+x.mod(c.d60).digits(2);
-	if (x.lt(c.e9)) return x.div(c.d86400).floor()+" day"+(x.gt(c.d172800)?"s":"")+" "+x.div(c.d3600).mod(c.d24).digits(2)+":"+x.div(c.d60).mod(c.d60).digits(2)+":"+x.mod(c.d60).digits(2);
-	return BEformat(x.div(c.d31556926),2)+" years";
+	if (x.lt(constant.d60)) return x.noLeadFormat(2)+" seconds";
+	if (x.lt(constant.d3600)) return x.div(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	if (x.lt(constant.d86400)) return x.div(constant.d3600).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gt(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	return BEformat(x.div(constant.d31556926),2)+" years";
 }
 function rateFormat(x) {
 	x = N(x);
 	if (!Decimal.valid(x)) throw "Cannot access rateFormat("+x+")"
 	if (x.sign == 0) return "0 per second"
 	if (x.sign == -1) return "-"+rateFormat(x.neg())
-	if (x.eq(c.d1)) return "1 per second"
-	if (x.gt(c.d1)) return x.noLeadFormat(2)+" per second"
-	if (x.lt(c.d1)) return "1 per "+timeFormat(x.recip())
+	if (x.eq(constant.d1)) return "1 per second"
+	if (x.gt(constant.d1)) return x.noLeadFormat(2)+" per second"
+	if (x.lt(constant.d1)) return "1 per "+timeFormat(x.recip())
 	throw "Cannot access rateFormat("+x+")"
 }
 function decimalStructuredClone(obj) {

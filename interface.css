@@ -14,6 +14,9 @@
 	--wormhole_glow:0 0 5px #3300ff, 0 0 20px #6600ff, 0 0 45px #9900ff;
 	--research:#66ccff;
 	--axis_empowerment:rgba(102,0,204,0.9);
+	--galaxies:#ffff00;
+	--galaxyboosts:#99ff99;
+	--galaxypenalties:#ff9999;
 }
 .big {
 	font-size:120%;
@@ -64,6 +67,15 @@
 }
 ._research {
 	color:var(--research)
+}
+._galaxies {
+	color:var(--galaxies)
+}
+._galaxyboosts {
+	color:var(--galaxyboosts)
+}
+._galaxypenalties {
+	color:var(--galaxypenalties)
 }
 html, body {
 	max-width:100%;
@@ -175,6 +187,11 @@ input {
 	bottom:0px;
 	left:10px;
 	padding:0px;
+}
+#storyTitle {
+	text-decoration:underline;
+	font-size:80px;
+	-webkit-text-fill-color: transparent;
 }
 .optionsbutton {
 	background-color:#cccccc;
@@ -292,7 +309,7 @@ tab {
 	border-color:rgba(102,102,102,0.8)
 }
 #button_bigtab_stardust {
-	background-image:url("stardustbackground.png");
+	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ff9900;
 	border-color:#ff9900;
@@ -348,7 +365,7 @@ tab {
 }
 .featureConfig::before{content:"Show options"}
 .stardustResetButton{
-	background-image:url("stardustbackground.png");
+	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ffffff;
 	font-size:15px;
@@ -431,7 +448,7 @@ tab {
 }
 #div_stardustBoost7 {font-size:90%}
 .stardustupgradebutton {
-	background-image:url("stardustbackground.png");
+	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ffffff;
 	padding:10px;
@@ -441,7 +458,7 @@ tab {
 	margin:4px;
 }
 .maxedstardustupgradebutton {
-	background-image:url("stardustbackground.png");
+	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ffffff;
 	padding:10px;
@@ -604,7 +621,7 @@ tab {
 	border-radius:9px;
 	width:180px
 }
-.maxdarkaxisbutton {
+#button_maxDarkAxis {
 	background-color:#990099;
 	color:#ffffff;
 	padding:10px;
@@ -1036,6 +1053,26 @@ tab {
 }
 .white {color: #ffffff}
 .black {color: #000000}
+.galaxyButton {
+	height:60px;
+	width:240px;
+	border-radius:30px;
+	margin:6px;
+	color:#000000;
+}
+.galaxyButton.active {background-color:rgba(153,153,0,0.9);}
+.galaxyButton.locked {background-color:rgba(153,153,153,0.9);}
+#div_galaxyEffects {
+	min-height:80px;
+	width:calc(100vw - 150px);
+	background-color:rgba(102,102,0,0.9);
+	border-style:solid;
+	border-radius:30px;
+	border-width:3px;
+	border-color:rgba(153,153,0,0.9);
+	color:rgba(255,255,255,0.9);
+	padding:10px;
+}
 @keyframes text-grow {
 	0% {font-size: 80%}
 	25% {font-size: 80%}

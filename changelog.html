@@ -53,8 +53,33 @@
 		<h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
 		<a href="index.html"><button class="back">Back to game</button></a>
 		<div id="logContainer"></div>
+		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script>
+const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
+function format(x,p=0){return gformat(N(x),p,notation)}
 const logEntries = [
+	{name:"𝕍1.3 \"One Meteor to Rule them All\" (2023-08-13)",changes:[
+		["CONTENT","Galaxies"],
+		["CONTENT","Study VI"],
+		["CONTENT","5 new rows of Research"],
+		["CONTENT","Tier 7 achievements"],
+		["CONTENT","4 new Tier 6 achievements"],
+		["CONTENT","Study IV and V can be completed more times"],
+		["BALANCE","Reduced theu unlock requirement of Study III completion 4"],
+		["BALANCE","Temporal energy has a much weaker effect and increases much slower. So sorry for anyone that unlocked it before this..."],
+		["BALANCE","Changed the scaling of Study V reward 3"],
+		["BALANCE","Stardust Upgrade 3 level 10 has a lower cost ("+format("ee7")+"&nbsp;→&nbsp;"+format("6.66e6666666")+")"],
+		["BUGFIX","Toggling the display of the footer no longer crashes the page"],
+		["BUGFIX","Wormhole reset not resetting the 'Stardust this Wormhole reset' stat"],
+		["BUGFIX","Mastery 103 being unaffected by mental energy"],
+		["BUGFIX","Dilated time can no longer become something like -(1 / "+format(1.8e16)+") seconds. Hasn't this already been fixed earlier?"],
+		["INTERFACE","Story entries now open as a popup"],
+		["INTERFACE","The effect of the next yellow lumen now shows relative to the baseline rather than the current value above 200 yellow lumens"],
+		["INTERFACE","Unlocking a new tier of achievements now shows a separate notification"],
+		["WHAT","Numbers in the changelog now use your chosen notation, and all entries have been changed retroactively"],
+		["WHAT","Removed all erroneous references to \"AleManInc\". Only \"alemaninc\" refers to the real alemaninc."],
+		["WHAT","Fixed a broken entry from 𝕍1.2.18"]
+	]},
 	{name:"𝕍1.2.21 (2023-07-31)",changes:[
 		["BUGFIX","Chroma gain being unaffected by everything except tickspeed"]
 	]},
@@ -67,7 +92,7 @@ const logEntries = [
 	]},
 	{name:"𝕍1.2.18 (2023-07-30)",changes:[
 		["BALANCE","Changed the reward of \"There are Four Lights\" - the effect is the same, but now scales based on (60 - stars) rather than (60 - stars)<sup>2</sup>"],
-		["BUGFIX","Fixed research loadouts for the 719th time"]
+		["BUGFIX","Fixed research loadouts for the 719th time"],
 		["INTERFACE","Added Time notation"],
 		["INTERFACE","The dark star gain button will no longer indicate multiple can be gained if bulk buy is disabled"]
 	]},
@@ -83,7 +108,7 @@ const logEntries = [
 		["BUGFIX","Star visual options not taking effect until refresh"],
 		["BUGFIX","Opening study options no longer crashes the page"],
 		["BUGFIX","It is now possible to change the notation without crashing the page"],
-		["INTERFACE","Mixed scientific notation gives one more digit of precision for values larger than 10<sup>10<sup>6</sup></sup> (e1 M)"],
+		["INTERFACE","Mixed scientific notation gives one more digit of precision for values larger than "+format("ee6")],
 	]},
 	{name:"𝕍1.2.15 (2023-07-28)",changes:[
 		["BUGFIX","Study descriptions not updating to reflect harder levels of the study (affected III and V)"],
@@ -165,7 +190,7 @@ const logEntries = [
 		["BALANCE","Stars are now capped at 60 in preparation for an upcoming feature ;)"],
 		["BALANCE","Stardust Upgrade 1 now affects dark axis (I am SO sorry for everyone in the Iron Will V run)"],
 		["BUGFIX","Fixed one of the news messages being undefined"],
-		["BUGFIX","Dilated time can no longer become something like -(1 / 1.8e16) seconds"],
+		["BUGFIX","Dilated time can no longer become something like -(1 / "+format(1.8e16)+") seconds"],
 		["BUGFIX","Fixed Mastery 103 being unaffected by knowledge"],
 		["BUGFIX","Fixed Mastery 52 being affected by the boost percentage of Mastery 51 instead of its own"],
 		["BUGFIX","Fixed Stardust Boost 12 being affected by the boost percentage for Stardust Boost 9 instead of its own"],
@@ -323,7 +348,7 @@ const logEntries = [
 		["TEXTFIX","The 'Star/Mastery/Research builds' columns of the 'last 10 runs' tables in 'Previous Prestiges' are now properly labeled 'Star/Mastery/Research builds' instead of 'build'"]
 	]},
 	{name:"<span style=\"text-decoration:line-through\">v1.1 \"The Light\"</span> 𝕍1.1 \"Just for Lilith\" (2023-04-01)",changes:[
-		["BALANCE","The row 7 mastery unlock now costs 1.5e61 stardust (from 1e60)"],
+		["BALANCE","The row 7 mastery unlock now costs "+format(1.5e61)+" stardust (from "+format(1e60)+")"],
 		["BALANCE","Stardust reset autobuyer is now unlocked at 8 Tier 5 achievements (previously 25)"],
 		["BALANCE","Wormhole reset autobuyer is now unlocked at 12 Tier 5 achievements (previously 20)"],
 		["BUGFIX","Dark T axis is no longer affected doubly by 'Grand Balance'"],
@@ -489,7 +514,7 @@ const logEntries = [
 		["BUGFIX","'NaN' should no longer occur"]
 	]},
 	{name:"v1β.4 \"I give up.\" (2022-06-06)",changes:[
-		["ANNOUNCEMENT","b>The game will no longer display a permanent 'Loading game...' screen. AleManInc will from now on do the responsible thing and test his updates locally.</b>"]
+		["ANNOUNCEMENT","b>The game will no longer display a permanent 'Loading game...' screen. alemaninc will from now on do the responsible thing and test his updates locally.</b>"]
 	]},
 	{name:"v1β.3 \"The Useless Stat Breakdown\" (2022-06-05)",changes:[
 		["BUGFIX","Stat breakdown for mastery power formula exponent now shows the correct value"],
@@ -525,7 +550,7 @@ const logEntries = [
 		["QOL","Buying automation speed upgrades now bulk-buys"],
 		["STORY","Renamed nearly everything in the Tribute layer (including the layer name itself)"],
 		["STORY","Added a story"],
-		"Current endgame: 10<sup>250,000</sup> exotic matter"
+		"Current endgame: "+format("e2.5e5")+" exotic matter"
 	]},
 	{name:"v1α.3 \"Smaller Adjustments\" (2022-03-07)",changes:[
 		["QOL","Engineering notation more readable (dynamic floating point) (by Hedrauta)"],
@@ -562,7 +587,7 @@ const logEntries = [
 		"- Added Dark Matter",
 		"- Added Axioms",
 		"- Finished Tribute Upgrades",
-		"Current endgame: 1e65 tributes"
+		"Current endgame: "+format("e65")+" tributes"
 	]},
 	{name:"v0.1.1 (2022-01-11)",changes:[
 		"- Added a code snippet that automatically fixes the game if for some reason your exotic matter becomes 'NaN'."
@@ -575,7 +600,7 @@ const logEntries = [
 		"- Added more statistics",
 		"- Added offline progress",
 		"- Made W Axis effect slightly stronger (added 15 minutes to the timer)",
-		"Unfortunatey, saves did not transfer to this version and caused a 'NaN' error."
+		"Unfortunately, saves did not transfer to this version and caused a 'NaN' error."
 	]},
 	{name:"v0 (2022-01-05)",changes:["Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts"]}
 ]

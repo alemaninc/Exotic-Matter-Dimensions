@@ -146,8 +146,10 @@ const hotkeys = {
 		if (subtabList[activeTab].length>=num) {if (subtabProperties[activeTab][subtabList[activeTab][num-1]].visible()) {openSubTab(activeTab,subtabList[activeTab][num-1])}}
 	},
 	hotkeyList:{
-		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),action:()=>openTab(x),visible:function(){return tabVisibility[x]()}}])),
-		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["action",()=>hotkeys.tryOpenSubTab(x)],["visible",function(){return true}]])]))
+		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),action:()=>openTab(x),visible:()=>tabVisibility[x]()}])),
+		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["action",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
+		"Stardust reset":{baseKey:"KeyS",action:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")},
+		"Wormhole reset":{baseKey:"KeyW",action:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")},
 	},
 	toBeChanged:null,
 	isChanging:false
