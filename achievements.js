@@ -1327,7 +1327,7 @@ const secretAchievementList = {
 	17:{
 		name:"Go research in real life instead.",
 		description:"Buy research 6-9.",
-		check:function(){return true;}, // checked locally
+		check:function(){return g.research.r6_9;}, // checked locally
 		flavor:"<b>its not Free, Its Negative free, and Negative free is expensive.</b> - Stat Mark",
 		rarity:2
 	},

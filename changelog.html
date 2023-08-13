@@ -58,6 +58,11 @@
 const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const logEntries = [
+	{name:"𝕍1.3.1 \"One Meteor to Rule them All\" (2023-08-13)",changes:[
+		["BUGFIX","Secret achievement for buying research 6-9 being given on buying any research"],
+		["INTERFACE","Moved the endgame threshold from what it was in 𝕍1.2 to the correct value"],
+		["WHAT","Added a missing QOL entry to the 𝕍1.3 changelog"]
+	]},
 	{name:"𝕍1.3 \"One Meteor to Rule them All\" (2023-08-13)",changes:[
 		["CONTENT","Galaxies"],
 		["CONTENT","Study VI"],

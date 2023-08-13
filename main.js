@@ -1983,15 +1983,15 @@ const progressMilestones = [
 	},
 	{
 		type:2,
-		condition:function(){return unlocked("Light");}
+		condition:function(){return unlocked("Galaxies");}
 	},
 	{
 		type:1,
 		label:"current endgame",
-		percent:function(){return g.studyCompletions.sum()/13;},
-		req:function(){return "13 Study completions";},
+		percent:function(){return g.galaxies/3;},
+		req:function(){return "3 galaxies";},
 		color:"endgame",
-		condition:function(){return g.studyCompletions.sum()>12;}
+		condition:function(){return g.galaxies>2;}
 	},
 	{
 		type:3,
