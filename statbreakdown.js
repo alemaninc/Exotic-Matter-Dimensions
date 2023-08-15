@@ -667,8 +667,8 @@ miscStats.darkmatterPerSec={
 		{
 			label:achievement.label(302),
 			func:function(prev){return g.achievement[302]?prev.mul(c.d1_308.pow(unspentStars())):prev;},
-			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(1.308,unspentStars(),3);},
-			show:function(){return g.achievement[302]&&(unspentStars()<0)}
+			text:function(){return "× "+c.d1_308.pow(unspentStars()).format(2)+" "+SSBsmall(1.308,unspentStars(),3);},
+			show:function(){return g.achievement[302]&&(unspentStars()>0)}
 		},
 		statTemplates.ach501Reward,
 		{

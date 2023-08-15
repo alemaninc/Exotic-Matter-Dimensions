@@ -58,6 +58,9 @@
 const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const logEntries = [
+	{name:"𝕍1.3.4 (2023-08-15)",changes:[
+		["BUGFIX","'Valence' achievement now appears properly in the stat breakdown"],
+	]},
 	{name:"𝕍1.3.3 (2023-08-15)",changes:[
 		["BUGFIX","It is no longer possible to lose a negative number of galaxies"],
 		["BUGFIX","Save import should be slightly less broken"]
