@@ -1049,7 +1049,33 @@ const research = (function(){
 			basecost:N(1500),
 			icon:icon.darkstar+classes.darkmatter("$")+icon.minus,
 			effect:function(power){return c.d2.pow(power)}
-		}
+		},
+		...(()=>{
+			let out = {}
+			for (let r=1;r<8;r++) for (let c=1;c<=r;c++) for (let d of [true,false]) {
+				let row = r+16
+				let col = d?(16-c):c
+				let adj = []
+				if (r==1||r>c) adj.push("r"+(r+15)+"_"+col)
+				if (c>1) adj.push("r"+(r+15)+"_"+(d?(17-c):(c-1)))
+				let a1 = axisCodes[r]    // the axis based on which costs are reduced
+				let a2 = axisCodes[c-1]  // the axis which has its costs reduced
+				out["r"+row+"_"+col] = {
+					description:function(){let eff=researchEffect(row,col);return "The "+(d?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(d?"dark ":"")+a1+" axis]"+(eff.eq(1)?"":eff.gt(1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
+					adjacent_req:adj.sort(),
+					condition:[],
+					visibility:function(){return betaActive},
+					type:"normal",
+					basecost:N(0),
+					icon:icon[(d?"dark":"")+a1+"Axis"]+icon.arr+icon[(d?"dark":"")+a2+"Axis"]+classes[(d?"dark":"exotic")+"matter"]("$"),
+					effect:function(power){return power.div((d?[5e3,6e3,2e3,4e3,800,5e3,80]:[12500,2e4,8e3,8e4,3e4,2e5/3,200])[r-1])},
+					value:function(){return eff.mul(stat["real"+(d?"dark":"")+a1+"Axis"]).add(1)},
+					a2:a2,
+					group:"spatialsynergism"+(d?"dark":"light")
+				}
+			}
+			return out
+		})()
 	}
 })();
 const nonPermanentResearchList = Object.keys(research).filter(x=>research[x].type!=="permanent")
@@ -1078,7 +1104,9 @@ const researchGroupList = {
 	light:{label:"Light",get description(){return "Each Light research owned multiplies the cost of all other Light research in the same row by "+(g.achievement[713]?achievement(713).effectFormat(achievement(713).effect()):"4")+"."},color:"#ffff00",icon:"L"},
 	stardust:{label:"Stardust",get description(){return "Each Stardust research owned doubles the cost of all other Stardust research."+((g.studyCompletions[4]==4)?"":(" If your number of Stardust research is greater than or equal to your Study IV completions ("+g.studyCompletions[4]+") their cost is increased even further."))},color:"#ff9900",icon:"S"},
 	lightaugment:{label:"Light Augmentation",description:"Each Light Augmentation multiplies the cost of all other Light Augmentation research by the number already owned, and increases the lumen requirements to buy them.",color:"#cccc00",icon:"LA"},
-	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:"var(--time)",icon:"t"}
+	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:"var(--time)",icon:"t"},
+	spatialsynergismlight:{label:"Spatial Synergism (Light)",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:"var(--exoticmatter)",icon:"A",effectors:Object.fromEntries(axisCodes.map(x=>[x,nonPermanentResearchList.filter(y=>research[y].group=="spatialsynergismlight"&&research[y].a2==x)]))},
+	spatialsynergismdark:{label:"Spatial Synergism (Dark)",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:"var(--darkmatter)",icon:"A",effectors:Object.fromEntries(axisCodes.map(x=>[x,nonPermanentResearchList.filter(y=>research[y].group=="spatialsynergismlight"&&research[y].a2==x)]))}
 }
 function resizeResearch(x){
 	let size = 15
@@ -1124,6 +1152,7 @@ function researchEffect(row,col) {
 function researchCost(x) {
 	// locking
 	if (research[x].group=="time") if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
+	if (["spatialsynergismlight","spatialsynergismdark"].includes(research[x].group)) if (ownedResearchInGroup(research[x].group).length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
 	// base
 	let output = N(research[x]["basecost"]);
 	// class modifiers

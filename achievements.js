@@ -18,7 +18,8 @@ achievement.tierColors = {
 	4:{primary:"#009999",secondary:"#00ffff"},
 	5:{primary:"#000080",secondary:"#6699ff"},
 	6:{primary:"#000000",secondary:"#ffffff"},
-	7:{primary:"#999900",secondary:"#ffff00"}
+	7:{primary:"#999900",secondary:"#ffff00"},
+	8:{primary:"#006644",secondary:"#0099ff"}
 }
 achievement.perAchievementReward = {
 	1:{text:"+0.02× X axis effect per achievement in this tier (currently: +{}×)",value:()=>(achievement.ownedInTier(1)/50).toFixed(2),calc:x=>N(x/50),currentVal:c.d0},
@@ -27,9 +28,10 @@ achievement.perAchievementReward = {
 	4:{text:"Energy effects are 0.1% stronger per achievement in this tier (currently: {}%)",value:()=>(achievement.ownedInTier(4)/10).toFixed(1),calc:x=>N(x/1e3+1),currentVal:c.d1},
 	5:{text:"Base knowledge gain is multiplied by achievements in this tier (currently: ×{}). In addition, gain increasing quality-of-life bonuses as more achievements in this tier are unlocked",value:()=>achievement.ownedInTier(5),calc:x=>N(x),currentVal:c.d0},
 	6:{text:"Research in rows 8-12 is 1% cheaper per achievement in this tier, plus an extra 1% reduction for every 4 achievements (currently: {}%)",value:()=>Math.floor(achievement.ownedInTier(6)*1.25),calc:x=>N(1-Math.floor(x*1.25)/100),currentVal:c.d1},
-	7:{text:"The base of the first galaxy penalty is reduced based on achievements in this tier ({})",value:function(){return (achievement.ownedInTier(7)==Object.keys(achievementList[7]).length)?"currently: 10":("currently: "+this.calc(achievement.ownedInTier(7)).format()+", next: "+this.calc(achievement.ownedInTier(7)+1).format())},calc:x=>N(Math.ceil(10**(36/(x+17)))),currentVal:c.d64}
+	7:{text:"The base of the first galaxy penalty is reduced based on achievements in this tier ({})",value:function(){return (achievement.ownedInTier(7)==Object.keys(achievementList[7]).length)?"currently: 10":("currently: "+this.calc(achievement.ownedInTier(7)).format()+", next: "+this.calc(achievement.ownedInTier(7)+1).format())},calc:x=>N(Math.ceil(10**(36/(x+17)))),currentVal:c.e2},
+	8:{text:"You can buy 1 additional research from each of the Spatial Synergism groups per achievement in this tier (currently: {})",value:()=>(achievement.ownedInTier(8)+7),calc:x=>x+7,currentVal:7}
 }
-achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701}
+achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:801}
 achievement.visible = function(id) {
 	if (g.achievement[id]) return true
 	if (achievement(id).beta==true) if (!betaActive) return false
@@ -1201,6 +1203,9 @@ const achievementList = {
 			flavor:"\"This is a house, Do you want to live here?\" - Stat Mark, 2020",
 			effect:function(){return N(0.0816).mul(g.galaxies).add(1.202).pow(g.observations.sumDecimals())}
 		}
+	},
+	8:{
+		801:{}
 	}
 };
 achievement.all = Object.values(achievementList).map(x => Object.keys(x)).flat()

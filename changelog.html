@@ -58,6 +58,10 @@
 const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const logEntries = [
+	{name:"𝕍1.3.3 (2023-08-15)",changes:[
+		["BUGFIX","It is no longer possible to lose a negative number of galaxies"],
+		["BUGFIX","Save import should be slightly less broken"]
+	]},
 	{name:"𝕍1.3.2 \"Thou shalt not see anything useful here.\" (2023-08-13)",changes:[
 		["BUGFIX","Inputting an invalid number into the 'destroy galaxies' popup no longer makes galaxies NaN"],
 		["WHAT","Fixed the 𝕍1.3 changelog saying \"theu unlock requirement of Study III completion 4\""],

@@ -1671,7 +1671,7 @@ const lightEffect = [
 	{value:function(x=g.lumens[3]){let out = x.gt(c.d50)?x.div(c.d25).sub(c.d1).ln().add(c.d2).div(c.d4):x.div(c.e2);return out.gt(c.d1)?out.mul(c.d200).sub(c.d199).sqrt().add(c.d99).div(c.e2):out},format:function(x){return x.mul(c.d100).noLeadFormat(2)}},
 	{value:function(x=g.lumens[4]){return x.gt(c.d10)?x.log10().pow(c.d2):x.div(c.d10)},format:function(x){return x.noLeadFormat(3)}},
 	{value:function(x=g.lumens[5]){return achievement.all.filter(a=>achievement(a).yellowBreakpoints==undefined?false:achievement(a).yellowBreakpoints.length==3?(achievement(a).yellowBreakpoints[0].lte(x)&&achievement(a).yellowBreakpoints[1].gt(x)):(achievement(a).yellowBreakpoints[0].lte(x)))}},
-	{value:function(x=g.lumens[6]){return x.gt(c.d50)?N(12.5).div(x):c.d1.sub(x.div(c.d50))},format:function(x){return x.noLeadFormat(4)}},
+	{value:function(x=g.lumens[6]){return x.gt(c.d25)?N(12.5).div(x):c.d1.sub(x.div(c.d50))},format:function(x){return x.noLeadFormat(4)}},
 	{value:function(x=g.lumens[7]){return x.gt(c.d5)?Decimal.convergentSoftcap(x.mul(c.d0_4),c.d10,c.e10,2).recip():c.d1.sub(x.div(c.d10))},format:function(x){return g.lumens[7].gte(c.d25)?x.recip().noLeadFormat(3):c.d1.sub(x).mul(c.e2).noLeadFormat(3)}}
 ]
 var lightCache = {
@@ -1773,9 +1773,9 @@ function loseGalaxyPopup() {
 }
 function loseGalaxy(lost) {
 	if (isNaN(lost)) {notify("Invalid number.","#ffff00","#000000")}
-	else if (lost==0) {notify("No galaxies lost","#ffff00","#000000")}
-	else if (lost>g.galaxies) {notify("Not enough galaxies.","#ffff00","#000000")}
 	else if (lost%1>0) {notify("Input an integer.","#ffff00","#000000")}
+	else if (lost<1) {notify("No galaxies lost","#ffff00","#000000")}
+	else if (lost>g.galaxies) {notify("Not enough galaxies.","#ffff00","#000000")}
 	else {
 		g.galaxies-=lost
 		wormholeReset()
@@ -2137,7 +2137,7 @@ function processImport(string) {
 		addSecretAchievement(30)
 	} else {
 		load(JSON.parse(atob(string)))
-		generateResearchCanvas()
+		for (let i=0;i<initSteps.length;i++) if (initSteps[i].onImport??false) initSteps[i].function()
 	}
 }
 function exportSave() {
