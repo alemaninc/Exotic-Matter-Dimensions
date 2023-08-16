@@ -2300,14 +2300,14 @@ miscStats.stardustBoost2={
 	type:"combined",
 	value:function(){
 		if (!unlocked("Stardust")) return c.d1
-		return [g.stardust.add(c.d1).log10(),c.d0_075,stardustBoostBoost(2)].productDecimals().add(c.d1)
+		return g.stardust.add(c.d1).log10().mul(c.d0_075).add(c.d1).pow(stardustBoostBoost(2))
 	}
 }
 miscStats.stardustBoost3={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<1) return c.d1
-		return Decimal.linearSoftcap(g.stardust.div(c.e7).add(c.d1).log10().pow(c.d0_7).div(c.d2),c.d10,c.d1).mul(stardustBoostBoost(3)).add(c.d1)
+		return Decimal.linearSoftcap(g.stardust.div(c.e7).add(c.d1).log10().pow(c.d0_7).div(c.d2),c.d10,c.d1).add(c.d1).pow(stardustBoostBoost(3))
 	}
 }
 miscStats.stardustBoost4={
@@ -2328,7 +2328,7 @@ miscStats.stardustBoost6={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<4) return c.d1
-		return g.stardust.pow(c.d0_15).add(c.e10).log10().log10().sub(c.d1).mul(stardustBoostBoost(6)).add(c.d1)
+		return g.stardust.pow(c.d0_15).add(c.e10).log10().log10().pow(stardustBoostBoost(6))
 	}
 }
 miscStats.stardustBoost7={
@@ -2343,7 +2343,7 @@ miscStats.stardustBoost8={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<6) return c.d1
-		return g.stardust.add(c.e100).log10().log10().div(c.d2).pow(c.d5).sub(c.d1).mul(stardustBoostBoost(8)).add(c.d1)
+		return g.stardust.add(c.e100).log10().log10().div(c.d2).pow(stardustBoostBoost(8).mul(c.d5))
 	}
 }
 miscStats.stardustBoost9={

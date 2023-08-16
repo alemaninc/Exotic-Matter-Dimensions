@@ -273,13 +273,14 @@ function updateHTML() {
 		if (!g.topResourcesShown.stardust) d.innerHTML("span_stardust_disabledTop",g.stardust.format())
 		if (activeSubtabs.stardust=="stardustBoosts") {
 			d.innerHTML("span_stardustBoost1Value",stat.stardustBoost1.format(2));
-			d.innerHTML("span_stardustBoost2Value",stat.stardustBoost2.sub(c.d1).mul(c.e2).format(2));
-			d.innerHTML("span_stardustBoost3Value",stat.stardustBoost3.sub(c.d1).mul(c.e2).format(2));
+			for (let i of [2,3,6,8]) {
+				let val = stat["stardustBoost"+i]
+				d.innerHTML("span_stardustBoost"+i+"Value",(val.gte(c.d10)?val:val.sub(c.d1).mul(c.e2)).noLeadFormat(2))
+				d.innerHTML("span_stardustBoost"+i+"Tooltip",val.gte(c.d10)?"×":"%")
+			}
 			d.innerHTML("span_stardustBoost4Value",stat.stardustBoost4.format(3));
 			d.innerHTML("span_stardustBoost5Value",stat.stardustBoost5.format(2));
-			d.innerHTML("span_stardustBoost6Value",stat.stardustBoost6.sub(c.d1).mul(c.e2).format(2));
 			d.innerHTML("span_stardustBoost7Value",stat.stardustBoost7.format(4));
-			d.innerHTML("span_stardustBoost8Value",stat.stardustBoost8.sub(c.d1).mul(c.e2).format(2));
 			d.innerHTML("span_stardustBoost9Value",stat.stardustBoost9.format(3));
 			d.innerHTML("span_stardustBoost10Value",stat.stardustBoost10.format(4));
 			d.innerHTML("span_stardustBoost11Value",stat.stardustBoost11.sub(c.d1).mul(c.e2).format(2));
@@ -463,13 +464,8 @@ function updateHTML() {
 			d.innerHTML("span_highestGalaxies",g.highestGalaxies)
 			d.innerHTML("span_currentGalaxyStarCost",starCost(59).format())
 			d.innerHTML("span_nextGalaxyStarCost",starCost(59,g.galaxies+1).format())
-			let affCur=0,affNext=0
-			for (let i=0;i<60;i++) {
-				if (starCost(i).lt(g.stardust)) affCur=i+1
-				if (starCost(i,g.galaxies+1).lt(g.stardust)) affNext=i+1
-			}
-			d.innerHTML("span_currentGalaxyAffordableStars",affCur)
-			d.innerHTML("span_nextGalaxyAffordableStars",affNext)
+			d.innerHTML("span_currentGalaxyAffordableStars",affordableStars())
+			d.innerHTML("span_nextGalaxyAffordableStars",affordableStars(g.galaxies+1))
 			d.class("button_gainGalaxy","galaxyButton "+(g.stars==60?"active":"locked"))
 			d.class("button_destroyGalaxies","galaxyButton "+(g.galaxies==0?"locked":"active"))
 			for (let i=1;i<galaxyEffects.length;i++) {

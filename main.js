@@ -920,13 +920,13 @@ function stardustBoostBoost(x) {
 const stardustBoostText = [
 	null,
 	"Exotic matter gain is multiplied by {v}",
-	"Y Axis is {v}% stronger",
-	"W Axis is {v}% stronger",
+	"Y Axis is {v}{t} stronger",
+	"W Axis is {v}{t} stronger",
 	"Stardust gain is multiplied by (mastery&nbsp;power)<sup>{v}</sup><br><span class=\"small\">(current total: ×{t})</span>",
 	"X Axis base price ratio is divided by {v}<br><span class=\"small\">(overall: {t}× cheaper)</span>",
-	"Dark Z Axis is {v}% stronger",
+	"Dark Z Axis is {v}{t} stronger",
 	"Mastery power gain is multiplied by {v}<sup>s<sup id=\"span_stardustBoost7FakeExp\"></sup></sup>, where s = "+unbreak("(seconds in this stardust reset)")+"<br><span class=\"small\">(current total: ×{t})</span>",
-	"V Axis is {v}% stronger",
+	"V Axis is {v}{t} stronger",
 	"Dark stars are {v}× cheaper",
 	"Increase the exponent of the Z axis effect formula by {v}",
 	"Row 10 Masteries are {v}% stronger",
@@ -1032,6 +1032,10 @@ function buyStar() {
 		for (let i of secretAchievementEvents.starBuy) addSecretAchievement(i);
 		if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false;
 	}
+}
+function affordableStars(gal=g.galaxies) {
+	for (let i=59;i>=0;i--) if (starCost(i,gal).lt(g.stardust)) return i+1
+	return 0
 }
 function buyStarUpgrade(x) {
 	if ((unspentStars() > 0) && availableStarRow(Math.floor(x/10)) && (!g.star[x])) {
@@ -1724,7 +1728,10 @@ const galaxyEffects = [
 		req:2,
 		boost:{
 			value:function(n=g.galaxies){return [c.d1_15,effectiveGalaxies(2,n),c.d0_9].decimalPowerTower()},
-			text:function(){return (this.value().gt(c.d10)?"{}×":"+{}%")+" chroma gain per star"},
+			text:function(){
+				function eff(gal){return galaxyEffects[2].boost.value(gal).mul(stat.chromaGainBase).pow(affordableStars(gal))}
+				return (this.value().gt(c.d10)?"{}×":"+{}%")+" chroma gain per star<br><span class=\"small\">(this is currently a "+arrowJoin(eff(g.galaxies).noLeadFormat(2),eff(g.galaxies+1).noLeadFormat(2)+"× multiplier overall from stars)")
+			},
 			format:function(e){return this.value().gte(c.d10)?e.noLeadFormat(3):e.sub(c.d1).mul(c.e2).noLeadFormat(2)}
 		},
 		penalty:{
@@ -1991,7 +1998,7 @@ const progressMilestones = [
 		percent:function(){return g.galaxies/3;},
 		req:function(){return "3 galaxies";},
 		color:"endgame",
-		condition:function(){return g.galaxies>2;}
+		condition:function(){return g.highestGalaxies>2;}
 	},
 	{
 		type:3,

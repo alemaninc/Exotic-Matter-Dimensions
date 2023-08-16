@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.4",
+	current:"𝕍1.3.5",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -296,6 +296,18 @@ const c = deepFreeze({		 // c = "constant"
 });
 const axisCodes = "XYZWVUTS".split("");
 const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x]).flat()
-function percentOrMult(num,precision=2) {
-	return num.lte(c.d0_1)?(num.recip().noLeadFormat(precision)+"÷"):num.gte(c.d10)?(num.noLeadFormat(precision)+"×"):(num.sub(c.d1).mul(c.e2).noLeadFormat(precision)+"%")
+function percentOrMult(num,precision=2,classname) {
+	let number,sign
+	if (num.lte(c.d0_1)) {
+		number=num.recip().noLeadFormat(precision)
+		sign="÷"
+	} else if (num.gte(c.d10)) {
+		number=num.noLeadFormat(precision)
+		sign="×"
+	} else {
+		number=num.sub(c.d1).mul(c.e2).noLeadFormat(precision)
+		sign="%"
+	}
+	if (typeof classname == "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
+	return number+sign
 }

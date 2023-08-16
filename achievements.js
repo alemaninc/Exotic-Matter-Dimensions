@@ -887,7 +887,7 @@ const achievementList = {
 			name:"The 4th dimension doesn't exist",
 			description:"Reach 160 total dark axis without more than 3 different types of dark axis",
 			check:function(){return stat.totalDarkAxis.gte(160)&&this.active()&&achievement.ownedInTier(5)>=7;},
-			progress:function(){return achievement.ownedInTier(5)>=7?"You must have at least 7 other Tier 5 achievements to attempt this":this.active()?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
+			progress:function(){return achievement.ownedInTier(5)<7?"You must have at least 7 other Tier 5 achievements to attempt this":this.active()?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
 			reward:"Dark star cost scaling starts 4 dark stars later",
 			flavor:"Einstein would agree",
 			active:function(){return axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()<=3;}
