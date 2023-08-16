@@ -95,7 +95,7 @@ const newsSupport = {
 		for (let i of props) out.push(Object.getOwnPropertyDescriptor(item,i).value==undefined?Object.getOwnPropertyDescriptor(item,i).get.toString():(i+":\""+Object.getOwnPropertyDescriptor(item,i).value+"\""))
 		return "{"+out.join(",")+"}"
 	},
-	secretAchievementHelp:function(){popup({text:"Here is the name of a random Secret Achievement: "+secretAchievementList[Object.keys(secretAchievementList).filter(x=>g.secretAchievement[x]).random()]+".",buttons:[["Close",""]]})},
+	secretAchievementHelp:function(){notify("Here is the name of a random Secret Achievement: "+secretAchievementList[Object.keys(secretAchievementList).filter(x=>!g.secretAchievement[x]).random()].name+".");currentNewsOffset=1e4},
 	easterTime:function() {let Y = new Date().getUTCFullYear();let C = Math.floor(Y/100);let N = Y - 19*Math.floor(Y/19);let K = Math.floor((C - 17)/25);let I = C - Math.floor(C/4) - Math.floor((C - K)/3) + 19*N + 15;I = I - 30*Math.floor((I/30));I = I - Math.floor(I/28)*(1 - Math.floor(I/28)*Math.floor(29/(I + 1))*Math.floor((21 - N)/11));let J = Y + Math.floor(Y/4) + I + 2 - C + Math.floor(C/4);J = J - 7*Math.floor(J/7);let L = I - J;let M = 3 + Math.floor((L + 40)/44);let D = L + 28 - 31*Math.floor(M/4);return Math.abs((M*30+D)-((new Date().getUTCMonth()+1)*30+new Date().getUTCDate()))<7},
 	EMDevelopmentVariables:function(){return [g.exoticmatter,N(totalAchievements),g.truetimePlayed,g.masteryPower,g.stardust,g.darkmatter,g.hawkingradiation]},
 	EMDevelopmentIndex:function(){return newsSupport.EMDevelopmentVariables().map(x=>x.add(c.d10).quad_slog()).sumDecimals().mul(c.e2)},
@@ -104,7 +104,7 @@ const newsSupport = {
 	addZP:function(){g.zipPoints+=(g.zipPointMulti-(g.zipPoints/1e158)**2);if(d.element("news_zipPoints")!==undefined){d.innerHTML("news_zipPoints",newsSupport.formatZP())}},
 	cashInZPRewards:[
 		{get value(){return Math.min(g.zipPoints**(1/3)/10,Math.log10(g.zipPoints))},func:function(){g.dilatedTime+=this.value},get text(){return "+"+timeFormat(this.value)+" dilated time!"},get visible(){return true}},
-		{get value(){return Math.min(g.zipPointMulti+0.001*g.zipPoints*Math.log10(g.zipPoints)**-2,1e300)},func:function(){g.zipPointMulti=this.value},get text(){return "Zip Point multiplier "+arrowJoin(BEformat(N(g.zipPointMulti),2)+"×",+BEformat(N(this.value),2)+"×!")},get visible(){return g.zipPointMulti<1e300}},
+		{get value(){return Math.min(g.zipPointMulti+0.001*g.zipPoints*Math.log10(g.zipPoints)**-2,1e300)},func:function(){g.zipPointMulti=this.value;addSecretAchievement(32)},get text(){return "Zip Point multiplier "+arrowJoin(BEformat(N(g.zipPointMulti),2)+"×",+BEformat(N(this.value),2)+"×!")},get visible(){return g.zipPointMulti<1e300}},
 		{get value(){return Math.floor(Math.log10(g.zipPoints)**3)},func:function(){o.add("stardust",this.value)},get text(){return "+"+BEformat(this.value)+" stardust!"},get visible(){return g.stardust.div(this.value).gt(c.e2)}},
 		{get value(){return Math.floor(Math.log10(g.zipPoints)**3)},func:function(){o.add("hawkingradiation",this.value)},get text(){return "+"+BEformat(this.value)+" hawking radiation!"},get visible(){return g.hawkingradiation.div(this.value).gt(c.e2)}}
 	],
@@ -388,7 +388,8 @@ const newsList = [
 	{text:["When the LIGHT is subsumed by SHADOW","When the FOUNTAINS fill the sky","All will fall into CHAOS.","The TITANS will take form from the FOUNTAINS","And envelop the land in devastation.","The surviving Dark Matter, crushed by the darkness","Will slowly, one by one, turn into statues...","Leaving the Exotic Matter to fend for itself.","Lost eternally in an endless night...","Is that your idea of paradise?"].join(newsSupport.br(100)),get weight(){return unlocked("Dark Matter")?1:0}},
 	{text:"22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222: the full 2 saga of the news ticker."},
 	{get text(){return "Fact: there are "+Object.keys(notations).length+" notations in the game. Have you ever wondered what your exotic matter amount would look like in different notations? Here's your amount of exotic matter in some different notations - "+Object.entries(notations).map(x=>x[0]+": "+x[1](g.exoticmatter)).join(newsSupport.br(100))},get weight(){return g.exoticmatter.gt(c.inf)?1:0}},
-	{text:"I see dilation, but where are the tachyon particles?"}
+	{text:"I see dilation, but where are the tachyon particles?"},
+	{get text(){let highest = Object.keys(achievementList).reverse().filter(x=>achievement.ownedInTier(x)>0)[0];return "How has it taken you "+timeFormat(g.timePlayed)+" to get "+achievement.ownedInTier(highest)+" "+achievement.tierName(highest)+" achievement"+((achievement.ownedInTier(highest)==1)?"":"s")+"? How pathetic..."},get weight(){return g.timePlayed*totalAchievements>1e5?1:0}}
 ]
 // bottom
 var newsOrder = []

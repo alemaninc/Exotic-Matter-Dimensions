@@ -1053,11 +1053,11 @@ const research = (function(){
 		...(()=>{
 			let out = {}
 			for (let r=1;r<8;r++) for (let c=1;c<=r;c++) for (let d of [true,false]) {
-				let row = r+16
+				let row = 17+r-c
 				let col = d?(16-c):c
 				let adj = []
-				if (r==1||r>c) adj.push("r"+(r+15)+"_"+col)
-				if (c>1) adj.push("r"+(r+15)+"_"+(d?(17-c):(c-1)))
+				if (row>17||c==1) adj.push("r"+(row-1)+"_"+col)
+				if (c>1) adj.push("r"+row+"_"+(col+(d?1:-1)))
 				let a1 = axisCodes[r]    // the axis based on which costs are reduced
 				let a2 = axisCodes[c-1]  // the axis which has its costs reduced
 				out["r"+row+"_"+col] = {
@@ -1066,11 +1066,11 @@ const research = (function(){
 					condition:[],
 					visibility:function(){return betaActive},
 					type:"normal",
-					basecost:N(0),
+					basecost:N(250+25*(r+c)),
 					icon:icon[(d?"dark":"")+a1+"Axis"]+icon.arr+icon[(d?"dark":"")+a2+"Axis"]+classes[(d?"dark":"exotic")+"matter"]("$"),
 					effect:function(power){return power.div((d?[5e3,6e3,2e3,4e3,800,5e3,80]:[12500,2e4,8e3,8e4,3e4,2e5/3,200])[r-1])},
-					value:function(){return eff.mul(stat["real"+(d?"dark":"")+a1+"Axis"]).add(1)},
-					a2:a2,
+					value:function(){return researchEffect(row,col).mul(stat["real"+(d?"dark":"")+a1+"Axis"]).add(1)},
+					a1:a1,a2:a2,
 					group:"spatialsynergism"+(d?"dark":"light")
 				}
 			}

@@ -2028,6 +2028,7 @@ function ProgressBar() {
 	}
 	d.innerHTML("gameprogress",label);
 	d.element("gameprogress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+filled+"%,rgba(102,102,102,0.9) "+filled+"%,rgba(102,102,102,0.9)),"+color;
+	d.element("gameprogress").style.color = blackOrWhiteContrast(color)
 }
 function progressBarOnClick() {
 	let data

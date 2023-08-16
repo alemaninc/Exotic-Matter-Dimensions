@@ -885,9 +885,9 @@ const achievementList = {
 		},
 		527:{
 			name:"The 4th dimension doesn't exist",
-			description:"Reach 160 total dark axis without more than 3 different types of dark axis",
-			check:function(){return stat.totalDarkAxis.gte(160)&&this.active()&&achievement.ownedInTier(5)>=7;},
-			progress:function(){return achievement.ownedInTier(5)<7?"You must have at least 7 other Tier 5 achievements to attempt this":this.active()?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
+			description:"Reach 160 total dark axis without more than 3 different types of dark axis or resetting your dark axis in the current Wormhole",
+			check:function(){return stat.totalDarkAxis.gte(160)&&this.active()&&(achievement.ownedInTier(5)>=7||g.darkstars.eq(c.d0));},
+			progress:function(){return ((g.darkstars.eq(c.d0)||achievement.ownedInTier(5)>=7)&&this.active())?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
 			reward:"Dark star cost scaling starts 4 dark stars later",
 			flavor:"Einstein would agree",
 			active:function(){return axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()<=3;}
@@ -1448,6 +1448,13 @@ const secretAchievementList = {
 			if (this.clicks==42) {setTimeout(()=>{addSecretAchievement(31)},2000)}
 			else {setTimeout(function(){secretAchievementList[31].clicks=0},30000)}
 		}
+	},
+	32:{
+		name:"You have 1 ^300, 0 ^299, 0 ^298, 0 ^297 and 0 ^296",
+		get description(){return "Have a Zip Point multiplier of "+BEformat("e300")+"×"},
+		check:function(){return g.zipPointMulti==1e300},
+		flavor:"Stupid xhwzwka changed it to \"You have 1e300 exponents\". How boring...",
+		rarity:7
 	}
 }
 const achievementEvents = {
