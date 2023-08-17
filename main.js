@@ -2020,7 +2020,7 @@ function ProgressBar() {
 	} else if (data.type==2) {
 		label = "No new aspects detected. <span style=\"font-weight:700\">Perhaps you need something else.</span>";
 		filled = 0;
-		color = "#000000"; // doesn't get used
+		color = "#666666"; // same as unfilled
 	} else if (data.type==3) {
 		label = "You are at the current endgame. Click for a clue of what the next update will bring";
 		filled = 100;

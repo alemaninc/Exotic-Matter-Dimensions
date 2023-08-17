@@ -1494,7 +1494,7 @@ const researchLoadouts = {
 	},
 	load:function(string){
 		showingResearchLoadouts=false
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buyResearch(researchRow(i),researchCol(i),true)
+		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buyResearch(researchRow(i),researchCol(i),false)
 		popup({text:"Successfully loaded!",buttons:[["Close",""]]})
 	}
 }

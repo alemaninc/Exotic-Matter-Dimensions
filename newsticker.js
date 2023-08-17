@@ -389,7 +389,7 @@ const newsList = [
 	{text:"22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222: the full 2 saga of the news ticker."},
 	{get text(){return "Fact: there are "+Object.keys(notations).length+" notations in the game. Have you ever wondered what your exotic matter amount would look like in different notations? Here's your amount of exotic matter in some different notations - "+Object.entries(notations).map(x=>x[0]+": "+x[1](g.exoticmatter)).join(newsSupport.br(100))},get weight(){return g.exoticmatter.gt(c.inf)?1:0}},
 	{text:"I see dilation, but where are the tachyon particles?"},
-	{get text(){let highest = Object.keys(achievementList).reverse().filter(x=>achievement.ownedInTier(x)>0)[0];return "How has it taken you "+timeFormat(g.timePlayed)+" to get "+achievement.ownedInTier(highest)+" "+achievement.tierName(highest)+" achievement"+((achievement.ownedInTier(highest)==1)?"":"s")+"? How pathetic..."},get weight(){return g.timePlayed*totalAchievements>1e5?1:0}}
+	{get text(){let highest = Object.keys(achievementList).reverse().filter(x=>achievement.ownedInTier(x)>0)[0];if(highest==undefined){return newsSupport.error};return "How has it taken you "+timeFormat(g.timePlayed)+" to get "+achievement.ownedInTier(highest)+" "+achievement.tierName(highest)+" achievement"+((achievement.ownedInTier(highest)==1)?"":"s")+"? How pathetic..."},get weight(){return g.timePlayed*totalAchievements>1e5?1:0}}
 ]
 // bottom
 var newsOrder = []
