@@ -28,7 +28,7 @@ achievement.perAchievementReward = {
 	4:{text:"Energy effects are 0.1% stronger per achievement in this tier (currently: {}%)",value:()=>(achievement.ownedInTier(4)/10).toFixed(1),calc:x=>N(x/1e3+1),currentVal:c.d1},
 	5:{text:"Base knowledge gain is multiplied by achievements in this tier (currently: ×{}). In addition, gain increasing quality-of-life bonuses as more achievements in this tier are unlocked",value:()=>achievement.ownedInTier(5),calc:x=>N(x),currentVal:c.d0},
 	6:{text:"Research in rows 8-12 is 1% cheaper per achievement in this tier, plus an extra 1% reduction for every 4 achievements (currently: {}%)",value:()=>Math.floor(achievement.ownedInTier(6)*1.25),calc:x=>N(1-Math.floor(x*1.25)/100),currentVal:c.d1},
-	7:{text:"The base of the first galaxy penalty is reduced based on achievements in this tier ({})",value:function(){return (achievement.ownedInTier(7)==Object.keys(achievementList[7]).length)?"currently: 10":("currently: "+this.calc(achievement.ownedInTier(7)).format()+", next: "+this.calc(achievement.ownedInTier(7)+1).format())},calc:x=>N(Math.ceil(10**(36/(x+17)))),currentVal:c.e2},
+	7:{text:"The base of the first galaxy penalty is reduced based on achievements in this tier ({})",value:function(){return showFormulas?"ceil(10<sup>36 ÷ (17+A)</sup>)":(achievement.ownedInTier(7)==Object.keys(achievementList[7]).length)?"currently: 10":("currently: "+this.calc(achievement.ownedInTier(7)).format()+", next: "+this.calc(achievement.ownedInTier(7)+1).format())},calc:x=>N(Math.ceil(10**(36/(x+17)))),currentVal:c.e2},
 	8:{text:"You can buy 1 additional research from each of the Spatial Synergism groups per achievement in this tier (currently: {})",value:()=>(achievement.ownedInTier(8)+7),calc:x=>x+7,currentVal:7}
 }
 achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:801}
@@ -106,9 +106,11 @@ const achievementList = {
 			get description(){return "Accumulate "+BEformat(c.e11)+" mastery power";},
 			check:function(){return g.masteryPower.gt(c.e11);},
 			progress:function(){return achievement.percent(g.masteryPower,c.e11,0);},
-			get reward(){return "Extremely small boost to first row Masteries based on time played (currently: "+this.effect().format(2)+"%)";},
+			get reward(){return "Extremely small boost to first row Masteries based on time played (currently: {}%)";},
 			flavor:"10,000 hours to master your craft.",
 			effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(c.e5).add(c.d10).log10().log10(),c.d0_75,c.d1).sqrt();},
+			effectFormat:x=>x.format(2),
+			formulaText:()=>formulaFormat.convSoftcap("log(log(t ÷ 100,000 + 10))",c.d0_75,c.d1,g.truetimePlayed.gt(42014859476))+"<sup>0.5</sup>"
 		},
 		106:{
 			name:"10.000 hours?",
@@ -198,6 +200,10 @@ const achievementList = {
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d8_5,c.d10):out.pow(out.log10().add(c.d1))).fix(c.d0)
 			},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).format(2),
+			formulaText:()=>{
+				if (g.lumens[5].lt(c.e2)) return formulaFormat.convSoftcap("log(MP + 1)<sup>2</sup> ÷ 10",c.d750,c.d900,g.masteryPower.gt(4.004e86))
+				return "((log(MP + 1)<sup>2</sup> ÷ 1,000 + 1)<sup>1 + log(log(MP + 1)<sup>2</sup> ÷ 1,000 + 1)</sup> - 1) × 100"
+			},
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
 		115:{
@@ -222,6 +228,10 @@ const achievementList = {
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d4,c.d5):out.mul(out.div(c.e2).add(c.d1))).fix(c.d0)
 			},
 			effectFormat:x=>x.format(2),
+			formulaText:()=>{
+				let out = "log(ΣA + 1)"
+				return (g.lumens[5].lt(c.d100)?formulaFormat.convSoftcap(out,c.d4,c.d5,stat.totalAxis.gte(9999)):(out+" + "+out+"<sup>2</sup> ÷ 100"))
+			},
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
 		202:{
@@ -230,7 +240,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.WAxis.eq(c.d0);},
 			progress:function(){return g.WAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
 			prevReq:[104],
-			reward:"+0.4% stardust per W Axis",
+			get reward(){return "+0.4% stardust per W Axis (total: "+percentOrMult(c.d1_004.pow(g.WAxis))+")"},
 			flavor:"Like all great art, it defies the tyrant Time."
 		},
 		203:{
@@ -239,7 +249,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.ZAxis.eq(c.d0);},
 			progress:function(){return g.ZAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
 			prevReq:[202],
-			reward:"+0.3% stardust per Z Axis",
+			get reward(){return "+0.3% stardust per Z Axis (total: "+percentOrMult(c.d1_003.pow(g.ZAxis))+")"},
 			flavor:"Four axis good, two axis better"
 		},
 		204:{
@@ -248,7 +258,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.YAxis.eq(c.d0);},
 			progress:function(){return g.YAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
 			prevReq:[203],
-			reward:"+0.2% stardust per Y Axis",
+			get reward(){return "+0.2% stardust per Y Axis (total: "+percentOrMult(c.d1_002.pow(g.YAxis))+")"},
 			flavor:"It seemed that this poor ignorant Monarch — as he called himself — was persuaded that the Straight Line which he called his Kingdom, and in which he passed his existence, constituted the whole of the world"
 		},
 		205:{
@@ -257,7 +267,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.e25)&&g.XAxis.eq(c.d0);},
 			progress:function(){return g.XAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
 			prevReq:[204],
-			reward:"+0.1% stardust per X Axis",
+			get reward(){return "+0.1% stardust per X Axis (total: "+percentOrMult(c.d1_001.pow(g.XAxis))+")"},
 			flavor:"That Point is a Being like ourselves, but confined to the non-dimensional Gulf. He is himself his own World, his own Universe; of any other than himself he can form no conception; he knows not Length, nor Breadth, nor Height, for he has had no experience of them; he has no cognizance even of the number Two; nor has he a thought of Plurality; for he is himself his One and All, being really Nothing."
 		},
 		206:{
@@ -273,6 +283,7 @@ const achievementList = {
 				return Decimal.convergentSoftcap(out,c.d8,y.eq(c.d1)?c.d512:c.d12).fix(c.d0)
 			},
 			effectFormat:x=>x.noLeadFormat(2),
+			formulaText:()=>formulaFormat.convSoftcap("10<sup>log(MP + 1)<sup>0.3</sup> × 0.3</sup>",c.d8,g.lumens[5].lt(c.d100)?c.d12:c.d512,g.masteryPower.gt(2.4444e39)),
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
 		207:{
@@ -399,6 +410,10 @@ const achievementList = {
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d8_5,c.d10):out.pow(out.log10().add(c.d1))).fix(c.d1)
 			},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).format(2),
+			formulaText:()=>{
+				if (g.lumens[5].lt(c.d100)) return formulaFormat.convSoftcap("log(DM + 1)",c.d750,c.d900,g.darkmatter.gt("e750"))
+				return "((1 + log(DM + 1) ÷ 100)<sup>1 + log(1 + log(DM + 1) ÷ 100)</sup> - 1) × 100"
+			},
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
 		302:{
@@ -476,6 +491,10 @@ const achievementList = {
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d0_5,c.d1):Decimal.logarithmicSoftcap(out,c.d1,c.d1)).fix(c.d0)
 			},
 			effectFormat:x=>x.format(3),
+			formulaText:()=>{
+				let out = "log(DM + 1)<sup>0.5</sup> ÷ 100"
+				return g.lumens[5].lt(c.d100)?formulaFormat.convSoftcap(out,c.d0_5,c.d1,g.darkmatter.gt("e2500")):formulaFormat.logSoftcap(out,c.d1,c.d1,g.darkmatter.gt(c.ee4))
+			},
 			yellowBreakpoints:[c.d99,c.e2,0],
 			active:function(){return Object.keys(masteryData).map(x => MasteryE(x)?1:0).reduce((x,y) => x+y);}
 		},
@@ -499,6 +518,10 @@ const achievementList = {
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.e9,c.e10,1):Decimal.linearSoftcap(out,c.e10,c.d1div3,1)).fix(c.d1)
 			},
 			effectFormat:x=>x.format(2),
+			formulaText:()=>{
+				let out = "log(EM + 1) ÷ 1,000"
+				return "10<sup>"+(g.lumens[5].lt(c.e2)?formulaFormat.convSoftcap(out,c.d9,c.d10,g.exoticmatter.gt("e9e3")):formulaFormat.linSoftcap(out,c.d10,c.d1div3,g.exoticmatter.gt(c.ee4)))+"</sup>"
+			},
 			yellowBreakpoints:[c.d99,c.d100,0]
 		},
 		312:{
@@ -593,6 +616,7 @@ const achievementList = {
 			flavor:"All the sounds of the night seemed to pass through a hollow tunnel of indefinite length.",
 			effect:function(y=this.yellowValue){return g.exoticmatter.add(c.e10).layerplus(-3).mul(c.d0_8).mul(y.add(c.d1)).fix(c.d0);},
 			effectFormat:x=>x.format(2),
+			formulaText:function(){return "log(log(log(EM + "+c.e10.format()+")))"+formulaFormat.mult(c.d0_8.mul(this.yellowValue.add(c.d1)))},
 			yellowBreakpoints:[c.d30,c.d60,0],
 		},
 		410:{
@@ -605,6 +629,7 @@ const achievementList = {
 			flavor:"If I get up early the day feels longer than if I get up late, even if I spend the same amount of time awake.",
 			effect:function(y=this.yellowValue){return g.masteryPower.add(c.e10).layerplus(-3).mul(c.d1_2).mul(y.add(c.d1)).fix(c.d0);},
 			effectFormat:x=>x.format(2),
+			formulaText:function(){return "log(log(log(MP + "+c.e10.format()+")))"+formulaFormat.mult(c.d1_2.mul(this.yellowValue.add(c.d1)))},
 			yellowBreakpoints:[c.d40,c.d70,0],
 		},
 		411:{
@@ -617,6 +642,7 @@ const achievementList = {
 			flavor:"A mathematician makes plans to travel backwards in time through a wormhole to a parallel universe when he can't even make it to Mars with the fastest rocket on hand today.",
 			effect:function(y=this.yellowValue){return g.stardust.add(c.e10).layerplus(-3).mul(y.add(c.d1)).fix(c.d0);},
 			effectFormat:x=>x.format(2),
+			formulaText:function(){return "log(log(log(S + "+c.e10.format()+")))"+formulaFormat.mult(this.yellowValue.add(c.d1))},
 			yellowBreakpoints:[c.d50,c.d80,0],
 		},
 		412:{
@@ -625,9 +651,11 @@ const achievementList = {
 			check:function(){return g.star[101]||g.star[102]||g.star[103]||g.star[104];},
 			progress:function(){return "Not Completed!";},
 			prevReq:[401],
-			get reward(){return "Multiply stardust gain by "+this.effect().format(2)+" (based on dark stars)";},
+			get reward(){return "Multiply stardust gain by {} (based on dark stars)";},
 			flavor:"More than a paradise",
-			effect:function(){return Decimal.logarithmicSoftcap([c.d1_125,g.darkstars,c.d2].decimalPowerTower(),c.inf,c.d1).fix(c.d1);}
+			effect:function(){return Decimal.logarithmicSoftcap([c.d1_125,g.darkstars,c.d2].decimalPowerTower(),c.inf,c.d1).fix(c.d1);},
+			effectFormat:x=>x.format(2),
+			formulaText:function(){return formulaFormat.logSoftcap("1.125<sup>★<sup>2</sup></sup>",c.inf,c.d1,this.effect().gt(c.inf))}
 		},
 		413:{
 			name:"OMCCDV",
@@ -706,9 +734,11 @@ const achievementList = {
 			description:"Destroy the universe within 5 hours of starting it",
 			check:function(){return g.timeThisWormholeReset<18000;},
 			progress:function(){return g.timeThisWormholeReset<18000?(timeFormat(18000-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			get reward(){return "Stardust Boost 1 is "+this.effect().noLeadFormat(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
+			reward:"Stardust Boost 1 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)",
 			flavor:"N o t h i n g	 t r a v e l s	 f a s t e r	 t h a n	 t h e	 s p e e d	 o f	 l i g h t",
-			effect:function(){return c.d18000.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d2_5).fix(0);}
+			effect:function(){return c.d18000.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d2_5).fix(0);},
+			effectFormat:x=>x.noLeadFormat(3),
+			formulaText:()=>"max(log(18,000 ÷ max(t, 18)), 0) × (max(log(18,000 ÷ max(t, 18)), 0) + 1) × 1.25"
 		},
 		508:{
 			name:"Hyperspeed II",
@@ -716,9 +746,11 @@ const achievementList = {
 			check:function(){return g.timeThisWormholeReset<1800;},
 			progress:function(){return g.timeThisWormholeReset<1800?(timeFormat(1800-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
 			prevReq:[507],
-			get reward(){return "Stardust Boost 4 is "+this.effect().noLeadFormat(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
+			get reward(){return "Stardust Boost 4 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"w	i	t	h		 t	h	e		 p	o	s	s	i	b	l	e		 e	x	c	e	p	t	i	o	n",
-			effect:function(){return c.d1800.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d10div3).fix(0);}
+			effect:function(){return c.d1800.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d10div3).fix(0);},
+			effectFormat:x=>x.noLeadFormat(3),
+			formulaText:()=>"max(log(1,800 ÷ max(t, 18)), 0) × (max(log(1,800 ÷ max(t, 18)), 0) + 1) × 1.667"
 		},
 		509:{
 			name:"Hyperspeed III",
@@ -726,9 +758,11 @@ const achievementList = {
 			check:function(){return g.timeThisWormholeReset<180;},
 			progress:function(){return g.timeThisWormholeReset<180?(timeFormat(180-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
 			prevReq:[508],
-			get reward(){return "Stardust Boost 7 is "+this.effect().noLeadFormat(2)+"% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
+			get reward(){return "Stardust Boost 7 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"o	 f			 b	 a	 d			 n	 e	 w	 s",
-			effect:function(){return c.d180.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d5).fix(0);}
+			effect:function(){return c.d180.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d5).fix(0);},
+			effectFormat:x=>x.noLeadFormat(3),
+			formulaText:()=>"max(log(180 ÷ max(t, 18)), 0) × (max(log(180 ÷ max(t, 18)), 0) + 1) × 2.5"
 		},
 		510:{
 			name:"Hyperspeed IV",
@@ -752,7 +786,7 @@ const achievementList = {
 			description:"Destroy the universe, never having more dark stars than normal stars (including allocated)",
 			check:function(){return g.shiningBrightTonight;},
 			progress:function(){return g.shiningBrightTonight?"Still possible":"Failed";},
-			reward:"Dark stars are 0.25% cheaper per normal star",
+			get reward(){return "Dark stars are 0.25% cheaper per normal star (total: "+percentOrMult(N(0.9975**g.stars))+")"},
 			flavor:"Like diamonds in the sky"
 		},
 		513:{
@@ -760,7 +794,7 @@ const achievementList = {
 			description:"Bulk buy 20 dark stars at once",
 			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
 			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d20,0);},
-			reward:"2× dark matter per dark star",
+			get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
 			flavor:"The greatest shortcoming of the human race is our inability to understand the exponential function."
 		},
 		514:{
@@ -769,7 +803,7 @@ const achievementList = {
 			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
 			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d35,0);},
 			prevReq:[513],
-			reward:"2× dark matter per dark star",
+			get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
 			flavor:"Anyone who believes exponential growth can go on forever in a finite world is either a madman or an economist."
 		},
 		515:{
@@ -778,7 +812,7 @@ const achievementList = {
 			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
 			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d50,0);},
 			prevReq:[514],
-			reward:"2× dark matter per dark star",
+			get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
 			flavor:"10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>"
 		},
 		516:{
@@ -803,9 +837,11 @@ const achievementList = {
 			description:"Gain 696,342 hawking radiation from a single Wormhole reset",
 			check:function(){return stat.pendinghr.gt(696342);},
 			progress:function(){return achievement.percent(stat.pendinghr,c.d696342,0);},
-			get reward(){return "Exotic matter gain is multiplied by "+this.effect().format(2)+" (based on observations)";},
+			reward:"Exotic matter gain is multiplied by {} (based on observations)",
 			flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",
-			effect:function(){return g.observations.map(x=>[c.d2,x,c.d0_75].decimalPowerTower()).productDecimals().fix(c.d1);}
+			effect:function(){return g.observations.map(x=>[c.d2,x,c.d0_75].decimalPowerTower()).productDecimals().fix(c.d1);},
+			effectFormat:x=>x.format(2),
+			formulaText:()=>countTo(4).map(i=>"2<sup>O<span class=\"xscript\"><sup>0.75</sup><sub>"+i+"</sub></span></sup>").join(" × ")
 		},
 		519:{
 			name:"Shiny Yellow Orbs",
@@ -879,9 +915,11 @@ const achievementList = {
 			check:function(){return g.ach526possible&&g.darkXAxis.gt(0)&&unlocked("Hawking Radiation");},
 			progress:function(){return g.ach526possible?"Still achievable":"Failed";},
 			prevReq:[525],
-			get reward(){return "+"+this.effect().format(3)+" normal and dark S axis effect (based on total normal axis)";},
+			get reward(){return "+{} normal and dark S axis effect (based on total normal axis)";},
 			flavor:"",		// intentionally left blank
 			effect:function(){return Decimal.convergentSoftcap(stat.totalAxis.add(c.d1).log10().div(c.e4),c.d0_0004,c.d0_0009)},
+			effectFormat:x=>x.format(3),
+			formulaText:()=>formulaFormat.convSoftcap("log(ΣA + 1) ÷ 10,000",c.d0_0004,c.d0_0009,stat.totalAxis.gte(9999))
 		},
 		527:{
 			name:"The 4th dimension doesn't exist",
@@ -905,9 +943,11 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.ee6)+" exotic matter";},
 			check:function(){return g.exoticmatter.gt(c.ee6);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.ee6,1);},
-			get reward(){return "The base value of the base mastery power exponent is multiplied by "+this.effect().format(4)+" (based on unspent hawking radiation)<br><span class=\"small\">(TL:DR - more mastery power)</span>";},
+			get reward(){return "The base value of the base mastery power exponent is multiplied by {} (based on unspent hawking radiation)<br><span class=\"small\">(TL:DR - more mastery power)</span>";},
 			flavor:"Go become a millionaire in real life.",
-			effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(c.d10).dilate(c.d0_1).div(c.d10),c.d1_75,c.d2),g.hawkingradiation.add(c.e10).log10().log10()).fix(c.d1);}
+			effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(c.d10).dilate(c.d0_1).div(c.d10),c.d1_75,c.d2),g.hawkingradiation.add(c.e10).log10().log10()).fix(c.d1);},
+			effectFormat:x=>x.noLeadFormat(4),
+			formulaText:()=>{return formulaFormat.convSoftcap("10<sup>log(HR + 10)<sup>0.1</sup></sup> ÷ 10",c.d1_75,c.d2,g.hawkingradiation.gt(641695609))+" × log(log(HR + "+c.e10.format()+"))"}
 		},
 		530:{
 			name:"Big Bang",
@@ -924,9 +964,14 @@ const achievementList = {
 			description:"Unlock Light",
 			check:function(){return g.research.r8_8},
 			progress:function(){return "Not Completed!"},
-			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% hawking radiation (based on exotic matter and stardust)"},
+			reward:"Gain more hawking radiation based on exotic matter and stardust (currently: {})",
 			flavor:"Oh, how hard it is to be the only one who knows the truth!",
 			effect:function(){return [g.exoticmatter.add(c.d1).pow(c.em8).mul(c.d10).layerplus(-2),g.stardust.add(c.d1).pow(c.em5).mul(c.d10).layerplus(-2)].productDecimals().pow10()},
+			effectFormat:x=>percentOrMult(x),
+			formulaText:function(){
+				let out = "10<sup>log(log((EM + 1)<sup>"+c.em8.format()+"</sup> × 10)) × log(log((S + 1)<sup>"+c.em5.format()+"</sup> × 10))</sup>"
+				return this.effect().gte(c.d10)?(out+"×"):("("+out+" - 1) × 100%")
+			}
 		},
 		602:{
 			name:"District 13",
@@ -941,9 +986,11 @@ const achievementList = {
 			description:"Get 1 of each primary lumen",
 			check:function(){return !g.lumens.slice(0,3).map(x=>x.eq(c.d0)).includes(true)},
 			progress:function(){return achievement.percent(g.lumens.slice(0,3).map(x=>x.min(c.d1)).sumDecimals(),c.d3,0)},
-			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format()+"% chroma gain (based on total lumens)"},
+			reward:"{} chroma gain (based on total lumens)",
 			flavor:"The soul becomes dyed with the color of its thoughts.",
-			effect:function(){return g.lumens.sumDecimals().div(c.d100).add(c.d1)}
+			effect:function(){return g.lumens.sumDecimals().div(c.d100).add(c.d1)},
+			effectFormat:x=>percentOrMult(x),
+			formulaText:()=>g.lumens.sumDecimals().gte(c.d900)?"ΣL ÷ 100 + 1×":"+ΣL%"
 		},
 		604:{
 			name:"Graduation",
@@ -968,9 +1015,11 @@ const achievementList = {
 			get description(){return "Reach "+this.req.format()+" (10^^π) dark energy"},
 			check:function(){return g.darkEnergy.gt(this.req)},
 			progress:function(){return achievement.percent(g.darkEnergy,this.req,1)},
-			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% all energy gain (based on dark energy)"},
+			reward:"{} all energy gain (based on dark energy)",
 			flavor:"Programming graphics in X is like finding the square root of π using Roman numerals",
-			effect:function(){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.d2)}
+			effect:function(){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.d2)},
+			effectFormat:x=>percentOrMult(x),
+			formulaText:()=>"log(log(log(DE × "+c.ee10.format()+")))<sup>2</sup>×"
 		},
 		607:{
 			name:"There are Four Lights",
@@ -979,8 +1028,8 @@ const achievementList = {
 			progress:function(){return achievement.percent(N(this.lumens()),c.d4,0)},
 			get reward(){return "Each star below 60 divides chroma gain by 2.8 rather than 3"},
 			flavor:"There are six lights. How many do you see now?",
-			effect:function(y=this.yellowValue){return N(2.8).sub(y.mul(1.6))}, // this is a placeholder and has no effect intentionally
-			effectFormat:x=>x.noLeadFormat(3),
+//			effect:function(y=this.yellowValue){return N(2.8).sub(y.mul(1.6))}, // this is a placeholder and has no effect intentionally
+//			effectFormat:x=>x.noLeadFormat(3),
 			lumens:function(){return countTo(6,true).map(x=>g.lumens[x].gt(c.d0)?1:0).sum()},
 		},
 		608:{
@@ -1004,9 +1053,11 @@ const achievementList = {
 			description:"Reach 999 Discoveries",
 			check:function(){return g.totalDiscoveries.gte(999)},
 			progress:function(){return achievement.percent(g.totalDiscoveries,N(999),0)},
-			get reward(){return "+"+this.effect().sub(c.d1).mul(c.e2).format(2)+"% hawking radiation (based on percentage of unspent Discoveries)"},
+			reward:"+{}% hawking radiation (based on percentage of unspent Discoveries)",
 			flavor:"999 Emergencies, what is your emergency?\"<br>\"MY FITBIT SAYS I’M ABOUT TO DIE!",
 			effect:function(){return unspentDiscoveries().div(g.totalDiscoveries.gte(999)?g.totalDiscoveries:g.totalDiscoveries.mul(999).sqrt().max(c.d1)).add(c.d1)},
+			effectFormat:x=>x.sub(c.d1).mul(c.e2).format(2),
+			formulaText:()=>"100 × υD ÷ ΣD"
 		},
 		611:{
 			name:"Pieces of Eight",
@@ -1014,7 +1065,7 @@ const achievementList = {
 			check:function(){return g.research.r11_8},
 			progress:function(){return "Not Completed!"},
 			prevReq:[607],
-			reward:"+0.25% chroma gain per dark star",
+			get reward(){return "+0.25% chroma gain per dark star (total: "+percentOrMult(N(1.0025).pow(g.darkstars))+")"},
 			flavor:"Stars, hide your fires, let not light see my black and deep desires"
 		},
 		612:{
@@ -1078,9 +1129,11 @@ const achievementList = {
 			description:"Create 2 galaxies",
 			check:function(){return g.galaxies>=2},
 			progress:function(){return achievement.percent(N(g.galaxies),c.d2,0)},
-			get reward(){return "The star cost is divided by "+this.effect().format(4)+" per star, per star (based on time in the current Wormhole) (current total: "+this.effect().pow(g.stars**2).format(2)+")"},
+			get reward(){return "The star cost is divided by {} per star, per star (based on time in the current Wormhole) (current total: "+this.effect().pow(g.stars**2).format(2)+")"},
 			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"alemaninc.github.io/Exotic-Matter-Dimensions/\">github.io</a>? Try that too!",
-			effect:function(){return g.truetimeThisWormholeReset.div(c.e7).add(c.d1).pow(c.e2)}
+			effect:function(){return g.truetimeThisWormholeReset.div(c.e7).add(c.d1).pow(c.e2)},
+			effectFormat:x=>x.format(4),
+			formulaText:()=>"(1 + t × "+c.e7.format()+")<sup>100</sup>"
 		},
 		703:{
 			name:"You got past the Big Wall",
@@ -1088,9 +1141,11 @@ const achievementList = {
 			prevReq:[702],
 			check:function(){return g.galaxies>=3},
 			progress:function(){return achievement.percent(N(g.galaxies),c.d3,0)},
-			get reward(){return "The star cost superscaling starts at "+this.effect().noLeadFormat(4)+" instead of 25 (based on hawking radiation)"},
+			reward:"The star cost superscaling starts at {} instead of 25 (based on hawking radiation)",
 			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"file:///C:/Users/\">C:/Users/ale</a>-- okay, maybe not that one...",
-			effect:function(){return g.hawkingradiation.gte(c.ee16)?c.d40:g.hawkingradiation.add(c.d10).log10().log10().add(c.d24)}
+			effect:function(){return Decimal.convergentSoftcap(g.hawkingradiation.add(c.e10).log10().log10(),c.d8,c.d16).add(c.d24)},
+			effectFormat:x=>x.noLeadFormat(4),
+			formulaText:()=>g.hawkingradiation.gt(c.ee8)?"40 - 64 ÷ log(log(HR))":("log(log(HR + "+c.e10.format()+")) + 24")
 		},
 		704:{
 			name:"Five-finger discount",
@@ -1113,18 +1168,22 @@ const achievementList = {
 			description:"Hit the knowledge effect softcap",
 			check:function(){return stat.knowledgeEffect.gte(37.5)},
 			progress:function(){return achievement.percent(stat.knowledgeEffect,N(37.5),0)},
-			get reward(){return "Each dark W axis (including free) gives a "+this.effect().format(2)+"× multiplier to dark matter gain (based on knowledge)"},
+			reward:"Each dark W axis (including free) gives a {}× multiplier to dark matter gain (based on knowledge)",
 			flavor:"Knowledge is like the sea. Go too deep, and the crushing weight of it could kill you.",
-			effect:function(){return g.knowledge.gt("1.2156503370801548e5412")?g.knowledge.add(c.d1).dilate(c.d2div3).div(c.inf):c.d1}
+			effect:function(){return g.knowledge.add(c.d1).dilate(c.d2div3).div(c.inf).max(c.d1)},
+			effectFormat:x=>x.noLeadFormat(2),
+			formulaText:()=>"max(10<sup>log(K + 1)<sup>2 ÷ 3</sup></sup> ÷ "+c.inf.format()+", 1)"
 		},
 		707:{
 			name:"Master of the Void",
 			get description(){return "Reach "+c.e30.format()+" mastery power without buying normal axis, having active Masteries, doing stardust resets, buying stars or stardust upgrades or having temporary research"},
 			check:function(){return g.masteryPower.gte(c.e30)&&stat.totalAxis.eq(c.d0)&&g.ach524possible&&(g.TotalStardustResets==0)&&(totalResearch.temporary==0)},
 			progress:function(){return (totalResearch.temporary>0)?"Failed due to having research":(g.stars>0)?"Failed due to having stars":(g.stardustUpgrades.sum()>6)?"Failed due to buying stardust upgrades":(g.TotalStardustResets>0)?"Failed due to stardust resetting":(!g.ach524possible)?"Failed due to having active Masteries":(stat.totalAxis.neq(c.d0))?"Failed due to having axis":achievement.percent(g.masteryPower,c.e30,1)},
-			get reward(){return "+"+this.effect().format(3)+" to the base mastery power gain exponent (based on time since last mastery swap)"},
+			reward:"+{} to the base mastery power gain exponent (based on time since last mastery swap)",
 			flavor:"This is not Iron Will VI",
-			effect:function(){return g.baseMasteryPowerGain.log10()}
+			effect:function(){return g.baseMasteryPowerGain.log10()},
+			effectFormat:x=>x.format(3),
+			formulaText:()=>"log(t + 1)",
 		},
 		708:{
 			name:"Mind-bending Curvature",
@@ -1160,9 +1219,11 @@ const achievementList = {
 			description:"Generate 1 chroma per second with 40 stars or less",
 			check:function(){return g.ach711Progress<41},
 			progress:function(){return g.ach711Progress==61?"1 chroma per second has not been reached in the current Spacetime":("Best is "+g.ach711Progress+" stars")},
-			get reward(){return "Unlock Mastery 105, and Mastery 105 works with "+this.effect().mul(c.e2).noLeadFormat(3)+"% efficiency "+((g.ach711Progress==0)?"":("(based on least number of stars that 1 chroma per second was generated with"+((g.ach711Progress>40)?"":(". Current best: "+g.ach711Progress))+")"))},
+			get reward(){return "Unlock Mastery 105, and Mastery 105 works with {}% efficiency "+((g.ach711Progress==0)?"":("(based on least number of stars that 1 chroma per second was generated with"+((g.ach711Progress>40)?"":(". Current best: "+g.ach711Progress))+")"))},
 			flavor:"I only know two pieces; one is 'Clair de lune' and the other isn't",
-			effect:function(){return (g.ach711Progress==0)?c.d1:(g.ach711Progress>40)?c.d0:N(0.91-g.ach711Progress/50)}
+			effect:function(){return (g.ach711Progress==0)?c.d1:(g.ach711Progress>40)?c.d0:N(0.91-g.ach711Progress/50)},
+			effectFormat:x=>x.mul(c.e2).format(),
+			formulaText:()=>"(★ = 0) ? 100 : 91 - ★ × 2"
 		},
 		712:{
 			name:"Rewind",
@@ -1189,8 +1250,28 @@ const achievementList = {
 			description:"Play for 122 years",
 			check:function(){return g.truetimePlayed.gt(31556926*122)},
 			progress:function(){return achievement.percent(g.truetimePlayed.div(31556926),c.d122,0)},
-			reward:"122 extra Discoveries",
+			get reward(){return betaActive?("{} extra Discoveries (based on time played)"+(this.effect().gt(g.knowledge.log10().div(c.d10))?" (softcapped past "+g.knowledge.log10().div(c.d10).format()+", based on knowledge)":"")):"122 extra Discoveries"},
+			effect:function(){
+				if (!betaActive) return c.d122
+				let out = g.truetimePlayed.div(31556926)
+				if (out.gt(c.e3)) out = out.log10().sub(c.d2).sqrt().mul(c.d2).add(c.d1).pow10()
+				return Decimal.logarithmicSoftcap(out,g.knowledge.log10().div(c.d10),c.d1)
+			},
+			effectFormat:x=>x.format(3),
+			formulaText:function(){return formulaFormat.logSoftcap(g.truetimePlayed.gt(31556926e3)?"10<sup>log(t ÷ 31,556,926)<sup>0.5</sup> × 2 + 1</sup>":"t ÷ 31,556,926",g.knowledge.log10().div(c.d10),c.d1,this.effect().gt(g.knowledge.log10().div(c.d10)))},
 			flavor:"As soon as you feel too old to do a thing, do it."
+		},
+		716:{
+			name:"Infinity Upgrade",
+			get description(){return "Buy a stardust upgrade for less than "+c.inf.recip().format()+" stardust"},
+			check:function(){return true}, // checked locally
+			progress:function(){let min = countTo(5).map(x=>stat["stardustUpgrade"+x+"Cost"]).reduce((x,y)=>x.min(y));return min.lt(c.inf.recip())?"You can achieve this if you buy a stardust upgrade right now!":achievement.percent(min.recip(),c.inf,1)},
+			reward:"The 9-achievement Wormhole Milestone effect is raised to the power of {} (based on time in the current Wormhole)",
+			effect:function(){return g.truetimeThisWormholeReset.div(c.e4).add(c.d10).log10().log10().div(c.d10).add(c.d1)},
+			effectFormat:x=>x.format(4),
+			formulaText:()=>"log(log(t ÷ 10,000 + 10)) ÷ 10 + 1",
+			flavor:"I am incapable of conceiving infinity, and yet I do not accept finity.",
+			beta:true
 		},
 		719:{
 			name:"OMCCDV II",
@@ -1455,6 +1536,20 @@ const secretAchievementList = {
 		check:function(){return g.zipPointMulti==1e300},
 		flavor:"Stupid xhwzwka changed it to \"You have 1e300 exponents\". How boring...",
 		rarity:7
+	},
+	33:{
+		name:"Stat Mark",
+		description:"Prove your status as a Distinguished Contributor that's not in our server",
+		check:function(){return newsSupport.newsletter.answered==8},
+		flavor:"Hardly marked",
+		rarity:6
+	},
+	34:{
+		name:"Wrong game?",
+		description:"Import a save string from Antimatter Dimensions",
+		check:function(){return true},
+		flavor:"alemaninc knows what it is like to get mistaken for someone far grander than yourself.<br>alemaninc gets angrier.",
+		rarity:2
 	}
 }
 const achievementEvents = {
@@ -1528,7 +1623,7 @@ function showAchievementInfo(id) {
 	let out = "<h4 style=\"color:"+textcolor+";text-decoration:underline\">"+ach.name+"</h4>";
 	out += "<p style=\"color:"+textcolor+"\">"+ach.description+"</p>";
 	if (ach.reward !== undefined) {
-		let rewardText = [yellowLight.affected.includes(String(id))?ach.reward.replaceAll("{}",yellowLight.effectHTML(id,c.d0,achievement(id).yellowValue)):ach.reward]
+		let rewardText = [ach.effect==undefined?ach.reward:(showFormulas&&ach.formulaText!==undefined)?ach.reward.replaceAll("{}",formulaFormat(ach.formulaText())):yellowLight.affected.includes(String(id))?ach.reward.replaceAll("{}",yellowLight.effectHTML(id,c.d0,achievement(id).yellowValue)):(ach.effectFormat==undefined)?ach.reward:ach.reward.replaceAll("{}",ach.effectFormat(ach.effect()))]
 		if (ach.yellowBreakpoints!==undefined) {if(ach.yellowBreakpoints[0].lte(g.lumens[5])) {
 			let limitReached = ach.yellowBreakpoints.length==3?ach.yellowBreakpoints[1].lte(g.lumens[5]):false
 			let from0 = ach.yellowBreakpoints[0].eq(c.d0)

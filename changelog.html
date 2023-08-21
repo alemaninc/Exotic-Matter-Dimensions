@@ -58,6 +58,22 @@
 const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const logEntries = [
+	/*
+	{name:"𝕍1.4",changes:[
+		["BALANCE","'Old age' achievement reward has been buffed"]
+	]}
+	*/
+	{name:"𝕍1.3.8 (2023-08-21)",changes:[
+		["BALANCE","Stardust Boosts 10, 11 and 12 are very slightly weaker at very low amounts of stardust. The end results are asymptotically equal at typical unlock values."],
+		["BUGFIX","Stardust Boost 9 is no longer harmful with less than "+format("ee2")+" stardust"],
+		["BUGFIX<sup>2</sup>","Error popup now shows the Discord invite link for easy reporting"],
+		["BUGFIX","Research loadouts ignoring research that branches off a research to the right or below it"],
+		["CONTENT","The secret achievements that required you to import specific save strings now use a separate 'Use promotion code' button, and the codes are now encrypted in the source code. :smirk:"],
+		["INTERFACE","Added a hotkey which shows in-game formulas"],
+		["INTERFACE","Research 12-8 now has a yellow icon rather than a white one"],
+		["INTERFACE","The icons of stars 82 and 84 are no longer swapped"],
+		["INTERFACE","Very small numbers are now displayed in the form (1 ÷ x) instead of (1 / x)"]
+	]},
 	{name:"𝕍1.3.7 (2023-08-17)",changes:[
 		["BUGFIX","Game not opening at all for new people"],
 		["BUGFIX","Loading research loadouts trying to buy all previous research"]

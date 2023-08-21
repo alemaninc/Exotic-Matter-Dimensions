@@ -38,7 +38,7 @@
 				<div class="subtab main" id="subtab_main_axis">
 					<button class="featureConfig main" onClick="openConfig['Axis']()"></button>
 					<p id="div_exoticmatter_disabledTop">You have <span id="span_exoticmatter_disabledTop" class="big _exoticmatter"></span> exotic matter<br>You are getting <span id="span_exoticmatterPerSec_disabledTop" class="big _exoticmatter"></span> exotic matter per second</p><br>
-					<button class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis</button><br>
+					<button class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis (<span id="span_affordableAxis"></span>)</button><br>
 					<div id="div_normalAxisContainer" style="width:900px"></div><br>
 				</div>
 				<div class="subtab main" id="subtab_main_masteries" style="display:none">
@@ -104,7 +104,7 @@
 					<button class="featureConfig stardust" onClick="openConfig['Dark Matter']()"></button>
 					<div id="div_darkMatterUnlocked">
 						<p><span id="div_darkmatter_disabledTop">You have <span class="big _darkmatter" id="span_darkmatter_disabledTop"></span> dark matter<br>You are gaining <span class="big _darkmatter" id="span_darkmatterPerSec_disabledTop"></span> dark matter per second</span><br id="br_darkmatter_disabledTop">Dark matter gain is multiplied by <span class="big _darkmatter" id="span_baseDarkMatterGain"></span> (based on stardust)<br>For every <span class="big _darkmatter" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="big _darkmatter" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free</p>
-						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis</button><br>
+						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis  (<span id="span_affordableDarkAxis"></span>)</button><br>
 						<div id="div_darkAxisContainer" style="width:900px"></div>
 						<div>You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
 						<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')"></button></div>
@@ -186,6 +186,8 @@
 					<button class="optionsbutton" onClick="wipeSavePopup()" style="background-color:#000000;color:#ff0000;">WIPE SAVE</button>
 					<button class="optionsbutton" onClick="importSave()">Import save</button>
 					<button class="optionsbutton" onClick="exportSave()">Export save</button>
+					<button class="optionsbutton" onClick="inputPromo()">Input promotion code</button>
+					<button class="optionsbutton" onClick="downloadSave()">Download save</button>
 					<button class="optionsbutton" onClick="changeTheme()">Theme: <span id="colortheme"></span></button>
 					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','Only Axis tab','None'],'mode')" id="button_footerDisplay"></button>
 					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
@@ -297,7 +299,7 @@
 			</div>
 			<div id="footer" style="z-index: 0">
 				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
-				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://discord.gg/aK6Bvwr2fw" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | Version <span id="span_currentVersion"></span>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | Version <span id="span_currentVersion"></span>
 			</div>
 		</div>
 		<div id="div_fancyPopupScreen" class="popupScreen">

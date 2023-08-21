@@ -42,6 +42,7 @@ const research = (function(){
 	function expFormat(exponent,precision) {
 		return exponent.eq(c.d1)?"":("<sup>"+exponent.noLeadFormat(precision)+"</sup>")
 	}
+	function numOrFormula(id) {return showFormulas?("<i>"+research[id].formulaDesc()+"</i>"):research[id].numDesc()}
 	function timeResearchDesc(row,col,res){return function(){return "+"+(researchEffect(row,col).gte(c.d0_01)?(researchEffect(row,col).mul(c.e2).noLeadFormat(2)+"% "+res+" per second"):("1% "+res+" per "+researchEffect(row,col).mul(c.e2).recip().noLeadFormat(2)+" seconds"))+" in the current Wormhole (currently: "+percentOrMult(researchEffect(row,col).mul(g.truetimeThisWormholeReset).add(c.d1),2)+")"}}
 	let classes = {
 		sup:x=>"<sup>"+x+"</sup>",
@@ -178,7 +179,9 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d80);}
 		},
 		r2_14: {
-			description:function(){return "Raise the X Axis effect to the power of "+researchEffect(2,14).noLeadFormat(4)+" (decreases based on X Axis owned)";},
+			numDesc:function(){return researchEffect(2,14).noLeadFormat(4)},
+			formulaDesc:function(){return "(X ÷ 100 + 1)<sup>0.1</sup>"+formulaFormat.mult(researchPower(2,14).div(c.d4))+" + 1"},
+			description:function(){return "Raise the X Axis effect to the power of "+numOrFormula("r2_14")+" (decreases based on X Axis owned)";},
 			adjacent_req:["r1_13"],
 			condition:[],
 			visibility:function(){return true;},
@@ -563,7 +566,9 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d0_03);}
 		},
 		r7_8: {
-			description:function(){return "The star cost scaling is "+c.d1.sub(researchEffect(7,8)).mul(c.e2).format(2)+"% slower (based on owned achievements)";},
+			numDesc:function(){return c.d1.sub(researchEffect(7,8)).mul(c.e2).format(2)},
+			formulaDesc:function(){return "100 × (1 - ("+(totalAchievements>60?"A":("50 + A<sup>6</sup> ÷ "+N(4.6656e9).format()))+" ÷ 50)"+expFormat(researchPower(7,8).mul(c.dm0_5))+")"},
+			description:function(){return "The star cost scaling is "+numOrFormula("r7_8")+"% slower (based on owned achievements)";},
 			adjacent_req:["r6_8"],
 			condition:[studyReq(1,2),studyReq(2,2)],
 			visibility:function(){return g.studyCompletions[1]>=2&&g.studyCompletions[2]>=2;},
@@ -694,7 +699,9 @@ const research = (function(){
 		...(()=>{
 			let out = []
 			for (let i=0;i<3;i++) out.push(["r9_"+(i+7),{
-				description:function(){return "Chroma increases "+researchEffect(9,i+7).noLeadFormat(2)+"× faster (based on "+lightNames[i]+" lumens)"},
+				numDesc:function(){return researchEffect(9,i+7).noLeadFormat(2)},
+				formulaDesc:function(){return "(1 + L × (L + 1) ÷ 2)"+expFormat(researchPower(9,i+7))},
+				description:function(){return "Chroma increases "+numOrFormula("r9_"+(i+7))+"× faster (based on "+lightNames[i]+" lumens)"},
 				adjacent_req:["r8_8"],
 				condition:[lumenReq(i,c.d1)],
 				visibility:function(){return true},
@@ -707,7 +714,9 @@ const research = (function(){
 			return Object.fromEntries(out)
 		})(),
 		r9_13:{
-			description:function(){return "Stardust boosts energy gain (currently: "+researchEffect(9,13).noLeadFormat(2)+"×)"},
+			numDesc:function(){return researchEffect(9,13).noLeadFormat(2)},
+			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(9,13).mul(0.08).noLeadFormat(3)+"</sup>"},
+			description:function(){return "Stardust boosts energy gain (currently: "+numOrFormula("r9_13")+"×)"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
 			visibility:function(){return g.studyCompletions[4]>0},
@@ -726,7 +735,9 @@ const research = (function(){
 			icon:icon.study([[50,85,5],[85,50,5],[50,15,5],[15,50,5]])
 		},
 		r9_15:{
-			description:function(){return "Stardust boosts chroma gain (currently: "+researchEffect(9,15).noLeadFormat(2)+"×)"},
+			numDesc:function(){return researchEffect(9,15).noLeadFormat(2)},
+			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(9,15).mul(0.05).noLeadFormat(3)+"</sup>"},
+			description:function(){return "Stardust boosts chroma gain (currently: "+numOrFormula("r9_15")+"×)"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
 			visibility:function(){return g.studyCompletions[4]>0},
@@ -770,7 +781,9 @@ const research = (function(){
 		...(()=>{
 			let out = []
 			for (let i=0;i<3;i++) out.push(["r10_"+(i+7),{
-				description:function(){return "Chroma increases "+researchEffect(10,i+7).format(2)+"× faster (based on "+lightNames[i+3]+" chroma)"},
+				numDesc:function(){return researchEffect(10,i+7).format(2)},
+				formulaDesc:function(){return "(((log(C ÷ 1,000 + 1)<sup>3</sup>) ÷ ((log<sub>"+lightData[i].baseScale.toString()+"</sub>(C ÷ 1,000 + 1) + 0.5)<sup>2</sup> ÷ 2 + 0.875)) + 1)"+expFormat(researchPower(10,i+7).mul(c.d2))},
+				description:function(){return "Chroma increases "+numOrFormula("r10_"+(i+7))+"× faster (based on "+lightNames[i+3]+" chroma)"},
 				adjacent_req:["r9_"+(i+7)],
 				condition:[{check:function(){return g.chroma[i+3].gt(c.e9)},text:function(){return g.chroma[i+3].format()+" / "+BEformat(c.e9)+" "+lightNames[i+3]+" chroma"}},unconnectedResearchReq("r10_5")],
 				visibility:function(){return g.research.r10_5},
@@ -796,7 +809,9 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(var(--mastery),rgba(0,0,0,0) 3.125%,var(--mastery) 6.25%),repeating-radial-gradient(var(--mastery),rgba(0,0,0,0) 10%,var(--mastery) 20%);opacity:0.5\"></div>"
 		},
 		r10_13:{
-			description:function(){return "Stardust boosts hawking radiation gain (currently: "+researchEffect(10,13).noLeadFormat(2)+"×)"},
+			numDesc:function(){return researchEffect(10,13).noLeadFormat(2)},
+			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(10,13).mul(0.07).noLeadFormat(3)+"</sup>"},
+			description:function(){return "Stardust boosts hawking radiation gain (currently: "+numOrFormula("r10_13")+"×)"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
 			visibility:function(){return g.studyCompletions[4]>0},
@@ -807,7 +822,9 @@ const research = (function(){
 			group:"stardust"
 		},
 		r10_15:{
-			description:function(){return "Gain free dark stars based on stardust (currently: "+researchEffect(10,15).noLeadFormat(2)+")"},
+			numDesc:function(){return researchEffect(10,15).noLeadFormat(2)},
+			formulaDesc:function(){return "(log(log(S + 1) + 10,000) - 4) × "+researchPower(10,15).mul(c.d2_5).noLeadFormat(2)},
+			description:function(){return "Gain free dark stars based on stardust (currently: "+numOrFormula("r10_15")+")"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
 			visibility:function(){return g.studyCompletions[4]>0},
@@ -833,10 +850,12 @@ const research = (function(){
 			visibility:function(){return g.achievement[612]},
 			type:"permanent",
 			basecost:N(5250),
-			icon:"<span style=\"font-size:40px;color:#ffffff\">𖦹</span>"
+			icon:"<span style=\"font-size:40px\" class=\"_galaxies\">𖦹</span>"
 		},
 		r13_5:{
-			description:function(){return "Yellow light weakens the second galaxy penalty (currently: ^"+researchEffect(13,5).format(3)+")"},
+			numDesc:function(){return researchEffect(13,5).noLeadFormat(3)},
+			formulaDesc:function(){return "(log(L + 1)<sup>2</sup> ÷ 100 + 1)"+expFormat(researchPower(13,5).neg())},
+			description:function(){return "Yellow light weakens the second galaxy penalty (currently: ^"+numOrFormula("r13_5")+")"},
 			adjacent_req:["r13_7"],
 			condition:[lightAugmentReq(5)],
 			visibility:function(){return true},
@@ -847,18 +866,22 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r13_7:{
-			description:function(){return "White lumens reduce star costs even further (currently: ^"+researchEffect(13,7).noLeadFormat(3)+")"},
+			numDesc:function(){return researchEffect(13,7).noLeadFormat(3)},
+			formulaDesc:function(){return "log(max(L, 10))"+expFormat(researchPower(13,7).neg())},
+			description:function(){return "White lumens reduce star costs even further (currently: ^"+numOrFormula("r13_7")+")"},
 			adjacent_req:["r12_8"],
 			condition:[lightAugmentReq(6)],
 			visibility:function(){return true},
 			type:"normal",
 			basecost:N(1440),
-			effect:function(power){return g.lumens[6].log10().pow(power.neg())},
+			effect:function(power){return g.lumens[6].max(c.d10).log10().pow(power.neg())},
 			icon:icon.lumen(6)+icon.arr+classes.stars(icon.star()+"$"),
 			group:"lightaugment"
 		},
 		r13_8:{
-			description:function(){return "Multiply chroma gain by "+researchEffect(13,8).noLeadFormat(2)+"× (based on black and white lumens)"},
+			numDesc:function(){return researchEffect(13,8).noLeadFormat(2)},
+			formulaDesc:function(){return c.d2.pow(researchPower(13,8)).noLeadFormat(3)+"<sup>(L<sub>6</sub> × L<sub>7</sub>)<sup>1 ÷ 3</sup></sup>"},
+			description:function(){return "Multiply chroma gain by "+numOrFormula("r13_8")+"× (based on black and white lumens)"},
 			adjacent_req:["r12_8"],
 			condition:[],
 			visibility:function(){return true},
@@ -868,18 +891,22 @@ const research = (function(){
 			icon:gradientText("L","-webkit-linear-gradient(90deg,#000000,#ffffff)")+icon.arr+icon.chroma(6)
 		},
 		r13_9:{
-			description:function(){return "Black lumens reduce chroma costs even further (currently: ÷"+researchEffect(13,9).noLeadFormat(3)+")"},
+			numDesc:function(){return researchEffect(13,9).noLeadFormat(3)},
+			formulaDesc:function(){return "log(max(L, 10))"+expFormat(researchPower(13,9))},
+			description:function(){return "Black lumens reduce chroma costs even further (currently: ÷"+numOrFormula("r13_9")+")"},
 			adjacent_req:["r12_8"],
 			condition:[lightAugmentReq(7)],
 			visibility:function(){return true},
 			type:"normal",
 			basecost:N(1440),
-			effect:function(power){return g.lumens[7].log10().pow(power)},
+			effect:function(power){return g.lumens[7].max(c.d10).log10().pow(power)},
 			icon:icon.lumen(7)+icon.arr+classes.stars(icon.chroma(6)+"$"),
 			group:"lightaugment"
 		},
 		r13_11:{
-			description:function(){return "Red lumens boost Stardust Boosts divisible by 3 (currently: "+researchEffect(13,11).sub(c.d1).mul(c.e2).format(2)+"%)"},
+			numDesc:function(){return researchEffect(13,11).sub(c.d1).mul(c.e2).noLeadFormat(2)},
+			formulaDesc:function(){return "20 - 20 ÷ (log(log(L + 10)) × "+researchPower(13,11).mul(c.d2).noLeadFormat(3)+" + 1)"},
+			description:function(){return "Red lumens boost Stardust Boosts divisible by 3 (currently: "+numOrFormula("r13_11")+"%)"},
 			adjacent_req:["r13_9"],
 			condition:[lightAugmentReq(0)],
 			visibility:function(){return true},
@@ -890,7 +917,12 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r14_6:{
-			description:function(){return "Green lumens boost tickspeed (currently: "+percentOrMult(researchEffect(14,6),2)+")"},
+			numDesc:function(){return percentOrMult(researchEffect(14,6),2)},
+			formulaDesc:function(){
+				let out = "(log(L + 1)<sup>2</sup> ÷ 32 + 1)"+expFormat(researchPower(14,6))
+				return researchEffect(14,6).gte(c.d10)?(out+"×"):researchPower(14,6).eq(c.d1)?"log(L + 1)<sup>2</sup> × 3.125%":("100 × ("+out+" - 1)%")
+			},
+			description:function(){return "Green lumens boost tickspeed (currently: "+numOrFormula("r14_6")+")"},
 			adjacent_req:["r13_7"],
 			condition:[lightAugmentReq(1)],
 			visibility:function(){return true},
@@ -901,7 +933,9 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r14_10:{
-			description:function(){return "Magenta lumens boost dark Y axis (currently: ^"+researchEffect(14,10).format(4)+")"},
+			numDesc:function(){return researchEffect(14,10).format(4)},
+			formulaDesc:function(){return "10<sup>log(L + 1)<sup>0.5</sup> × "+researchPower(14,10).div(c.d2).noLeadFormat(3)+"</sup>"},
+			description:function(){return "Magenta lumens boost dark Y axis (currently: ^"+numOrFormula("r14_10")+")"},
 			adjacent_req:["r13_9"],
 			condition:[lightAugmentReq(4)],
 			visibility:function(){return true},
@@ -914,7 +948,9 @@ const research = (function(){
 		...(()=>{
 			let out = {}
 			for (let i of [5,11]) out["r15_"+i] = {
-				description:function(){return (i==11?"Black":"White")+" lumens boost research 13-8 even further (currently: "+researchEffect(15,i).mul(c.e2).format(2)+"% stronger, additive with 15-"+(i==11?"5":"11")+")"},
+				numDesc:function(){return researchEffect(15,i).mul(c.e2).noLeadFormat(2)},
+				formulaDesc:function(){return "log(log(L + 10)) × "+researchPower(15,i).mul(c.e2).noLeadFormat(3)},
+				description:function(){return (i==11?"Black":"White")+" lumens boost research 13-8 even further (currently: "+numOrFormula("r15_"+i)+"% stronger, additive with 15-"+(i==11?"5":"11")+")"},
 				adjacent_req:(i==11)?["r13_11","r14_10","r15_9"]:["r13_5","r14_6","r15_7"],
 				condition:[{check:function(){return achievement.ownedInTier(7)>=7},text:function(){return achievement.ownedInTier(7)+" / 7 Tier 7 achievements"}}],
 				visibility:function(){return true},
@@ -926,7 +962,9 @@ const research = (function(){
 			return out
 		})(),
 		r15_7:{
-			description:function(){return "Cyan lumens boost energy gain (currently: "+researchEffect(15,7).format(2)+"×)"},
+			numDesc:function(){return researchEffect(15,7).format(2)},
+			formulaDesc:function(){return "10<sup>log(L + 1)<sup>0.5</sup> × "+researchPower(15,7).mul(c.d2div3).noLeadFormat(3)+"</sup>"},
+			description:function(){return "Cyan lumens boost energy gain (currently: "+numOrFormula("r15_7")+"×)"},
 			adjacent_req:["r13_7"],
 			condition:[lightAugmentReq(3)],
 			visibility:function(){return true},
@@ -937,7 +975,9 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r15_9:{
-			description:function(){return "Blue lumens boost hawking radiation gain (currently: "+researchEffect(15,9).format(2)+"×)"},
+			numDesc:function(){return researchEffect(15,9).format(2)},
+			formulaDesc:function(){return "(2<sup>L<sup>1 ÷ 3</sup></sup> - 1)"+expFormat(researchPower(15,9))},
+			description:function(){return "Blue lumens boost hawking radiation gain (currently: "+numFormat("r15_9")+"×)"},
 			adjacent_req:["r13_9"],
 			condition:[lightAugmentReq(2)],
 			visibility:function(){return true},
@@ -1078,8 +1118,9 @@ const research = (function(){
 		})()
 	}
 })();
-const nonPermanentResearchList = Object.keys(research).filter(x=>research[x].type!=="permanent")
-const permanentResearchList = Object.keys(research).filter(x=>research[x].type=="permanent")
+const researchList = Object.keys(research).filter(x=>x!=="r6_9")
+const nonPermanentResearchList = researchList.filter(x=>research[x].type!=="permanent")
+const permanentResearchList = researchList.filter(x=>research[x].type=="permanent")
 function validateResearch(x) {
 	function out(txt){error("Research "+x+" has an invalid <samp>"+txt+"</samp> property")}
 	let res=research[x]
@@ -1154,7 +1195,7 @@ function researchCost(x) {
 	if (research[x].group=="time") if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
 	if (["spatialsynergismlight","spatialsynergismdark"].includes(research[x].group)) if (ownedResearchInGroup(research[x].group).length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
 	// base
-	let output = N(research[x]["basecost"]);
+	let output = research[x]["basecost"];
 	// class modifiers
 	if (research[x].group=="energy") {
 		output=output.mul(c.d2.pow(ownedResearchInGroup("energy").length))
@@ -1494,7 +1535,21 @@ const researchLoadouts = {
 	},
 	load:function(string){
 		showingResearchLoadouts=false
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buyResearch(researchRow(i),researchCol(i),false)
+		function buy(id) { // buys only 1 adjacent research and only if one is not already owned
+			if (g.research[id]) return
+			let [r,c] = [researchRow(id),researchCol(id)]
+			if (!availableResearch(r,c)) {
+				let adj = id
+				console.log(adj)
+				do {
+					adj = research[adj].adjacent_req[0]
+					console.log(adj)
+				} while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0))
+				buy(adj)
+			}
+			buyResearch(r,c,false)
+		}
+		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buy(i)
 		popup({text:"Successfully loaded!",buttons:[["Close",""]]})
 	}
 }

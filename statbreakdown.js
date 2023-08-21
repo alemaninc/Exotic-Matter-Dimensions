@@ -950,7 +950,7 @@ miscStats.ZAxisEffect={
 			show:function(){return g.research.r6_1&&stat.darkEnergyEffect.neq(c.d1)&&researchEffect(6,1).neq(c.d0)}
 		},
 		{
-			label:"Research 17-4",
+			label:"Research 16-4",
 			mod:function(){return stat.SAxisEffect.pow(Decimal.mul(researchEffect(16,4),stat.realSAxis))},
 			func:function(prev){return g.research.r16_4?prev.pow(this.mod()):prev},
 			text:function(){return "^ "+this.mod().format(4)+" "+SSBsmall(stat.SAxisEffect.format(4),researchEffect(16,4).eq(c.d1)?stat.realSAxis.noLeadFormat(2):SSBsmall(stat.realSAxis.noLeadFormat(2),researchEffect(16,4).noLeadFormat(2),2),3)},
@@ -2350,28 +2350,28 @@ miscStats.stardustBoost9={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<7) return c.d1
-		return g.stardust.pow(c.d0_01).log10().pow(stardustBoostBoost(9).mul(c.d0_4))
+		return g.stardust.add(c.e100).log10().div(c.e2).pow(stardustBoostBoost(9).mul(c.d0_4))
 	}
 }
 miscStats.stardustBoost10={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<8) return c.d0
-		return Decimal.convergentSoftcap(g.stardust.pow(c.em3).add(c.d10).log10().log10().mul(stardustBoostBoost(10)).div(c.d10),c.d0_5,c.d1)
+		return Decimal.convergentSoftcap(g.stardust.add(c.ee3).log10().log10().sub(c.d3).mul(stardustBoostBoost(10)).div(c.d10),c.d0_5,c.d1)
 	}
 }
 miscStats.stardustBoost11={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<9) return c.d1
-		return Decimal.convergentSoftcap(g.stardust.pow(c.em4).add(c.d10).log10().log10().mul(stardustBoostBoost(11)).div(c.d10),c.d1_5,c.d2).add(c.d1)
+		return Decimal.convergentSoftcap(g.stardust.add(c.ee4).log10().log10().sub(c.d4).mul(stardustBoostBoost(11)).div(c.d10),c.d1_5,c.d2).add(c.d1)
 	}
 }
 miscStats.stardustBoost12={
 	type:"combined",
 	value:function(){
 		if (g.stardustUpgrades[2]<10) return c.d0
-		return Decimal.convergentSoftcap(g.stardust.pow(c.em5).add(c.d10).log10().log10().mul(stardustBoostBoost(12)),c.d0,c.d1)
+		return Decimal.convergentSoftcap(g.stardust.add(c.ee5).log10().log10().sub(c.d5).mul(stardustBoostBoost(12)),c.d0,c.d1)
 	}
 }
 miscStats.stardustUpgrade1Cap={type:"combined",value:function(){return 4}}
@@ -2423,7 +2423,7 @@ miscStats.knowledgeEffectCap={type:"combined",value:function(){return c.d50}}
 miscStats.extraDiscoveries_add={type:"combined",value:function(){
 	let out = c.d0
 	if (g.achievement[604]) out = out.add(achievement(604).effValue())
-	if (g.achievement[714]) out = out.add(c.d122)
+	if (g.achievement[714]) out = out.add(achievement(714).effect())
 	return out
 }},
 miscStats.extraDiscoveries_mul={type:"combined",value:function(){

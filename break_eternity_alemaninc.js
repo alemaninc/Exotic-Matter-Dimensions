@@ -3119,7 +3119,7 @@ function gformat(value,precision=0,notation="Scientific",subnotation="Scientific
 	if (x.eq(constant.maxvalue.recip())) return "0"
 	if (x.isNaN()) return "NaN";
 	if (x.eq(constant.d0)) return "0";
-	if (x.lt(constant.em5)) return "(1 / "+gformat(x.recip(),precision,notation,subnotation)+")";
+	if (x.lt(constant.em5)) return "(1 ÷ "+gformat(x.recip(),precision,notation,subnotation)+")";
 	if (x.lt(constant.e6)) return notationSupport.formatSmall(x,precision)
 	return notations[notation](x,subnotation)
 }

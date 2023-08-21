@@ -53,6 +53,7 @@ function updateHTML() {
 				d.innerHTML("span_exoticmatter_disabledTop",g.exoticmatter.format())
 				d.innerHTML("span_exoticmatterPerSec_disabledTop",stat.exoticmatterPerSec.noLeadFormat(2))
 			}
+			d.innerHTML("span_affordableAxis",axisCodes.map(x=>maxAffordableAxis(x)).sumDecimals().sub(stat.totalAxis).format())
 			for (let i=0;i<8;i++) {
 				let type = axisCodes[i];
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
@@ -261,7 +262,7 @@ function updateHTML() {
 			for (let i in wormholeMilestoneList) {
 				d.display("div_wormholeMilestone"+i,tier5achs>=Number(i)?"inline-block":"none")
 			}
-			d.innerHTML("span_wormholeMilestone9Effect",wormholeMilestone9Effect().format(4))
+			d.innerHTML("span_wormholeMilestone9Effect",stat.wormholeMilestone9Effect.format(4))
 			d.innerHTML("span_wormholeMilestone18Effect",timeFormat(wormholeMilestone18Effect()))
 			d.innerHTML("span_wormholeMilestone27Effect",wormholeMilestone27Effect().format(2))
 			d.innerHTML("span_nextWormholeMilestone",(achievement.ownedInTier(5)==30)?"":("At "+nextMilestoneNum+" achievements: "+(nextMilestone.text??nextMilestone.static)))
@@ -272,19 +273,8 @@ function updateHTML() {
 		d.display("div_stardust_disabledTop",g.topResourcesShown.stardust?"none":"inline-block")
 		if (!g.topResourcesShown.stardust) d.innerHTML("span_stardust_disabledTop",g.stardust.format())
 		if (activeSubtabs.stardust=="stardustBoosts") {
-			d.innerHTML("span_stardustBoost1Value",stat.stardustBoost1.format(2));
-			for (let i of [2,3,6,8]) {
-				let val = stat["stardustBoost"+i]
-				d.innerHTML("span_stardustBoost"+i+"Value",(val.gte(c.d10)?val:val.sub(c.d1).mul(c.e2)).noLeadFormat(2))
-				d.innerHTML("span_stardustBoost"+i+"Tooltip",val.gte(c.d10)?"×":"%")
-			}
-			d.innerHTML("span_stardustBoost4Value",stat.stardustBoost4.format(3));
-			d.innerHTML("span_stardustBoost5Value",stat.stardustBoost5.format(2));
-			d.innerHTML("span_stardustBoost7Value",stat.stardustBoost7.format(4));
-			d.innerHTML("span_stardustBoost9Value",stat.stardustBoost9.format(3));
-			d.innerHTML("span_stardustBoost10Value",stat.stardustBoost10.format(4));
-			d.innerHTML("span_stardustBoost11Value",stat.stardustBoost11.sub(c.d1).mul(c.e2).format(2));
-			d.innerHTML("span_stardustBoost12Value",stat.stardustBoost12.format(4));
+			for (let i=1;i<3+g.stardustUpgrades[2];i++) d.innerHTML("span_stardustBoost"+i+"Value",showFormulas?showStardustBoostFormula[i]():formatStardustBoost(i))
+			for (let i of [2,3,6,8]) d.innerHTML("span_stardustBoost"+i+"Tooltip",(stat["stardustBoost"+i].gte(c.d10)||showFormulas)?"×":"%")
 			d.innerHTML("span_stardustBoost4Tooltip",g.masteryPower.add(c.d1).pow(stat.stardustBoost4).format(2));
 			d.innerHTML("span_stardustBoost5Tooltip",stat.stardustBoost5.pow(g.XAxis).format(2));
 			d.innerHTML("span_stardustBoost7Tooltip",stat.stardustBoost7.pow(stardustBoost7Exp()).format(2))
@@ -303,7 +293,7 @@ function updateHTML() {
 			d.innerHTML("span_starCost",BEformat(starCost()));
 			let rowsShown = starRowsShown()
 			if (g.starContainerStyle=="Legacy") {
-				for (let i of dynamicStars) {if (rowsShown.includes(Math.floor(i/10))) {d.innerHTML("span_star"+i+"EffectLegacy",formatStarEffect(i))}}
+				for (let i of dynamicStars) {if (rowsShown.includes(Math.floor(i/10))) {d.innerHTML("span_star"+i+"EffectLegacy",showFormulas?formulaFormat(showStarEffectFormula(i)):formatStarEffect(i))}}
 			}
 			for (let row=1;row<11;row++) {
 				d.tr("starRow"+row+g.starContainerStyle,rowsShown.includes(row))
@@ -328,13 +318,16 @@ function updateHTML() {
 					d.innerHTML("span_darkmatter_disabledTop",g.darkmatter.format())
 					d.innerHTML("span_darkmatterPerSec_disabledTop",stat.darkmatterPerSec.format(2))
 				}
+				d.innerHTML("span_affordableDarkAxis",axisCodes.map(x=>maxAffordableDarkAxis(x)).sumDecimals().sub(stat.totalDarkAxis).format())
 				d.innerHTML("span_baseDarkMatterGain",miscStats.darkmatterPerSec.modifiers[1].func(miscStats.darkmatterPerSec.modifiers[0].func()).format(2));
 				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gt(1)?"1":BEformat(stat.darkMatterFreeAxis.pow(-1).max(1),2));
 				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(1)?"1":BEformat(stat.darkMatterFreeAxis.max(1),2));
 				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
 				let effect3diff = darkStarEffect3(stat.realDarkStars.add(c.d1)).sub(stat.darkStarEffect3);
 				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkstarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
-				darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(stat.maxAffordableDarkStars.max(g.darkstars)).format(0)+" dark axis)<br><br>"+darkStarEffectHTML();
+				if (showFormulas) darkStarButtonText += " (Need "+darkStarReqFormula()+" total dark axis)"
+				else darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(stat.maxAffordableDarkStars.max(g.darkstars)).format(0)+" dark axis)"
+				darkStarButtonText += "<br><br>"+darkStarEffectHTML();
 				d.innerHTML("span_darkstars",BEformat(g.darkstars)+((stat.realDarkStars.neq(g.darkstars))?("<span class=\"small\"> (effective "+stat.realDarkStars.noLeadFormat(3)+")</span>"):""));
 				d.innerHTML("button_darkstar",darkStarButtonText);
 				for (let i=0;i<8;i++) {
@@ -348,7 +341,7 @@ function updateHTML() {
 					}
 					let v1 = stat.realDarkStars;
 					let v2 = realDarkStars(stat.maxAffordableDarkStars.max(g.darkstars.add(c.d1)));
-					d.innerHTML("span_darkStarEffect2"+type,Decimal.eq(darkStarEffect2Level(type,v1),darkStarEffect2Level(type,v2))?(darkStarEffect2Level(type,v1).mul(c.d10).noLeadFormat(4)+"%"):arrowJoin(darkStarEffect2Level(type,v1).mul(c.d10).noLeadFormat(4)+"%",+darkStarEffect2Level(type,v2).mul(c.d10).noLeadFormat(4)+"%"));
+					d.innerHTML("span_darkStarEffect2"+type,showFormulas?darkStarEffect2LevelFormula(type):(Decimal.eq(darkStarEffect2Level(type,v1),darkStarEffect2Level(type,v2))?(darkStarEffect2Level(type,v1).mul(c.d10).noLeadFormat(4)+"%"):arrowJoin(darkStarEffect2Level(type,v1).mul(c.d10).noLeadFormat(4)+"%",+darkStarEffect2Level(type,v2).mul(c.d10).noLeadFormat(4)+"%")));
 				}
 				d.innerHTML("span_darkUAxisEffectAlt",stat.darkUAxisEffect.pow(stat.totalDarkAxis).format(3))
 				for (let name of empowerableDarkAxis) {
@@ -444,6 +437,7 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"Chroma",g.chroma[i].format())
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
+				d.innerHTML("span_"+lightNames[i]+"LightEffect",i==5?lightCache.currentEffect[5].length:showFormulas?lightEffect[i].formula():arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
 				d.element("button_chromaGen"+i).style["background-color"]=(g.activeChroma==i)?"#000000":""
 				if (i>2) {
 					d.innerHTML("button_chromaGen"+i,((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents[i].map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
@@ -456,8 +450,11 @@ function updateHTML() {
 				d.innerHTML("span_cyanLightBoost",arrowJoin(researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.currentEffect[3].mul(stat.observationEffect)).format(2),researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.nextEffect[3].mul(stat.observationEffect)).format(2)))
 				d.innerHTML("span_magentaLightBoost",arrowJoin(g.baseMasteryPowerGain.pow(lightCache.currentEffect[4]).format(2),g.baseMasteryPowerGain.pow(lightCache.nextEffect[4]).format(2)))
 				d.innerHTML("button_reviewYellowLight0",g.lumens[5].gte(c.d200)?"See currently affected":"See next effect")
+				d.innerHTML("span_cyanLightSign",lightCache.currentEffect[3].gte(c.d10)?"×":"%")
 			}
-			d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
+			if (lightTiersUnlocked()>2) {
+				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
+			}
 		} else if (activeSubtabs.wormhole=="galaxies") {
 			d.innerHTML("span_galaxies",g.galaxies)
 			d.innerHTML("span_galaxyPlural",g.galaxies==1?"y":"ies")
@@ -471,8 +468,8 @@ function updateHTML() {
 			for (let i=1;i<galaxyEffects.length;i++) {
 				if (g.highestGalaxies+1>=galaxyEffects[i].req) {
 					d.tr("tr_galaxyEffects"+i,true)
-					d.innerHTML("span_galaxyBoost"+i,galaxyEffects[i].boost.text().replace("{}",arrowJoin(formatGalaxyEffect(i,"boost"),formatGalaxyEffect(i,"boost",g.galaxies+1))))
-					d.innerHTML("span_galaxyPenalty"+i,galaxyEffects[i].penalty.text().replace("{}",arrowJoin(formatGalaxyEffect(i,"penalty"),formatGalaxyEffect(i,"penalty",g.galaxies+1))))
+					d.innerHTML("span_galaxyBoost"+i,galaxyEffects[i].boost.text().replace("{}",showFormulas?textFormat(galaxyEffects[i].boost.formula(),"_galaxies"):arrowJoin(formatGalaxyEffect(i,"boost"),formatGalaxyEffect(i,"boost",g.galaxies+1))))
+					d.innerHTML("span_galaxyPenalty"+i,galaxyEffects[i].penalty.text().replace("{}",showFormulas?textFormat(galaxyEffects[i].penalty.formula(),"_galaxies"):arrowJoin(formatGalaxyEffect(i,"penalty"),formatGalaxyEffect(i,"penalty",g.galaxies+1))))
 				} else {
 					d.tr("tr_galaxyEffects"+i,false)
 				}

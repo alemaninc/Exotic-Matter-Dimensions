@@ -204,7 +204,8 @@ const HTPtexts = [
 		visibility:function(){return unlocked("Galaxies")},
 		paragraphs:[
 			"Once you reach 60 stars, it is impossible to buy more. Instead, you can gain Galaxies.",
-			"Galaxies dramatically increase star costs, but give new boosts in return."
+			"Each Galaxy you gain will dramatically increase star costs, but provide a boost in return.",
+			"If the star penalty proves to be too difficult for you, you can destroy the Galaxies you have created - however, gaining or losing Galaxies forces a Wormhole reset."
 		]
 	}
 ].sort((a,b)=>(a.name>b.name)?1:-1)

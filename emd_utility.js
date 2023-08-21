@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.7",
+	current:"𝕍1.3.8",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -11,8 +11,9 @@ const version = {
 	c column number
 	o error object
 */
-window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
 var gameHalted = false
+var showFormulas = false
+const discordInvite = "https://discord.gg/aK6Bvwr2fw"
 function halt() { // Terminates the game loop, used for debugging
 	clearInterval(gameloop);
 	clearInterval(fineGrainLoop);
@@ -23,7 +24,7 @@ function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toSt
 }
 function error(text) {
 	halt()
-	popup({text:"Error: "+text+".<br>Please tell alemaninc about this.<br>A copy of your savefile has also been attached.",input:btoa(localStorage.getItem("save")),buttons:[]})
+	popup({text:"Error: "+text+".<br>Please tell alemaninc about this.<br>A copy of your savefile has also been attached.<br><a href=\""+discordInvite+"\">Discord</a>",input:btoa(localStorage.getItem("save")),buttons:[]})
 }
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
@@ -126,6 +127,9 @@ const c = deepFreeze({		 // c = "constant"
 	d0_995		: Decimal.FC_NN(1,0,0.995),
 	d0_999		: Decimal.FC_NN(1,0,0.999),
 	d1_001		: Decimal.FC_NN(1,0,1.001),
+	d1_002		: Decimal.FC_NN(1,0,1.002),
+	d1_003		: Decimal.FC_NN(1,0,1.003),
+	d1_004		: Decimal.FC_NN(1,0,1.004),
 	d1_009		: Decimal.FC_NN(1,0,1.009),
 	d1_01			: Decimal.FC_NN(1,0,1.01),
 	d1_02			: Decimal.FC_NN(1,0,1.02),
@@ -146,6 +150,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_379654224:Decimal.FC_NN(1,0,1.379654224),
 	d1_5			: Decimal.FC_NN(1,0,1.5),
 	d1_75			: Decimal.FC_NN(1,0,1.75),
+	ln10			: Decimal.FC_NN(1,0,2.302585092994046),
 	d2_5			: Decimal.FC_NN(1,0,2.5),
 	d2_8			: Decimal.FC_NN(1,0,2.8),
 	pi				: Decimal.FC_NN(1,0,3.1415926535897932),
@@ -305,9 +310,30 @@ function percentOrMult(num,precision=2,classname) {
 		number=num.noLeadFormat(precision)
 		sign="×"
 	} else {
-		number=num.sub(c.d1).mul(c.e2).noLeadFormat(precision)
+		number=(num.gte(c.d1)?"+":"")+num.sub(c.d1).mul(c.e2).noLeadFormat(precision)
 		sign="%"
 	}
 	if (typeof classname == "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
+}
+function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
+formulaFormat.bracketize = function(str) {return (str.search(" ")==-1)?str:("("+str+")")}
+formulaFormat.add = function(v,p=3) {return v.gt(c.d0)?(" + "+v.noLeadFormat(p)):v.lt(c.d0)?(" - "+v.neg().noLeadFormat(p)):""}
+formulaFormat.mult = function(v,p=3) {return v.gt(c.d1)?(" × "+v.noLeadFormat(p)):v.lt(c.d1)?(" ÷ "+v.recip().noLeadFormat(p)):""}
+formulaFormat.exp = function(v,p=3) {return v.eq(c.d1)?"":("<sup>"+v.noLeadFormat(p)+"</sup>")}
+formulaFormat.linSoftcap = function(value,start,power,condition) {
+	if (!condition) return value
+	return formulaFormat.bracketize("("+formulaFormat.bracketize(value)+formulaFormat.mult(power.add(c.d1).div(start))+formulaFormat.add(power.neg())+")"+formulaFormat.exp(power.add(c.d1).recip())+formulaFormat.mult(start))
+}
+formulaFormat.logSoftcap = function(value,start,power,condition) {   // string of value, start, power, condition for softcap (cannot check automatically due to v being the calculation)
+	if (!condition) return value
+	return formulaFormat.bracketize("(ln("+formulaFormat.bracketize(value)+formulaFormat.mult(start.recip())+")"+formulaFormat.mult(power)+" + 1)"+formulaFormat.exp(power.recip())+formulaFormat.mult(start))
+}
+formulaFormat.convSoftcap = function(value,start,limit,condition) {
+	if (!condition) return value
+	return formulaFormat.bracketize(limit.noLeadFormat(3)+" - "+limit.sub(start).pow(c.d2).noLeadFormat(3)+" ÷ "+formulaFormat.bracketize(value+formulaFormat.add(limit.sub(start.mul(c.d2)))))
+}
+formulaFormat.expScaling = function(value,start,power,condition) {
+	if (!condition) return value
+	return formulaFormat.bracketize("e<sup>("+formulaFormat.bracketize(formulaFormat.bracketize(value)+formulaFormat.mult(start.recip()))+formulaFormat.exp(power)+" - 1)"+formulaFormat.mult(power.recip())+"</sup>"+formulaFormat.mult(start))
 }

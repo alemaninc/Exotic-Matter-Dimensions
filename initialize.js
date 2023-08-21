@@ -60,9 +60,11 @@ const initSteps = [
 		gameloop = window.setInterval(auto_tick,50);
 		fineGrainLoop = window.setInterval(fineGrainTick,10);
 	}},
+	{function:function(){d.element("span_footerDiscord").href = discordInvite}},
 	{function:function(){
 		d.innerHTML("newsline",randomNewsItem())
 		openTopLevelDiv("game");
+		window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
 		initComplete = true;
 	}}
 ]

@@ -146,10 +146,11 @@ const hotkeys = {
 		if (subtabList[activeTab].length>=num) {if (subtabProperties[activeTab][subtabList[activeTab][num-1]].visible()) {openSubTab(activeTab,subtabList[activeTab][num-1])}}
 	},
 	hotkeyList:{
-		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),action:()=>openTab(x),visible:()=>tabVisibility[x]()}])),
-		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["action",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
-		"Stardust reset":{baseKey:"KeyS",action:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
-		"Wormhole reset":{baseKey:"KeyW",action:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
+		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),down:()=>openTab(x),visible:()=>tabVisibility[x]()}])),
+		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["down",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
+		"Stardust reset":{baseKey:"KeyS",down:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
+		"Wormhole reset":{baseKey:"KeyW",down:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
+		"Show/hide formulas":{baseKey:"KeyF",down:()=>showFormulas=!showFormulas,visible:()=>true}
 	},
 	toBeChanged:null,
 	isChanging:false
@@ -175,22 +176,30 @@ function formatHotkey(key) {
 	parts[parts.length-1] = out
 	return parts.join("+")
 }
-document.addEventListener("keypress",function(e){
-	if (e.ctrlKey) return // if switching tab or whatever
-	if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) { // if inputting something
-		if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key=="9") addSecretAchievement(10)
-		return
+function hotkeyHandler(isUp){
+	return function(e) {
+		if (e.ctrlKey) return // if switching tab or whatever
+		if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) { // if inputting something
+			if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key=="9") addSecretAchievement(10)
+			return
+		}
+		if (StudyE(1)) {	
+			notify("Hotkeys are disabled in Study I","#990000","#ffffff")
+			return
+		}
+		let key = (e.shiftKey?"shift+":"")+e.code
+		if (hotkeys.isChanging) {
+			d.display("div_fancyPopupScreen","none")
+			g.hotkeys[hotkeys.toBeChanged]=key
+			hotkeys.isChanging=false
+		} else {
+			for (let i of Object.keys(g.hotkeys)) if (g.hotkeys[i]==key) if (hotkeys.hotkeyList[i].visible()) {
+				let data = hotkeys.hotkeyList[i]
+				if (isUp) {if (data.up!==undefined) hotkeys.hotkeyList[i].up()}
+				else {if (data.down!==undefined) hotkeys.hotkeyList[i].down()}
+			}
+		}
 	}
-	if (StudyE(1)) {	
-		notify("Hotkeys are disabled in Study I","#990000","#ffffff")
-		return
-	}
-	let key = (e.shiftKey?"shift+":"")+e.code
-	if (hotkeys.isChanging) {
-		d.display("div_fancyPopupScreen","none")
-		g.hotkeys[hotkeys.toBeChanged]=key
-		hotkeys.isChanging=false
-	} else {
-		for (let i of Object.keys(g.hotkeys)) {if (g.hotkeys[i]==key) {if (hotkeys.hotkeyList[i].visible()) {hotkeys.hotkeyList[i].action()}}}
-	}
-})
+}
+document.addEventListener("keydown",hotkeyHandler(false))
+document.addEventListener("keyup",hotkeyHandler(true))
