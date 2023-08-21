@@ -1219,7 +1219,8 @@ function researchCost(x) {
 	// hyper 1
 	output = output.sub(studies[5].reward(3))
 	if (research[x].group=="lightaugment"&&g.achievement[712]) output = output.sub(ownedResearchInGroup("lightaugment").length*35)
-	return output.max(c.d0).ceil();
+	if (output.sign==-1) return c.d0
+	return output.ceil();
 }
 const researchRows = Object.keys(research).map(x => researchRow(x)).reduce((x,y)=>Math.max(x,y));
 function toggleResearchCell(row,col,mode) {

@@ -46,13 +46,9 @@ Object.defineProperty(Array,"equal",{
 	}
 });
 Object.defineProperty(Array.prototype,"joinWithAnd",{
-	value: function joinWithAnd(delimiter=",") {
+	value: function joinWithAnd(delimiter=", ") {
 		if (this.length<3) return this.join(" and ");
-		let arr = structuredClone(this)
-		let out = arr.splice(0,1);
-		while (arr.length>1) out+=delimiter+" "+arr.splice(0,1);
-		out+=" and "+arr[0];
-		return out;
+		return this.slice(0,this.length-1).join(delimiter)+" and "+this[this.length-1]
 	}
 })
 Object.defineProperty(Array.prototype,"shuffle",{
