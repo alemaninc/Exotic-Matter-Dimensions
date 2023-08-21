@@ -269,12 +269,22 @@ const statTemplates = {
 			show:function(){return this.mod().neq(c.d1)}
 		};
 	},
-	tickspeed:{
-		label:"Tickspeed",
-		func:function(prev){return prev.mul(stat.tickspeed);},
-		text:function(){return "× "+stat.tickspeed.format(3);},
-		dependencies:["tickspeed"],
-		show:function(){return stat.tickspeed.neq(c.d1)}
+	tickspeed:function(exp,dependencies=[]){
+		if (exp==undefined) return {
+			label:"Tickspeed",
+			func:function(prev){return prev.mul(stat.tickspeed);},
+			text:function(){return "× "+stat.tickspeed.format(3);},
+			dependencies:["tickspeed"],
+			show:function(){return stat.tickspeed.neq(c.d1)}
+		}
+		else return {
+			label:"Tickspeed",
+			mod:function(){return stat.tickspeed.gt(c.d1)?stat.tickspeed.pow(exp()):stat.tickspeed},
+			func:function(prev){return prev.mul(this.mod());},
+			text:function(){return "× "+this.mod().format(3)+(stat.tickspeed.gt(c.d1)&&exp().neq(c.d1)?(" "+SSBsmall(stat.tickspeed.noLeadFormat(3),exp().noLeadFormat(4),3)):"");},
+			dependencies:["tickspeed",dependencies].flat(),
+			show:function(){return stat.tickspeed.neq(c.d1)&&exp().neq(c.d0)}
+		}
 	},
 	ach209Reward:{
 		label:achievement.label(209),
@@ -483,7 +493,7 @@ miscStats.exoticmatterPerSec={
 			text:function(){return "^ 1.05";},
 			show:function(){return g.achievement[401]}
 		},
-		statTemplates.tickspeed
+		statTemplates.tickspeed()
 	]
 };
 miscStats.stardustMultiplier={
@@ -710,7 +720,7 @@ miscStats.darkmatterPerSec={
 			dependencies:["gravitationalEnergyEffect"],
 			show:function(){return stat.gravitationalEnergyEffect.neq(c.d1)}
 		},
-		statTemplates.tickspeed
+		statTemplates.tickspeed()
 	]
 };
 miscStats.masteryPowerPerSec={
@@ -764,7 +774,7 @@ miscStats.masteryPowerPerSec={
 			dependencies:["neuralEnergyEffect"],
 			show:function(){return stat.neuralEnergyEffect.neq(c.d1)}
 		},
-		statTemplates.tickspeed
+		statTemplates.tickspeed()
 	]
 };
 miscStats.baseMasteryPowerExponent={
@@ -1604,14 +1614,7 @@ miscStats.energyGainSpeed={
 			text:function(){return "× "+researchEffect(15,7).format(2)},
 			show:function(){return g.research.r15_7}
 		},
-		{
-			label:"Tickspeed",
-			exponent:function(){return (g.achievement[408]&&stat.tickspeed.gt(c.d1))?achievement(408).effect():c.d1},
-			func:function(prev){return prev.mul(stat.tickspeed.pow(this.exponent()))},
-			dependencies:["tickspeed"],
-			text:function(){return "× "+stat.tickspeed.pow(this.exponent()).format(3)+" "+(this.exponent().eq(c.d1)?"":SSBsmall(stat.tickspeed.format(3),this.exponent().noLeadFormat(4),3))},
-			show:function(){return stat.tickspeed.neq(c.d1)}
-		}
+		statTemplates.tickspeed(()=>g.achievement[408]?achievement(408).effect():c.d1)
 	]
 };
 miscStats.energyEffectBoost={
@@ -2055,7 +2058,7 @@ miscStats.knowledgePerSec={
 			dependencies:["mentalEnergyEffect"],
 			show:function(){return stat.mentalEnergyEffect.neq(c.d1)}
 		},
-		statTemplates.tickspeed
+		statTemplates.tickspeed()
 	]
 };
 miscStats.observationEffect={
@@ -2130,14 +2133,7 @@ miscStats.chromaPerSec={
 			text:function(){return "× "+galaxyEffects[2].boost.value().pow(g.stars).format(2)+" "+SSBsmall(galaxyEffects[2].boost.value().noLeadFormat(3),g.stars,3)},
 			show:function(){return g.galaxies>=galaxyEffects[2].req&&g.stars>0}
 		},
-		{
-			label:"Tickspeed",
-			exponent:function(){return (g.studyCompletions[6]>0&&stat.tickspeed.gt(c.d1))?studies[6].reward(1):c.d1},
-			func:function(prev){return prev.mul(stat.tickspeed.pow(this.exponent()))},
-			dependencies:["tickspeed"],
-			text:function(){return "× "+stat.tickspeed.pow(this.exponent()).format(3)+" "+(this.exponent().eq(c.d1)?"":SSBsmall(stat.tickspeed.format(3),this.exponent().noLeadFormat(2),3))},
-			show:function(){return stat.tickspeed.neq(c.d1)}
-		}
+		statTemplates.tickspeed(()=>studies[6].reward(1))
 	]
 }
 

@@ -326,13 +326,14 @@ function studyRewardHTML(studyNum,rewardNum,precision,completions) {
 }
 function studyPower(x){return Math.min(g.studyCompletions[x],3)}
 function studyRewardBoost(studyNum,rewardNum) {
-	let out = c.d1
+	if (rewardNum==2) return c.d1
 	if (rewardNum==3) {
-		out = out.mul(lightCache.currentEffect[0])
-		let studyAchievements = [null,608,609,705]
+		let out = lightCache.currentEffect[0]
+		let studyAchievements = [null,608,609,705,715]
 		if (typeof studyAchievements[studyNum] == "number") if (g.achievement[studyAchievements[studyNum]]) out = out.div(c.d0_9)
+		return out
 	}
-	return out
+	functionError("studyRewardBoost",arguments)
 }
 const studies = [
 	null,
@@ -427,7 +428,7 @@ const studies = [
 		goal:function(){return [N(4000),N(4000),c.e100,c.e100][studyPower(5)]},
 		reward:function(num,comp=g.studyCompletions[5]){
 			if (num==1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
-			if (num==2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(2)))
+			if (num==2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(5,2)))
 			if (num==3) return [c.d0,N(2.5),N(10),N(30),N(60)][comp].mul(studyRewardBoost(5,3))
 			functionError("studies[5].reward",arguments)
 		},
@@ -998,8 +999,8 @@ const showStardustBoostFormula = {
 		let mult1 = "(1 + S ÷ 10)<sup>0.5</sup>"
 		let mult2 = g.stardust.gt("ee6.6666666666")?("10<sup>10<sup>"+formulaFormat.convSoftcap("log(log(S + 1)) × 1.5 - 1",c.d9,c.d12,true)+"</sup></sup>"):"10<sup>log(S + 1)<sup>1.5</sup> × 0.1</sup>"
 		let base = stardustBoostBoost(1).eq(c.d1)?(mult1+" × "+mult2):("("+mult1+" × "+mult2+")<sup>"+stardustBoostBoost(1).noLeadFormat(3))
-		if (stat.stardustBoost1.lt(c.ee12)) return mult1+" × "+mult2
-		return "10<sup>10<sup>"+formulaFormat.convSoftcap("log(log("+mult1+" × "+mult2+"))",c.d12,c.d15,true)
+		if (stat.stardustBoost1.lt(c.ee12)) return base
+		return "10<sup>10<sup>"+formulaFormat.convSoftcap("log(log("+base+"))",c.d12,c.d15,true)
 	},
 	2:function(){return "(1 + log(S + 1) × 0.075)"+formulaFormat.exp(stardustBoostBoost(2))},
 	3:function(){return "("+formulaFormat.linSoftcap("log(S ÷ "+c.e7.format()+" + 1)<sup>0.7</sup> ÷ 2",c.d10,c.d1,g.stardust.gt(1.6324e79))+" + 1)"+formulaFormat.exp(stardustBoostBoost(3))},

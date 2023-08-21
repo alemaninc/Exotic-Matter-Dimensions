@@ -1261,6 +1261,15 @@ const achievementList = {
 			formulaText:function(){return formulaFormat.logSoftcap(g.truetimePlayed.gt(31556926e3)?"10<sup>log(t ÷ 31,556,926)<sup>0.5</sup> × 2 + 1</sup>":"t ÷ 31,556,926",g.knowledge.log10().div(c.d10),c.d1,this.effect().gt(g.knowledge.log10().div(c.d10)))},
 			flavor:"As soon as you feel too old to do a thing, do it."
 		},
+		715:{
+			name:"Metastable",
+			description:"Complete the fourth level of Study IV with just one Stardust reset",
+			check:function(){return (g.activeStudy==4)&(g.studyCompletions[4]>2)&&(g.TotalStardustResets<2)},
+			progress:function(){return (g.studyCompletions[4]<3)?"Complete Study IV 3 times first":(g.activeStudy!==4)?"Enter Study IV first":g.TotalStardustResets>1?"Failed":"Still possible"},
+			reward:"The third reward of Study IV is 11.1% stronger",
+			flavor:"Nature abhors a vacuum, and if I can only walk with sufficient carelessness I am sure to be filled.",
+			beta:true
+		},
 		716:{
 			name:"Infinity Upgrade",
 			get description(){return "Buy a stardust upgrade for less than "+c.inf.recip().format()+" stardust"},
@@ -1272,6 +1281,10 @@ const achievementList = {
 			formulaText:()=>"log(log(t ÷ 10,000 + 10)) ÷ 10 + 1",
 			flavor:"I am incapable of conceiving infinity, and yet I do not accept finity.",
 			beta:true
+		},
+		717:{
+			name:"Base 3",
+			description:"Have 3 times more of each normal axis than the next normal axis, with at least 3 S axis. Includes free levels."
 		},
 		719:{
 			name:"OMCCDV II",
@@ -1557,7 +1570,7 @@ const achievementEvents = {
 	gameloop:[105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529,605,606,610,615,705,706,707,708,709,710,711,714],
 	stardustUpgrade:[216,301,402,403,404,405,406,407,602],
 	starBuy:[401,519,528,612],
-	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609],
+	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609,715],
 	wormholeResetAfter:[604,614],
 	researchBuy:[601,611,613,616,712,713],
 	lumenGain:[603,607],

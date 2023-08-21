@@ -977,7 +977,7 @@ const research = (function(){
 		r15_9:{
 			numDesc:function(){return researchEffect(15,9).format(2)},
 			formulaDesc:function(){return "(2<sup>L<sup>1 ÷ 3</sup></sup> - 1)"+expFormat(researchPower(15,9))},
-			description:function(){return "Blue lumens boost hawking radiation gain (currently: "+numFormat("r15_9")+"×)"},
+			description:function(){return "Blue lumens boost hawking radiation gain (currently: "+numOrFormula("r15_9")+"×)"},
 			adjacent_req:["r13_9"],
 			condition:[lightAugmentReq(2)],
 			visibility:function(){return true},
