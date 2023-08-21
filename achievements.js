@@ -1282,10 +1282,6 @@ const achievementList = {
 			flavor:"I am incapable of conceiving infinity, and yet I do not accept finity.",
 			beta:true
 		},
-		717:{
-			name:"Base 3",
-			description:"Have 3 times more of each normal axis than the next normal axis, with at least 3 S axis. Includes free levels."
-		},
 		719:{
 			name:"OMCCDV II",
 			req:N(44059),

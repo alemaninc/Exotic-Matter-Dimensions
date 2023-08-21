@@ -231,7 +231,7 @@ const statTemplates = {
 		return {
 			label:"Softcap",
 			func:function(prev){return Decimal.convergentSoftcap(prev,g[type+"Axis"].mul(stat.freeAxisSoftcapStart),g[type+"Axis"].mul(stat.freeAxisSoftcapLimit));},
-			text:function(){return "convergent, start&nbsp;"+g[type+"Axis"].mul(stat.freeAxisSoftcapStart).noLeadFormat(2)+", limit&nbsp;"+g[type+"Axis"].mul(stat.freeAxisSoftcapLimit).noLeadFormat(2);},
+			text:function(){return formulaFormat.convSoftcap("<i>x</i>",g[type+"Axis"].mul(stat.freeAxisSoftcapStart),g[type+"Axis"].mul(stat.freeAxisSoftcapLimit),true)},
 			dependencies:["freeAxisSoftcapStart","freeAxisSoftcapLimit"],
 			show:function(){return Decimal.div(stat["free"+type+"Axis"],g[type+"Axis"]).gt(stat.freeAxisSoftcapStart)} // circular references are legal in show()
 		};
@@ -1136,7 +1136,7 @@ miscStats.freeXAxis={
 		{
 			label:achievement.label(108),
 			func:function(prev){return g.achievement[108]?prev.add(g.ZAxis.mul(achievement(108).effect())):prev;},
-			text:function(){return "+ "+g.ZAxis.div(achievement(108).effect()).noLeadFormat(2);},
+			text:function(){return "+ "+g.ZAxis.mul(achievement(108).effect()).noLeadFormat(2);},
 			show:function(){return g.achievement[108]&&g.ZAxis.neq(c.d0)}
 		},
 		statTemplates.ach210Reward("Y"),
