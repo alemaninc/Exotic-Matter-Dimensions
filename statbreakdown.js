@@ -269,7 +269,7 @@ const statTemplates = {
 			show:function(){return this.mod().neq(c.d1)}
 		};
 	},
-	tickspeed:function(exp,label,dependencies=[]){
+	tickspeed:function(exp,label="Tickspeed",dependencies=[]){
 		if (exp==undefined) return {
 			label:"Tickspeed",
 			func:function(prev){return prev.mul(stat.tickspeed);},
@@ -1793,7 +1793,13 @@ miscStats.HRMultiplier={
 			text:function(){return "× "+researchEffect(15,9).format(2)},
 			show:function(){return g.research.r15_9}
 		},
-		statTemplates.timeResearch(16,7)
+		statTemplates.timeResearch(16,7),
+		{
+			label:achievement.label(802),
+			func:function(prev){return g.achievement[802]?prev.mul(N(1.0067).pow(g.lumens[2])):prev},
+			text:function(){return "× "+N(1.0067).pow(g.lumens[2]).format(4)+" "+SSBsmall("1.0067",g.lumens[2].format(),3)},
+			show:function(){return g.achievement[802]&&g.lumens[2].gt(c.d0)}
+		}
 	]
 };
 miscStats.HRExponent={
@@ -2428,7 +2434,7 @@ miscStats.extraDiscoveries_mul={type:"combined",value:function(){
 	if (g.achievement[504]) out = out.mul(c.d1_05)
 	return out
 }}
-miscStats.chromaGainBase={type:"combined",value:function(){return g.achievement[607]?c.d2_8:c.d3}}
+miscStats.chromaGainBase={type:"combined",value:function(){return g.achievement[607]?achievement(607).effect():c.d3}}
 
 const statGenerations = {}
 const stat = {}

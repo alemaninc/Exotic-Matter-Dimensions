@@ -791,7 +791,7 @@ function masteryBoost(x) {
 	if (row==10) {
 		b = b.mul(stat.stardustBoost11);
 		if (achievement.ownedInTier(5)>=27) b = b.mul(wormholeMilestone27Effect().div(c.e2).add(c.d1));
-		if (g.achievement[710]&&x==104) b = b.mul(c.d4);
+		if (g.achievement[710]&&x==103) b = b.mul(betaActive?c.d9:c.d4);
 		if (x==105) b = b.mul(achievement(711).effect())
 	}
 	return b.fix(c.d0);
@@ -1957,9 +1957,9 @@ const galaxyEffects = [
 		req:4,
 		boost:{
 			value:function(n=g.galaxies){return effectiveGalaxies(3,1,n).div(c.e2).add(c.d1)},
-			text:function(){return "U axis effect is "+(this.value().gt(c.d10)?"multiplied by {}":"increased by {}%")+" per star"},
+			text:function(){return "U axis effect is "+(this.value().gte(c.d10)?"multiplied by {}":"increased by {}%")+" per star"},
 			format:function(e){return this.value().gte(c.d10)?e.noLeadFormat(3):e.sub(c.d1).mul(c.e2).noLeadFormat(2)},
-			formula:function(){return "1 + "+effectiveGalaxyFormulaText(3,1)+" ÷ 100"}
+			formula:function(){return this.value().gte(c.d10)?("1 + "+effectiveGalaxyFormulaText(3,1)+" ÷ 100"):effectiveGalaxyFormulaText(3,1)}
 		},
 		penalty:{
 			value:function(n=g.galaxies){return [c.inf,effectiveGalaxies(3,0,n),c.d3].decimalPowerTower()},

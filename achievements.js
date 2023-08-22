@@ -19,7 +19,7 @@ achievement.tierColors = {
 	5:{primary:"#000080",secondary:"#6699ff"},
 	6:{primary:"#000000",secondary:"#ffffff"},
 	7:{primary:"#999900",secondary:"#ffff00"},
-	8:{primary:"#006644",secondary:"#0099ff"}
+	8:{primary:"#006644",secondary:"#00ff99"}
 }
 achievement.perAchievementReward = {
 	1:{text:"+0.02× X axis effect per achievement in this tier (currently: +{}×)",value:()=>(achievement.ownedInTier(1)/50).toFixed(2),calc:x=>N(x/50),currentVal:c.d0},
@@ -31,7 +31,7 @@ achievement.perAchievementReward = {
 	7:{text:"The base of the first galaxy penalty is reduced based on achievements in this tier ({})",value:function(){return showFormulas?"ceil(10<sup>36 ÷ (17+A)</sup>)":(achievement.ownedInTier(7)==Object.keys(achievementList[7]).length)?"currently: 10":("currently: "+this.calc(achievement.ownedInTier(7)).format()+", next: "+this.calc(achievement.ownedInTier(7)+1).format())},calc:x=>N(Math.ceil(10**(36/(x+17)))),currentVal:c.e2},
 	8:{text:"You can buy 2 additional Spatial Synergism research per achievement in this tier (currently: {})",value:()=>2*achievement.ownedInTier(8)+6,calc:x=>2*x+6,currentVal:6}
 }
-achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:101}
+achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,get 8(){return betaActive?712:801}}
 achievement.visible = function(id) {
 	if (g.achievement[id]) return true
 	if (achievement(id).beta==true) if (!betaActive) return false
@@ -1028,8 +1028,9 @@ const achievementList = {
 			progress:function(){return achievement.percent(N(this.lumens()),c.d4,0)},
 			get reward(){return "Each star below 60 divides chroma gain by 2.8 rather than 3"},
 			flavor:"There are six lights. How many do you see now?",
-//			effect:function(y=this.yellowValue){return N(2.8).sub(y.mul(1.6))}, // this is a placeholder and has no effect intentionally
-//			effectFormat:x=>x.noLeadFormat(3),
+			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d1_25:y.eq(c.d0)?N(2.8):c.d2_5.sub(y)},
+			effectFormat:x=>x.noLeadFormat(3),
+			yellowBreakpoints:[N(999),c.e4,1],
 			lumens:function(){return countTo(6,true).map(x=>g.lumens[x].gt(c.d0)?1:0).sum()},
 		},
 		608:{
@@ -1187,7 +1188,7 @@ const achievementList = {
 		},
 		708:{
 			name:"Mind-bending Curvature",
-			req:N("8.88e888"),
+			get req(){return betaActive?N("7.77e777"):N("8.88e888")},
 			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
 			check:function(){return achievement(501).realEffect().gte(this.req)},
 			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)},
@@ -1196,7 +1197,7 @@ const achievementList = {
 		},
 		709:{
 			name:"Mind-bending Curvature II",
-			req:N("9.99e999"),
+			get req(){return betaActive?N("8.88e888"):N("9.99e999")},
 			prevReq:[708],
 			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
 			check:function(){return achievement(501).realEffect().gte(this.req)},
@@ -1206,12 +1207,12 @@ const achievementList = {
 		},
 		710:{
 			name:"Mind-bending Curvature III",
-			req:N("1.11e1111"),
+			get req(){return betaActive?N("9.99e999"):N("1.11e1111")},
 			prevReq:[709],
 			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
 			check:function(){return achievement(501).realEffect().gte(this.req)},
 			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)},
-			reward:"Mastery 103 is 4× stronger",
+			get reward(){return "Mastery 103 is "+(betaActive?9:4)+"× stronger"},
 			flavor:"Auschwitz will forever remain the black hole of the entire human history"
 		},
 		711:{
@@ -1284,17 +1285,27 @@ const achievementList = {
 		},
 		717:{
 			name:"Base 3",
-			description:"Have 3 times more of each normal axis than the following normal axis, with at least 3 S axis. Includes free levels!",
+			description:"Destroy the universe having at least 3 times more of each normal axis than the following normal axis, with at least 1 S axis.",
 			check:function(){
-				if (stat.realSAxis.lt(c.d3)) return false
+				if (stat.realSAxis.eq(c.d0)) return false
 				for (let i=0;i<7;i++) if (Decimal.lt(stat["real"+axisCodes[i]+"Axis"],stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3))) return false
 				return true
 			},
 			progress:function(){
-				if (stat.realSAxis.lt(c.d3)) return stat.realSAxis.noLeadFormat(3)+" / 3 S axis"
-				for (let i=6;i>=0;i--) if (Decimal.lt(stat["real"+axisCodes[i]+"Axis"],stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3))) return stat["real"+axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"
+				if (stat.realSAxis.eq(c.d0)) return "Need an S axis"
+				for (let i=6;i>=0;i--) if (Decimal.lt(g[axisCodes[i]+"Axis"],g[axisCodes[i+1]+"Axis"].mul(c.d3))) return g[axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+g[axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"
+				return "Wormhole now to get this achievement!"
 			},
 			reward:"The softcap of the 3rd dark star effect is 3% slower",
+			flavor:"\"Reaching Base 3 Needs a massive 1.00E100<br>Which takes 2 hours to do<br>Base 3 is the final base. You have to reach<br>ω^ω^ω Which takes 1 day to do.\"<br>- Stat Mark",
+			beta:true
+		},
+		718:{
+			name:"Softcap-colored Lights",
+			description:"Have 26 black and white lumens each",
+			check:function(){return g.lumens[6].gt(c.d25)&&g.lumens[7].gt(c.d25)},
+			progress:function(){return this.check()?"Due to the way achievements work, you need to gain 1 more lumen of any kind to get this.":achievement.percent(Decimal.add(g.lumens[6].min(26),g.lumens[7].min(26)),N(52),0)},
+			reward:"Research 13-8 is 2.6% stronger",
 			flavor:"",
 			beta:true
 		},
@@ -1315,10 +1326,19 @@ const achievementList = {
 			name:"The Explorer",
 			description:"Reveal all Spatial Synergism research",
 			check:function(){return this.revealed()==56},
-			progress:function(){let q="span style=\"color:hsl(270 50% 50%);opacity:0.5;\">??</span>";return "Progress: "+this.revealed()+" / "+q+" ("+q+"."+q+"%)"},
+			progress:function(){let q="<span style=\"color:#330066\">??</span>";return "Progress: "+this.revealed()+" / "+q+" ("+q+"."+q+"%)"},
 			get reward(){return "Mastery 62 affects normal axis costs with ^0.1 effect (currently: ^"+masteryEffect(62).pow(c.d0_1).format(4)+")"},
 			flavor:"Adventure is just bad planning.",
 			revealed:function(){let v = visibleResearch();return researchGroupList.spatialsynergism.contents.map(x=>v.includes(x)?1:0).sum()},
+			beta:true
+		},
+		802:{
+			name:"Blacken the Sun",
+			get description(){return "Reach "+c.d2_1e67.format()+" hawking radiation"},
+			check:function(){return g.hawkingradiation.gte(c.d2_1e67)},
+			progress:function(){return achievement.percent(g.hawkingradiation,c.d2_1e67,1)},
+			get reward(){return "Each blue lumen increases hawking radiation gain by 0.67% (total: "+percentOrMult(N(1.0067).pow(g.lumens[2]))+")"},
+			flavor:"Every revolution evaporates and leaves behind only the slime of a new bureaucracy.",
 			beta:true
 		}
 	}
@@ -1591,10 +1611,10 @@ const achievementEvents = {
 	gameloop:[105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529,605,606,610,615,705,706,707,708,709,710,711,714],
 	stardustUpgrade:[216,301,402,403,404,405,406,407,602],
 	starBuy:[401,519,528,612],
-	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609,715],
-	wormholeResetAfter:[604,614],
-	researchBuy:[601,611,613,616,712,713],
-	lumenGain:[603,607],
+	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609,715,717],
+	wormholeResetAfter:[604,614,802],
+	researchBuy:[601,611,613,616,712,713,801],
+	lumenGain:[603,607,718],
 	galaxyGain:[701,702,703],
 }
 const secretAchievementEvents = {
@@ -1608,7 +1628,7 @@ const secretAchievementEvents = {
 function updateAchievementsTab() {
 	let tiers = Object.keys(achievementList);
 	for (let tier of tiers) {
-		if ((achievement.ownedInTier(tier)==0)||((achievement.ownedInTier(tier)==Object.keys(achievementList[tier]).length)&&(!g.completedAchievementTiersShown))) {
+		if (((achievement.ownedInTier(tier)==0)&&(!g.achievement[achievement.initial[tier]]))||((achievement.ownedInTier(tier)==Object.keys(achievementList[tier]).length)&&(!g.completedAchievementTiersShown))) {
 			d.display("div_achievementTier"+tier,"none");
 		} else {
 			d.display("div_achievementTier"+tier,"inline-block");
@@ -1682,7 +1702,7 @@ function addAchievement(x) {
 		let colors = achievement.tierColors[tier]
 		notify("Achievement Get! \""+achievement(x).name+"\"",colors.primary);
 		if (tier!=="1") if (x==achievement.initial[tier]) notify("You have unlocked "+achievement.tierName(tier)+" achievements!",colors.primary)
-		updateResearchTree();
+		if (tier==5&&achievement.ownedInTier(5)==15) updateResearchTree();
 		updateAchievementsTab();
 		d.display("span_noAchievements","none")
 		totalAchievements = Object.values(g.achievement).map(x=>x?1:0).sum()

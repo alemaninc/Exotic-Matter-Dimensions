@@ -1179,7 +1179,7 @@ function researchPower(row,col) {
 	}
 	if (row==7&&col==5&&g.achievement[616]) out = out.mul(1+totalResearch.overall()/300)
 	if (row==13&&col==8) {
-		let mult = c.d1
+		let mult = g.achievement[718]?N(1.026):c.d1
 		if (g.research.r15_5) mult = mult.add(researchEffect(15,5))
 		if (g.research.r15_11) mult = mult.add(researchEffect(15,11))
 		out = out.mul(mult)
@@ -1192,9 +1192,9 @@ function researchEffect(row,col) {
 function researchCost(x) {
 	// locking
 	if (research[x].group=="time") if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
-	if (research[x].group=="spatialsynergism") if (ownedResearchInGroup("spatialsynergism").length>=2*achievement.perAchievementReward[8].currentVal+6) return c.maxvalue
+	if (research[x].group=="spatialsynergism") if (ownedResearchInGroup("spatialsynergism").length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
 	// base
-	let output = research[x]["basecost"];
+	let output = research[x].basecost;
 	// class & study modifiers
 	if (research[x].group=="energy") {
 		output=output.mul(c.d2.pow(ownedResearchInGroup("energy").length))
@@ -1209,9 +1209,9 @@ function researchCost(x) {
 		for (let i=2;i<=ownedResearchInGroup("lightaugment").length;i++) mult*=i
 		output=output.mul(mult)
 	}
+	// hyper 2
 	if (x=="r9_2") output = output.mul(2**studyPower(3))
 	if (x=="r9_14") output = output.mul(1.5**studyPower(4))
-	// hyper 2
 	if ((researchRow(x)>7)&&(researchRow(x)<13)) output = output.mul(achievement.perAchievementReward[6].currentVal)
 	if (StudyE(5)&&research[x].type=="normal") output = output.mul(studies[5].difficultyConstant())
 	for (let i of ["r1_5","r1_6","r1_10","r1_11"]) if (g.research[i]) output = output.mul(researchEffect(1,researchCol(i)))
