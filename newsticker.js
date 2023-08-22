@@ -381,7 +381,7 @@ const newsList = [
 	{text:"Is it safe to say that all of these news messages are fake?",get weight(){return timeSinceGameOpened>180?1:0}},
 	{text:"\"I dedicate this game to myself\" - alemaninc"},
 	{text:"<span onClick=\"newsSupport.setBackground('#ff9900')\">Click here to set the theme to Orange</span>"},
-	{text:"You will see this news message only once in a green moon."},
+	{text:"You will see this news message only once in a green moon. Why will you see it more than once in the first place? "},
 	{text:"Do people truly play this or do they only look at it for a few minutes once a day?",get weight(){return unlocked("Stardust")?1:0}},
 	{text:"So you came to play a game? Let the game begin!",get weight(){return timeSinceGameOpened<5?1:0}},
 	{text:"But if all the stars generate gray light, why are the buttons colored? No one will ever know.",get weight(){return unlocked("Light")?1:0}},
@@ -438,7 +438,7 @@ const newsList = [
 	{get text(){return "alemaninc is releasing <i>Exotic Matter Dimensions</i> "+(Number(version.current.substring(2,3))+1)+" in just 5 hours! Click <a onClick=\"newsSupport.newsletter.init()\">this newsletter</a> to find out more."},weight:0}, // placeholder
 	{text:"Now in your local alemaninc Inc.: The <span style=\"color:#ffff00;\"><b>light bulb</b></span>! You can bring this <span style=\"color:#ffff00;\"><b>light bulb</b></span>  anyware as long as you dont touch the <span style=\"color:#ff0000;\"><u>red</u></span> and <span style=\"color:#0000ff;\"><u>blue</u></span> <span style=\"color:#ff9900;text-decoration:line-through\">wires</span>. If you buy it, you also get 50% off the <span style=\"color:#00ffff;\">idl</span><span style=\"color:#ff0000;\">eat</span><span style=\"color:#0000ff;\">or</span>! The <span style=\"color:#00ffff;\">idl</span><span style=\"color:#ff0000;\">eat</span><span style=\"color:#0000ff;\">or</span> makes you <span style=\"color:#4a86e8;\">freeze</span> by whoever <span style=\"color:#00ff00;\">opens</span> this <span style=\"color:#980000;\">complex</span> object but you will stop idleing when someone says&nbsp;&nbsp;\"You are not in idle\"."},
 	{text:"Stat Mark's PPPT SONG 1: PPPT, I have a \"The opposition\" and a \"<unknown>\", BOOM, The <unknown>, I have a \"Con\" and a \"Luigin\", BOOM, Luonigin, I have a \"THE <unknown>\", And \"Luonigin\", BOOM, The <Luonigin>."},
-	{text:" This is far from comprehensive! In order for this game to get alemaninc's Certificate of Comprehensivity, your game must be coded at a similiar level to the following: Tier 1. Zip Points (xhwzwka's version); Tier 2. Cookie Clicker; Tier 3. Zip Points (alemaninc's version); Tier 4. Synergism; Tier 5. Antimatter Dimensions. This gets a Tier 3 with Fractional Tier 4 at best! That's not good enough! All incremental game professionals can recreate Antimatter Dimensions!"}
+	{text:"This is far from comprehensive! In order for this game to get alemaninc's Certificate of Comprehensivity, your game must be coded at a similiar level to the following: Tier 1. Zip Points (xhwzwka's version); Tier 2. Cookie Clicker; Tier 3. Zip Points (alemaninc's version); Tier 4. Synergism; Tier 5. Antimatter Dimensions. This gets a Tier 3 with Fractional Tier 4 at best! That's not good enough! All incremental game professionals can recreate Antimatter Dimensions!"}
 ]
 // bottom
 var newsOrder = []

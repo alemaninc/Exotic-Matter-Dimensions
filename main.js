@@ -20,6 +20,7 @@ const basesave = {
 	masteryIdsShown:true,
 	masteryBoostsShown:true,
 	masteryActivityShown:true,
+	masteryRowsReversed:false,
 	timePlayed:0,
 	truetimePlayed:c.d0,
 	featuresUnlocked:[],
@@ -184,7 +185,7 @@ var totalStars = 0;
 var totalResearch = {
 	temporary:0,
 	permanent:0,
-	get overall(){return this.temporary+this.permanent}
+	overall:function(){return this.temporary+this.permanent}
 }
 var screen = 1;		// 1:game			2:story
 var overclockSpeedupFactor = 1;
@@ -319,8 +320,8 @@ function stardustUpgradeCost(x) {
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stars));
 	return cost;
 }
-function studyRewardHTML(studyNum,rewardNum,precision,completions) {
-	if (completions == undefined) completions = g.studyCompletions[studyNum];
+function studyRewardHTML(studyNum,rewardNum,precision=2,completions=g.studyCompletions[studyNum]) {
+	if (showFormulas) if (studies[studyNum].rewardFormulas!==undefined) if (studies[studyNum].rewardFormulas[rewardNum]!==undefined) return formulaFormat(studies[studyNum].rewardFormulas[rewardNum](completions))
 	if (completions == 4) return N(studies[studyNum].reward(rewardNum,4)).noLeadFormat(precision);
 	return arrowJoin(N(studies[studyNum].reward(rewardNum,completions)).noLeadFormat(precision),N(studies[studyNum].reward(rewardNum,completions+1)).noLeadFormat(precision));
 }
@@ -357,7 +358,10 @@ const studies = [
 			"Empower "+studyRewardHTML(1,1,1)+"% of your Y axis",
 		 	"Increase the effect of stardust upgrade #2 by "+studyRewardHTML(1,2,2)+"% (based on achievements)",
 			"Multiply hawking radiation gain by "+studyRewardHTML(1,3,0)
-		]}
+		]},
+		rewardFormulas:{
+			2:(comp=g.studyCompletions[1],ach=totalAchievements)=>studyRewardBoost(1,2).mul(c.d10).noLeadFormat(3)+" × Σ<span class=\"xscript\"><sup>"+comp+"</sup><sub>n=1</sub></span>(1 - ("+(ach>=80?"A ÷ 64":("1 + A<sup>5</sup> ÷ "+BEformat(1.31072e10)))+")<sup>n-5</sup>)"
+		}
 	},
 	{
 		name:"Big Bang Theory",
@@ -399,7 +403,14 @@ const studies = [
 			"Increase the cap of Stardust Upgrade #5 by "+studyRewardHTML(3,1,0),
 			"Keep ^"+studyRewardHTML(3,2,studyRewardBoost(3,2).eq(c.d1)?1:3)+" of each of the first six Energies on Stardust reset",
 			"Meta energy increases "+studyRewardHTML(3,3,2)+"× faster (based on game-time in this Wormhole)"
-		]}
+		]},
+		rewardFormulas:{
+			3:function(comp=g.studyCompletions[3]){
+				let out = "1 + Σ<span class=\"xscript\"><sup>"+(comp-1)+"</sup><sub>n=0</sub></span>(t ÷ 10<sup>n</sup>)<sup>max(n, 0.5)</sup>"
+				if (studyRewardBoost(3,3).eq(c.d1)) return out
+				return "("+out+")<sup>"+studyRewardBoost(3,3).noLeadFormat(3)+"</sup>"
+ 			}
+		}
 	},
 	{
 		name:"Vacuum Decay",
@@ -414,7 +425,7 @@ const studies = [
 			functionError("studies[4].reward",arguments)
 		},
 		reward_desc:function(){return [
-			"Base stardust gain formula exponent "+studyRewardHTML(4,1,2),
+			"Base stardust gain formula exponent is "+studyRewardHTML(4,1,2),
 			"The effect of Mastery 42 is "+studyRewardHTML(4,2,2)+"× stronger",
 			"The first effect of dark stars is "+studyRewardHTML(4,3,2)+"× stronger"
 		]}
@@ -566,6 +577,7 @@ function realAxisCostExponent(type) {
 	if (type=="S"&&g.research.r3_5) output = output.mul(researchEffect(3,5));
 	let tier7res = ["r16_2","r15_2","r14_2","r13_2","r13_1","r14_1","r15_1","r16_1"]
 	if (g.research[tier7res]) output = output.mul(researchEffect(researchRow(tier7res),researchCol(tier7res)))
+	for (let i of researchGroupList.spatialsynergism.effectors[type]) if (g.research[i]) output = output.div(research[i].value())
 	return output;
 }
 function realAxisScalePower(type){return stat.axisScalingPower}
@@ -819,19 +831,19 @@ function masteryFormula(x) {
 		return "log(MP+10)<sup>"+masteryBoost(62).mul(-0.04).noLeadFormat(3)+"</sup>"
 	}
 	if (x==63) return "log(MP+1)<sup>0.8</sup>"+formulaFormat.mult(masteryBoost(63))
-	if (x==71) return "log(log(MP<sup>1.25</sup> + "+c.e10.format()+"))"+formulaFormat.exp(masteryBoost(71))
-	if (x==72) return formulaFormat.logSoftcap("log(log(MP + "+c.e10.format()+"))<sup>0.5</sup> - 1",c.d1,c.d5,g.masteryPower.gt(c.ee4))+formulaFormat.mult(masteryBoost(72))+" + 1"
+	if (x==71) return "log<sup>[2]</sup>(MP<sup>1.25</sup> + "+c.e10.format()+")"+formulaFormat.exp(masteryBoost(71))
+	if (x==72) return formulaFormat.logSoftcap("log<sup>[2]</sup>(MP + "+c.e10.format()+")<sup>0.5</sup> - 1",c.d1,c.d5,g.masteryPower.gt(c.ee4))+formulaFormat.mult(masteryBoost(72))+" + 1"
 	if ([81,82,83,84].includes(x)) {
 		let out = "log(MP + 1)<sup>0.5 × "+formulaFormat.mult(masteryBoost(x).mul([c.d0_03,c.d0_1,c.d0_2,c.d0_24][x-81]))+" × "
 		if (x==81) out += "X<sup>0.4</sup>"
-		if (x==82) out += "log(log(EM + 10))"
-		if (x==83) out += "log(log(DM + 10))<sup>0.75</sup>"
-		if (x==84) out += "log(log(S + 10))<sup>0.5</sup>"
+		if (x==82) out += "log<sup>[2]</sup>(EM + 10)"
+		if (x==83) out += "log<sup>[2]</sup>(DM + 10)<sup>0.75</sup>"
+		if (x==84) out += "log<sup>[2]</sup>(S + 10)<sup>0.5</sup>"
 		return "10<sup>"+formulaFormat.logSoftcap(out,c.e2,c.d1,masteryEffect(x).gt(c.e100))+"</sup>"
 	}
-	if (x==85) return "log(log(MP + 10))"+formulaFormat.mult(masteryBoost(85).mul(c.d0_2))
-	if (x==91) return "log(log(MP + 10))"+formulaFormat.mult(masteryBoost(91).mul(c.d0_03))+" × log(t + 10) + 1"
-	if (x==92) return "log(log(MP + 10))"+formulaFormat.mult(masteryBoost(92).div(c.d3))+" ÷ log(t + 10) + 1"
+	if (x==85) return "log<sup>[2]</sup>(MP + 10)"+formulaFormat.mult(masteryBoost(85).mul(c.d0_2))
+	if (x==91) return "log<sup>[2]</sup>(MP + 10)"+formulaFormat.mult(masteryBoost(91).mul(c.d0_03))+" × log(t + 10) + 1"
+	if (x==92) return "log<sup>[2]</sup>(MP + 10)"+formulaFormat.mult(masteryBoost(92).div(c.d3))+" ÷ log(t + 10) + 1"
 	if (x==101) return formulaFormat.logSoftcap("log(MP + 10)"+formulaFormat.exp(masteryBoost(101).div(c.d2)),c.d75,c.d2,masteryEffect(101).gt(c.d75))
 	if (x==102) return "10<sup>log(MP + 1)<sup>2 ÷ 3</sup>"+formulaFormat.mult(masteryBoost(102).mul(c.d0_0175))+"</sup>"
 	if (x==103) return "(10<sup>log(MP + 10)<sup>0.2</sup></sup> - 9)"+formulaFormat.exp(masteryBoost(103))
@@ -997,22 +1009,22 @@ function formatStardustBoost(x){
 const showStardustBoostFormula = {
 	1:function(){
 		let mult1 = "(1 + S ÷ 10)<sup>0.5</sup>"
-		let mult2 = g.stardust.gt("ee6.6666666666")?("10<sup>10<sup>"+formulaFormat.convSoftcap("log(log(S + 1)) × 1.5 - 1",c.d9,c.d12,true)+"</sup></sup>"):"10<sup>log(S + 1)<sup>1.5</sup> × 0.1</sup>"
+		let mult2 = g.stardust.gt("ee6.6666666666")?("10<sup>10<sup>"+formulaFormat.convSoftcap("log<sup>[2]</sup>(S + 1) × 1.5 - 1",c.d9,c.d12,true)+"</sup></sup>"):"10<sup>log(S + 1)<sup>1.5</sup> × 0.1</sup>"
 		let base = stardustBoostBoost(1).eq(c.d1)?(mult1+" × "+mult2):("("+mult1+" × "+mult2+")<sup>"+stardustBoostBoost(1).noLeadFormat(3))
 		if (stat.stardustBoost1.lt(c.ee12)) return base
-		return "10<sup>10<sup>"+formulaFormat.convSoftcap("log(log("+base+"))",c.d12,c.d15,true)
+		return "10<sup>10<sup>"+formulaFormat.convSoftcap("log<sup>[2]</sup>("+base+")",c.d12,c.d15,true)
 	},
 	2:function(){return "(1 + log(S + 1) × 0.075)"+formulaFormat.exp(stardustBoostBoost(2))},
 	3:function(){return "("+formulaFormat.linSoftcap("log(S ÷ "+c.e7.format()+" + 1)<sup>0.7</sup> ÷ 2",c.d10,c.d1,g.stardust.gt(1.6324e79))+" + 1)"+formulaFormat.exp(stardustBoostBoost(3))},
 	4:function(){return "(log(S<sup>0.05</sup> + 10)<sup>1 ÷ 3</sup> - 1)"+formulaFormat.mult(stardustBoostBoost(4))},
 	5:function(){return "("+formulaFormat.linSoftcap("10<sup>log(S × "+c.e24.format()+" + "+c.e64.format()+")<sup>2 ÷ 3</sup> - 16</sup>",c.inf,c.d1,g.stardust.gt("7.56e5814"))+")"+formulaFormat.exp(stardustBoostBoost(5))},
-	6:function(){return "log(log(S<sup>0.15</sup> + "+c.e10.format()+"))"+formulaFormat.exp(stardustBoostBoost(6))},
+	6:function(){return "log<sup>[2]</sup>(S<sup>0.15</sup> + "+c.e10.format()+")"+formulaFormat.exp(stardustBoostBoost(6))},
 	7:function(){return "log(S + 10)"+formulaFormat.exp(stardustBoostBoost(7).div(c.e2))},
-	8:function(){return "log(log(S + "+c.e100.format()+"))"+formulaFormat.exp(stardustBoostBoost(8).mul(c.d5))+formulaFormat.mult(N(1/32).pow(stardustBoostBoost(8)))},
+	8:function(){return "log<sup>[2]</sup>(S + "+c.e100.format()+")"+formulaFormat.exp(stardustBoostBoost(8).mul(c.d5))+formulaFormat.mult(N(1/32).pow(stardustBoostBoost(8)))},
 	9:function(){return "(log(S + "+c.e100.format()+") ÷ 100)"+formulaFormat.exp(stardustBoostBoost(9).mul(c.d0_4))},
-	10:function(){return formulaFormat.convSoftcap("(log(log(S + "+c.ee3.format()+")) - 3)"+formulaFormat.mult(stardustBoostBoost(10).div(c.d10)),c.d0_5,c.d1,stat.stardustBoost10.gt(c.d0_5))},
-	11:function(){return formulaFormat.convSoftcap("(log(log(S + "+c.ee4.format()+")) - 4)"+formulaFormat.mult(stardustBoostBoost(11).div(c.d10)),c.d1_5,c.d2,stat.stardustBoost11.gt(c.d2_5))+" + 1"},
-	12:function(){return formulaFormat.convSoftcap("(log(log(S + "+c.ee5.format()+")) - 5)"+formulaFormat.mult(stardustBoostBoost(12)),c.d0,c.d1,true)}
+	10:function(){return formulaFormat.convSoftcap("(log<sup>[2]</sup>(S + "+c.ee3.format()+") - 3)"+formulaFormat.mult(stardustBoostBoost(10).div(c.d10)),c.d0_5,c.d1,stat.stardustBoost10.gt(c.d0_5))},
+	11:function(){return formulaFormat.convSoftcap("(log<sup>[2]</sup>(S + "+c.ee4.format()+") - 4)"+formulaFormat.mult(stardustBoostBoost(11).div(c.d10)),c.d1_5,c.d2,stat.stardustBoost11.gt(c.d2_5))+" + 1"},
+	12:function(){return formulaFormat.convSoftcap("(log<sup>[2]</sup>(S + "+c.ee5.format()+") - 5)"+formulaFormat.mult(stardustBoostBoost(12)),c.d0,c.d1,true)}
 }
 function stardustBoost7Exp(x) {
 	x=(x==undefined)?g.truetimeThisStardustReset:N(x)
@@ -1192,8 +1204,8 @@ function showStarEffectFormula(x) {
 	if (x==42) return c.e18.format()
 	if ([11,12,13,14].includes(x)) {
 		let modifier
-		if (x==11) modifier = " × (1 - 1 ÷ log(log((EM + 1) × "+c.e10.format()+")))"
-		if (x==12) modifier = " ÷ log(log((EM + 1) × "+c.e10.format()+"))"
+		if (x==11) modifier = " × (1 - 1 ÷ log<sup>[2]</sup>((EM + 1) × "+c.e10.format()+"))"
+		if (x==12) modifier = " ÷ log<sup>[2]</sup>((EM + 1) × "+c.e10.format()+")"
 		if (x==13) modifier = " × (1 - 1 ÷ (1 + t ÷ 1,000))"
 		if (x==14) modifier = " ÷ (1 + t ÷ 1,000)"
 		return "10<sup>"+row1StarPower(x).noLeadFormat(3)+modifier+"</sup>"
@@ -1202,9 +1214,9 @@ function showStarEffectFormula(x) {
 	if (x==64) return formulaFormat.convSoftcap("log(EM + 10)<sup>0.1</sup>",c.d1,c.d3,true) // always softcapped
 	if ([71,72,73,74].includes(x)) {
 		let power = g.research.r6_10?researchEffect(6,10).div(c.e2).add(c.d1):c.d1,out
-		if (x==71) out = "log(log(MP<sup>0.31623</sup> + 10))"+formulaFormat.mult(power.mul(c.d22_5))
-		if (x==72) out = "log(log(EM + 10))<sup>2</sup>"+formulaFormat.mult(power.mul(c.d1_5))
-		if (x==73) out = "log(log(S + 10))"+formulaFormat.mult(power.mul(c.d8))
+		if (x==71) out = "log<sup>[2]</sup>(MP<sup>0.31623</sup> + 10)"+formulaFormat.mult(power.mul(c.d22_5))
+		if (x==72) out = "log<sup>[2]</sup>(EM + 10)<sup>2</sup>"+formulaFormat.mult(power.mul(c.d1_5))
+		if (x==73) out = "log<sup>[2]</sup>(S + 10)"+formulaFormat.mult(power.mul(c.d8))
 		if (x==74) out = "log(t + 1)"+formulaFormat.mult(power.mul(c.d7_5))
 		return formulaFormat.convSoftcap(out,c.d75,c.e2,starEffect(x).gt(c.d75))
 	}
@@ -1325,17 +1337,24 @@ function buyMaxDarkAxis(caps) {
 function darkStarEffect1(x=stat.realDarkStars) {
 	return [x,c.d5,studies[4].reward(3)].productDecimals()
 }
+function darkStarEffect3SoftcapInc() {	
+	let out = c.d10
+	if (g.achievement[717]) out = out.mul(c.d1_03)
+	return out
+}
 function darkStarEffect3(x) {
 	x=(x==undefined)?stat.realDarkStars:N(x);
 	if (x.lte(c.e2)) return x;
-	return Decimal.convergentSoftcap(x.div(c.d10).sub(c.d9).ln().mul(c.d10).add(c.e2),c.d150,c.d200);
+	let inc = darkStarEffect3SoftcapInc()
+	return Decimal.convergentSoftcap(x.div(inc).sub(c.d9).ln().mul(inc).add(c.e2),c.d150,c.d200);
 }
 function darkStarEffectHTML() {
 	let v1 = stat.realDarkStars;
 	let v2 = realDarkStars(stat.maxAffordableDarkStars.max(g.darkstars.add(c.d1)));
 	let eff2 = darkAxisBoostedNextStar()
 	let eff3text = arrowJoin(darkStarEffect3(v1).noLeadFormat(4),darkStarEffect3(v2).noLeadFormat(4))
-	if (showFormulas&&v2.gt(c.e2)) eff3text = formulaFormat(formulaFormat.convSoftcap("100 + ln(★ ÷ 10 - 9) × 10",c.d150,c.d200,darkStarEffect3().gt(c.d150))) 
+	let eff3inc = darkStarEffect3SoftcapInc()
+	if (showFormulas&&v2.gt(c.e2)) eff3text = formulaFormat(formulaFormat.convSoftcap("100 + ln(★ ÷ "+eff3inc.noLeadFormat(3)+" - 9) × "+eff3inc.noLeadFormat(3),c.d150,c.d200,darkStarEffect3().gt(c.d150))) 
 	return [
 		"The base gain of dark matter will become "+arrowJoin(darkStarEffect1(v1).noLeadFormat(2),darkStarEffect1(v2).noLeadFormat(2))+"% stronger",
 		 (eff2.length==8?"All dark":("Dark "+eff2.joinWithAnd()))+" axis will become stronger",
@@ -1380,6 +1399,7 @@ function realDarkAxisCostExponent(type) {
 	if (type=="S"&&g.research.r3_11) output = output.mul(researchEffect(3,11));
 	let tier7res = ["r16_14","r15_14","r14_14","r13_14","r13_15","r14_15","r15_15","r16_15"]
 	if (g.research[tier7res]) output = output.mul(researchEffect(researchRow(tier7res),researchCol(tier7res)))
+	for (let i of researchGroupList.spatialsynergism.effectors["dark"+type]) if (g.research[i]) output = output.div(research[i].value())
 	return output;
 }
 function maxAffordableDarkAxis(type) {
@@ -1456,7 +1476,7 @@ function darkStarEffect2Level(axis,x) {
 	return Decimal.linearSoftcap(out,c.d40,c.d1);
 }
 function darkStarEffect2LevelFormula(axis) {
-	let out = "floor(★ ÷ 8) + max(0, min(★ % 8"+formulaFormat.add(N(-axisCodes.indexOf(axis)))+", 1))"
+	let out = "floor(★ ÷ 8) + max(0, min(★ mod 8"+formulaFormat.add(N(-axisCodes.indexOf(axis)))+", 1))"
 	if (stat.realDarkStars.gte(c.d80)) {
 		if (axis=="W") out = formulaFormat.linSoftcap(out,c.d10,c.d3,true)
 		if (axis=="S") out = formulaFormat.logSoftcap(out,c.d10,c.d9,true)
@@ -1813,7 +1833,7 @@ const lightEffect = [
 	{
 		value:function(x=g.lumens[2]){return x.div(c.d10).add(c.d4).log2().log2()},
 		format:function(x){return x.format(4)},
-		formula:function(){return "log<sub>2</sub>(log<sub>2</sub>(L ÷ 10 + 4))"}
+		formula:function(){return "log<span class=\"xscript\"><sup>[2]</sup><sub>2</sub></span>(L ÷ 10 + 4)"}
 	},
 	{
 		value:function(x=g.lumens[3]){
@@ -1822,8 +1842,9 @@ const lightEffect = [
 		},
 		format:function(x){return x.gte(c.d10)?x.noLeadFormat(3):x.mul(c.d100).noLeadFormat(2)},
 		formula:function(){
-			if (lightCache.currentEffect[3].lte(c.d1)) return g.lumens[3].gte(c.d50)?("ln(L ÷ 25 - 1) × 12.5 + 50"):"L"
-			let out = "(("+out+") × 200 - 199)<sup>0.5</sup> + 99"
+			if (g.lumens[3].lt(c.d50)) return "L"
+			if (lightCache.currentEffect[3].lt(c.d1)) return "ln(L ÷ 25 - 1) × 25 + 50"
+			let out = "(50 × ln(L ÷ 25 - 1) - 99)<sup>0.5</sup> + 99"
 			if (lightCache.currentEffect[3].lt(c.d10)) return out
 			return "("+out+") ÷ 100"
 		}
@@ -1845,7 +1866,7 @@ const lightEffect = [
 		formula:function(){
 			if (g.lumens[7].lt(c.d5)) return "10 × L"
 			if (g.lumens[7].lt(c.d25)) return "100 - 250 ÷ L"
-			return "10<sup>10<sup>"+formulaFormat.convSoftcap("log(log(L × 0.4))",c.d0,c.d1,true)+"</sup></sup>"
+			return "10<sup>10<sup>"+formulaFormat.convSoftcap("log<sup>[2]</sup>(L × 0.4)",c.d0,c.d1,true)+"</sup></sup>"
 		}
 	}
 ]
@@ -1867,10 +1888,11 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	let shownAchievements,out=[]
 	if (mode==0) {shownAchievements = lightCache.currentEffect[5]}
 	else if (mode==1) {shownAchievements = yellowLight.affected.filter(x=>achievement(x).yellowBreakpoints[0].lte(g.lumens[5]))}
-	else {error("Cannot access reviewYellowLight("+value+")")}
+	else {functionError("reviewYellowLight",arguments)}
+	shownAchievements = shownAchievements.sort((a,b)=>(g.achievement[b]?1:0)-(g.achievement[a]?1:0))
 	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px;\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).yellowValue:c.d0,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).nextYellowValue:achievement(x).yellowValue))+"</td></tr></table></div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+(g.achievement[x]?"":";filter:opacity(33%)")+"\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).yellowValue:c.d0,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).nextYellowValue:achievement(x).yellowValue))+"</td></tr></table></div>")
 	}
 	popup({
 		text:out.join(""),
@@ -2055,7 +2077,8 @@ const openConfig = (()=>{
 			{text:"Mastery toggle confirmation "+(g.confirmations.stardustReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.toggleMastery")},
 			{text:(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs",onClick:"toggle('masteryIdsShown')"},
 			{text:(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages",onClick:"toggle('masteryBoostsShown')"},
-			{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"}
+			{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"},
+			{text:"Order of Mastery rows "+(g.masteryRowsReversed?"":"not ")+"reversed",onClick:"toggle('masteryRowsReversed');d.innerHTML('masteryContainerLegacy',masteryTableLegacy());d.innerHTML('masteryContainerModern',masteryTableModern())"}
 		])},
 		"Offline Time":function(){showConfigModal("Offline Time",[
 			{text:(g.glowOptions.overclock?"G":"No g")+"low during Overclock",onClick:toggle("g.glowOptions.overclock")}
@@ -2217,7 +2240,7 @@ function ProgressBar() {
 	}
 	d.innerHTML("gameprogress",label);
 	d.element("gameprogress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+filled+"%,rgba(102,102,102,0.9) "+filled+"%,rgba(102,102,102,0.9)),"+color;
-	d.element("gameprogress").style.color = blackOrWhiteContrast(color)
+	d.element("gameprogress").style.color = blackOrWhiteContrast(getComputedStyle(d.element("gameprogress"))["background-color"] )
 }
 function progressBarOnClick() {
 	let data

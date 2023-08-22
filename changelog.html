@@ -59,14 +59,34 @@ const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":lo
 function format(x,p=0){return gformat(N(x),p,notation)}
 const logEntries = [
 	/*
+	blank entry:
+	{name:"",changes:[
+
+	]}
+	next major:
 	{name:"𝕍1.4",changes:[
 		["BALANCE","'Old age' achievement reward has been buffed"],
 		["CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"]
 	]}
 	*/
+	{name:"𝕍1.3.11.0.1 (2023-08-22)",changes:[
+		["BALANCE","Overclock is no longer disabled in Study III"],
+		["BUGFIX","Cyan light effect formula is now correct above 50 cyan lumens"],
+		["BUGFIX","'Double Galaxy' reward formula now correctly says '÷ 1e7' rather than '× 1e7'"],
+		["BUGFIX","Star ID's and active states are no longer left-aligned, which caused them to be outside modern-style buttons"],
+		["BUGFIX","Owned row 10 stars are now properly transparent on the modern layout"],
+		["BUGFIX","The secret research no longer persists on respec"],
+		["BUGFIX","Formulas for research 10-7, 10-8 and 10-9 now account for 'Antimatter Academia'"],
+		["BUGFIX","Really old saves with autobuyer levels higher than the cap will no longer show the 'upgrade autobuyer' button for autobuyers that can't be leveled further"],
+		["BUGFIX","Having a zip point multiplier no longer breaks hidden statistics"],
+		["INTERFACE","Dark axis effects no longer show leading zeroes"],
+		["INTERFACE","Iterated logarithms in formulas now show as <i>log<sup>[2]</sup>(x)</i> instead of <i>log(log(x))</i>"],
+		["INTERFACE","Achievements which are affected by yellow light but not owned are now transparent in the yellow light effect overviews and always at the bottom of the list"],
+		["QOL","Added an option to reverse the order of Mastery rows"]
+	]},
 	{name:"𝕍1.3.11 (2023-08-21)",changes:[
 		["BUGFIX","Fixed an issue with <code>structuredClone()</code>"],
-		["INTERFACE","Removed the 'download save' button temporarily"]
+		["INTERFACE","Removed the 'download save' button temporarily"],
 	]},
 	{name:"𝕍1.3.10 (2023-08-21)",changes:[
 		["BUGFIX","The stat breakdown no longer shows 'Feedback Loop' as having a much larger effect than it really does"],

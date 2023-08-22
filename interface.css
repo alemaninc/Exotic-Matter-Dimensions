@@ -545,7 +545,7 @@ tab {
 .ownedstarbutton7.modern {background-color:rgba(102,255,153,0.3);}
 .ownedstarbutton8.modern {background-color:rgba(51,255,204,0.3);}
 .ownedstarbutton9.modern {background-color:rgba(0,255,255,0.3);}
-.ownedstarbutton10.modern {background-image:radial-gradient(rgba(255,255,255,0.3),rgba(0,0,0,0.3));}
+.ownedstarbutton10.modern {background:radial-gradient(rgba(255,255,255,0.3),rgba(0,0,0,0.3));}
 #starPanel {
 	min-height:75px;
 	font-size:16px;

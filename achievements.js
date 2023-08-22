@@ -29,9 +29,9 @@ achievement.perAchievementReward = {
 	5:{text:"Base knowledge gain is multiplied by achievements in this tier (currently: ×{}). In addition, gain increasing quality-of-life bonuses as more achievements in this tier are unlocked",value:()=>achievement.ownedInTier(5),calc:x=>N(x),currentVal:c.d0},
 	6:{text:"Research in rows 8-12 is 1% cheaper per achievement in this tier, plus an extra 1% reduction for every 4 achievements (currently: {}%)",value:()=>Math.floor(achievement.ownedInTier(6)*1.25),calc:x=>N(1-Math.floor(x*1.25)/100),currentVal:c.d1},
 	7:{text:"The base of the first galaxy penalty is reduced based on achievements in this tier ({})",value:function(){return showFormulas?"ceil(10<sup>36 ÷ (17+A)</sup>)":(achievement.ownedInTier(7)==Object.keys(achievementList[7]).length)?"currently: 10":("currently: "+this.calc(achievement.ownedInTier(7)).format()+", next: "+this.calc(achievement.ownedInTier(7)+1).format())},calc:x=>N(Math.ceil(10**(36/(x+17)))),currentVal:c.e2},
-	8:{text:"You can buy 1 additional research from each of the Spatial Synergism groups per achievement in this tier (currently: {})",value:()=>(achievement.ownedInTier(8)+7),calc:x=>x+7,currentVal:7}
+	8:{text:"You can buy 2 additional Spatial Synergism research per achievement in this tier (currently: {})",value:()=>2*achievement.ownedInTier(8)+6,calc:x=>2*x+6,currentVal:6}
 }
-achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:801}
+achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:101}
 achievement.visible = function(id) {
 	if (g.achievement[id]) return true
 	if (achievement(id).beta==true) if (!betaActive) return false
@@ -110,7 +110,7 @@ const achievementList = {
 			flavor:"10,000 hours to master your craft.",
 			effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(c.e5).add(c.d10).log10().log10(),c.d0_75,c.d1).sqrt();},
 			effectFormat:x=>x.format(2),
-			formulaText:()=>formulaFormat.convSoftcap("log(log(t ÷ 100,000 + 10))",c.d0_75,c.d1,g.truetimePlayed.gt(42014859476))+"<sup>0.5</sup>"
+			formulaText:()=>formulaFormat.convSoftcap("log<sup>[2]</sup>(t ÷ 100,000 + 10)",c.d0_75,c.d1,g.truetimePlayed.gt(42014859476))+"<sup>0.5</sup>"
 		},
 		106:{
 			name:"10.000 hours?",
@@ -421,7 +421,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.inf)+" exotic matter with no partially filled star rows (all rows must be either full or empty)";},
 			check:function(){return g.exoticmatter.gt(c.inf)&&this.valence();},
 			progress:function(){return this.valence()?achievement.percent(g.exoticmatter,c.inf,1):"Failed";},
-			reward:"+30.8% dark matter per unassigned star",
+			get reward(){return "+30.8% dark matter per unassigned star (total: "+percentOrMult(N(1.308).pow(unspentStars()))+")"},
 			flavor:"I made a noble gas joke, sadly nobody reacted",
 			valence:function(){return [1,2,3,4,5,6,7,8,9,10].map(x => [1,2,3,4].map(y => g.star[10*x+y]?1:0).sum()%4).sum()==0;}
 		},
@@ -616,7 +616,7 @@ const achievementList = {
 			flavor:"All the sounds of the night seemed to pass through a hollow tunnel of indefinite length.",
 			effect:function(y=this.yellowValue){return g.exoticmatter.add(c.e10).layerplus(-3).mul(c.d0_8).mul(y.add(c.d1)).fix(c.d0);},
 			effectFormat:x=>x.format(2),
-			formulaText:function(){return "log(log(log(EM + "+c.e10.format()+")))"+formulaFormat.mult(c.d0_8.mul(this.yellowValue.add(c.d1)))},
+			formulaText:function(){return "log<sup>[3]</sup>(EM + "+c.e10.format()+")"+formulaFormat.mult(c.d0_8.mul(this.yellowValue.add(c.d1)))},
 			yellowBreakpoints:[c.d30,c.d60,0],
 		},
 		410:{
@@ -629,7 +629,7 @@ const achievementList = {
 			flavor:"If I get up early the day feels longer than if I get up late, even if I spend the same amount of time awake.",
 			effect:function(y=this.yellowValue){return g.masteryPower.add(c.e10).layerplus(-3).mul(c.d1_2).mul(y.add(c.d1)).fix(c.d0);},
 			effectFormat:x=>x.format(2),
-			formulaText:function(){return "log(log(log(MP + "+c.e10.format()+")))"+formulaFormat.mult(c.d1_2.mul(this.yellowValue.add(c.d1)))},
+			formulaText:function(){return "log<sup>[3]</sup>(MP + "+c.e10.format()+")"+formulaFormat.mult(c.d1_2.mul(this.yellowValue.add(c.d1)))},
 			yellowBreakpoints:[c.d40,c.d70,0],
 		},
 		411:{
@@ -642,7 +642,7 @@ const achievementList = {
 			flavor:"A mathematician makes plans to travel backwards in time through a wormhole to a parallel universe when he can't even make it to Mars with the fastest rocket on hand today.",
 			effect:function(y=this.yellowValue){return g.stardust.add(c.e10).layerplus(-3).mul(y.add(c.d1)).fix(c.d0);},
 			effectFormat:x=>x.format(2),
-			formulaText:function(){return "log(log(log(S + "+c.e10.format()+")))"+formulaFormat.mult(this.yellowValue.add(c.d1))},
+			formulaText:function(){return "log<sup>[3]</sup>(S + "+c.e10.format()+")"+formulaFormat.mult(this.yellowValue.add(c.d1))},
 			yellowBreakpoints:[c.d50,c.d80,0],
 		},
 		412:{
@@ -856,7 +856,7 @@ const achievementList = {
 		},
 		520:{
 			name:"Rationing",
-			description:"Destroy the universe with no more than 15 stardust upgrades",
+			description:"Destroy the universe with no more than 15 stardust upgrades (note that the axis autobuyer upgrade and Mastery unlocks always persist on reset)",
 			check:function(){return this.owned()<=15;},
 			progress:function(){return this.owned()>15?"Failed":((15-this.owned())+" upgrade"+(this.owned()==14?"":"s")+" left");},
 			get reward(){return (this.yellowValue.eq(c.d0)?"Square":"{}th")+" root the cost of the first level of each Stardust Upgrade"},
@@ -947,7 +947,7 @@ const achievementList = {
 			flavor:"Go become a millionaire in real life.",
 			effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(c.d10).dilate(c.d0_1).div(c.d10),c.d1_75,c.d2),g.hawkingradiation.add(c.e10).log10().log10()).fix(c.d1);},
 			effectFormat:x=>x.noLeadFormat(4),
-			formulaText:()=>{return formulaFormat.convSoftcap("10<sup>log(HR + 10)<sup>0.1</sup></sup> ÷ 10",c.d1_75,c.d2,g.hawkingradiation.gt(641695609))+" × log(log(HR + "+c.e10.format()+"))"}
+			formulaText:()=>{return formulaFormat.convSoftcap("10<sup>log(HR + 10)<sup>0.1</sup></sup> ÷ 10",c.d1_75,c.d2,g.hawkingradiation.gt(641695609))+" × log<sup>[2]</sup>(HR + "+c.e10.format()+")"}
 		},
 		530:{
 			name:"Big Bang",
@@ -969,7 +969,7 @@ const achievementList = {
 			effect:function(){return [g.exoticmatter.add(c.d1).pow(c.em8).mul(c.d10).layerplus(-2),g.stardust.add(c.d1).pow(c.em5).mul(c.d10).layerplus(-2)].productDecimals().pow10()},
 			effectFormat:x=>percentOrMult(x),
 			formulaText:function(){
-				let out = "10<sup>log(log((EM + 1)<sup>"+c.em8.format()+"</sup> × 10)) × log(log((S + 1)<sup>"+c.em5.format()+"</sup> × 10))</sup>"
+				let out = "10<sup>log<sup>[2]</sup>((EM + 1)<sup>"+c.em8.format()+"</sup> × 10) × log<sup>[2]</sup>((S + 1)<sup>"+c.em5.format()+"</sup> × 10)</sup>"
 				return this.effect().gte(c.d10)?(out+"×"):("("+out+" - 1) × 100%")
 			}
 		},
@@ -1019,7 +1019,7 @@ const achievementList = {
 			flavor:"Programming graphics in X is like finding the square root of π using Roman numerals",
 			effect:function(){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.d2)},
 			effectFormat:x=>percentOrMult(x),
-			formulaText:()=>"log(log(log(DE × "+c.ee10.format()+")))<sup>2</sup>×"
+			formulaText:()=>"log<sup>[3]</sup>(DE × "+c.ee10.format()+")<sup>2</sup>×"
 		},
 		607:{
 			name:"There are Four Lights",
@@ -1109,8 +1109,8 @@ const achievementList = {
 		616:{
 			name:"Pseudoscience",
 			description:"Have 30 researches with no spent Discoveries",
-			check:function(){return (totalResearch.overall>=30)&&g.spentDiscoveries.eq(c.d0)},
-			progress:function(){return g.spentDiscoveries.eq(c.d0)?achievement.percent(N(totalResearch.overall),c.d30,0):"Failed"},
+			check:function(){return (totalResearch.overall()>=30)&&g.spentDiscoveries.eq(c.d0)},
+			progress:function(){return g.spentDiscoveries.eq(c.d0)?achievement.percent(N(totalResearch.overall()),c.d30,0):"Failed"},
 			reward:"Research 7-5 is 0.33% stronger per research owned",
 			flavor:"These mysteries about <i>how</i> we evolved should not distract us from the indisputable fact that we <i>did</i> evolve."
 		}
@@ -1133,7 +1133,7 @@ const achievementList = {
 			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"alemaninc.github.io/Exotic-Matter-Dimensions/\">github.io</a>? Try that too!",
 			effect:function(){return g.truetimeThisWormholeReset.div(c.e7).add(c.d1).pow(c.e2)},
 			effectFormat:x=>x.format(4),
-			formulaText:()=>"(1 + t × "+c.e7.format()+")<sup>100</sup>"
+			formulaText:()=>"(1 + t ÷ "+c.e7.format()+")<sup>100</sup>"
 		},
 		703:{
 			name:"You got past the Big Wall",
@@ -1145,7 +1145,7 @@ const achievementList = {
 			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"file:///C:/Users/\">C:/Users/ale</a>-- okay, maybe not that one...",
 			effect:function(){return Decimal.convergentSoftcap(g.hawkingradiation.add(c.e10).log10().log10(),c.d8,c.d16).add(c.d24)},
 			effectFormat:x=>x.noLeadFormat(4),
-			formulaText:()=>g.hawkingradiation.gt(c.ee8)?"40 - 64 ÷ log(log(HR))":("log(log(HR + "+c.e10.format()+")) + 24")
+			formulaText:()=>g.hawkingradiation.gt(c.ee8)?"40 - 64 ÷ log<sup>[2]</sup>(HR)":("log<sup>[2]</sup>(HR + "+c.e10.format()+") + 24")
 		},
 		704:{
 			name:"Five-finger discount",
@@ -1278,8 +1278,24 @@ const achievementList = {
 			reward:"The 9-achievement Wormhole Milestone effect is raised to the power of {} (based on time in the current Wormhole)",
 			effect:function(){return g.truetimeThisWormholeReset.div(c.e4).add(c.d10).log10().log10().div(c.d10).add(c.d1)},
 			effectFormat:x=>x.format(4),
-			formulaText:()=>"log(log(t ÷ 10,000 + 10)) ÷ 10 + 1",
+			formulaText:()=>"log<sup>[2]</sup>(t ÷ 10,000 + 10) ÷ 10 + 1",
 			flavor:"I am incapable of conceiving infinity, and yet I do not accept finity.",
+			beta:true
+		},
+		717:{
+			name:"Base 3",
+			description:"Have 3 times more of each normal axis than the following normal axis, with at least 3 S axis. Includes free levels!",
+			check:function(){
+				if (stat.realSAxis.lt(c.d3)) return false
+				for (let i=0;i<7;i++) if (Decimal.lt(stat["real"+axisCodes[i]+"Axis"],stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3))) return false
+				return true
+			},
+			progress:function(){
+				if (stat.realSAxis.lt(c.d3)) return stat.realSAxis.noLeadFormat(3)+" / 3 S axis"
+				for (let i=6;i>=0;i--) if (Decimal.lt(stat["real"+axisCodes[i]+"Axis"],stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3))) return stat["real"+axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"
+			},
+			reward:"The softcap of the 3rd dark star effect is 3% slower",
+			flavor:"",
 			beta:true
 		},
 		719:{
@@ -1295,7 +1311,16 @@ const achievementList = {
 		}
 	},
 	8:{
-		801:{}
+		801:{
+			name:"The Explorer",
+			description:"Reveal all Spatial Synergism research",
+			check:function(){return this.revealed()==56},
+			progress:function(){let q="span style=\"color:hsl(270 50% 50%);opacity:0.5;\">??</span>";return "Progress: "+this.revealed()+" / "+q+" ("+q+"."+q+"%)"},
+			get reward(){return "Mastery 62 affects normal axis costs with ^0.1 effect (currently: ^"+masteryEffect(62).pow(c.d0_1).format(4)+")"},
+			flavor:"Adventure is just bad planning.",
+			revealed:function(){let v = visibleResearch();return researchGroupList.spatialsynergism.contents.map(x=>v.includes(x)?1:0).sum()},
+			beta:true
+		}
 	}
 };
 achievement.all = Object.values(achievementList).map(x => Object.keys(x)).flat()

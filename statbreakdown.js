@@ -110,7 +110,7 @@ const hiddenStatistics = [
 		condition:function(){return g.zipPoints>0}
 	},{
 		name:"Zip Point gain multiplier",
-		value:function(){return N(g.zipPointMulti).noLeadForamt(2)+"×"},
+		value:function(){return N(g.zipPointMulti).noLeadFormat(2)+"×"},
 		condition:function(){return g.zipPointMulti>1}
 	}
 ].sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
@@ -269,7 +269,7 @@ const statTemplates = {
 			show:function(){return this.mod().neq(c.d1)}
 		};
 	},
-	tickspeed:function(exp,dependencies=[]){
+	tickspeed:function(exp,label,dependencies=[]){
 		if (exp==undefined) return {
 			label:"Tickspeed",
 			func:function(prev){return prev.mul(stat.tickspeed);},
@@ -278,7 +278,7 @@ const statTemplates = {
 			show:function(){return stat.tickspeed.neq(c.d1)}
 		}
 		else return {
-			label:"Tickspeed",
+			label:label,
 			mod:function(){return stat.tickspeed.gt(c.d1)?stat.tickspeed.pow(exp()):stat.tickspeed},
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(3)+(stat.tickspeed.gt(c.d1)&&exp().neq(c.d1)?(" "+SSBsmall(stat.tickspeed.noLeadFormat(3),exp().noLeadFormat(4),3)):"");},
@@ -788,7 +788,7 @@ miscStats.baseMasteryPowerExponent={
 			label:"Base",
 			exp:function(){return N(c.d1_2);},
 			func:function(){return g.exoticmatter.pow(c.d0_1).add(c.d10).log10().log10().add(c.d1).pow(this.exp());},
-			text:function(){return unbreak("(log(log("+g.exoticmatter.format()+" ^ 0.1 + 10)) + 1)")+" ^ "+this.exp().format(2);},
+			text:function(){return unbreak("(log<sup>[2]</sup>("+g.exoticmatter.format()+" ^ 0.1 + 10) + 1)")+" ^ "+this.exp().format(2);},
 			show:function(){return true}
 		},
 		{
@@ -945,7 +945,7 @@ miscStats.ZAxisEffect={
 			},
 			constant:function(){return g.exoticmatter.add(c.d1).mul(c.e10).log10().log10().log10().add(c.d1);},
 			func:function(){return [c.d10,this.constant(),this.constant(),this.exp()].decimalPowerTower().mul(c.d0_15);},
-			consttext:function(){return unbreak("(log(log(log("+g.exoticmatter.add(c.d1).format(2)+" × "+BEformat(c.e10)+"))) + 1)");},
+			consttext:function(){return unbreak("(log<sup>[3]</sup>("+g.exoticmatter.add(c.d1).format(2)+" × "+BEformat(c.e10)+") + 1)");},
 			text:function(){return "10 ^ "+this.consttext()+" ^ "+this.consttext()+" ^ "+this.exp().noLeadFormat(3)+" × 0.15";},
 			dependencies:["stardustBoost10"],
 			show:function(){return true}
@@ -1050,7 +1050,7 @@ miscStats.UAxisEffect={
 		{
 			label:"Base",
 			func:function(){return g.stardust.add(c.e10).log10().log10().pow(c.d2).div(c.d10).pow10();}, 
-			text:function(){return "10 ^ "+unbreak("(log(log("+g.stardust.format(0)+" + "+BEformat(c.e10)+")) ^ 2 ÷ 10)");},
+			text:function(){return "10 ^ "+unbreak("(log<sup>[2]</sup>("+g.stardust.format(0)+" + "+BEformat(c.e10)+") ^ 2 ÷ 10)");},
 			show:function(){return true}
 		},
 		statTemplates.ach209Reward,
@@ -1511,6 +1511,13 @@ miscStats.axisCostExponent={
 			text:function(){return "× "+stat.dimensionalEnergyEffect.format(4)},
 			dependencies:["dimensionalEnergyEffect"],
 			show:function(){return stat.dimensionalEnergyEffect.neq(c.d1)}
+		},
+		{
+			label:achievement.label(801),
+			func:function(prev){return MasteryE(62)?prev.pow(masteryEffect(62).pow(c.d0_1)):prev},
+			text:function(){return "× "+masteryEffect(62).pow(c.d0_1).format(4)+" "+SSBsmall(masteryEffect(62).format(4),"0.1",3)},
+			dependencies:masteryDependencies(62),
+			show:function(){return g.achievement[801]&&MasteryE(62)}
 		}
 	]
 };
@@ -2023,13 +2030,7 @@ miscStats.knowledgePerSec={
 			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(researchEffect(7,5).mul(totalAchievements).add(c.d1).format(3),lightCache.currentEffect[3].noLeadFormat(3),3);},
 			show:function(){return g.research.r7_5&&researchEffect(7,5).neq(c.d0)&&totalAchievements>0&&lightCache.currentEffect[3].neq(c.d0)}
 		},
-		{
-			label:"Study VI reward 2",
-			mod:function(){return stat.tickspeed.gt(c.d1)?stat.tickspeed.pow(studies[6].reward(2)):c.d1},
-			func:function(prev){return prev.mul(this.mod())},
-			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(stat.tickspeed.format(3),studies[6].reward(2).noLeadFormat(2),3);},
-			show:function(){return g.studyCompletions[6]>0&&stat.tickspeed.gte(c.d1)}
-		},
+		statTemplates.tickspeed(()=>studies[6].reward(2),"Study VI reward 2"),
 		{
 			label:"Observations",
 			func:function(prev){return prev.add(c.d1).pow(stat.observationEffect).sub(c.d1);},

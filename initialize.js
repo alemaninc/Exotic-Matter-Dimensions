@@ -10,8 +10,8 @@ const initSteps = [
 		for(let id of Object.keys(research)){validateResearch(id)}
 		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type=="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
 	}}},
-	{function:function(){HTMLGenerator()}},
 	{function:function(){load(JSON.parse(localStorage.getItem("save")));}},
+	{function:function(){HTMLGenerator()}},
 	{function:function(){
 		d.innerHTML("span_currentVersion",version.current)
 		document.title="Exotic Matter Dimensions "+version.current+" by alemaninc"

@@ -348,7 +348,7 @@ function updateHTML() {
 							d.innerHTML("span_realdark"+type+"Axis","Effective: "+stat["realdark"+type+"Axis"].noLeadFormat(2));
 						}
 						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(0))?(" + "+BEformat(stat["freedark"+type+"Axis"],2)):""));
-						d.innerHTML("span_dark"+type+"AxisEffect",BEformat(stat["dark"+type+"AxisEffect"],[2,2,2,3,2,3,2,4][i]));
+						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"].noLeadFormat([2,2,2,3,2,3,2,4][i]));
 						d.innerHTML("span_dark"+type+"AxisCost",BEformat(stat["dark"+type+"AxisCost"]));
 					}
 					let v1 = stat.realDarkStars;
@@ -383,7 +383,7 @@ function updateHTML() {
 			d.class("button_"+id+"AutobuyerToggle",g[id+"AutobuyerOn"]?"automatortoggleon":"automatortoggleoff");
 			d.innerHTML("button_"+id+"AutobuyerToggle",g[id+"AutobuyerOn"]?"On":"Off");
 			d.innerHTML("span_"+id+"AutobuyerInterval",timeFormat(autobuyerMeta.interval(id)));
-			d.display("button_"+id+"AutobuyerUpgrade",g[id+"AutobuyerUpgrades"]==autobuyerMeta.cap(id)?"none":"inline-block");
+			d.display("button_"+id+"AutobuyerUpgrade",g[id+"AutobuyerUpgrades"]>=autobuyerMeta.cap(id)?"none":"inline-block");
 			d.element("button_"+id+"AutobuyerUpgrade").style["background-color"]=autobuyerMeta.cost(id).gt(g[autobuyers[id].resource])?"#b2b2b2":"#cccccc";
 			d.innerHTML("span_"+id+"AutobuyerCost",autobuyerMeta.cost(id).format(2));
 		}
@@ -430,7 +430,7 @@ function updateHTML() {
 				for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),researchLoadoutSelected==(i+1)?"researchLoadoutSelected":"researchLoadout")
 			}
 			let visible = visibleResearch()
-			for (let i of buyableResearchWithCondition) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
+			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
 		} else if (activeSubtabs.wormhole=="studies") {
 			for (let i of visibleStudies()) {
 				d.innerHTML("span_study"+i+"Description",studies[i].description())
@@ -449,7 +449,7 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"Chroma",g.chroma[i].format())
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
-				d.innerHTML("span_"+lightNames[i]+"LightEffect",i==5?lightCache.currentEffect[5].length:showFormulas?lightEffect[i].formula():arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
+				d.innerHTML("span_"+lightNames[i]+"LightEffect",i==5?lightCache.currentEffect[5].length:showFormulas?formulaFormat(lightEffect[i].formula()):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
 				d.element("button_chromaGen"+i).style["background-color"]=(g.activeChroma==i)?"#000000":""
 				if (i>2) {
 					d.innerHTML("button_chromaGen"+i,((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents[i].map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
@@ -497,7 +497,7 @@ function updateHTML() {
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
-	if (StudyE(3)) {
+	if (StudyE(3)&&(!overclockActive)) {
 		let diff = time-0.05
 		g.dilatedTime += diff
 		time -= diff

@@ -26,7 +26,17 @@ function alemanicHash(message,length=512) {
 	}
 	return out.map(x => base64[Math.floor(Math.abs(x))%64]).join("")
 }
-function unbreak(str) {return str.replaceAll(" ","&nbsp;")}
+function unbreak(str) { // prevent targeting inside HTML tags
+	let inTag = false
+	let out = ""
+	for (let i of str.split("")) {
+		if (i=="<") inTag=true
+		else if (i==">") inTag=false
+		if (i==" "&&(!inTag)) out+="&nbsp;"
+		else out+=i
+	}
+	return out
+}
 function arrowJoin(a,b) {return a+"&nbsp;→&nbsp;"+b}
 Object.defineProperty(Array.prototype,"remove",{
   value:function remove(item){
