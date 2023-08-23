@@ -1115,7 +1115,34 @@ const research = (function(){
 				}
 			}
 			return out
-		})()
+		})(),
+		r23_5: {
+			adjacent_req:["r19_5","r20_4","r21_3","r22_2","r23_1"],
+			condition:[{check:function(){return g.exoticmatter.gt(studies[7].unlockReq())},text:function(){return g.exoticmatter.format()+" / "+studies[7].unlockReq().format()+" exotic matter"}}],
+			visibility:function(){return true;},
+			type:"study",
+			basecost:N(2500),
+			icon:icon.study([[50,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.cos(Math.PI*x/180),50+35*Math.sin(Math.PI*x/180),5])])
+		},
+		r24_4:{
+			description:function(){return "Luck shard gain is "+numOrFormula("r24_5")+(researchEffect(24,5)?"×":"%")+" faster (based on stardust)"},
+			adjacent_req:["r24_5"],
+			condition:[studyReq(7,2)],
+			visibility:function(){return g.studyCompletions[7]>1},
+			type:"normal",
+			basecost:N(2500),
+			icon:icon.stardust+icon.arr,
+			effect:function(power){}
+		},
+		r24_5:{
+			description:function(){return "Unlock Luck Upgrades"},
+			adjacent_req:["r23_5"],
+			condition:[studyReq(7,1)],
+			visibility:function(){return g.studyCompletions[7]>0},
+			type:"permanent",
+			basecost:N(18000),
+			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 5%,var(--luck) 7.5%, var(--luck) 17.5%,rgba(0,0,0,0) 20%,rgba(0,0,0,0) 25%)\"></div>"
+		},
 	}
 })();
 const researchList = Object.keys(research).filter(x=>x!=="r6_9")
@@ -1191,8 +1218,8 @@ function researchEffect(row,col) {
 }
 function researchCost(x) {
 	// locking
-	if (research[x].group=="time") if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
-	if (research[x].group=="spatialsynergism") if (ownedResearchInGroup("spatialsynergism").length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
+	if ((research[x].group=="time")&&(!g.research[x])) if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
+	if ((research[x].group=="spatialsynergism")&&(!g.research[x])) if (ownedResearchInGroup("spatialsynergism").length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
 	// base
 	let output = research[x].basecost;
 	// class & study modifiers

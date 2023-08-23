@@ -449,7 +449,7 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"Chroma",g.chroma[i].format())
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
-				d.innerHTML("span_"+lightNames[i]+"LightEffect",i==5?lightCache.currentEffect[5].length:showFormulas?formulaFormat(lightEffect[i].formula()):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
+				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i==5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
 				d.element("button_chromaGen"+i).style["background-color"]=(g.activeChroma==i)?"#000000":""
 				if (i>2) {
 					d.innerHTML("button_chromaGen"+i,((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents[i].map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
@@ -554,6 +554,10 @@ function tick(time) {																																		 // The game loop, which 
 
 
 	// Incrementer section - this comes last because otherwise resets don't work properly
+	for (let i=0;i<energyTypes.length;i++) {   // energy comes first to make Study III harder :D
+		if (energyTypesUnlocked()>i) o.mul(energyTypes[i]+"Energy",energyPerSec(i).pow(time));
+		else g[energyTypes[i]+"Energy"]=c.d1;
+	}
 	incrementExoticMatter(stat.exoticmatterPerSec.mul(time));
 	g.exoticmatter = g.exoticmatter.max(stat.exoticmatterPerSec.mul(g.achievement[112]?c.d60:g.achievement[111]?c.d30:g.achievement[110]?c.d15:0)).fix(c.d0);
 	if (unlocked("Masteries")) {
@@ -563,10 +567,6 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)==30&&g.activeStudy==0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(0));
 	if (achievement.ownedInTier(5)>=10) incrementStardust(stat.tickspeed.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
-	for (let i=0;i<energyTypes.length;i++) {
-		if (energyTypesUnlocked()>i) o.mul(energyTypes[i]+"Energy",energyPerSec(i).pow(time));
-		else g[energyTypes[i]+"Energy"]=c.d1;
-	}
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
 	if (typeof g.activeChroma == "number") {
 		if (lightComponents[g.activeChroma]==null) {

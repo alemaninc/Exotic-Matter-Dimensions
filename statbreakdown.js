@@ -357,6 +357,12 @@ const statTemplates = {
 			text:function(){return "× "+this.mod().format(2)},
 			show:function(){return g.research["r"+row+"_"+col]}
 		}
+	},
+	study7:{
+		label:"Study VII",
+		func:function(prev){return StudyE(7)?prev.pow(studies[7].luckEffect()):prev},
+		text:function(){return "^ "+studies[7].luckEffect().noLeadFormat(3)},
+		show:function(){return StudyE(7)}
 	}
 }
 var miscStats = {};
@@ -493,6 +499,7 @@ miscStats.exoticmatterPerSec={
 			text:function(){return "^ 1.05";},
 			show:function(){return g.achievement[401]}
 		},
+		statTemplates.study7,
 		statTemplates.tickspeed()
 	]
 };
@@ -600,7 +607,8 @@ miscStats.stardustExponent={
 			func:function(prev){return g.stars<40?[prev,galaxyEffects[2].penalty.value(),N(40-g.stars)].decimalPowerTower():prev},
 			text:function(){return "^ "+galaxyEffects[2].penalty.value().pow(40-g.stars).noLeadFormat(3)+" "+SSBsmall(galaxyEffects[2].penalty.value().noLeadFormat(3),"(40 - "+g.stars+")",3)},
 			show:function(){return galaxyEffects[2].penalty.value().neq(c.d1)&&g.stars<40}
-		}
+		},
+		statTemplates.study7
 	])
 };
 miscStats.pendingstardust={
@@ -720,6 +728,7 @@ miscStats.darkmatterPerSec={
 			dependencies:["gravitationalEnergyEffect"],
 			show:function(){return stat.gravitationalEnergyEffect.neq(c.d1)}
 		},
+		statTemplates.study7,
 		statTemplates.tickspeed()
 	]
 };
@@ -774,6 +783,7 @@ miscStats.masteryPowerPerSec={
 			dependencies:["neuralEnergyEffect"],
 			show:function(){return stat.neuralEnergyEffect.neq(c.d1)}
 		},
+		statTemplates.study7,
 		statTemplates.tickspeed()
 	]
 };

@@ -171,10 +171,13 @@ const basesave = {
 	chroma:Array(8).fill(c.d0),
 	lumens:Array(8).fill(c.d0),
 	activeChroma:null,
+	showLightEffectsFrom0:false,
 	galaxies:0,
 	highestGalaxies:0,
 	highestGalaxiesSpacetime:0,
 	ach711Progress:61,
+	luckEssence:0,
+	luckShards:c.d0
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = ["Y"]
@@ -187,7 +190,6 @@ var totalResearch = {
 	permanent:0,
 	overall:function(){return this.temporary+this.permanent}
 }
-var screen = 1;		// 1:game			2:story
 var overclockSpeedupFactor = 1;
 var secretAchievementPoints = 0;
 var savecounter = 0; // will prevent save before load
@@ -231,10 +233,10 @@ const dilationUpgrades = [
 	},
 	{
 		tooltip:"The Overclock softcap is reduced by {e}%",
-		cost:function(x=g.dilationUpgrades[3]){return 86400+21600*x},
-		cap:5,
-		effect:function(x=g.dilationUpgrades[3]){return 1-0.1*x},
-		effectFormat:function(x=g.dilationUpgrades[3]){return (1-this.effect(x)).toFixed(1)},
+		cost:function(x=g.dilationUpgrades[3]){return 64800+43200*x},
+		cap:10,
+		effect:function(x=g.dilationUpgrades[3]){return x==10?0.1:x==0?1:Decimal.decibel(-x).toNumber()},
+		effectFormat:function(x=g.dilationUpgrades[3]){return N((1-this.effect(x))*100).noLeadFormat(2)},
 		tickspeedNeeded:N(32768)
 	},
 	{
@@ -467,6 +469,29 @@ const studies = [
 			"Tickspeed<sup>"+studyRewardHTML(6,2,3)+"</sup> affects the base gain of knowledge",
 			"Research 8-2 is "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned"
 		]},
+	},
+	{
+		name:"Luck Be In The Air Tonight",
+		unlockReq:function(){return [N("e5e8"),c.ee100,c.ee100,c.ee100][studyPower(7)]},
+		description:function(){return "Each stardust reset also gives "+(studyPower(7)+4)+" luck essence for every order of magnitude of stardust gained. The gain of exotic matter, mastery power, stardust and dark matter is raised to a power between "+N(1-studies[7].luckMaxReduction()).noLeadFormat(3)+" and 1 (based on how close luck essence is to a multiple of 1,000)"},
+		luckEssenceGain:function(x=stat.pendingstardust.sub(g.stardust)){return x.lt(c.d1)?c.d0:x.log10().mul(studyPower(7)+4).floor()},
+		luckMaxReduction:function(){return (3+studyPower(7))/6},
+		luckEffect:function(x=g.luckEssence){return N(1 - Math.sqrt((1-Math.cos(x/Math.PI/500))/2) * studies[7].luckMaxReduction())},
+		research:"r23_5",
+		goal:function(){return [N(5750),N(6750),N(8000),N(9500)][studyPower(7)]},
+		reward:function(num,comp=g.studyCompletions[7]){
+			if (num==1) return [c.d0,c.d75,c.d90,N(98),c.d100][comp]
+			if (num==2) return [g.hawkingradiation.add(c.e10).log10().log10().pow(comp).sub(c.d1),c.d0_001,studyRewardBoost(7,2)].productDecimals().pow10().sub(c.d1)
+			if (num==3) return [c.d0,c.d0_8,N(1.4),N(1.8),N(2.1)].mul(studyRewardBoost(7,3))
+		},
+		reward_desc:function(){return [
+			"Research unlocked by Study VII works at "+studyRewardHTML(7,1,0)+"% efficiency",
+			"Gain "+studyRewardHTML(7,2,2)+" luck shards per second (based on hawking radiation)",
+			"Empower up to "+studyRewardHTML(7,3,3)+" U axis"
+		]},
+		rewardFormulas:{
+			2:(comp=g.studyCompletions[7])=>"10<sup>(log<sup>[2]</sup>(HR + "+c.e10.format()+")<sup>"+comp+"</sup> - 1)"+formulaFormat.mult(studyRewardBoost(7,2).div(c.e3))+"</sup> - 1"
+		}
 	}
 ];
 const fullStudyNames = [null,...countTo(studies.length-1).map(x=>"Study "+roman(x)+": "+studies[x].name)]
@@ -532,7 +557,8 @@ const storyEntries = {
 	"Hawking Radiation":"<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"_wormhole\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"_research\">research</span>?</p>",
 	get ["Studies"](){return "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"in which stars don't form easily":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you enlightenment.</p>"},
 	get ["Light"](){return "<p>Having traversed "+BEformat(N(g.TotalWormholeResets))+" universes, it's easy to feel as if you've \"seen it all\". You take a moment to appreciate the simple things in your existence, like the color of exotic matter... and you realise that it doesn't seem to have one. Everything is illuminated by the same constant gray light.</p><p>Surely there is a way to create color in this place?</p>"},
-	get ["Galaxies"](){return "<p>The dark matter has made your stars unstable, and now if you have more than 60 in close proximity to each other they'll all collapse.</p><p>You'll need to practice working with stronger, smaller galaxies to succeed.</p>"}
+	get ["Galaxies"](){return "<p>The dark matter has made your stars unstable, and now if you have more than 60 in close proximity to each other they'll all collapse.</p><p>You'll need to practice working with stronger, smaller galaxies to succeed.</p>"},
+	"Luck":"<p></p>"
 }
 function openStory(x) {
 	if (storyEntries[x]!==undefined) {
@@ -958,11 +984,12 @@ function stardustReset() {
 		if (summary.gain.gt(g.previousStardustRuns.wormhole.highest.gain)) g.previousStardustRuns.wormhole.highest = summary
 		if (summary.gain.gt(g.previousStardustRuns.spacetime.highest.gain)) g.previousStardustRuns.spacetime.highest = summary
 		if (summary.gain.gt(g.previousStardustRuns.eternity.highest.gain)) g.previousStardustRuns.eternity.highest = summary
+		incrementStardust(stat.pendingstardust.floor().sub(g.stardust).max(c.d0))
+		g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset);
+		addAchievement(201);
+		addAchievement(511);
+		if (StudyE(7)) g.luckEssence += studies[7].luckEssenceGain()
 	}
-	addAchievement(201);
-	addAchievement(511);
-	incrementStardust(stat.pendingstardust.floor().sub(g.stardust).max(c.d0))
-	g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset);
 	g.exoticmatter=c.d0;
 	for (let i=0;i<8;i++) {
 		g[axisCodes[i]+"Axis"]=(g.stardustUpgrades[1]>=i+2)?(Decimal.mul(g[axisCodes[i]+"Axis"],stat.stardustUpgrade2AxisRetentionFactor).floor()):c.d0;
@@ -1612,6 +1639,7 @@ function wormholeReset() {
 		}
 		g.activeStudy=0;
 		updateAllStudyDivs();
+		g.luckEssence=0
 	}
 	g.exoticmatter=c.d0;
 	for (let i=0;i<8;i++) {
@@ -1840,7 +1868,7 @@ const lightEffect = [
 			let out = x.gt(c.d50)?x.div(c.d25).sub(c.d1).ln().add(c.d2).div(c.d4):x.div(c.e2)
 			return out.gt(c.d1)?out.mul(c.d200).sub(c.d199).sqrt().add(c.d99).div(c.e2):out
 		},
-		format:function(x){return x.gte(c.d10)?x.noLeadFormat(3):x.mul(c.d100).noLeadFormat(2)},
+		format:function(x){return x.gte(c.d10)?x.noLeadFormat(3):x.mul(c.d100).noLeadFormat(3)},
 		formula:function(){
 			if (g.lumens[3].lt(c.d50)) return "L"
 			if (lightCache.currentEffect[3].lt(c.d1)) return "ln(L ÷ 25 - 1) × 25 + 50"
@@ -1854,7 +1882,10 @@ const lightEffect = [
 		format:function(x){return x.noLeadFormat(3)},
 		formula:function(){return g.lumens[4].gte(c.d10)?"log(L)<sup>2</sup>":"L ÷ 10"}
 	},
-	{value:function(x=g.lumens[5]){return achievement.all.filter(a=>achievement(a).yellowBreakpoints==undefined?false:achievement(a).yellowBreakpoints.length==3?(achievement(a).yellowBreakpoints[0].lte(x)&&achievement(a).yellowBreakpoints[1].gt(x)):(achievement(a).yellowBreakpoints[0].lte(x)))}},
+	{
+		value:function(x=g.lumens[5]){return achievement.all.filter(a=>achievement(a).yellowBreakpoints==undefined?false:achievement(a).yellowBreakpoints.length==3?(achievement(a).yellowBreakpoints[0].lte(x)&&achievement(a).yellowBreakpoints[1].gt(x)):(achievement(a).yellowBreakpoints[0].lte(x)))},
+		formula:function(){return numword(lightCache.currentEffect[5].length)}
+	},
 	{
 		value:function(x=g.lumens[6]){return x.gt(c.d25)?N(12.5).div(x):c.d1.sub(x.div(c.d50))},
 		format:function(x){return x.noLeadFormat(4)},
@@ -1892,7 +1923,7 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	shownAchievements = shownAchievements.sort((a,b)=>(g.achievement[b]?1:0)-(g.achievement[a]?1:0))
 	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+(g.achievement[x]?"":";filter:opacity(33%)")+"\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).yellowValue:c.d0,(mode==0&&g.lumens[5].lt(c.d200))?achievement(x).nextYellowValue:achievement(x).yellowValue))+"</td></tr></table></div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+(g.achievement[x]?"":";filter:opacity(33%)")+"\"><table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode==1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode==1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table></div>")
 	}
 	popup({
 		text:out.join(""),
@@ -2047,6 +2078,14 @@ const topResources = [
 		text:function(){return studies[6].name+" divisor: <span class=\"red\">"+studies[6].effect().noLeadFormat(3)+"</span>"},
 		condition:function(){return StudyE(6);}
 	},
+	{
+		text:function(){return "<span class=\"_luck\">"+g.luckEssence+"</span> luck essence (+<span class=\"_luck\">"+studies[7].luckEssenceGain()+"</span>)"},
+		condition:function(){return StudyE(7);}
+	},
+	{
+		text:function(){return studies[7].name+": ^<span class=\"red\">"+studies[7].luckEffect().noLeadFormat(3)+"</span>"},
+		condition:function(){return StudyE(7);}
+	}
 ];
 function updateTopResourceModal() {
 	for (let i=0;i<topResources.length;i++) {
@@ -2117,6 +2156,7 @@ const openConfig = (()=>{
 		])},
 		"Light":function(){showConfigModal("Light",[
 			{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:toggle("g.glowOptions.noChromaGeneration")},
+			{text:"Lumen effects shown from "+(g.showLightEffectsFrom0?"zero":"previous lumen"),onClick:"toggle('showLightEffectsFrom0')"}
 		])}
 	}
 })()

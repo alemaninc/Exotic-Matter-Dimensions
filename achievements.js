@@ -841,7 +841,7 @@ const achievementList = {
 			flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",
 			effect:function(){return g.observations.map(x=>[c.d2,x,c.d0_75].decimalPowerTower()).productDecimals().fix(c.d1);},
 			effectFormat:x=>x.format(2),
-			formulaText:()=>countTo(4).map(i=>"2<sup>O<span class=\"xscript\"><sup>0.75</sup><sub>"+i+"</sub></span></sup>").join(" × ")
+			formulaText:()=>"2<sup>"+countTo(4).map(i=>"O<span class=\"xscript\"><sup>0.75</sup><sub>"+i+"</sub></span>").join(" + ")+"</sup>"
 		},
 		519:{
 			name:"Shiny Yellow Orbs",
@@ -1250,16 +1250,16 @@ const achievementList = {
 			name:"Old age",
 			description:"Play for 122 years",
 			check:function(){return g.truetimePlayed.gt(31556926*122)},
-			progress:function(){return achievement.percent(g.truetimePlayed.div(31556926),c.d122,0)},
+			progress:function(){return achievement.percent(g.truetimePlayed.div(31556926),c.d122,0)+"<br>(Real time left to reach: "+timeFormat(N(31556926*122).sub(g.truetimePlayed).div(stat.tickspeed))+")"},
 			get reward(){return betaActive?("{} extra Discoveries (based on time played)"+(this.effect().gt(g.knowledge.log10().div(c.d10))?" (softcapped past "+g.knowledge.log10().div(c.d10).format()+", based on knowledge)":"")):"122 extra Discoveries"},
 			effect:function(){
 				if (!betaActive) return c.d122
 				let out = g.truetimePlayed.div(31556926)
-				if (out.gt(c.e3)) out = out.log10().sub(c.d2).sqrt().mul(c.d2).add(c.d1).pow10()
+				if (out.gt(c.e3)) out = out.log10().mul(c.d3).sub(c.d8).pow(c.d1div3).add(c.d2).pow10()
 				return Decimal.logarithmicSoftcap(out,g.knowledge.log10().div(c.d10),c.d1)
 			},
 			effectFormat:x=>x.format(3),
-			formulaText:function(){return formulaFormat.logSoftcap(g.truetimePlayed.gt(31556926e3)?"10<sup>log(t ÷ 31,556,926)<sup>0.5</sup> × 2 + 1</sup>":"t ÷ 31,556,926",g.knowledge.log10().div(c.d10),c.d1,this.effect().gt(g.knowledge.log10().div(c.d10)))},
+			formulaText:function(){return formulaFormat.logSoftcap(g.truetimePlayed.gt(31556926e3)?"10<sup>(log(t ÷ 31,556,926) × 3 - 8)<sup>1 ÷ 3</sup> + 2</sup>":"t ÷ 31,556,926",g.knowledge.log10().div(c.d10),c.d1,this.effect().gt(g.knowledge.log10().div(c.d10)))},
 			flavor:"As soon as you feel too old to do a thing, do it."
 		},
 		715:{

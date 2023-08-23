@@ -17,6 +17,9 @@
 	--galaxies:#ffff00;
 	--galaxyboosts:#99ff99;
 	--galaxypenalties:#ff9999;
+	--luck:#339966;
+	--prismatic:#00ff80;
+	--exp:#ffcc00;
 }
 .big {
 	font-size:120%;
@@ -52,31 +55,20 @@
 	-webkit-background-clip:text;
 	-webkit-text-fill-color:transparent;
 }
-._stars {
-	color:var(--stars);
-}
-._darkmatter {
-	color:var(--darkmatter);
-}
-._energy {
-	color:var(--energy);
-}
+._stars {color:var(--stars);}
+._darkmatter {color:var(--darkmatter);}
+._energy {color:var(--energy);}
 ._wormhole {
 	color:var(--wormhole_text);
 	text-shadow:var(--wormhole_glow);
 }
-._research {
-	color:var(--research)
-}
-._galaxies {
-	color:var(--galaxies)
-}
-._galaxyboosts {
-	color:var(--galaxyboosts)
-}
-._galaxypenalties {
-	color:var(--galaxypenalties)
-}
+._research {color:var(--research);}
+._galaxies {color:var(--galaxies);}
+._galaxyboosts {color:var(--galaxyboosts);}
+._galaxypenalties {color:var(--galaxypenalties);}
+._luck {color:var(--luck);}
+._prismatic {color:var(--prismatic);}
+._exp {color:var(--exp)}
 html, body {
 	max-width:100%;
 	min-width:1200px;

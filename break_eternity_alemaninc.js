@@ -876,8 +876,8 @@
 		Decimal.decibel = function (x) {
 			x=N(x)
 			if (x.mod(1).neq(0)) throw "Could not calculate Decimal.decibel("+x+"); input must be an integer"
-			if (x.abs().gt(1e17)) return Decimal.pow(10,x.div(10))
-			return Decimal.pow(10,x.div(10).floor()).mul([1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x.mod(10).toNumber()])
+			if (x.layer!==0) return Decimal.pow(10,x.div(10))
+			return x.div(10).floor().pow10().mul([1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x.mod(10).toNumber()])
 		}
 
 		Decimal.valid = function (x) {
@@ -1958,7 +1958,7 @@
 			if (a.layer === 0)
 			{
 				var newmag = 10**(a.sign*a.mag);
-				if (Number.isFinite(newmag) && Math.abs(newmag) > 0.1) { return FC(1, 0, newmag); }
+				if (Number.isFinite(newmag) && Math.abs(newmag) >= 0.1) { return FC(1, 0, newmag); }
 				else
 				{
 					if (a.sign === 0) { return Decimal.dOne; }
