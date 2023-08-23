@@ -1102,7 +1102,7 @@ inputStarAllocatorBuild.toggle = function(id){
 		d.element("button_inputStarAllocatorBuild_"+id).className = ""
 	} else {
 		inputStarAllocatorBuild.order.push(id)
-		d.element("button_inputStarAllocatorBuild_"+id).className = "ownedstarbutton"+Math.floor(id/10)
+		d.element("button_inputStarAllocatorBuild_"+id).className = "legacy ownedstarbutton"+Math.floor(id/10)
 	}
 }
 function importStarAllocatorBuild() {

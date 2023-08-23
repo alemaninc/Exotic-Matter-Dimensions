@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.13",
+	current:"𝕍1.3.14",
 	nextUpdateHint:"Explore",
 }
 /*
