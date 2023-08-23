@@ -388,7 +388,7 @@ const studies = [
 		unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e1e12")][studyPower(3)]},
 		energyGainConstant:function(){return [N(1000),N(2000),N(3000),N(4000)][studyPower(3)]},
 		energyPowerConstant:function(){return [c.dm1,c.dm2,c.dm5,N(-20)][studyPower(3)]},
-		description:function(){return "Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled. Energies severely reduce production instead of boosting it, and you start with all Energies unlocked. All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time."},
+		description:function(){return "Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled. Energies severely reduce production instead of boosting it (x<sup>"+this.energyPowerConstant().format()+"</sup>), and you start with all Energies unlocked. All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time."},
 		research:"r9_2",
 		goal:function(){return [c.d2e3,N(2200),N(2400),N(2700)][studyPower(3)];},
 		reward:function(num,comp=g.studyCompletions[3]){
@@ -984,10 +984,10 @@ function stardustReset() {
 		if (summary.gain.gt(g.previousStardustRuns.wormhole.highest.gain)) g.previousStardustRuns.wormhole.highest = summary
 		if (summary.gain.gt(g.previousStardustRuns.spacetime.highest.gain)) g.previousStardustRuns.spacetime.highest = summary
 		if (summary.gain.gt(g.previousStardustRuns.eternity.highest.gain)) g.previousStardustRuns.eternity.highest = summary
-		incrementStardust(stat.pendingstardust.floor().sub(g.stardust).max(c.d0))
-		g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset);
 		addAchievement(201);
 		addAchievement(511);
+		incrementStardust(stat.pendingstardust.floor().sub(g.stardust).max(c.d0))
+		g.fastestStardustReset=Decimal.min(g.fastestStardustReset,g.timeThisStardustReset);
 		if (StudyE(7)) g.luckEssence += studies[7].luckEssenceGain()
 	}
 	g.exoticmatter=c.d0;
