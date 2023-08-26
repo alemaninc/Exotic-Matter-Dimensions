@@ -20,7 +20,7 @@ const initSteps = [
 	{function:function(){for (let i of countTo(9,true)) {updateLightCache(i)}},onImport:true},
 	{function:function(){for (let tier of Object.keys(achievementList)) {achievement.perAchievementReward[tier].currentVal = achievement.perAchievementReward[tier].calc(achievement.ownedInTier(tier))}},onImport:true},
 	{function:function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type=="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}}},
-	{function:function(){for (let i of Object.keys(miscStats)) {console.log(i);statGeneration(i)}}},
+	{function:function(){for (let i of Object.keys(miscStats)) statGeneration(i)}},
 	{function:function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])}},
 	{function:function(){updateStats()},onImport:true},
 	{function:function(){updateMasteryLayout()},onImport:true},

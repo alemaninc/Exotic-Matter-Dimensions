@@ -180,7 +180,7 @@ const research = (function(){
 		},
 		r2_14: {
 			numDesc:function(){return researchEffect(2,14).noLeadFormat(4)},
-			formulaDesc:function(){return "(X ÷ 100 + 1)<sup>0.1</sup>"+formulaFormat.mult(researchPower(2,14).div(c.d4))+" + 1"},
+			formulaDesc:function(){return researchPower(2,14).div(c.d4).noLeadFormat(4)+" ÷ (X ÷ 100 + 1)<sup>0.1</sup> + 1"},
 			description:function(){return "Raise the X Axis effect to the power of "+numOrFormula("r2_14")+" (decreases based on X Axis owned)";},
 			adjacent_req:["r1_13"],
 			condition:[],
@@ -1155,6 +1155,17 @@ const research = (function(){
 			icon:classes.mastery("M")+classes.xscript("+",classes.mastery("52")),
 			group:"mastery"
 		},
+		r20_7:{
+			description:function(){return "The effect of Mastery 52 is raised to the power of "+researchEffect(19,9).noLeadFormat(3)},
+			adjacent_req:["r19_8"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(3000),
+			effect:function(power){return c.d1_2.pow(power)},
+			icon:classes.mastery("M")+classes.xscript("+",classes.mastery("52")),
+			group:"mastery"
+		},
 		r23_5: {
 			adjacent_req:["r19_5","r20_4","r21_3","r22_2","r23_1"],
 			condition:[{check:function(){return g.exoticmatter.gt(studies[7].unlockReq())},text:function(){return g.exoticmatter.format()+" / "+studies[7].unlockReq().format()+" exotic matter"}}],
@@ -1612,10 +1623,8 @@ const researchLoadouts = {
 			let [r,c] = [researchRow(id),researchCol(id)]
 			if (!availableResearch(r,c)) {
 				let adj = id
-				console.log(adj)
 				do {
 					adj = research[adj].adjacent_req[0]
-					console.log(adj)
 				} while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0))
 				buy(adj)
 			}

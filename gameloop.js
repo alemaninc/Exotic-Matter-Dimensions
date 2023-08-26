@@ -470,6 +470,7 @@ function updateHTML() {
 			}
 			if (lightTiersUnlocked()>2) {
 				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
+				d.display("div_grayLight",lightTiersUnlocked()==4?"inline-block":"none")
 			}
 		} else if (activeSubtabs.wormhole=="galaxies") {
 			d.innerHTML("span_galaxies",g.galaxies)

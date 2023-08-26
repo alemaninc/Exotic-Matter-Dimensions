@@ -443,7 +443,7 @@ const studies = [
 		goal:function(){return [N(3000),N(3700),N(4500),N(5400)][studyPower(4)]},
 		reward:function(num,comp=g.studyCompletions[4]){
 			if (num==1) return N([0.5,0.514,0.527,0.539,0.55][comp])
-			if (num==2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
+			if (num==2) return betaActive?N([0,13/30,0.8,1.1,4/3][comp]).mul(studyRewardBoost(4,2)).pow10():N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
 			if (num==3) return [c.d1,c.d2_5,c.d5,c.d10,c.d20][comp].pow(studyRewardBoost(4,3).mul(c.d0_3))
 			functionError("studies[4].reward",arguments)
 		},
