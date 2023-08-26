@@ -63,7 +63,7 @@ const research = (function(){
 		tickspeed:classes.time("Δt"),
 		achievements:classes.achievements("A"),
 		mastery:function(x=""){return classes.mastery("M"+classes.sub(x))},
-		masterypower:classes.mastery("MP"),
+		masteryPower:classes.mastery("MP"),
 		stardust:classes.stardust("S"),
 		star:function(x=""){return classes.stars("★"+classes.sub(x))},
 		darkaxis:classes.darkmatter("A"),
@@ -443,7 +443,7 @@ const research = (function(){
 			visibility:function(){return g.studyCompletions[1]>=2;},
 			type:"normal",
 			basecost:c.d3,
-			icon:icon.achievements+icon.arr+icon.masterypower, 
+			icon:icon.achievements+icon.arr+icon.masteryPower, 
 			effect:function(power){return power.mul(c.d0_02);}
 		},
 		r6_6: {
@@ -837,7 +837,7 @@ const research = (function(){
 		r11_8: {
 			description:function(){return "Unlock two additional colors of Light"},
 			adjacent_req:["r10_7","r10_8","r10_9"],
-			condition:[totalStudyReq(12)],
+			condition:[totalStudyReq(12),unconnectedResearchReq("r10_5")],
 			visibility:function(){return true},
 			type:"permanent",
 			basecost:N(2160),
@@ -1116,6 +1116,45 @@ const research = (function(){
 			}
 			return out
 		})(),
+		r18_8: {
+			adjacent_req:["r17_7","r17_9","r18_6","r18_10"],
+			condition:[{check:function(){return g.masteryPower.gt(studies[8].unlockReq())},text:function(){return g.masteryPower.format()+" / "+studies[8].unlockReq().format()+" mastery power"}},{check:function(){return g.ach524possible},text:function(){return "without having active Masteries in the current Wormhole"},joinWithPrevious:true},{check:function(){return totalResearch.temporary<28},text:function(){return ", more than "+totalResearch.temporary+" / 27 temporary Research"},joinWithPrevious:true},{check:function(){return g.stardustUpgrades[4]==0},text:function(){return "or buying the fifth Stardust Upgrade"},joinWithPrevious:true}],
+			visibility:function(){return true;},
+			type:"study",
+			basecost:N(3000),
+			icon:icon.study([[15,15,5],[15,50,5],[15,85,5],[45,15,5],[45,85,5],[65,50,5],[85,15,5],[85,15,5]])
+		},
+		r19_7:{
+			description:function(){return "+"+researchEffect(19,7).noLeadFormat(3)+" base mastery power exponent (this is currently a "+stat.masteryTimer.pow(researchEffect(19,7)).format(2)+"× multiplier to mastery power gain)"},
+			adjacent_req:["r19_8"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(3000),
+			effect:function(power){return power.mul(c.d12)},
+			icon:icon.time+icon.arr+icon.masteryPower,
+			group:"mastery"
+		},
+		r19_8:{
+			description:function(){return "Unlock the ninth color of Light"},
+			adjacent_req:["r18_8"],
+			condition:[studyReq(8,1)],
+			visibility:function(){return g.studyCompletions[8]>0},
+			type:"permanent",
+			basecost:N(21000),
+			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:radial-gradient(#808080,rgba(0,0,0,0))\"></div>"
+		},
+		r19_9:{
+			description:function(){return "The effect of Mastery 52 is raised to the power of "+researchEffect(19,9).noLeadFormat(3)},
+			adjacent_req:["r19_8"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(3000),
+			effect:function(power){return c.d1_2.pow(power)},
+			icon:classes.mastery("M")+classes.xscript("+",classes.mastery("52")),
+			group:"mastery"
+		},
 		r23_5: {
 			adjacent_req:["r19_5","r20_4","r21_3","r22_2","r23_1"],
 			condition:[{check:function(){return g.exoticmatter.gt(studies[7].unlockReq())},text:function(){return g.exoticmatter.format()+" / "+studies[7].unlockReq().format()+" exotic matter"}}],
@@ -1174,6 +1213,7 @@ const researchGroupList = {
 	lightaugment:{label:"Light Augmentation",description:"Each Light Augmentation multiplies the cost of all other Light Augmentation research by the number already owned, and increases the lumen requirements to buy them.",color:"#cccc00",icon:"LA"},
 	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:"var(--time)",icon:"t"},
 	spatialsynergism:{label:"Spatial Synergism",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:"#3333ff",icon:"A",effectors:Object.fromEntries(fullAxisCodes.map(x=>[x,nonPermanentResearchList.filter(y=>research[y].group=="spatialsynergism"&&((researchCol(x)>8?"dark":"")+research[y].a2)==x)]))},
+	mastery:{label:"Mastery",get description(){return "Having more Mastery research than your Study VIII completions ("+g.studyCompletions[8]+") will weaken all Masteries by 33% per excess research"},color:"var(--mastery)",icon:"M"}
 }
 function resizeResearch(x){
 	let size = 15
@@ -1211,6 +1251,7 @@ function researchPower(row,col) {
 		if (g.research.r15_11) mult = mult.add(researchEffect(15,11))
 		out = out.mul(mult)
 	}
+	if (research["r"+row+"_"+col].group=="spatialsynergism") out = out.mul(stat.spatialSynergismPower)
 	return out;
 }
 function researchEffect(row,col) {
@@ -1393,7 +1434,10 @@ const baseObservationCostRatios = [
 ];
 function observationCostRatios(type) {
 	let out = [...baseObservationCostRatios[type]]
-	out[0] = out[0].pow(studies[5].reward(2))
+	out[0] = out[0].pow([
+		studies[5].reward(2),
+		luckUpgrades.cinquefolium.observation.eff()
+	].productDecimals())
 	return out
 }
 function observationCost(type,amount) {

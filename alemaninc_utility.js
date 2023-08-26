@@ -229,3 +229,7 @@ function blackOrWhiteContrast(hex) {
 	let sum = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
 	return (sum >= 128) ? "#000000" : "#ffffff";
 }
+const viewportHeight = window.innerHeight
+const viewportWidth = window.innerWidth
+const viewportDiagonalLength = Math.sqrt(viewportHeight**2+viewportWidth**2)
+function tableGenerator(array) {return "<table>"+array.map(row=>"<tr>"+row.map(col=>"<td>"+col+"</td>").join("")+"</tr>").join("")+"</table>"}

@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.15.1",
+	current:"𝕍1.3.16",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -63,7 +63,6 @@ function functionError(functionName,argumentList) {
 }
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
 function BEformat(value,precision=0) {return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");}
-const lightNames = ["red","green","blue","cyan","magenta","yellow","white","black"]
 const c = deepFreeze({		 // c = "constant"
 	...constant,
 	dm16			: Decimal.FC_NN(-1,0,16),
@@ -97,6 +96,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_059		: Decimal.FC_NN(1,0,0.059),
 	d0_07			: Decimal.FC_NN(1,0,0.07),
 	d0_075		: Decimal.FC_NN(1,0,0.075),
+	d0_0816		: Decimal.FC_NN(1,0,0.0816),
 	d0_085		: Decimal.FC_NN(1,0,0.085),
 	d0_1			: Decimal.FC_NN(1,0,0.1),
 	d0_12			: Decimal.FC_NN(1,0,0.12),
@@ -146,11 +146,13 @@ const c = deepFreeze({		 // c = "constant"
 	d1_2			: Decimal.FC_NN(1,0,1.2),
 	d1_202		: Decimal.FC_NN(1,0,1.202),
 	d1_25			: Decimal.FC_NN(1,0,1.25),
+	d1_3			: Decimal.FC_NN(1,0,1.3),
 	d1_308		: Decimal.FC_NN(1,0,1.308),
 	d1_337		: Decimal.FC_NN(1,0,1.337),
 	d1_379654224:Decimal.FC_NN(1,0,1.379654224),
 	d1_5			: Decimal.FC_NN(1,0,1.5),
 	d1_75			: Decimal.FC_NN(1,0,1.75),
+	d2_3			: Decimal.FC_NN(1,0,2.3),
 	ln10			: Decimal.FC_NN(1,0,2.302585092994046),
 	d2_5			: Decimal.FC_NN(1,0,2.5),
 	d2_8			: Decimal.FC_NN(1,0,2.8),
@@ -319,23 +321,27 @@ function percentOrMult(num,precision=2,classname) {
 	return number+sign
 }
 function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
-formulaFormat.bracketize = function(str) {return (str.search(" ")==-1)?str:("("+str+")")}
+formulaFormat.bracketize = function(str) {
+	let out = (str.search(" ")==-1)?str:("("+str+")")
+	while (out.substring(0,2)=="(("&&out.substring(out.length-2)=="))") out = out.substring(1,out.length-1)
+	return out
+}
 formulaFormat.add = function(v,p=3) {return v.gt(c.d0)?(" + "+v.noLeadFormat(p)):v.lt(c.d0)?(" - "+v.neg().noLeadFormat(p)):""}
 formulaFormat.mult = function(v,p=3) {return v.gt(c.d1)?(" × "+v.noLeadFormat(p)):v.lt(c.d1)?(" ÷ "+v.recip().noLeadFormat(p)):""}
-formulaFormat.exp = function(v,p=3) {return v.eq(c.d1)?"":("<sup>"+v.noLeadFormat(p)+"</sup>")}
-formulaFormat.linSoftcap = function(value,start,power,condition) {
+formulaFormat.exp = function(v,analog=false,p=3) {return v.eq(c.d1)?"":analog?(" ^ "+v.noLeadFormat(p)):("<sup>"+v.noLeadFormat(p)+"</sup>")}
+formulaFormat.linSoftcap = function(value,start,power,condition,analog) {
 	if (!condition) return value
-	return formulaFormat.bracketize("("+formulaFormat.bracketize(value)+formulaFormat.mult(power.add(c.d1).div(start))+formulaFormat.add(power.neg())+")"+formulaFormat.exp(power.add(c.d1).recip())+formulaFormat.mult(start))
+	return formulaFormat.bracketize("("+formulaFormat.bracketize(value)+formulaFormat.mult(power.add(c.d1).div(start))+formulaFormat.add(power.neg())+")"+formulaFormat.exp(power.add(c.d1).recip(),analog)+formulaFormat.mult(start))
 }
-formulaFormat.logSoftcap = function(value,start,power,condition) {   // string of value, start, power, condition for softcap (cannot check automatically due to v being the calculation)
+formulaFormat.logSoftcap = function(value,start,power,condition,analog) {   // string of value, start, power, condition for softcap (cannot check automatically due to v being the calculation)
 	if (!condition) return value
-	return formulaFormat.bracketize("(ln("+formulaFormat.bracketize(value)+formulaFormat.mult(start.recip())+")"+formulaFormat.mult(power)+" + 1)"+formulaFormat.exp(power.recip())+formulaFormat.mult(start))
+	return formulaFormat.bracketize("(ln("+formulaFormat.bracketize(value)+formulaFormat.mult(start.recip())+")"+formulaFormat.mult(power)+" + 1)"+formulaFormat.exp(power.recip(),analog)+formulaFormat.mult(start))
 }
-formulaFormat.convSoftcap = function(value,start,limit,condition) {
+formulaFormat.convSoftcap = function(value,start,limit,condition,analog) {
 	if (!condition) return value
 	return formulaFormat.bracketize(limit.noLeadFormat(3)+" - "+limit.sub(start).pow(c.d2).noLeadFormat(3)+" ÷ "+formulaFormat.bracketize(value+formulaFormat.add(limit.sub(start.mul(c.d2)))))
 }
-formulaFormat.expScaling = function(value,start,power,condition) {
+formulaFormat.expScaling = function(value,start,power,condition,analog) {
 	if (!condition) return value
-	return formulaFormat.bracketize("e<sup>("+formulaFormat.bracketize(formulaFormat.bracketize(value)+formulaFormat.mult(start.recip()))+formulaFormat.exp(power)+" - 1)"+formulaFormat.mult(power.recip())+"</sup>"+formulaFormat.mult(start))
+	return formulaFormat.bracketize("e<sup>("+formulaFormat.bracketize(formulaFormat.bracketize(value)+formulaFormat.mult(start.recip()))+formulaFormat.exp(power,analog)+" - 1)"+formulaFormat.mult(power.recip())+"</sup>"+formulaFormat.mult(start))
 }

@@ -51,12 +51,18 @@
 	</head>
 	<body>
 		<h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
+		<h4 style="color: #6666ff">Code contributors who want to change their name or color within the changelog can do so by reaching out to alemaninc or submitting a pull request</h4>
 		<a href="index.html"><button class="back">Back to game</button></a>
 		<div id="logContainer"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script>
 const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
 function format(x,p=0){return gformat(N(x),p,notation)}
+const contributors = {
+	"Hedrauta":"#00cc00",
+	"IRAD":"#ff9933"
+}
+// Log entry format: [type, description, contributor (if applicable)]
 const logEntries = [
 	/*
 	blank entry:
@@ -67,11 +73,32 @@ const logEntries = [
 	{name:"𝕍1.4",changes:[
 		["BALANCE","'Old age' achievement reward has been buffed"],
 		["BALANCE","The 'Mind-bending Curvature' achievements are easier, and the reward of III is stronger"],
-		["CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"]
+		["BALANCE","The magenta lumen softcap has been significantly pushed back"],
+		["CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"],
+		["QOL","The reward of 'Superpowered' has been changed"]
 	]},
 	*/
+	{name:"𝕍1.3.16 \"Power of CONTRIBUTE\" (2023-08-26)",changes:[
+		["BALANCE","The red lumen softcap past 100 uses a stronger formula: anyone that hasn't cheated probably won't notice the difference, but it now approaches the cap of 200% much, much slower"],
+		["BALANCE","Research 11-8 now requires 10-5 to be bought"],
+		["BUGFIX","It is no longer possible to get \"Make [type] Axis effect go above [number]×\" without having the respective axis unlocked"],
+		["BUGFIX","'Buy Max Axis' button showing the wrong number if you can afford axis which are not unlocked yet"],
+		["BUGFIX","Row 8 Mastery formulas no longer have 2 multiplication signs (or a multiplication and division sign)"],
+		["BUGFIX","Hawking radiation base gain apex exponent breakdown not showing Stardust Boost 12"],
+		["BUGFIX","Mastery 41 and 43 formulas now account for their boost percentages"],
+		["FLAIR","Story entries have been edited, color has been added to the late-game ones and their titles are no longer underlined and have less empty space around them"],
+		["INTERFACE","Formulas for the knowledge effect and next Discovery requirement have been added"],
+		["INTERFACE","Standard notation now shows progressively less precision past "+format("e3e5")],
+		["INTERFACE","Fixed an issue with the Wormhole theme"],
+		["INTERFACE","Overclock being active now shows on the header"],
+		["INTERFACE","Stardust Boost 7 now shows the softcap formula (past "+format("1e6")+" seconds ≈ 11.5 days) in the stat breakdown"],
+		["INTERFACE","Dynamic base values of stats in the stat breakdown should be easier to understand"],
+		["META","People who have contributed code to the game (at the moment only Hedrauta and IRAD) now have their contributions color-coded within the changelog"],
+		["QOL","Added the option to freeze the game"],
+		["QOL","Added hotkeys for overclock and game freeze"]
+	]},
 	{name:"𝕍1.3.15.1 \"U.N. Owen Was Pull Request?\" (2023-08-26)",changes:[
-		["WHAT","Fixed the 𝕍1.3.15 changelog being undefined"]
+		["WHAT","Fixed the 𝕍1.3.15 changelog being undefined","IRAD"]
 	]},
 	{name:"𝕍1.3.15 (2023-08-23)",changes:[
 		["BUGFIX","'Enneract' is now possible again"],
@@ -659,21 +686,21 @@ const logEntries = [
 		"Current endgame: "+format("e2.5e5")+" exotic matter"
 	]},
 	{name:"v1α.3 \"Smaller Adjustments\" (2022-03-07)",changes:[
-		["QOL","Engineering notation more readable (dynamic floating point) (by Hedrauta)"],
-		["QOL","Number shown on Tribute-Reset-Button more readable (by Hedrauta)"]
+		["QOL","Engineering notation more readable (dynamic floating point)","Hedrauta"],
+		["QOL","Number shown on Tribute-Reset-Button more readable","Hedrauta"]
 	]},
 	{name:"v1α.2 \"Hedrautafunded?\" (2022-02-27)",changes:[
-		["BUGFIX","Fixed people's saves getting deleted (courtesy of Hedrauta)"],
+		["BUGFIX","Fixed people's saves getting deleted","Hedrauta"],
 		["BUGFIX","<i>Hopefully</i> fixed energy per second setting itself to NaN"]
 	]},
 	{name:"v1α.1 \"Crowdfunded\" (2022-02-25)",changes:[
-		["BUGFIX","Fixed save import (courtesy of Hedrauta)"],
-		["INTERFACE","Added Engineering notation (courtesy of Hedrauta)"],
+		["BUGFIX","Fixed save import","Hedrauta"],
+		["INTERFACE","Added Engineering notation","Hedrauta"],
 		["BALANCE","Axis autobuyer is a lot cheaper"]
 	]},
 	{name:"v1α \"Bugs Out, Bugs In\" (<span style=\"color:#ff0000; text-shadow:0 0 5px #ff0000,0 0 20px #ff0000,0 0 45px #ff0000\">22/2/22</span>)",changes:[
 		["CONTENT","Added Energy"],
-		["CONTENT","Gaining an axion now does a tribute reset"],
+		["CONTENT","Gaining an axiom now does a tribute reset"],
 		["CONTENT","Named the updates"],
 		["CONTENT","Added a 'How to play' section"],
 		["CONTENT","Added a 'Hidden Statistics' section"],
@@ -711,7 +738,7 @@ const logEntries = [
 	{name:"v0 (2022-01-05)",changes:["Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts"]}
 ]
 for (let i of logEntries) {
-	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\">"+i.name+"</button><div class=\"panel\"><table>"+i.changes.map(x => (typeof x == "object")?("<tr><td style=\"width:200px\">"+x[0]+"</td><td style=\"width:calc(100vw - 200px)\">"+x[1]+"</td></tr>"):("<tr><td colspan=\"2\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+"</table></div>"
+	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\">"+i.name+"</button><div class=\"panel\"><table>"+i.changes.map(x => (typeof x == "object")?("<tr><td style=\"width:200px"+(x.length==3?(";color:"+contributors[x[2]]):"")+"\">"+x[0]+"</td><td style=\"width:calc(100vw - 200px)"+(x.length==3?(";color:"+contributors[x[2]]):"")+"\">"+x[1]+(x.length==3?(" (by "+x[2]+")"):"")+"</td></tr>"):("<tr><td colspan=\"2\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+"</table></div>"
 }
 var acc = document.getElementsByClassName("accordion");
 

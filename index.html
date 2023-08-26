@@ -53,15 +53,16 @@
 				</div>
 				<div class="subtab main" id="subtab_main_offlineTime" style="display:none">
 					<button class="featureConfig main" onClick="openConfig['Offline Time']()"></button>
-					<p>You have <span id="span_dilatedTime" class="big _time"></span> of dilated time.<br>You earn 1 second of dilated time per second spent offline.</p>
+					<p>You have <span id="span_dilatedTime" class="big _time"></span> of dilated time.<br>You earn 1 second of dilated time per second spent offline or while time is frozen.</p>
 					<div class="dilationDiv">
 						<h1>Overclock</h1>
 						<input type="range" id="dilationSpeedupFactor" min="1" max="4" step="0.001" style="width:350px">						
 						<p>When enabled, Overclock provides a <span id="span_overclockSpeedupFactor" class="big _time"></span>× time boost at the cost of <span id="span_overclockCost"></span> seconds of dilated time per real-life second.</p>
 						<p id="span_overclockCostScaling" class="big _time2"></p>
 						<div id="overclockFooter">
-							<button class="overclockOption" id="button_overclockActive" onClick="overclockActive=!overclockActive"></button>
+							<button class="overclockOption" id="button_overclockActive" onClick="toggleOverclock()"></button>
 							<button class="overclockOption" id="button_overclockToSoftcap" onClick="overclockToSoftcap();updateOverclockScrollbar()">Set Overclock to the softcap start</button>
+							<button class="overclockOption" id="button_freezeGame" onClick="toggleFreeze()"></button>
 						</div>
 					</div>
 					<div id="div_dilationUpgrades" class="dilationDiv"></div>
@@ -122,6 +123,9 @@
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','studies')" id="button_subtab_wormhole_studies" style="display:none;filter:brightness(60%)">Studies</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','light')" id="button_subtab_wormhole_light" style="display:none;filter:brightness(60%)">Light</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','galaxies')" id="button_subtab_wormhole_galaxies" style="display:none;filter:brightness(60%)">Galaxies</button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','luck')" id="button_subtab_wormhole_luck" style="display:none;filter:brightness(60%)">Luck</button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','prismatic')" id="button_subtab_wormhole_prismatic" style="display:none;filter:brightness(60%)">Prismatic/button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','antimatter')" id="button_subtab_wormhole_antimatter" style="display:none;filter:brightness(60%)">Antimatter</button>
 				</div>
 				<p id="div_hr_disabledTop">You have <span id="span_hr_disabledTop" class="big _wormhole"></span> Hawking radiation</p>
 				<div class="subtab wormhole" id="subtab_wormhole_research">
@@ -173,6 +177,15 @@
 						<p id="span_galaxyEffectTooltip"></p>
 					</div>
 				</div>
+				<div class="subtab wormhole" id="subtab_wormhole_luck" style="display:none">
+					<p>You have <span class="big _luck" id="span_luckShards"></span> luck shards.<br>
+					You are generating <span class="big _luck" id="span_luckShardsPerSec"></span> luck shards per second.<br>
+					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down the normal axis cost scaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
+					<table id="table_luckUpgrades"></table>
+					<div style="float:right;text-align:right;margin-right:20px;" id="div_luckSpendOptions" style="text-align:right;"></div>
+				</div>
+				<div class="subtab wormhole" id="subtab_wormhole_prismatic" style="display:none"></div>
+				<div class="subtab wormhole" id="subtab_wormhole_antimatter" style="display:none"></div>
 			</div>
 			<div class="tab" id="bigtab_options" style="display:none;font-size:0;">
 				<div class="optionsNavigation globalnavigation">
@@ -319,13 +332,14 @@
 		</div>
 		<div id="wormholeAnimation" class="topleveldiv" style="display:none;opacity:0"></div>
 		<div id="notifyDiv"></div>
+		<div id="background"></div>
 		<div id="foo"></div>
 		<script type="text/javascript" src="alemaninc_utility.js"></script>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script type="text/javascript" src="emd_utility.js"></script>
+		<script type="text/javascript" src="data.js"></script>
 		<script type="text/javascript" src="researchtree.js"></script>
 		<script type="text/javascript" src="achievements.js"></script>
-		<script type="text/javascript" src="data.js"></script>
 		<script type="text/javascript" src="previousprestige.js"></script>
 		<script type="text/javascript" src="navigation.js"></script>
 		<script type="text/javascript" src="main.js"></script>

@@ -3086,14 +3086,14 @@ const notations = {
 			let e3vals = [10,9,8,7,6,5,4,3,2,1,0].map(x=>Math.floor((height/1e3**x)%1e3))
 			let firste3 = e3vals.map(x=>x>0).indexOf(true)
 			let out = ""
-			for (let i=firste3;i<Math.min(firste3+3,11);i++) {
+			for (let i=firste3;i<Math.min(firste3+2,11);i++) {
 				if (e3vals[i]==0) continue;
 				let values = String(e3vals[i]).padStart(3,"0").split("")
 				if (e3vals[i]>1||i==10) out+=e0[values[2]]+e1[values[1]]+e2[values[0]]
 				out+=e3[i]
 			}
 			if (out.substring(out.length-1)=="-") out = out.substring(0,out.length-1)
-			if (height>=1e7) out += "s"
+			if (height>=1e5) out += "s"
 			else out = x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+out
 			return out
 		}

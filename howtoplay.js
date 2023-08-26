@@ -52,6 +52,25 @@ const HTPtexts = [
 		]
 	},
 	{
+		name:"Formulas",
+		visibility:function(){return true},
+		paragraphs:[
+			"By pressing {0}, you can view certain formulas within the game (you can change this key in Options > Hotkeys).",
+			"Here is an overview of some mathematical notation used in these formulas:",
+			tableGenerator([
+				["log(n)","Logarithm"],
+				["log<sup>[x]</sup>(n)","Iterated logarithm: for example, log<sup>[2]</sup>(20) = log(log(20))"],
+				["log<sub>b</sub>(n)","Base b logarithm"],
+				["a ^^ b","Tetration"],
+				["slog","Superlogarithm"],
+				["Ξ<sup>[x]</sup>n","Iterated exponentiation: for example, Ξ<sup>[2]</sup>3 = 10<sup>10<sup>3</sup></sup>"]
+			])
+		],
+		dynamics:[
+			()=>formatHotkey(g.hotkeys["Show/hide formulas"])
+		]
+	},
+	{
 		name:"Achievements",
 		visibility:function(){return totalAchievements>0},
 		paragraphs:[

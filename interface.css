@@ -20,6 +20,7 @@
 	--luck:#339966;
 	--prismatic:#00ff80;
 	--exp:#ffcc00;
+	--antimatter:#990000;
 }
 .big {
 	font-size:120%;
@@ -68,11 +69,16 @@
 ._galaxypenalties {color:var(--galaxypenalties);}
 ._luck {color:var(--luck);}
 ._prismatic {color:var(--prismatic);}
-._exp {color:var(--exp)}
+._exp {color:var(--exp);}
+._antimatter {color:var(--antimatter);}
 html, body {
 	max-width:100%;
 	min-width:1200px;
 	overflow-x:hidden;
+	min-height:100vh;
+	font-size:15px;
+	font-family:verdana;
+	text-align:center;
 }
 button, div {
 	vertical-align:top;
@@ -181,9 +187,9 @@ input {
 	padding:0px;
 }
 #storyTitle {
-	text-decoration:underline;
 	font-size:80px;
 	-webkit-text-fill-color: transparent;
+	margin:20px;
 }
 .optionsbutton {
 	background-color:#cccccc;
@@ -670,6 +676,15 @@ tab {
 	left:0px;
 	width:100vw;
 }
+#background {
+	min-height:100vh;
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100vw;
+	height:100vh;
+	z-index:-1;
+}
 .popupScreen {
 	position:fixed;
 	top:0px;
@@ -967,84 +982,85 @@ tab {
 	border-width:1px;
 	border-radius:20px;
 }
-.redLightDiv {
+#div_redLight {
 	background-color:rgba(51,0,0,0.9);
 	border-color:rgba(153,0,0,0.9);
 	color:#990000;
 }
-.redChromaButton {
+#button_redChromaGen {
 	background-color: rgba(102,0,0,0.9);
 	border-color: #990000;
 	color:#cc0000;
 }
 .red {color:#ff0000}
-.greenLightDiv {
+#div_greenLight {
 	background-color:rgba(0,51,0,0.9);
 	border-color:rgba(0,153,0,0.9);
 	color:#009900
 }
-.greenChromaButton {
+#button_greenChromaGen {
 	background-color: rgba(0,102,0,0.9);
 	border-color: #009900;
 	color:#00cc00;
 }
 .green {color:#00ff00}
-.blueLightDiv {
+#div_blueLight {
 	background-color:rgba(0,0,51,0.9);
 	border-color:rgba(0,0,153,0.9);
 	color:#000099
 }
-.blueChromaButton {
+#button_blueChromaGen {
 	background-color: rgba(0,0,102,0.9);
 	border-color: #000099;
 	color:#0000cc;
 }
 .blue {color:#0000ff}
-.cyanLightDiv {
+#div_cyanLight {
 	background-color:rgba(0,51,51,0.9);
 	border-color:rgba(0,153,153,0.9);
 	color:#009999
 }
-.cyanChromaButton {
+#button_cyanChromaGen {
 	background-color: rgba(0,102,102,0.9);
 	border-color: #009999;
 	color:#00cccc;
 }
 .cyan {color: #00ffff}
-.magentaLightDiv {
+#div_magentaLight {
 	background-color:rgba(51,0,51,0.9);
 	border-color:rgba(153,0,153,0.9);
 	color:#990099
 }
-.magentaChromaButton {
+#button_magentaChromaGen {
 	background-color: rgba(102,0,102,0.9);
 	border-color: #990099;
 	color:#cc00cc;
 }
 .magenta {color: #ff00ff}
-.yellowLightDiv {
+#div_yellowLight {
 	background-color:rgba(51,51,0,0.9);
 	border-color:rgba(153,153,0,0.9);
 	color:#999900
 }
-.yellowChromaButton {
+#button_yellowChromaGen, .reviewYellowLight {
 	background-color: rgba(102,102,0,0.9);
 	border-color: #999900;
 	color:#cccc00;
 }
 .yellow {color: #ffff00}
-.whiteLightDiv, .blackLightDiv {
+#div_whiteLight, #div_blackLight, #div_grayLight {
 	background-color:rgba(0,0,0,0.9);
 	border-color:rgba(51,51,51,0.9);
 	color:#999999;
 }
-.whiteChromaButton, .blackChromaButton {
+#button_whiteChromaGen, #button_blackChromaGen, #button_grayChromaGen {
 	background-color: rgba(25,25,25,0.9);
 	border-color: rgba(51,51,51,0.9);
 	color:#999999;
 }
 .white {color: #ffffff}
 .black {color: #000000}
+.gray {color: #808080}
 .galaxyButton {
 	height:60px;
 	width:240px;
@@ -1064,6 +1080,24 @@ tab {
 	border-color:rgba(153,153,0,0.9);
 	color:rgba(255,255,255,0.9);
 	padding:10px;
+}
+.luckPercentageOption {
+	width:50px;
+	border-radius:5px;
+}
+.buyLuckRunes {
+	height:60px;
+	width:200px;
+	border-radius:20px;
+	background-color:#132;
+	color:var(--luck);
+}
+.luckUpgrade {
+	height:125px;
+	width:175px;
+	border-radius:12px;
+	background-color:#132;
+	color:var(--luck);
 }
 @keyframes text-grow {
 	0% {font-size: 80%}

@@ -10,16 +10,17 @@ const initSteps = [
 		for(let id of Object.keys(research)){validateResearch(id)}
 		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type=="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
 	}}},
+	{function:function(){for (let i of Object.keys(researchGroupList)) researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group==i).map(x=>x[0])}},
 	{function:function(){load(JSON.parse(localStorage.getItem("save")));}},
 	{function:function(){HTMLGenerator()}},
 	{function:function(){
 		d.innerHTML("span_currentVersion",version.current)
 		document.title="Exotic Matter Dimensions "+version.current+" by alemaninc"
 	}},
-	{function:function(){for (let i of countTo(8,true)) {updateLightCache(i)}},onImport:true},
+	{function:function(){for (let i of countTo(9,true)) {updateLightCache(i)}},onImport:true},
 	{function:function(){for (let tier of Object.keys(achievementList)) {achievement.perAchievementReward[tier].currentVal = achievement.perAchievementReward[tier].calc(achievement.ownedInTier(tier))}},onImport:true},
 	{function:function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type=="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}}},
-	{function:function(){for (let i of Object.keys(miscStats)) statGeneration(i)}},
+	{function:function(){for (let i of Object.keys(miscStats)) {console.log(i);statGeneration(i)}}},
 	{function:function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])}},
 	{function:function(){updateStats()},onImport:true},
 	{function:function(){updateMasteryLayout()},onImport:true},
@@ -31,7 +32,6 @@ const initSteps = [
 		largeNumberVisualizationNumbers.sort((a,b)=>a.value-b.value)
 	}},
 	{function:function(){theme();},onImport:true},
-	{function:function(){for (let i of Object.keys(researchGroupList)) researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group==i).map(x=>x[0])}},
 	{function:function(){updateResearchTree()},onImport:true},
 	{function:function(){for (let i of Object.keys(research)){resizeResearch(i)}}},
 	{function:function(){generateResearchCanvas();},onImport:true},

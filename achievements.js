@@ -19,7 +19,7 @@ achievement.tierColors = {
 	5:{primary:"#000080",secondary:"#6699ff"},
 	6:{primary:"#000000",secondary:"#ffffff"},
 	7:{primary:"#999900",secondary:"#ffff00"},
-	8:{primary:"#006644",secondary:"#00ff99"}
+	8:{primary:"#008855",secondary:"#00ff99"}
 }
 achievement.perAchievementReward = {
 	1:{text:"+0.02× X axis effect per achievement in this tier (currently: +{}×)",value:()=>(achievement.ownedInTier(1)/50).toFixed(2),calc:x=>N(x/50),currentVal:c.d0},
@@ -132,7 +132,7 @@ const achievementList = {
 		108:{
 			name:"Feedback Loop",
 			description:"Make the Z Axis effect go above 4×",
-			check:function(){return stat.ZAxisEffect.gt(c.d4);},
+			check:function(){return stat.ZAxisEffect.gt(c.d4)&&stat.axisUnlocked>2;},
 			progress:function(){return achievement.percent(stat.ZAxisEffect,c.d4,1);},
 			prevReq:[103],
 			get reward(){return "Gain a free X Axis per {} purchased Z Axis (currently: "+g.ZAxis.mul(this.effect()).noLeadFormat(2)+")"},
@@ -144,7 +144,7 @@ const achievementList = {
 		109:{
 			name:"Slow",
 			description:"Make the W Axis effect go above 4×",
-			check:function(){return stat.WAxisEffect.gt(4);},
+			check:function(){return stat.WAxisEffect.gt(4)&&stat.axisUnlocked>3;},
 			progress:function(){return achievement.percent(stat.WAxisEffect,c.d4,1);},
 			prevReq:[104],
 			get reward(){return "Add 30 seconds to the W Axis timer per W Axis"+(g.lumens[5].lt(c.d360)?"":"<sup>{}</sup>")+(Decimal.eq(g.WAxis,stat.realWAxis)?"":" (including free)")},
@@ -273,7 +273,7 @@ const achievementList = {
 		206:{
 			name:"The Missing Link",
 			description:"Make the Y Axis effect go above 0.4×",
-			check:function(){return stat.YAxisEffect.gt(c.d0_4);},
+			check:function(){return stat.YAxisEffect.gt(c.d0_4)&&stat.axisUnlocked>1;},
 			progress:function(){return achievement.percent(stat.YAxisEffect,c.d0_4,0);},
 			prevReq:[102],
 			get reward(){return "{} free Y axis (based on mastery power)";},
@@ -455,7 +455,7 @@ const achievementList = {
 		306:{
 			name:"Merchant",
 			description:"Make the V axis effect go above 44,444×",
-			check:function(){return stat.VAxisEffect.gt(c.d44444);},
+			check:function(){return stat.VAxisEffect.gt(c.d44444)&&stat.axisUnlocked>4;},
 			progress:function(){return achievement.percent(stat.VAxisEffect,c.d44444,1);},
 			prevReq:[207],
 			reward:"1 free V axis",
@@ -464,7 +464,7 @@ const achievementList = {
 		307:{
 			name:"Neutron Star",
 			description:"Make the U axis effect go above 4×",
-			check:function(){return stat.UAxisEffect.gt(c.d4);},
+			check:function(){return stat.UAxisEffect.gt(c.d4)&&stat.axisUnlocked>5;},
 			progress:function(){return achievement.percent(stat.UAxisEffect,c.d4,1);},
 			prevReq:[208],
 			reward:"1 free U axis",
@@ -473,7 +473,7 @@ const achievementList = {
 		308:{
 			name:"Multinomial Theorem",
 			description:"Make the T axis effect go above 44,444×",
-			check:function(){return stat.TAxisEffect.gt(c.d44444);},
+			check:function(){return stat.TAxisEffect.gt(c.d44444)&&stat.axisUnlocked>6;},
 			progress:function(){return achievement.percent(stat.TAxisEffect,c.d44444,1);},
 			prevReq:[209],
 			reward:"1 free T axis",
@@ -503,7 +503,7 @@ const achievementList = {
 			description:"Reach 1,500% Mastery 11 efficiency",
 			check:function(){return masteryBoost(11).gte(c.d15);},
 			progress:function(){return achievement.percent(masteryBoost(11).mul(c.e2),c.d1500,0);},
-			reward:"Mastery 52 is 1% more effective",
+			get reward(){return betaActive?("Add 15"+(stat.tickspeed.eq(c.d1)?"":" real life")+" minutes to the Mastery timer"+(g.studyCompletions[8]==0?"":" (this is now useless due to Study VIII! :D)")):"Mastery 52 is 1% more effective"},
 			flavor:"Mastery-Man, Mastery-Man<br>does whatever a master can"
 		},
 		311:{
@@ -512,7 +512,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.ee3);},
 			progress:function(){return achievement.percent(g.exoticmatter,c.ee3,1);},
 			get reward(){return "Multiply exotic matter gain by {} (based on exotic matter)";},
-			flavor:"The number of Planck volumes in the observable universe is around 4.65×10<sup>185</sup>. Hence find the volume of 1 exotic matter if 1 observable universe = 10<sup>10<sup>3</sup></sup> exotic matters",
+			get flavor(){return "The number of Planck volumes in the observable universe is around "+BEformat("4.65e185")+". Hence find the volume of 1 exotic matter if 1 observable universe = "+c.ee3.format()+" exotic matters"},
 			effect:function(y=this.yellowValue){
 				let out = g.exoticmatter.add(c.d1).pow(c.em3)
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.e9,c.e10,1):Decimal.linearSoftcap(out,c.e10,c.d1div3,1)).fix(c.d1)
@@ -1011,7 +1011,7 @@ const achievementList = {
 		},
 		606:{
 			name:"Ball Lightning",
-			req:N(10).quad_tetr(Math.PI),
+			req:c.d10.quad_tetr(c.pi),
 			get description(){return "Reach "+this.req.format()+" (10^^π) dark energy"},
 			check:function(){return g.darkEnergy.gt(this.req)},
 			progress:function(){return achievement.percent(g.darkEnergy,this.req,1)},
@@ -1182,7 +1182,7 @@ const achievementList = {
 			progress:function(){return (totalResearch.temporary>0)?"Failed due to having research":(g.stars>0)?"Failed due to having stars":(g.stardustUpgrades.sum()>6)?"Failed due to buying stardust upgrades":(g.TotalStardustResets>0)?"Failed due to stardust resetting":(!g.ach524possible)?"Failed due to having active Masteries":(stat.totalAxis.neq(c.d0))?"Failed due to having axis":achievement.percent(g.masteryPower,c.e30,1)},
 			reward:"+{} to the base mastery power gain exponent (based on time since last mastery swap)",
 			flavor:"This is not Iron Will VI",
-			effect:function(){return g.baseMasteryPowerGain.log10()},
+			effect:function(){return stat.masteryTimer.log10()},
 			effectFormat:x=>x.format(3),
 			formulaText:()=>"log(t + 1)",
 		},
@@ -1306,7 +1306,7 @@ const achievementList = {
 			check:function(){return g.lumens[6].gt(c.d25)&&g.lumens[7].gt(c.d25)},
 			progress:function(){return this.check()?"Due to the way achievements work, you need to gain 1 more lumen of any kind to get this.":achievement.percent(Decimal.add(g.lumens[6].min(26),g.lumens[7].min(26)),N(52),0)},
 			reward:"Research 13-8 is 2.6% stronger",
-			flavor:"",
+			flavor:"Game under construction: all mechanics must wear hardcaps.",
 			beta:true
 		},
 		719:{
@@ -1318,7 +1318,7 @@ const achievementList = {
 			progress:function(){return achievement.percent(Decimal.add(stat.totalAxis,stat.totalDarkAxis),this.req,0)},
 			get reward(){return "Each observation increases knowledge gain by (20.20 + 8.16 × [number of galaxies])%, compounding with itself (currently: "+this.effect().format()+"×)"},
 			flavor:"\"This is a house, Do you want to live here?\" - Stat Mark, 2020",
-			effect:function(){return N(0.0816).mul(g.galaxies).add(1.202).pow(g.observations.sumDecimals())}
+			effect:function(){return c.d0_0816.mul(g.galaxies).add(c.d1_202).pow(g.observations.sumDecimals())}
 		}
 	},
 	8:{
@@ -1702,6 +1702,7 @@ function addAchievement(x) {
 		let colors = achievement.tierColors[tier]
 		notify("Achievement Get! \""+achievement(x).name+"\"",colors.primary);
 		if (tier!=="1") if (x==achievement.initial[tier]) notify("You have unlocked "+achievement.tierName(tier)+" achievements!",colors.primary)
+		if (achievement.ownedInTier(tier)==Object.keys(achievementList[tier]).length) notify("You have completed all "+achievement.tierName(tier)+" achievements!")
 		if (tier==5&&achievement.ownedInTier(5)==15) updateResearchTree();
 		updateAchievementsTab();
 		d.display("span_noAchievements","none")

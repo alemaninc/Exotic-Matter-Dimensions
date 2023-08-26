@@ -53,7 +53,7 @@ function updateHTML() {
 				d.innerHTML("span_exoticmatter_disabledTop",g.exoticmatter.format())
 				d.innerHTML("span_exoticmatterPerSec_disabledTop",stat.exoticmatterPerSec.noLeadFormat(2))
 			}
-			d.innerHTML("span_affordableAxis",axisCodes.map(x=>maxAffordableAxis(x)).sumDecimals().sub(stat.totalAxis).format())
+			d.innerHTML("span_affordableAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableAxis(x).sub(g[x+"Axis"])).sumDecimals().format())
 			for (let i=0;i<8;i++) {
 				let type = axisCodes[i];
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
@@ -112,6 +112,10 @@ function updateHTML() {
 			d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")
 			d.element("button_overclockActive").style["background-color"] = overclockActive?"#000000":""
 			d.display("button_overclockToSoftcap",dilationUpgrades[1].effect()>stat.overclockSoftcap?"inline-block":"none")
+			d.innerHTML("button_freezeGame",gameFrozen?"Unfreeze time":"Freeze time")
+			d.element("button_freezeGame").style["background-color"] = gameFrozen?"#000033":""
+			d.element("button_freezeGame").style["color"] = gameFrozen?"#00ffff":""
+			d.element("button_freezeGame").style["border-color"] = gameFrozen?"#00ffff":""
 			if (g.dilationUpgradesUnlocked>0) {
 				d.display("div_dilationUpgrades","inline-block")
 				for (let i=1;i<5;i++) {
@@ -324,7 +328,7 @@ function updateHTML() {
 					d.innerHTML("span_darkmatter_disabledTop",g.darkmatter.format())
 					d.innerHTML("span_darkmatterPerSec_disabledTop",stat.darkmatterPerSec.format(2))
 				}
-				d.innerHTML("span_affordableDarkAxis",axisCodes.map(x=>maxAffordableDarkAxis(x)).sumDecimals().sub(stat.totalDarkAxis).format())
+				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"])).sumDecimals().format())
 				d.innerHTML("span_baseDarkMatterGain",miscStats.darkmatterPerSec.modifiers[1].func(miscStats.darkmatterPerSec.modifiers[0].func()).format(2));
 				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gt(1)?"1":BEformat(stat.darkMatterFreeAxis.pow(-1).max(1),2));
 				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(1)?"1":BEformat(stat.darkMatterFreeAxis.max(1),2));
@@ -414,11 +418,11 @@ function updateHTML() {
 		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
 		if (activeSubtabs.wormhole=="research") {
-			d.innerHTML("span_discoveryDisplay",BEformat(unspentDiscoveries())+" / "+BEformat(g.totalDiscoveries));
-			d.innerHTML("span_discoveryKnowledgeReq",BEformat(nextDiscovery()));
-			d.innerHTML("span_knowledge",BEformat(g.knowledge));
-			d.innerHTML("span_knowledgeEffect",BEformat(stat.knowledgeEffect,3));
-			d.innerHTML("span_knowledgePerSec",BEformat(stat.knowledgePerSec,2));
+			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format()+" / "+g.totalDiscoveries.format());
+			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
+			d.innerHTML("span_knowledge",g.knowledge.format());
+			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10) × 10",stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
+			d.innerHTML("span_knowledgePerSec",stat.knowledgePerSec.format(2));
 			d.element("researchContainer").style["padding-bottom"] = d.element("discoveryPanel").clientHeight+"px"
 			for (let i=0;i<4;i++) {
 				d.element("button_observation"+i).style["background-color"] = g[observationResources[i]].gte(observationCost(i))?"rgba(179,204,255,0.75)":"rgba(128,153,204,0.75)"
@@ -444,23 +448,23 @@ function updateHTML() {
 			d.innerHTML("span_baseChroma",stat.chromaGainBase.pow(g.stars-60).noLeadFormat(2))
 			d.display("lightContainer2",lightTiersUnlocked()>1?"inline-block":"none")
 			d.display("lightContainer3",lightTiersUnlocked()>2?"inline-block":"none")
-			for (let i=0;i<[0,3,6,8][lightTiersUnlocked()];i++) {
+			for (let i=0;i<[0,3,6,8,9][lightTiersUnlocked()];i++) {
 				let name = lightNames[i]
 				d.innerHTML("span_"+name+"Chroma",g.chroma[i].format())
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
 				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i==5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
-				d.element("button_chromaGen"+i).style["background-color"]=(g.activeChroma==i)?"#000000":""
+				d.element("button_"+name+"ChromaGen").style["background-color"]=(g.activeChroma==i)?"#000000":""
 				if (i>2) {
-					d.innerHTML("button_chromaGen"+i,((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents[i].map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
+					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents[i].map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
 				} else {
-					d.innerHTML("button_chromaGen"+i,((g.activeChroma==i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
+					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
 				}
 			}
 			d.innerHTML("span_greenLightBoost",arrowJoin(lightCache.currentEffect[1].pow(g.SAxis).format(2),lightCache.nextEffect[1].pow(g.SAxis).format(2)))
 			if (lightTiersUnlocked()>1) {
 				d.innerHTML("span_cyanLightBoost",arrowJoin(researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.currentEffect[3].mul(stat.observationEffect)).format(2),researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.nextEffect[3].mul(stat.observationEffect)).format(2)))
-				d.innerHTML("span_magentaLightBoost",arrowJoin(g.baseMasteryPowerGain.pow(lightCache.currentEffect[4]).format(2),g.baseMasteryPowerGain.pow(lightCache.nextEffect[4]).format(2)))
+				d.innerHTML("span_magentaLightBoost",arrowJoin(stat.masteryTimer.pow(lightCache.currentEffect[4]).format(2),stat.masteryTimer.pow(lightCache.nextEffect[4]).format(2)))
 				d.innerHTML("button_reviewYellowLight0",g.lumens[5].gte(c.d200)?"See currently affected":"See next effect")
 				d.innerHTML("span_cyanLightSign",lightCache.currentEffect[3].gte(c.d10)?"×":"%")
 			}
@@ -492,11 +496,33 @@ function updateHTML() {
 				break
 			}
 			d.innerHTML("span_galaxyEffectTooltip",tooltip)
+		} else if (activeSubtabs.wormhole=="luck") {
+			d.innerHTML("span_luckShards",g.luckShards.format(2))
+			d.innerHTML("span_luckShardsPerSec",stat.luckShardsPerSec.format(2))
+			d.innerHTML("span_luckShardEff1",showFormulas?luckShardEffect1Formula():luckShardEffect1().format(2))
+			d.innerHTML("span_luckShardEff2",showFormulas?luckShardEffect2Formula():luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).format(2):luckShardEffect2().format(3))
+			d.innerHTML("span_luckShardEff2Sign",luckShardEffect2().gt(c.d0_1)?"%":"×")
+			for (let type of luckRuneTypes) {
+				if (runeTypeUnlocked(type)) {
+					d.tr("tr_"+type+"Runes",true)
+					d.innerHTML("span_"+type+"Runes",unspentLuckRunes(type).format()+" / "+g.totalLuckRunes[type].format())
+					d.innerHTML("span_affordable"+type+"Runes",affordableLuckRunes(type).max(c.d1).format())
+					d.innerHTML("span_"+type+"RuneCost",luckRuneCost(type,affordableLuckRunes(type).max(c.d1)).noLeadFormat(2))
+					for (let upg of luckUpgradeList[type]) {
+						d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordableLuckUpgrades(type,upg).format()+")")
+						d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg).format())
+						d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?luckUpgrades[type][upg].formula():arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
+					}
+				} else {
+					d.tr("tr_"+type+"Runes",false)
+				}
+			}
 		}
 	}
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
+	if (time==0) return // no point causing lag
 	if (StudyE(3)&&(!overclockActive)) {
 		let diff = time-0.05
 		g.dilatedTime += diff

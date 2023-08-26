@@ -119,6 +119,22 @@ const subtabProperties = {
 		},
 		galaxies:{
 			visible:function(){return unlocked("Galaxies")}
+		},
+		luck:{
+			visible:function(){return unlocked("Luck")},
+			glow:function(){
+				for (let type of luckRuneTypes) {
+					if (g.glowOptions.buyLuckRune) if (affordableLuckRunes(type).gt(c.d0)) return true
+					if (g.glowOptions.buyLuckUpgrade) for (let upg of luckUpgradeList[type]) if (affordableLuckUpgrades(type,upg).gt(c.d0)) return true
+				}
+				return false
+			}
+		},
+		prismatic:{
+			visible:function(){return unlocked("Prismatic")}
+		},
+		antimatter:{
+			visible:function(){return unlocked("Antimatter")}
 		}
 	}
 }
@@ -148,6 +164,8 @@ const hotkeys = {
 	hotkeyList:{
 		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),down:()=>openTab(x),visible:()=>tabVisibility[x]()}])),
 		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["down",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
+		"Overclock":{baseKey:"KeyO",down:()=>toggleOverclock(),visible:()=>true},
+		"Freeze time":{baseKey:"shift+KeyO",down:()=>toggleFreeze(),visible:()=>true},
 		"Stardust reset":{baseKey:"KeyS",down:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
 		"Wormhole reset":{baseKey:"KeyW",down:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
 		"Show/hide formulas":{baseKey:"KeyF",down:()=>showFormulas=!showFormulas,visible:()=>true}
