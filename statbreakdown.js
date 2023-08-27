@@ -658,8 +658,14 @@ miscStats.darkmatterPerSec={
 		},
 		{
 			label:"Dark Stars",
-			func:function(prev){return prev.gt(1)?prev.pow(darkStarEffect1().div(c.e2).add(c.d1)):prev;},
-			text:function(){return "^ "+darkStarEffect1().div(c.e2).add(c.d1).noLeadFormat(3);},
+			func:function(prev){
+				if (betaActive) return prev.gt(c.em10)?prev.add(c.d1).pow(darkStarEffect1()).sub(c.d1):prev.mul(darkStarEffect1())
+				return prev.gt(c.d1)?prev.pow(darkStarEffect1()):prev
+			},
+			text:function(){
+				if (betaActive) return "(<i>x</i> + 1) ^ "+darkStarEffect1().noLeadFormat(3)+" - 1"
+				return "^ "+darkStarEffect1().noLeadFormat(3)
+			},
 			dependencies:["realDarkStars"],
 			show:function(){return stat.realDarkStars.neq(c.d0)&&g.stardust.gt(c.e12)}
 		},

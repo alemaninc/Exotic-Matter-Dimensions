@@ -1534,15 +1534,15 @@ function buySingleResearch(row,col,force=false) {
 	if (research[id].type=="permanent") {
 		if (cost.gt(g.totalDiscoveries)) return;		// not enough discoveries
 		totalResearch.permanent++
-		unlockFeature("Light",g.research.r8_8)
-		unlockFeature("Galaxies",g.research.r12_8)
-		unlockFeature("Prismatic",g.research.r20_8)
 	} else {
 		if (cost.gt(unspentDiscoveries())) return;	// research too expensive
 		o.add("spentDiscoveries",cost);
 		if (id!=="r6_9") totalResearch.temporary++
 	}
 	g.research[id] = true
+	unlockFeature("Light",g.research.r8_8)
+	unlockFeature("Galaxies",g.research.r12_8)
+	unlockFeature("Prismatic",g.research.r20_8)
 	if (research[id].type == "study"){
 		unlockFeature("Studies",true);
 		updateAllStudyDivs()

@@ -1031,7 +1031,7 @@ const achievementList = {
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d1_25:y.eq(c.d0)?N(2.8):c.d2_5.sub(y)},
 			effectFormat:x=>x.noLeadFormat(3),
 			yellowBreakpoints:[N(999),c.e4,1],
-			lumens:function(){return countTo(6,true).map(x=>g.lumens[x].gt(c.d0)?1:0).sum()},
+			lumens:function(){return countTo(9,true).map(x=>g.lumens[x].gt(c.d0)?1:0).sum()},
 		},
 		608:{
 			name:"Zero Player Game II",

@@ -87,9 +87,16 @@ const luckUpgrades = {
 	}
 }
 const luckUpgradeList = Object.fromEntries(luckRuneTypes.map(x=>[x,Object.keys(luckUpgrades[x])]))
+/*
+- name, desc, eff, format and formula are universal to all prismatic upgrades
+- each upgrade is also either:
+	- unlimited: can be bought unlimited times and has geometric cost scaling optimized for bulk purchases. properties: baseCost, scale
+  - limited: has a finite maximum level and unique cost formulas: when bulk bought, costs are summed one at a time. properties: cost, max
+- upgrades which have adverse effects also have the 'refundable' property set to true
+*/
 const prismaticUpgrades = {
 	prismaticSpeed:{
-		name:"Prismatic Speed",
+		name:"Prismatic Amplifier",
 		desc:"Prismatic gain is multiplied by {x}",
 		eff:(x=g.prismaticUpgrades.prismaticSpeed)=>Decimal.linearSoftcap(N(0.17609125905568124).mul(x),c.d20,c.d0_25).pow10(),
 		format:{x:(x=this.eff())=>x.noLeadFormat(2)},
@@ -98,7 +105,7 @@ const prismaticUpgrades = {
 		scale:c.d2
 	},
 	chromaSpeed:{
-		name:"Chroma Speed",
+		name:"Chromatic Amplifier",
 		desc:"Chroma gain is multiplied by {x}",
 		eff:(x=g.prismaticUpgrades.chromaSpeed)=>c.d2.sub(N(66).div(N(98).add(x))).pow(x),
 		format:{x:(x=this.eff())=>x.noLeadFormat(2)},
@@ -107,7 +114,7 @@ const prismaticUpgrades = {
 		scale:c.d2
 	},
 	chromaOverdrive:{
-		name:"Chroma Overdrive",
+		name:"Chromatic Overdrive",
 		desc:"Chroma gain is multiplied by {x}, but chroma generation is {y}× more expensive. Having at least 1 level of this makes red, green and blue chroma cost gray chroma.",
 		eff:{
 			x:(x=g.prismaticUpgrades.chromaOverdrive)=>c.d8.pow(x),
@@ -125,11 +132,39 @@ const prismaticUpgrades = {
 		scale:c.d10,
 		refundable:true
 	},
-	grayThresholdReduction:{
-		name:"",
-		desc:"The gray lumen threshold decrease is reduced to {x}",
-		eff:(x=g.prismaticUpgrades.grayThresholdReduction)=>x.gt(c.d10)?c.d20.sub(x.log10().add(c.d1).pow(c.d2)).div(c.d4).pow10():x.gt(c.d2)?c.e5.div(x):c.e5.sub(x.mul(2.5e4)),
+	lumenThresholdReduction1:{
+		name:"Lumen Increaser I",
+		desc:"The gray lumen threshold increase is reduced to {x}×",
+		eff:(x=g.prismaticUpgrades.lumenThresholdReduction1)=>x.gt(c.d10)?c.d20.sub(x.log10().add(c.d1).pow(c.d2)).div(c.d4).pow10():x.gt(c.d2)?c.e5.div(x):c.e5.sub(x.mul(2.5e4)),
 		format:{x:(x=this.eff())=>x.noLeadFormat(3)},
-
+		formula:()=>g.prismaticUpgrades.lumenThresholdReduction1.gte(c.d10)?"10<sup>(20 - (log(λ) + 1)<sup>2</sup>) ÷ 4</sup>":(BEformat(3e5)+" ÷ max(3 × λ, 3 + λ)"),
+		cost:(x=g.prismaticUpgrades.lumenThresholdReduction1)=>(x.gt(c.d10)?x.div(c.d20).add(c.d1):c.d1_5).pow(x.gt(c.e2)?x.pow(c.d2).div(c.e2):x).mul(c.d500),
+		costFormula:(x=g.prismaticUpgrades.lumenThresholdReduction1)=>(x.gte(c.d10)?"(1 + λ ÷ 20)":"1.5")+"<sup>"+(x.gte(c.e2)?"λ<sup>2</sup> ÷ 100":"λ")+"</sup> × 500",
+		max:c.e3
+	},
+	lumenThresholdReduction2:{
+		name:"Lumen Increaser II",
+		desc:"The black and white lumen threshold increases are reduced to {x}×",
+		eff:(x=g.prismaticUpgrades.lumenThresholdReduction2)=>c.d10.sub(x.div(c.d20)),
+		format:{x:(x=this.eff())=>x.noLeadFormat(3)},
+		formula:()=>"10 - λ ÷ 20",
+		cost:function(x=g.prismaticUpgrades.lumenThresholdReduction2){
+			let base = c.d12
+			let exp = x
+			if (x.gte(c.d20)) base = x
+			if (x.gte(c.d40)) exp = exp.mul(exp.div(c.e2).add(c.d1).pow(x.div(c.d20).sub(c.d1).floor()))
+			return base.pow(exp).mul(c.d750)
+		},
+		costFormula:(x=g.prismaticUpgrades.lumenThresholdReduction1)=>(x.gte(c.d20)?"λ":"12")+"<sup>"+(x.gte(c.d40)?("λ × (1 + λ ÷ 100)"+formulaFormat.exp(x.div(c.d20).sub(c.d1).floor())):"λ")+"</sup> × 750",
+		max:c.e2
+	},
+	lumenThresholdReduction3:{
+		name:"Lumen Increaser III",
+		desc:"The threshold increases of the first six lumens are reduced by {x}%",
+		eff:(x=g.prismaticUpgrades.lumenThresholdReduction3)=>x.gt(c.e2)?x.log10().recip():x.gt(c.d25)?c.d250.sub(x).div(c.d300):c.d1.sub(x.div(c.e2)),
+		format:{x:(x=this.eff())=>c.d1.sub(x).mul(c.e2).format()},
+		formula:(x=g.prismaticUpgrades.lumenThresholdReduction3)=>x.gte(c.e2)?"λ":x.gte(c.d25)?"(λ + 50) ÷ 3":"λ",
+		baseCost:c.e3,
+		scale:c.e2
 	}
 }

@@ -187,7 +187,8 @@ const basesave = {
 	luckShardSpendFactor:c.d0,
 	luckRuneSpendFactor:c.d0,
 	prismatic:c.d0,
-	prismaticUpgrades:Object.fromEntries(Object.keys(prismaticUpgrades).map(x=>[x,c.d0]))
+	prismaticUpgrades:Object.fromEntries(Object.keys(prismaticUpgrades).map(x=>[x,c.d0])),
+	prismaticSpendFactor:c.d0
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = ["Y","U"]
@@ -697,6 +698,7 @@ function buyAxis(x) {
 	if ((g.exoticmatter.gte(axisCost(x)))&&(stat.axisUnlocked>axisCodes.indexOf(x))) {
 		o.sub("exoticmatter",axisCost(x));
 		o.add(x+"Axis",c.d1);
+		unlockFeature("Masteries",g.XAxis.gt(0));
 	}
 	for (let i of achievementEvents.axisBuy) addAchievement(i);
 	if (g.SAxis.gt(c.d0)) g.ach525possible=false;
@@ -717,6 +719,7 @@ function buyMaxAxis(caps) {
 	for (let i of achievementEvents.axisBuy) addAchievement(i);
 	if (axisCodes.map(x => g[x+"Axis"].eq(c.d0)).includes(false)) g.ach526possible=false;
 	if (axisCodes.map(x => g[x+"Axis"]).sumDecimals().sub(totalBefore).gte(c.d4800)) addAchievement(530);
+	unlockFeature("Masteries",g.XAxis.gt(0));
 }
 var empoweredAxisBought = 0;
 function buyEmpoweredAxis() {
@@ -1127,6 +1130,8 @@ function buyStardustUpgrade(x) {
 		o.sub("stardust",stat["stardustUpgrade"+x+"Cost"]);
 		g.stardustUpgrades[x-1]++;
 		updateStat("stardustUpgrade"+x+"Cost")
+		unlockFeature("Dark Matter",g.stardustUpgrades[4]>0);
+		unlockFeature("Energy",g.stardustUpgrades[4]>1);
 	}
 	for (let i of achievementEvents.stardustUpgrade) addAchievement(i);
 }
@@ -1355,9 +1360,9 @@ const starIcons = (()=>{
 	for (let i=51;i<55;i++) out.push([i,icon.mastery(i-49)])
 	for (let i=61;i<65;i++) out.push([i,icon.exoticmatter+"→"+icon.axis(i-57)])
 	for (let i=71;i<75;i++) out.push([i,[icon.masteryPower,icon.exoticmatter,icon.stardust,icon.time][i-71]+"→"+icon.tickspeed])
-	out.push([81,icon.darkaxiscost+icon.minus])
+	out.push([81,icon.axiscost+icon.minus])
 	out.push([82,icon.axis(4)+icon.plus])
-	out.push([83,icon.axiscost+icon.minus])
+	out.push([83,icon.darkaxiscost+icon.minus])
 	out.push([84,icon.darkaxis(1)+icon.plus])
 	for (let i=91;i<95;i++) out.push([i,icon.exoticmatter+"→"+icon.star(i-80)])
 	for (let i=101;i<105;i++) out.push([i,icon.mastery(i-95)])
@@ -1424,7 +1429,7 @@ function buyMaxDarkAxis(caps) {
 	for (let i of achievementEvents.axisBuy) addAchievement(i);
 }
 function darkStarEffect1(x=stat.realDarkStars) {
-	return [x,c.d5,studies[4].reward(3)].productDecimals()
+	return studies[4].reward(3).mul(x).div(c.d20).add(c.d1)
 }
 function darkStarEffect3SoftcapInc() {	
 	let out = c.d10
@@ -1445,7 +1450,7 @@ function darkStarEffectHTML() {
 	let eff3inc = darkStarEffect3SoftcapInc()
 	if (showFormulas&&v2.gt(c.e2)) eff3text = formulaFormat(formulaFormat.convSoftcap("100 + ln(★ ÷ "+eff3inc.noLeadFormat(3)+" - 9) × "+eff3inc.noLeadFormat(3),c.d150,c.d200,darkStarEffect3().gt(c.d150))) 
 	return [
-		"The base gain of dark matter will become "+arrowJoin(darkStarEffect1(v1).noLeadFormat(2),darkStarEffect1(v2).noLeadFormat(2))+"% stronger",
+		"The base gain of dark matter will become "+arrowJoin(darkStarEffect1(v1).sub(c.d1).mul(c.e2).noLeadFormat(2),darkStarEffect1(v2).sub(c.d1).mul(c.e2).noLeadFormat(2))+"% stronger",
 		 (eff2.length==8?"All dark":("Dark "+eff2.joinWithAnd()))+" axis will become stronger",
 		 "You will gain "+eff3text+"% more free axis from dark matter"
 	].join("<br>");
@@ -2177,6 +2182,7 @@ function luckShardEffect2Formula(x=g.luckShards) {
 	}
 	return "log<sup>[2]</sup>(LS + 10)"
 }
+
 const topResources = [
 	{
 		text:function(){return "<span class=\"_exoticmatter\">"+g.exoticmatter.format()+"</span> exotic matter (<span class=\"_exoticmatter\">"+stat.exoticmatterPerSec.noLeadFormat(2)+"</span> / s)";},

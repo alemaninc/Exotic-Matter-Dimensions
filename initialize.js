@@ -66,6 +66,11 @@ const initSteps = [
 		openTopLevelDiv("game");
 		window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
 		initComplete = true;
+	}},
+	{function:function(){
+		unlockFeature("Light",g.research.r8_8)
+		unlockFeature("Galaxies",g.research.r12_8)
+		unlockFeature("Prismatic",g.research.r20_8)
 	}}
 ]
 var loadProgress = 0;

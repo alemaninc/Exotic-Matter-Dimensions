@@ -540,9 +540,6 @@ function tick(time) {																																		 // The game loop, which 
 
 
 	// Options & Display section
-	unlockFeature("Masteries",g.XAxis.gt(0));
-	unlockFeature("Dark Matter",g.stardustUpgrades[4]>0);
-	unlockFeature("Energy",g.stardustUpgrades[4]>1);
 	if (stat.totalDarkAxis.gte(1000)&&!g.storySnippets.includes("Black hole")) openStory("Black hole");
 	g.timePlayed+=time;
 	o.add("truetimePlayed",stat.tickspeed.mul(time));
