@@ -98,9 +98,9 @@ const prismaticUpgrades = {
 	prismaticSpeed:{
 		name:"Prismatic Amplifier",
 		desc:"Prismatic gain is multiplied by {x}",
-		eff:(x=g.prismaticUpgrades.prismaticSpeed)=>Decimal.linearSoftcap(N(0.17609125905568124).mul(x),c.d20,c.d0_25).pow10(),
+		eff:(x=g.prismaticUpgrades.prismaticSpeed)=>Decimal.linearSoftcap(N(0.17609125905568124).mul(x),c.d50,c.d0_25).pow10(),
 		format:{x:(x=this.eff())=>x.noLeadFormat(2)},
-		formula:{x:()=>this.eff().gt(c.e20)?("10<sup>"+formulaFormat.linSoftcap("λ × 0.17609",c.d20,c.d0_25,true)):"1.5<sup>λ</sup>"},
+		formula:{x:()=>this.eff().gt(c.e20)?("10<sup>"+formulaFormat.linSoftcap("λ × 0.17609",c.d50,c.d0_25,true)):"1.5<sup>λ</sup>"},
 		baseCost:c.d10,
 		scale:c.d2
 	},

@@ -990,7 +990,7 @@ tab {
 #div_redLight {
 	background-color:rgba(51,0,0,0.9);
 	border-color:rgba(153,0,0,0.9);
-	color:#990000;
+	color:#cc0000;
 }
 #button_redChromaGen {
 	background-color: rgba(102,0,0,0.9);
@@ -1001,7 +1001,7 @@ tab {
 #div_greenLight {
 	background-color:rgba(0,51,0,0.9);
 	border-color:rgba(0,153,0,0.9);
-	color:#009900
+	color:#00cc00
 }
 #button_greenChromaGen {
 	background-color: rgba(0,102,0,0.9);
@@ -1012,7 +1012,7 @@ tab {
 #div_blueLight {
 	background-color:rgba(0,0,51,0.9);
 	border-color:rgba(0,0,153,0.9);
-	color:#000099
+	color:#0000cc;
 }
 #button_blueChromaGen {
 	background-color: rgba(0,0,102,0.9);
@@ -1023,7 +1023,7 @@ tab {
 #div_cyanLight {
 	background-color:rgba(0,51,51,0.9);
 	border-color:rgba(0,153,153,0.9);
-	color:#009999
+	color:#00cccc;
 }
 #button_cyanChromaGen {
 	background-color: rgba(0,102,102,0.9);
@@ -1034,7 +1034,7 @@ tab {
 #div_magentaLight {
 	background-color:rgba(51,0,51,0.9);
 	border-color:rgba(153,0,153,0.9);
-	color:#990099
+	color:#cc00cc;
 }
 #button_magentaChromaGen {
 	background-color: rgba(102,0,102,0.9);
@@ -1045,7 +1045,7 @@ tab {
 #div_yellowLight {
 	background-color:rgba(51,51,0,0.9);
 	border-color:rgba(153,153,0,0.9);
-	color:#999900
+	color:#cccc00;
 }
 #button_yellowChromaGen, .reviewYellowLight {
 	background-color: rgba(102,102,0,0.9);

@@ -15,13 +15,13 @@ function updateHTML() {
 		}
 	}
 	updateTopResourceModal();
-	d.innerHTML("span_pendingstardust",stat.pendingstardust.sub(g.stardust).max(0).floor().format());
+	d.innerHTML("span_pendingstardust",stat.pendingstardust.sub(g.stardust).max(c.d0).floor().format());
 	d.class("span_pendingstardust",stat.pendingstardust.gt(g.stardust)?"big _stardust":"big _stardust_dark");
 	d.innerHTML("span_stardustExoticMatterReq",stardustExoticMatterReqText());
 	d.class("button_stardustReset",stat.pendingstardust.gt(g.stardust)?"stardustResetButton":"lockedStardustResetButton");
 	d.element("button_stardustReset").style.visibility=(masteryData[42].req()?"visible":"hidden");
 	d.class("button_wormholeReset",stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"wormholeResetButton":"lockedStardustResetButton");
-	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(1000))?"visible":"hidden";
+	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";
 	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
 	let showFooter = (g.footerDisplay=="All tabs")?true:(g.footerDisplay=="Only Axis tab")?(activeTab=="main"&&activeSubtabs.main=="axis"):(g.footerDisplay=="None")?false:undefined
 	d.display("footer",showFooter?"inline-block":"none")
@@ -330,8 +330,8 @@ function updateHTML() {
 				}
 				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"])).sumDecimals().format())
 				d.innerHTML("span_baseDarkMatterGain",miscStats.darkmatterPerSec.modifiers[1].func(miscStats.darkmatterPerSec.modifiers[0].func()).format(2));
-				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gt(1)?"1":BEformat(stat.darkMatterFreeAxis.pow(-1).max(1),2));
-				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(1)?"1":BEformat(stat.darkMatterFreeAxis.max(1),2));
+				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gt(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
+				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
 				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
 				let effect3diff = darkStarEffect3(stat.realDarkStars.add(c.d1)).sub(stat.darkStarEffect3);
 				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkstarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
@@ -351,7 +351,7 @@ function updateHTML() {
 							d.display("span_realdark"+type+"Axis","inline-block")
 							d.innerHTML("span_realdark"+type+"Axis","Effective: "+stat["realdark"+type+"Axis"].noLeadFormat(2));
 						}
-						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(0))?(" + "+BEformat(stat["freedark"+type+"Axis"],2)):""));
+						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(c.d0))?(" + "+BEformat(stat["freedark"+type+"Axis"],2)):""));
 						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"].noLeadFormat([2,2,2,3,2,3,2,4][i]));
 						d.innerHTML("span_dark"+type+"AxisCost",BEformat(stat["dark"+type+"AxisCost"]));
 					}
@@ -361,7 +361,7 @@ function updateHTML() {
 				}
 				d.innerHTML("span_darkUAxisEffectAlt",stat.darkUAxisEffect.pow(stat.totalDarkAxis).format(3))
 				for (let name of empowerableDarkAxis) {
-					d.display("button_empoweredDark"+name+"Axis",stat["empoweredDark"+name+"Axis"].gt(0)?"inline-block":"none");
+					d.display("button_empoweredDark"+name+"Axis",stat["empoweredDark"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 					d.innerHTML("span_empoweredDark"+name+"AxisAmount",BEformat(stat["empoweredDark"+name+"Axis"],2));
 				}
 			}
@@ -586,7 +586,7 @@ function tick(time) {																																		 // The game loop, which 
 		o.add("baseMasteryPowerGain",deltaBaseMasteryPowerGain().mul(time));
 		o.add("masteryPower",stat.masteryPowerPerSec.mul(time));
 	}
-	if (achievement.ownedInTier(5)==30&&g.activeStudy==0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(0));
+	if (achievement.ownedInTier(5)==30&&g.activeStudy==0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
 	if (achievement.ownedInTier(5)>=10) incrementStardust(stat.tickspeed.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));

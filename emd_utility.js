@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.19",
+	current:"𝕍1.3.20",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -182,6 +182,7 @@ const c = deepFreeze({		 // c = "constant"
 	d22				: Decimal.FC_NN(1,0,22),
 	d22_5			: Decimal.FC_NN(1,0,22.5),
 	d25				: Decimal.FC_NN(1,0,25),
+	d26				: Decimal.FC_NN(1,0,26),
 	d27				: Decimal.FC_NN(1,0,27),
 	d30				: Decimal.FC_NN(1,0,30),
 	d32				: Decimal.FC_NN(1,0,32),
@@ -192,6 +193,7 @@ const c = deepFreeze({		 // c = "constant"
 	d48				: Decimal.FC_NN(1,0,48),
 	d49				: Decimal.FC_NN(1,0,49),
 	d50				: Decimal.FC_NN(1,0,50),
+	d52				: Decimal.FC_NN(1,0,52),
 	d64				: Decimal.FC_NN(1,0,64),
 	d70				: Decimal.FC_NN(1,0,70),
 	d75				: Decimal.FC_NN(1,0,75),
@@ -215,7 +217,7 @@ const c = deepFreeze({		 // c = "constant"
 	d256			: Decimal.FC_NN(1,0,256),
 	d275			: Decimal.FC_NN(1,0,275),
 	d300			: Decimal.FC_NN(1,0,300),
-	inflog		: Decimal.FC_NN(1,0,Math.log10(2)*1024), // 308.254
+	inflog		: Decimal.FC_NN(1,0,308.25471555991675),
 	d320			: Decimal.FC_NN(1,0,320),
 	d325			: Decimal.FC_NN(1,0,325),
 	d350			: Decimal.FC_NN(1,0,350),
@@ -289,7 +291,7 @@ const c = deepFreeze({		 // c = "constant"
 	e180			: Decimal.FC_NN(1,1,180),
 	d2_2222e222:Decimal.FC_NN(1,1,222.34678314325814),
 	e270			: Decimal.FC_NN(1,1,270),
-	inf				: Decimal.FC_NN(1,1,Math.log10(2)*1024), // 1.8e308
+	inf				: Decimal.FC_NN(1,1,308.25471555991675), // 1.8e308
 	ee3				: Decimal.FC_NN(1,1,1e3),
 	e44031		: Decimal.FC_NN(1,1,44031),
 	e2e5			: Decimal.FC_NN(1,1,2e5),

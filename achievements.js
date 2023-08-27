@@ -599,7 +599,7 @@ const achievementList = {
 		408:{
 			name:"Eternal Inflation",
 			description:"Make the dark energy effect exceed 1 within the first 4 minutes of a Stardust reset",
-			check:function(){return energyEffect(0).gt(1)&&g.timeThisStardustReset<240;},
+			check:function(){return stat.darkEnergyEffect.gt(c.d1)&&g.timeThisStardustReset<240;},
 			progress:function(){return g.timeThisStardustReset<240?(timeFormat(240-g.timeThisStardustReset)+" left"):"Failed";},
 			get reward(){return "The effect of tickspeed on energy gain is "+(g.lumens[5].gte(this.yellowBreakpoints[0])?"raised to the power of {}":"squared");},
 			flavor:"I don't mind going back to daylight saving time. With inflation, the hour will be the only thing I've saved all year.",
@@ -711,13 +711,13 @@ const achievementList = {
 		505:{
 			name:"Iron Will IV",
 			description:"Buy a dark X Axis without stardust-resetting or having research in the current universe",
-			check:function(){return g.darkXAxis.gt(0)&&stat.ironWill;},
+			check:function(){return g.darkXAxis.gt(c.d0)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
 			prevReq:[504],
 			get reward(){return "Normal S axis are "+this.effect().sub(c.d1).mul(c.e2).toFixed(1)+"% stronger (increases at milestones of total dark axis reached in Iron Will mode. "+(this.milestones()==40?"All milestones have been reached!)":("Next milestone at "+this.effectBreakpoints[this.milestones()]+" total dark axis)"));},
 			flavor:"As a young man just starting out…<br>… I was very poor.<br>But, I never gave up. And today, after many years of hard work and perseverance…<br>… I am old.",
 			effectBreakpoints:[c.d2,c.d3,c.d4,c.d5,c.d6,c.d7,c.d8,c.d9,c.d10,c.d12,c.d15,c.d20,c.d25,c.d30,c.d40,c.d50,c.d60,c.d70,c.d80,c.d90,c.e2,c.d120,c.d140,c.d160,c.d180,c.d200,c.d225,c.d250,c.d275,c.d300,c.d325,c.d350,c.d400,c.d450,c.d500,c.d550,c.d600,c.d700,c.d800,c.d900],
-			milestones:function(){for(let i=39;i>=0;i--){if(g.ach505Progress.gt(this.effectBreakpoints[i])){return i+1}};return 0},
+			milestones:function(){for(let i=39;i>=0;i--){if(g.ach505Progress.gte(this.effectBreakpoints[i])){return i+1}};return 0},
 			effect:function(){return N(1.01+this.milestones()/1e3).fix(c.d0);}
 		},
 		506:{
@@ -736,7 +736,7 @@ const achievementList = {
 			progress:function(){return g.timeThisWormholeReset<18000?(timeFormat(18000-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
 			reward:"Stardust Boost 1 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)",
 			flavor:"N o t h i n g	 t r a v e l s	 f a s t e r	 t h a n	 t h e	 s p e e d	 o f	 l i g h t",
-			effect:function(){return c.d18000.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d2_5).fix(0);},
+			effect:function(){return c.d18000.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d2_5).fix(c.d0);},
 			effectFormat:x=>x.noLeadFormat(3),
 			formulaText:()=>"max(log(18,000 ÷ max(t, 18)), 0) × (max(log(18,000 ÷ max(t, 18)), 0) + 1) × 1.25"
 		},
@@ -748,7 +748,7 @@ const achievementList = {
 			prevReq:[507],
 			get reward(){return "Stardust Boost 4 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"w	i	t	h		 t	h	e		 p	o	s	s	i	b	l	e		 e	x	c	e	p	t	i	o	n",
-			effect:function(){return c.d1800.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d10div3).fix(0);},
+			effect:function(){return c.d1800.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d10div3).fix(c.d0);},
 			effectFormat:x=>x.noLeadFormat(3),
 			formulaText:()=>"max(log(1,800 ÷ max(t, 18)), 0) × (max(log(1,800 ÷ max(t, 18)), 0) + 1) × 1.667"
 		},
@@ -760,7 +760,7 @@ const achievementList = {
 			prevReq:[508],
 			get reward(){return "Stardust Boost 7 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
 			flavor:"o	 f			 b	 a	 d			 n	 e	 w	 s",
-			effect:function(){return c.d180.div(g.fastestWormholeReset.max(c.d18)).log10().max(0).simplex(2).mul(c.d5).fix(0);},
+			effect:function(){return c.d180.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d5).fix(c.d0);},
 			effectFormat:x=>x.noLeadFormat(3),
 			formulaText:()=>"max(log(180 ÷ max(t, 18)), 0) × (max(log(180 ÷ max(t, 18)), 0) + 1) × 2.5"
 		},
@@ -835,7 +835,7 @@ const achievementList = {
 		518:{
 			name:"Irradiated",
 			description:"Gain 696,342 hawking radiation from a single Wormhole reset",
-			check:function(){return stat.pendinghr.gt(696342);},
+			check:function(){return stat.pendinghr.gte(696342);},
 			progress:function(){return achievement.percent(stat.pendinghr,c.d696342,0);},
 			reward:"Exotic matter gain is multiplied by {} (based on observations)",
 			flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",
@@ -1171,9 +1171,9 @@ const achievementList = {
 			progress:function(){return achievement.percent(stat.knowledgeEffect,stat.knowledgeEffectCap.mul(c.d0_75),0)},
 			reward:"Each dark W axis (including free) gives a {}× multiplier to dark matter gain (based on knowledge)",
 			flavor:"Knowledge is like the sea. Go too deep, and the crushing weight of it could kill you.",
-			effect:function(){return g.knowledge.add(c.d1).dilate(c.d2div3).div(c.inf).max(c.d1)},
+			effect:function(){return g.knowledge.add(c.d1).dilate(c.d2div3).div(c.inf).add(c.d1)},
 			effectFormat:x=>x.noLeadFormat(2),
-			formulaText:()=>"max(10<sup>log(K + 1)<sup>2 ÷ 3</sup></sup> ÷ "+c.inf.format()+", 1)"
+			formulaText:()=>"10<sup>log(K + 1)<sup>2 ÷ 3</sup></sup> ÷ "+c.inf.format()+" + 1"
 		},
 		707:{
 			name:"Master of the Void",
@@ -1231,16 +1231,16 @@ const achievementList = {
 			description:"Buy a research which stems from a research below it",
 			check:function(){return g.research.r15_2||g.research.r15_14},
 			progress:function(){return "Not Completed!"},
-			reward:"Each Light Augmentation research reduces the cost of all other Light Augmentation research by 35 Discoveries",
+			reward:"Each Photonic research reduces the cost of all other Photonic research by 35 Discoveries",
 			flavor:"If you miss the beginning, the basics, then you are destined to go back and visit the basics."
 		},
 		713:{
 			name:"V's Achievements",
-			description:"Have all Light research active simultaneously",
+			description:"Have all Chromatic research active simultaneously",
 			check:function(){return this.active()==6},
 			progress:function(){return achievement.percent(N(this.active()),c.d6,0)},
 			active:function(){return [7,8,9].map(x=>g.research["r10_"+x]?2:g.research["r9_"+x]?1:0).sum()},
-			get reward(){return "Reduce the cost multiplier per Light research to {}×"+(g.lumens[5].gte(c.d360)?"":" (must have 360 yellow lumens for this to take effect)")},
+			get reward(){return "Reduce the cost multiplier per Chromatic research to {}×"+(g.lumens[5].gte(c.d360)?"":" (must have 360 yellow lumens for this to take effect)")},
 			effect:function(y=this.yellowValue){return c.d4.pow(c.d1.sub(y))},
 			effectFormat:x=>x.noLeadFormat(3),
 			yellowBreakpoints:[N(500),N(50000),1],
@@ -1304,7 +1304,7 @@ const achievementList = {
 			name:"Softcap-colored Lights",
 			description:"Have 26 black and white lumens each",
 			check:function(){return g.lumens[6].gt(c.d25)&&g.lumens[7].gt(c.d25)},
-			progress:function(){return this.check()?"Due to the way achievements work, you need to gain 1 more lumen of any kind to get this.":achievement.percent(Decimal.add(g.lumens[6].min(26),g.lumens[7].min(26)),N(52),0)},
+			progress:function(){return this.check()?"Due to the way achievements work, you need to gain 1 more lumen of any kind to get this.":achievement.percent(Decimal.add(g.lumens[6].min(c.d26),g.lumens[7].min(c.d26)),c.d52,0)},
 			reward:"Research 13-8 is 2.6% stronger",
 			flavor:"Game under construction: all mechanics must wear hardcaps.",
 			beta:true
@@ -1337,7 +1337,7 @@ const achievementList = {
 			get description(){return "Reach "+c.d2_1e67.format()+" hawking radiation"},
 			check:function(){return g.hawkingradiation.gte(c.d2_1e67)},
 			progress:function(){return achievement.percent(g.hawkingradiation,c.d2_1e67,1)},
-			get reward(){return "Each blue lumen increases hawking radiation gain by 0.67% (total: "+percentOrMult(N(1.0067).pow(g.lumens[2]))+")"},
+			reward:"TBD",
 			flavor:"Every revolution evaporates and leaves behind only the slime of a new bureaucracy.",
 			beta:true
 		}

@@ -634,7 +634,7 @@ miscStats.pendingstardust={
 		{
 			label:"Base Gain",
 			func:function(){return g.exoticmatter.lt(stat.stardustExoticMatterReq)?c.d0:g.exoticmatter.div(stat.stardustExoticMatterReq.div(c.d10)).dilate(studies[4].reward(1));},
-			text:function(){return unbreak("("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ÷ "+stat.stardustExoticMatterReq.div(c.d10).format()+")")+" "+unbreak("dilate "+studies[4].reward(1).toFixed(3));},
+			text:function(){return "10 ^ log("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ÷ "+stat.stardustExoticMatterReq.div(c.d10).format()+") ^ "+studies[4].reward(1).toFixed(3);},
 			dependencies:["stardustExoticMatterReq"],
 			show:function(){return true}
 		},
@@ -918,7 +918,7 @@ miscStats.XAxisEffect={
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.YAxisEffect.format(2),stat.empoweredYAxis.format(2),3)},
 			dependencies:["YAxisEffect","empoweredYAxis"],
-			show:function(){return stat.YAxisEffect}
+			show:function(){return stat.YAxisEffect.gt(c.d1)&&stat.empoweredYAxis.neq(c.d0)}
 		},
 		statTemplates.masteryMul(21),
 		statTemplates.res1_8,
@@ -1310,7 +1310,7 @@ miscStats.darkZAxisEffect={
 		{
 			label:"Base",
 			func:function(){return g.exoticmatter.pow(c.d0_005).div(c.d10).add(c.d1).dilate(c.d0_2).pow(c.d0_2);},
-			text:function(){return unbreak("(("+statFormat("EM",g.exoticmatter.format(0),"_exoticmatter")+" ^ 0.005 ÷ 10 + 1) dilate 0.2)")+" ^ 0.2";},
+			text:function(){return "10 ^ "+unbreak("(log("+statFormat("EM",g.exoticmatter.format(0),"_exoticmatter")+" ^ 0.005 ÷ 10 + 1) ^ 0.2)")+" ^ 0.2";},
 			show:function(){return true}
 		},
 		statTemplates.darkStarEffect2("Z"),
@@ -1384,8 +1384,8 @@ miscStats.darkTAxisEffect={
 				if (achievement.ownedInTier(5)>=18) out = out.add(wormholeMilestone18Effect());
 				return out;
 			},
-			func:function(){return this.time().div(c.e3).add(c.d1).dilate(0.5);},
-			text:function(){return unbreak("("+statFormat("t",this.time().format(0),"_time")+" ÷ 1,000 + 1)")+" dilate 0.5";},
+			func:function(){return this.time().div(c.e3).add(c.d1).dilate(c.d0_5);},
+			text:function(){return unbreak("10 ^ log("+statFormat("t",this.time().format(0),"_time")+" ÷ 1,000 + 1)")+" ^ 0.5";},
 			show:function(){return true}
 		},
 		statTemplates.darkStarEffect2("T")
@@ -1693,7 +1693,7 @@ miscStats.tickspeed={
 		},
 		{
 			label:"Time Paradox",
-			func:function(prev){return prev.max(0);},
+			func:function(prev){return prev.max(c.d0);},
 			text:function(){return "No negative numbers allowed";},
 			show:function(){return stat.tickspeed.sign==-1}
 		}
@@ -1751,20 +1751,6 @@ miscStats.HRMultiplier={
 			show:function(){return g.research.r15_9}
 		},
 		statTemplates.timeResearch(16,7),
-		{
-			label:achievement.label(802),
-			func:function(prev){return g.achievement[802]?prev.mul(N(1.0067).pow(g.lumens[2])):prev},
-			text:function(){return "× "+N(1.0067).pow(g.lumens[2]).format(4)+" "+SSBsmall("1.0067",g.lumens[2].format(),3)},
-			show:function(){return g.achievement[802]&&g.lumens[2].gt(c.d0)}
-		},
-		{
-			label:"Empowered U Axis",
-			mod:function(){return stat.UAxisEffect.pow(stat.empoweredUAxis)},
-			func:function(prev){return prev.mul(this.mod())},
-			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.UAxisEffect.format(3),stat.empoweredUAxis.noLeadFormat(3),3)},
-			dependencies:["UAxisEffect","empoweredUAxis"],
-			show:function(){return stat.UAxisEffect.neq(c.d1)&&stat.empoweredUAxis.neq(c.d0)}
-		},
 		{
 			label:luckUpgrades.cinquefolium.radiation.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.radiation.eff())},
@@ -2024,18 +2010,66 @@ miscStats.chromaPerSec={
 			show:function(){return g.galaxies>=galaxyEffects[2].req&&g.stars>0}
 		},
 		{
+			label:"Empowered Dark W Axis",
+			mod:function(){return stat.darkWAxisEffect.pow(stat.empoweredDarkWAxis);},
+			func:function(prev){return prev.mul(this.mod());},
+			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.darkWAxisEffect.format(2),stat.empoweredDarkWAxis.format(2),3)},
+			dependencies:["darkWAxisEffect","empoweredDarkWAxis"],
+			show:function(){return stat.YAxisEffect}
+		},
+		{
 			label:luckUpgrades.cinquefolium.chroma.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.chroma.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.chroma.eff()},
 			show:function(){return g.luckUpgrades.cinquefolium.chroma.neq(c.d0)}
 		},
 		{
-			label:"Gray Lumens",
+			label:"Gray Light",
 			func:function(prev){return prev.mul(lightCache.currentEffect[8])},
 			text:function(){return "× "+lightCache.currentEffect[8].format()},
 			show:function(){return g.lumens[8].neq(c.d0)}
 		},
+		{
+			label:prismaticUpgrades.chromaSpeed.name,
+			func:function(){return prismaticUpgrades.chromaSpeed.eff()},
+			text:function(){return "× "+prismaticUpgrades.chromaSpeed.eff().noLeadFormat(2)},
+			show:function(){return g.prismaticUpgrades.chromaSpeed.neq(c.d0)}
+		},
+		{
+			label:prismaticUpgrades.chromaOverdrive.name,
+			func:function(){return prismaticUpgrades.chromaOverdrive.eff.x()},
+			text:function(){return "× "+prismaticUpgrades.chromaOverdrive.eff.x().noLeadFormat(2)},
+			show:function(){return g.prismaticUpgrades.chromaOverdrive.neq(c.d0)}
+		},
 		statTemplates.tickspeed(()=>studies[6].reward(1))
+	]
+}
+miscStats.chromaCostMultiplier={
+	type:"breakdown",
+	label:"Chroma cost multiplier",
+	visible:function(){return lightTiersUnlocked()>1},
+	category:"Chroma gain",
+	precision:3,
+	modifiers:[
+		statTemplates.base("1",c.d1,false),
+		{
+			label:"Black Light",
+			func:function(prev){return prev.mul(lightCache.currentEffect[7])},
+			text:function(){return "÷ "+lightCache.currentEffect[7].recip().noLeadFormat(3)},
+			show:function(){return g.lumens[7].neq(c.d0)}
+		},
+		{
+			label:"Research 13-9",
+			func:function(prev){return g.research.r13_9?prev.div(researchEffect(13,9)):prev},
+			text:function(){return "÷ "+researchEffect(13,9).noLeadFormat(3)},
+			show:function(){return g.research.r13_9}
+		},
+		{
+			label:prismaticUpgrades.chromaOverdrive.name,
+			func:function(prev){return prev.mul(prismaticUpgrades.chromaOverdrive.eff.y())},
+			text:function(){return "× "+prismaticUpgrades.chromaOverdrive.eff.y().noLeadFormat(3)},
+			show:function(){return g.prismaticUpgrades.chromaOverdrive.neq(c.d0)}
+		}
 	]
 }
 miscStats.luckShardsPerSec={
@@ -2046,9 +2080,9 @@ miscStats.luckShardsPerSec={
 	precision:2,
 	modifiers:[
 		{
-			label:"Base (Study VII reward 2)",
-			func:function(){return studies[7].reward(2)},
-			text:function(){return studies[7].reward(2).format(3)},
+			label:"Base (Study VII reward 3)",
+			func:function(){return studies[7].reward(3)},
+			text:function(){return studies[7].reward(3).format(3)},
 			show:function(){return true}
 		}
 	]
@@ -2066,6 +2100,12 @@ miscStats.prismaticPerSec={
 			text:function(){return stat.basePrismaticGain.noLeadFormat(2)},
 			dependencies:["basePrismaticGain"],
 			show:function(){return true}
+		},
+		{
+			label:prismaticUpgrades.prismaticSpeed.name,
+			func:function(){return prismaticUpgrades.prismaticSpeed.eff()},
+			text:function(){return "× "+prismaticUpgrades.prismaticSpeed.eff().noLeadFormat(2)},
+			show:function(){return g.prismaticUpgrades.prismaticSpeed.neq(c.d0)}
 		}
 	]
 }
@@ -2105,18 +2145,24 @@ miscStats.empoweredYAxis={
 	},
 	dependencies:["YAxisEffect","realYAxis"]
 }
-miscStats.empoweredUAxis={
-	type:"combined",
-	value:function(){
-		let out = studies[7].reward(3)
-		return out.min(stat.realUAxis)
-	},
-	dependencies:["realUAxis"]
-}
 for (let i of empowerableAxis) {
 	miscStats["unempowered"+i+"Axis"]={
 		type:"combined",
 		value:function(){return stat["real"+i+"Axis"].sub(stat["empowered"+i+"Axis"])},
+		dependencies:["real"+i+"Axis","empowered"+i+"Axis"]
+	}
+}
+miscStats.empoweredDarkWAxis={
+	type:"combined",
+	value:function(){
+		return stat.realdarkWAxis.mul(studies[7].reward(1).div(c.e2))
+	},
+	dependencies:["realdarkWAxis"]
+}
+for (let i of empowerableDarkAxis) {
+	miscStats["unempoweredDark"+i+"Axis"]={
+		type:"combined",
+		value:function(){return stat["realdark"+i+"Axis"].sub(stat["empoweredDark"+i+"Axis"])},
 		dependencies:["real"+i+"Axis","empowered"+i+"Axis"]
 	}
 }

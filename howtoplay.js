@@ -170,7 +170,7 @@ const HTPtexts = [
 	},
 	{
 		name:"Wormhole",
-		visibility:function(){return unlocked("Hawking Radiation")||stat.totalDarkAxis.gt(c.e3)},
+		visibility:function(){return unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3)},
 		paragraphs:[
 			"Wormhole is the second reset option unlocked in the game. Wormhole resets everything that Stardust resets, as well as everything in the Stardust tab. In exchange, you get hawking radiation.",
 			"Unlike stardust, hawking radiation has no innate effect. However, it can be used to gain observations in the 'Research' tab. In addition, some Wormhole Milestones have effects which increase based on how much hawking radiation you have."

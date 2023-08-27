@@ -1239,9 +1239,9 @@ function validateResearch(x) {
 }
 const researchGroupList = {
 	energy:{label:"Energy",description:"Each Energy research owned doubles the cost of all other Energy research.",color:"var(--energy)",icon:"E"},
-	light:{label:"Light",get description(){return "Each Light research owned multiplies the cost of all other Light research in the same row by "+(g.achievement[713]?achievement(713).effectFormat(achievement(713).effect()):"4")+"."},color:"#ffff00",icon:"L"},
 	stardust:{label:"Stardust",get description(){return "Each Stardust research owned doubles the cost of all other Stardust research."+((g.studyCompletions[4]==4)?"":(" If your number of Stardust research is greater than or equal to your Study IV completions ("+g.studyCompletions[4]+") their cost is increased even further."))},color:"#ff9900",icon:"S"},
-	lightaugment:{label:"Light Augmentation",description:"Each Light Augmentation multiplies the cost of all other Light Augmentation research by the number already owned, and increases the lumen requirements to buy them.",color:"#cccc00",icon:"LA"},
+	light:{label:"Chromatic",get description(){return "Each Chromatic research owned multiplies the cost of all other Chromatic research in the same row by "+(g.achievement[713]?achievement(713).effectFormat(achievement(713).effect()):"4")+"."},color:"#ffff00",icon:"L"},
+	lightaugment:{label:"Photonic",description:"Each Photonic multiplies the cost of all other Photonic research by the number already owned, and increases the lumen requirements to buy them.",color:"#cccc00",icon:"LA"},
 	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:"var(--time)",icon:"t"},
 	spatialsynergism:{label:"Spatial Synergism",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:"#3333ff",icon:"A",effectors:Object.fromEntries(fullAxisCodes.map(x=>[x,nonPermanentResearchList.filter(y=>research[y].group=="spatialsynergism"&&((researchCol(x)>8?"dark":"")+research[y].a2)==x)]))},
 	mastery:{label:"Mastery",get description(){return "Having more Mastery research than your Study VIII completions ("+g.studyCompletions[8]+") will weaken all Masteries by 33% per excess research"},color:"var(--mastery)",icon:"M"}
@@ -1261,8 +1261,8 @@ function resizeResearch(x){
 		}
 	}
 }
-function ownedResearchInGroup(x) {
-	return researchGroupList[x].contents.filter(x=>g.research[x])
+function ownedResearchInGroup(x,owned=g.research) {
+	return researchGroupList[x].contents.filter(x=>owned[x])
 }
 function researchPower(row,col) {
 	let out = c.d1;
@@ -1288,10 +1288,10 @@ function researchPower(row,col) {
 function researchEffect(row,col) {
 	return research["r"+row+"_"+col].effect(researchPower(row,col));
 }
-function researchCost(x) {
+function researchCost(x,owned=g.research) {
 	// locking
-	if ((research[x].group=="time")&&(!g.research[x])) if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
-	if ((research[x].group=="spatialsynergism")&&(!g.research[x])) if (ownedResearchInGroup("spatialsynergism").length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
+	if ((research[x].group=="time")&&(!owned[x])) if (ownedResearchInGroup("time").length>=g.studyCompletions[6]) return c.maxvalue
+	if ((research[x].group=="spatialsynergism")&&(!owned[x])) if (ownedResearchInGroup("spatialsynergism").length>=achievement.perAchievementReward[8].currentVal) return c.maxvalue
 	// base
 	let output = research[x].basecost;
 	// class & study modifiers
@@ -1313,7 +1313,7 @@ function researchCost(x) {
 	if (x=="r9_14") output = output.mul(1.5**studyPower(4))
 	if ((researchRow(x)>7)&&(researchRow(x)<13)) output = output.mul(achievement.perAchievementReward[6].currentVal)
 	if (StudyE(5)&&research[x].type=="normal") output = output.mul(studies[5].difficultyConstant())
-	for (let i of ["r1_5","r1_6","r1_10","r1_11"]) if (g.research[i]) output = output.mul(researchEffect(1,researchCol(i)))
+	for (let i of ["r1_5","r1_6","r1_10","r1_11"]) if (owned[i]) output = output.mul(researchEffect(1,researchCol(i)))
 	// hyper 1
 	output = output.sub(studies[5].reward(3))
 	if (research[x].group=="lightaugment"&&g.achievement[712]) output = output.sub(ownedResearchInGroup("lightaugment").length*35)
@@ -1492,12 +1492,12 @@ function buyMaxObservations(type) {
 function discoveriesFromKnowledge(x) {
 	x=(x==undefined)?g.knowledge:N(x);
 	let base = g.knowledge.lt(c.d1)?c.d0:g.knowledge.log10();
-	return base.add(stat.extraDiscoveries_add).mul(stat.extraDiscoveries_mul).max(1);
+	return base.add(stat.extraDiscoveries_add).mul(stat.extraDiscoveries_mul).max(c.d0);
 }
 function nextDiscovery(x) {
 	x=(x==undefined)?g.totalDiscoveries:N(x);
 	let real = x.add(c.d1).div(stat.extraDiscoveries_mul).sub(stat.extraDiscoveries_add);
-	return real.max(0).pow10();
+	return real.max(c.d0).pow10();
 }
 function unspentDiscoveries() {
 	return g.totalDiscoveries.sub(g.spentDiscoveries);
