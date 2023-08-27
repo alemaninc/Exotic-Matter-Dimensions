@@ -44,8 +44,8 @@ achievement.percent = function(value,needed,log){
 	let valuefactor=value.layerplus(-log)
 	let neededfactor=needed.layerplus(-log)
 	let percent = valuefactor.div(neededfactor).max(c.d0).min(c.d1).toNumber()*100
-	let precision = (percent%1==0)?0:(percent%0.1==0)?1:2
-	return "Progress: "+value.noLeadFormat(2)+" / "+needed.noLeadFormat(2)+" ("+percent.toFixed(precision)+"%)";
+	let precision = (percent%1==0)?0:(percent%0.1==0)?1:(percent%0.1==0)?2:3
+	return "Progress: "+value.noLeadFormat(3)+" / "+needed.noLeadFormat(3)+" ("+percent.toFixed(precision)+"%)";
 }
 achievement.label = function(id,plural){
 	if (plural==undefined) plural=false;
@@ -841,7 +841,7 @@ const achievementList = {
 			flavor:"Above them, paralyzing half the heavens, burned a great sun. It burnt without cease, always fixed and still at one point in the sky, and so would burn until that day — now no longer impossibly distant — when it burnt itself out.",
 			effect:function(){return g.observations.map(x=>[c.d2,x,c.d0_75].decimalPowerTower()).productDecimals().fix(c.d1);},
 			effectFormat:x=>x.format(2),
-			formulaText:()=>"2<sup>"+countTo(4).map(i=>"O<span class=\"xscript\"><sup>0.75</sup><sub>"+i+"</sub></span>").join(" + ")+"</sup>"
+			formulaText:()=>"2<sup>Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>O<span class=\"xscript\"><sup>0.75</sup><sub>n</sub></span></sup>"
 		},
 		519:{
 			name:"Shiny Yellow Orbs",
@@ -1026,7 +1026,7 @@ const achievementList = {
 			description:"Have at least 1 of four colors of lumen",
 			check:function(){return this.lumens()>3},
 			progress:function(){return achievement.percent(N(this.lumens()),c.d4,0)},
-			get reward(){return "Each star below 60 divides chroma gain by 2.8 rather than 3"},
+			get reward(){return "Each star below 60 divides chroma gain by {} rather than 3"},
 			flavor:"There are six lights. How many do you see now?",
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d1_25:y.eq(c.d0)?N(2.8):c.d2_5.sub(y)},
 			effectFormat:x=>x.noLeadFormat(3),
@@ -1131,7 +1131,7 @@ const achievementList = {
 			check:function(){return g.galaxies>=2},
 			progress:function(){return achievement.percent(N(g.galaxies),c.d2,0)},
 			get reward(){return "The star cost is divided by {} per star, per star (based on time in the current Wormhole) (current total: "+this.effect().pow(g.stars**2).format(2)+")"},
-			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"alemaninc.github.io/Exotic-Matter-Dimensions/\">github.io</a>? Try that too!",
+			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"alemaninc.github.io/Exotic-Matter-Dimensions/\">alemaninc.github.io</a>? Try that too!",
 			effect:function(){return g.truetimeThisWormholeReset.div(c.e7).add(c.d1).pow(c.e2)},
 			effectFormat:x=>x.format(4),
 			formulaText:()=>"(1 + t ÷ "+c.e7.format()+")<sup>100</sup>"
@@ -1166,9 +1166,9 @@ const achievementList = {
 		},
 		706:{
 			name:"Cortex Baker",
-			description:"Hit the knowledge effect softcap",
-			check:function(){return stat.knowledgeEffect.gte(37.5)},
-			progress:function(){return achievement.percent(stat.knowledgeEffect,N(37.5),0)},
+			description:"Reach the knowledge effect softcap",
+			check:function(){return Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gte(c.d0_75)},
+			progress:function(){return achievement.percent(stat.knowledgeEffect,stat.knowledgeEffectCap.mul(c.d0_75),0)},
 			reward:"Each dark W axis (including free) gives a {}× multiplier to dark matter gain (based on knowledge)",
 			flavor:"Knowledge is like the sea. Go too deep, and the crushing weight of it could kill you.",
 			effect:function(){return g.knowledge.add(c.d1).dilate(c.d2div3).div(c.inf).max(c.d1)},
@@ -1326,7 +1326,7 @@ const achievementList = {
 			name:"The Explorer",
 			description:"Reveal all Spatial Synergism research",
 			check:function(){return this.revealed()==56},
-			progress:function(){let q="<span style=\"color:#330066\">??</span>";return "Progress: "+this.revealed()+" / "+q+" ("+q+"."+q+"%)"},
+			progress:function(){function q(x){return "<span style=\"color:#330066\">"+"?".repeat(x)+"</span>"};return "Progress: "+this.revealed()+" / "+q(2)+" ("+q(2)+"."+q(3)+"%)"},
 			get reward(){return "Mastery 62 affects normal axis costs with ^0.1 effect (currently: ^"+masteryEffect(62).pow(c.d0_1).format(4)+")"},
 			flavor:"Adventure is just bad planning.",
 			revealed:function(){let v = visibleResearch();return researchGroupList.spatialsynergism.contents.map(x=>v.includes(x)?1:0).sum()},

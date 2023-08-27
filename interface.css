@@ -18,7 +18,7 @@
 	--galaxyboosts:#99ff99;
 	--galaxypenalties:#ff9999;
 	--luck:#339966;
-	--prismatic:#00ff80;
+	--prismatic:-webkit-conic-gradient(#fcc,#ffc,#cfc,#cff,#ccf,#fcf,#fcc);
 	--exp:#ffcc00;
 	--antimatter:#990000;
 }
@@ -68,7 +68,12 @@
 ._galaxyboosts {color:var(--galaxyboosts);}
 ._galaxypenalties {color:var(--galaxypenalties);}
 ._luck {color:var(--luck);}
-._prismatic {color:var(--prismatic);}
+._prismatic {
+	background:var(--prismatic);
+	background-clip:text;
+	-webkit-background-clip:text;
+	-webkit-text-fill-color:transparent;
+}
 ._exp {color:var(--exp);}
 ._antimatter {color:var(--antimatter);}
 html, body {

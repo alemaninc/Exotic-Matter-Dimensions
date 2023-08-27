@@ -455,10 +455,10 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
 				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i==5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
 				d.element("button_"+name+"ChromaGen").style["background-color"]=(g.activeChroma==i)?"#000000":""
-				if (i>2) {
-					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents[i].map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
-				} else {
+				if (lightComponents(i)==null) {
 					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
+				} else {
+					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents(i).map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")					
 				}
 			}
 			d.innerHTML("span_greenLightBoost",arrowJoin(lightCache.currentEffect[1].pow(g.SAxis).format(2),lightCache.nextEffect[1].pow(g.SAxis).format(2)))
@@ -544,8 +544,6 @@ function tick(time) {																																		 // The game loop, which 
 	unlockFeature("Dark Matter",g.stardustUpgrades[4]>0);
 	unlockFeature("Energy",g.stardustUpgrades[4]>1);
 	if (stat.totalDarkAxis.gte(1000)&&!g.storySnippets.includes("Black hole")) openStory("Black hole");
-	unlockFeature("Light",g.research.r8_8)
-	unlockFeature("Galaxies",g.research.r12_8)
 	g.timePlayed+=time;
 	o.add("truetimePlayed",stat.tickspeed.mul(time));
 	g.timeThisStardustReset+=time;
@@ -595,19 +593,7 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=10) incrementStardust(stat.tickspeed.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
-	if (typeof g.activeChroma == "number") {
-		if (lightComponents[g.activeChroma]==null) {
-			g.chroma[g.activeChroma] = g.chroma[g.activeChroma].add(stat.chromaPerSec.mul(time)).fix(c.d0)
-		} else {
-			let spendFactor = lightComponents[g.activeChroma].map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div([stat.chromaPerSec,N(time),chromaCostFactor(g.activeChroma)].productDecimals()).min(c.d1)
-			if (spendFactor.eq(c.d0)) {
-				g.activeChroma=null
-			} else {
-				for (let i of lightComponents[g.activeChroma]) g.chroma[i]=g.chroma[i].sub([stat.chromaPerSec,N(time),chromaCostFactor(g.activeChroma),spendFactor].productDecimals()).fix(c.d0)
-				g.chroma[g.activeChroma] = g.chroma[g.activeChroma].add([stat.chromaPerSec,N(time),spendFactor].productDecimals()).fix(c.d0)
-			}
-		}
-	}
+	if (typeof g.activeChroma == "number") generateChroma(g.activeChroma,stat.chromaPerSec.mul(time))
 
 	// Automation section
 	if ((g.stardustUpgrades[1] > 0) && (g.axisAutobuyerOn)) axisAutobuyerProgress+=time/autobuyerMeta.interval("axis");

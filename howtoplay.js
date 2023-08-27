@@ -63,6 +63,8 @@ const HTPtexts = [
 				["log<sub>b</sub>(n)","Base b logarithm"],
 				["a ^^ b","Tetration"],
 				["slog","Superlogarithm"],
+				["Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Summation: for example, Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>2</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>2</sup>").join(" + ")+" = 30"],
+				["Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Product: for example, Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>n</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>"+x+"</sup>").join(" × ")+" = 27648"],
 				["Ξ<sup>[x]</sup>n","Iterated exponentiation: for example, Ξ<sup>[2]</sup>3 = 10<sup>10<sup>3</sup></sup>"]
 			])
 		],
@@ -179,7 +181,7 @@ const HTPtexts = [
 		visibility:function(){return unlocked("Hawking Radiation")},
 		paragraphs:[
 			"Completing Tier 5 achievements unlocks Wormhole Milestones.",
-			"Wormhole Milestones make the game less tedious, for r by unlocking new automators and allowing some things to persist on Stardust and Wormhole reset. A few milestones also provide production boosts."
+			"Wormhole Milestones make the game less tedious, for example by unlocking new automators and allowing some things to persist on Stardust and Wormhole reset. A few milestones also provide production boosts."
 		]
 	},
 	{

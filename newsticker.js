@@ -119,7 +119,7 @@ const newsSupport = {
 	hardMathAnswer:null,
 	hardMath:function(){let num1=BigInt(10**(50+Math.random()*30));let num2=BigInt(10**(30+Math.random()*20));newsSupport.hardMathAnswer=num1*num2;popup({text:"What is "+String(num1)+" × "+String(num2)+"?",input:"",buttons:[["Submit","newsSupport.checkHardMath()"]]})},
 	checkHardMath:function(){if(String(popupInput()).replaceAll(/[^$0-9.]/g,"")==String(newsSupport.hardMathAnswer)){popup({text:"Wow, you actually got it right. Here's some dilated time as a reward for your efforts.",buttons:[["Yay!","g.dilatedTime++"],["No, thanks, I see that as cheating.",""]]})}else{popup({text:"No, it's "+String(newsSupport.hardMathAnswer)+"! If that number doesn't take up multiple lines you have a <i>massive</i> viewport.",buttons:[["Close",""]]})}},
-	setBackground:function(color){document.body.style["background-color"]=color},
+	setBackground:function(color){d.element("background").style.background=color},
 	lightColor:function(){
 		let channels = [[0,4,5,6],[1,3,5,6],[2,3,4,6]]
 		if (g.chroma.sumDecimals().eq(c.d0)) return "#000000"
@@ -166,6 +166,13 @@ const newsSupport = {
 			}
 		},
 		finalNotify:function(){notify("Verification is complete! Your final task: use the name of the Secret Achievement you are about to get as a promotion code.","#009999","#00ffff")}
+	},
+	mysteryTheme:function(){
+		let received = Array.random(availableThemes().filter(x=>g.theme!==x))
+		popup({
+			text:"You have received the "+received+" theme!<br>Do you want to switch to this theme now?",
+			buttons:[["Switch","g.colortheme='"+received+"';theme()"],["Do not","g.colortheme=`"+received+"`;popup({text:'Since when were you the one in control?',buttons:[['Switch','theme()']]})"]]
+		})
 	}
 }
 // top
@@ -441,7 +448,8 @@ const newsList = [
 	{text:"This is far from comprehensive! In order for this game to get alemaninc's Certificate of Comprehensivity, your game must be coded at a similiar level to the following: Tier 1. Zip Points (xhwzwka's version); Tier 2. Cookie Clicker; Tier 3. Zip Points (alemaninc's version); Tier 4. Synergism; Tier 5. Antimatter Dimensions. This gets a Tier 3 with Fractional Tier 4 at best! That's not good enough! All incremental game professionals can recreate Antimatter Dimensions!"},
 	{text:"According to alemaninc, according to Susie(crow), according to Leximancer, according to The degenerate, according to b<sub>la</sub>c<sub>k hole</sub>, according to nicodium (al-maniac), according to xhwzwka, according to alemaninc, according to xhwzwka, according to alemaninc, <i>Synergism</i> is less complex than <i>Antimatter Dimensions</i>."},
 	{text:" UNROLL THE TADPOLE 🐸 UNCLOG THE FROG 🐸 UNLOAD THE TOAD 🐸 UNINHIBIT THE RIBBIT 🐸 UNSTICK THE LICK 🐸 UNIMPRISON THE AMPHIBIAN 🐸 UNMUTE THE NEWT 🐸 UNBENCH THE KENCH 🐸 PERMIT THE KERMIT 🐸 DEFOG THE POLLIWOG"},
-	{get text(){return "It's "+(new Date().getUTCFullYear())+"-15-06! Why isn't it "+(new Date().getUTCFullYear())+"-06-15? Only xhwzwka knows."},get weight(){return (new Date().getUTCMonth()==5)&&(new Date().getUTCDate()==15)}}
+	{get text(){return "It's "+(new Date().getUTCFullYear())+"-15-06! Why isn't it "+(new Date().getUTCFullYear())+"-06-15? Only xhwzwka knows."},get weight(){return (new Date().getUTCMonth()==5)&&(new Date().getUTCDate()==15)}},
+	{text:"<span onClick=\"newsSupport.mysteryTheme()\">Click this to receive a mystery theme</span>"}
 ]
 // bottom
 var newsOrder = []

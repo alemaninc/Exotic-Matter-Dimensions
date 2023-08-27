@@ -67,7 +67,7 @@ const luckUpgrades = {
 			desc:"Chroma gain is multiplied by {} (based on total lumens)",
 			eff:(x=g.luckUpgrades.cinquefolium.chroma)=>x.eq(c.d0)?c.d1:g.lumens.map(i=>i.add(c.d10).log10().pow(x.ln().add(c.d1))).sumDecimals().div(c.e2).pow10(),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"10<sup>Σ<span class=\"xscript\"><sup>9</sup><sub>n=1</sub></span>(log(L<sub>n</sub> + 10)<sup>ln(λ) + 1</sup>) ÷ 100"
+			formula:()=>"10<sup>Σ<span class=\"xscript\"><sup>9</sup><sub>1</sub></span>(log(L<sub>n</sub> + 10)<sup>ln(λ) + 1</sup>) ÷ 100"
 		},
 		axis:{
 			name:"Space",
@@ -87,3 +87,49 @@ const luckUpgrades = {
 	}
 }
 const luckUpgradeList = Object.fromEntries(luckRuneTypes.map(x=>[x,Object.keys(luckUpgrades[x])]))
+const prismaticUpgrades = {
+	prismaticSpeed:{
+		name:"Prismatic Speed",
+		desc:"Prismatic gain is multiplied by {x}",
+		eff:(x=g.prismaticUpgrades.prismaticSpeed)=>Decimal.linearSoftcap(N(0.17609125905568124).mul(x),c.d20,c.d0_25).pow10(),
+		format:{x:(x=this.eff())=>x.noLeadFormat(2)},
+		formula:{x:()=>this.eff().gt(c.e20)?("10<sup>"+formulaFormat.linSoftcap("λ × 0.17609",c.d20,c.d0_25,true)):"1.5<sup>λ</sup>"},
+		baseCost:c.d10,
+		scale:c.d2
+	},
+	chromaSpeed:{
+		name:"Chroma Speed",
+		desc:"Chroma gain is multiplied by {x}",
+		eff:(x=g.prismaticUpgrades.chromaSpeed)=>c.d2.sub(N(66).div(N(98).add(x))).pow(x),
+		format:{x:(x=this.eff())=>x.noLeadFormat(2)},
+		formula:{x:()=>"(2 - 66 ÷ (λ + 98))<sup>λ</sup>"},
+		baseCost:c.d10,
+		scale:c.d2
+	},
+	chromaOverdrive:{
+		name:"Chroma Overdrive",
+		desc:"Chroma gain is multiplied by {x}, but chroma generation is {y}× more expensive. Having at least 1 level of this makes red, green and blue chroma cost gray chroma.",
+		eff:{
+			x:(x=g.prismaticUpgrades.chromaOverdrive)=>c.d8.pow(x),
+			y:(x=g.prismaticUpgrades.chromaOverdrive)=>c.d1_26.pow(x)
+		},
+		format:{
+			x:(x=this.eff.x())=>x.format(),
+			y:(x=this.eff.y())=>y.noLeadFormat(2)
+		},
+		formula:{
+			x:()=>"8<sup>λ</sup>",
+			y:()=>"1.26<sup>λ</sup>"
+		},
+		baseCost:c.e2,
+		scale:c.d10,
+		refundable:true
+	},
+	grayThresholdReduction:{
+		name:"",
+		desc:"The gray lumen threshold decrease is reduced to {x}",
+		eff:(x=g.prismaticUpgrades.grayThresholdReduction)=>x.gt(c.d10)?c.d20.sub(x.log10().add(c.d1).pow(c.d2)).div(c.d4).pow10():x.gt(c.d2)?c.e5.div(x):c.e5.sub(x.mul(2.5e4)),
+		format:{x:(x=this.eff())=>x.noLeadFormat(3)},
+
+	}
+}

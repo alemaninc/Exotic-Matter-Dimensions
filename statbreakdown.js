@@ -190,9 +190,9 @@ const statTemplates = {
 	base:function(text,val,show){
 		return {
 			label:"Base",
-			func:function(){return val;},
-			text:function(){return text;},
-			show:function(){return show}
+			func:function(){return halfFunction(val);},
+			text:function(){return halfFunction(text);},
+			show:function(){return halfFunction(show);}
 		};
 	},
 	masteryAdd:function(id){
@@ -2045,6 +2045,42 @@ miscStats.luckShardsPerSec={
 			text:function(){return studies[7].reward(2).format(3)},
 			show:function(){return true}
 		}
+	]
+}
+miscStats.prismaticPerSec={
+	type:"breakdown",
+	label:"Prismatic gain",
+	visible:function(){return unlocked("Prismatic")},
+	category:"Prismatic gain",
+	precision:2,
+	modifiers:[
+		{
+			label:"Base",
+			func:function(){return stat.basePrismaticGain},
+			text:function(){return stat.basePrismaticGain.noLeadFormat(2)},
+			dependencies:["basePrismaticGain"],
+			show:function(){return true}
+		}
+	]
+}
+miscStats.basePrismaticGain={
+	type:"breakdown",
+	label:"Base Prismatic gain",
+	visible:function(){return unlocked("Prismatic")},
+	category:"Prismatic gain",
+	precision:2,
+	modifiers:[
+		statTemplates.base(()=>c.em16.format(),c.em16,true),
+		...(()=>{
+			let out = []
+			for (let i=0;i<9;i++) out.push({
+				label:toTitleCase(lightNames[i])+" lumens",
+				func:function(prev){return prev.mul(g.lumens[i])},
+				text:function(){return "× "+statFormat("L",g.lumens[i].format(),lightNames[i])},
+				show:function(){return true}
+			})
+			return out
+		})()
 	]
 }
 

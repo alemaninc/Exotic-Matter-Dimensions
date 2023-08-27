@@ -50,7 +50,10 @@ const subtabProperties = {
 	},
 	options:{
 		options:{},
-		hotkeys:{}
+		hotkeys:{},
+		story:{
+			visible:function(){return unlocked("Stardust")}
+		}
 	},
 	statistics:{
 		mainStatistics:{},
@@ -118,7 +121,11 @@ const subtabProperties = {
 			}
 		},
 		galaxies:{
-			visible:function(){return unlocked("Galaxies")}
+			visible:function(){return unlocked("Galaxies")},
+			glow:function(){
+				if (g.glowOptions.createGalaxy&&g.stars==60) return true
+				return false
+			}
 		},
 		luck:{
 			visible:function(){return unlocked("Luck")},
@@ -207,6 +214,7 @@ function hotkeyHandler(isUp){
 		}
 		let key = (e.shiftKey?"shift+":"")+e.code
 		if (hotkeys.isChanging) {
+			if (["ShiftLeft","ShiftRight"].includes(e.code)) return
 			d.display("div_fancyPopupScreen","none")
 			g.hotkeys[hotkeys.toBeChanged]=key
 			hotkeys.isChanging=false

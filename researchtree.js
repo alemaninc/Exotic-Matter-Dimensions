@@ -1142,7 +1142,7 @@ const research = (function(){
 			visibility:function(){return g.studyCompletions[8]>0},
 			type:"permanent",
 			basecost:N(21000),
-			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:radial-gradient(#808080,rgba(0,0,0,0))\"></div>"
+			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:radial-gradient(rgba(128,128,128,0.5),rgba(0,0,0,0))\"></div>"
 		},
 		r19_9:{
 			description:function(){return "The effect of Mastery 52 is raised to the power of "+researchEffect(19,9).noLeadFormat(3)},
@@ -1156,14 +1156,34 @@ const research = (function(){
 			group:"mastery"
 		},
 		r20_7:{
-			description:function(){return "The effect of Mastery 52 is raised to the power of "+researchEffect(19,9).noLeadFormat(3)},
+			description:function(){return "Masteries 61 and 63 are "+percentOrMult(researchEffect(20,7))+" stronger"},
+			adjacent_req:["r19_8"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(3000),
+			effect:function(power){return c.d1_5.pow(power)},
+			icon:classes.mastery("M")+classes.xscript("+",classes.mastery("6x")),
+			group:"mastery"
+		},
+		r20_8:{
+			description:function(){return "Unlock Prismatic"},
+			adjacent_req:["r19_7","r19_9","r20_7","r20_9"],
+			condition:[lumenReq(8,c.d1)],
+			visibility:function(){return true},
+			type:"permanent",
+			basecost:N(21000),
+			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:conic-gradient(rgba(255,0,0,0.5),rgba(0,0,0,0) 5.556%,rgba(128,128,128,0.5) 8.333%,rgba(0,0,0,0) 11.111%,rgba(255,255,0,0.5) 16.667%,rgba(0,0,0,0) 22.222%,rgba(255,255,255,0.5) 25%,rgba(0,0,0,0) 27.778%,rgba(0,255,0,0.5) 33.333%,rgba(0,0,0,0) 38.889%,rgba(255,255,255,0.5) 41.667%,rgba(0,0,0,0) 44.444%,rgba(0,255,255,0.5) 50%,rgba(0,0,0,0) 55.556%,rgba(128,128,128,0.5) 58.333%,rgba(0,0,0,0) 61.111%,rgba(0,0,255,0.5) 66.667%,rgba(0,0,0,0) 72.222%,rgba(0,0,0,0.5) 75%,rgba(0,0,0,0) 77.778%,rgba(255,0,255,0.5) 83.333%,rgba(0,0,0,0) 88.889%,rgba(0,0,0,0.5) 91.667%,rgba(0,0,0,0) 94.444%,rgba(255,0,0,0.5))\"></div>"
+		},
+		r20_9:{
+			description:function(){return "Masteries 102 and 104 are "+percentOrMult(researchEffect(20,9))+" stronger"},
 			adjacent_req:["r19_8"],
 			condition:[],
 			visibility:function(){return true},
 			type:"normal",
 			basecost:N(3000),
 			effect:function(power){return c.d1_2.pow(power)},
-			icon:classes.mastery("M")+classes.xscript("+",classes.mastery("52")),
+			icon:classes.mastery("M")+classes.xscript("+",classes.mastery("10x")),
 			group:"mastery"
 		},
 		r23_5: {
@@ -1514,6 +1534,9 @@ function buySingleResearch(row,col,force=false) {
 	if (research[id].type=="permanent") {
 		if (cost.gt(g.totalDiscoveries)) return;		// not enough discoveries
 		totalResearch.permanent++
+		unlockFeature("Light",g.research.r8_8)
+		unlockFeature("Galaxies",g.research.r12_8)
+		unlockFeature("Prismatic",g.research.r20_8)
 	} else {
 		if (cost.gt(unspentDiscoveries())) return;	// research too expensive
 		o.add("spentDiscoveries",cost);

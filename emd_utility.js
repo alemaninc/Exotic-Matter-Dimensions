@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.17",
+	current:"𝕍1.3.18",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -74,6 +74,7 @@ const c = deepFreeze({		 // c = "constant"
 	dm0_03		: Decimal.FC_NN(-1,0,0.03),
 	eme6			: Decimal.FC_NN(1,1,-1e6),
 	em40			: Decimal.FC_NN(1,1,-40),
+	em16			: Decimal.FC_NN(1,1,-16),
 	em8				: Decimal.FC_NN(1,0,1e-8),
 	em4				: Decimal.FC_NN(1,0,1e-4),
 	d0_0004		: Decimal.FC_NN(1,0,4e-4),
@@ -146,6 +147,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_2			: Decimal.FC_NN(1,0,1.2),
 	d1_202		: Decimal.FC_NN(1,0,1.202),
 	d1_25			: Decimal.FC_NN(1,0,1.25),
+	d1_26			: Decimal.FC_NN(1,0,1.26),
 	d1_3			: Decimal.FC_NN(1,0,1.3),
 	d1_308		: Decimal.FC_NN(1,0,1.308),
 	d1_337		: Decimal.FC_NN(1,0,1.337),

@@ -165,6 +165,7 @@
 					<div id="lightContainer1"></div><div id="lightContainer2"></div><div id="lightContainer3"></div>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_galaxies" style="display:none">
+					<button class="featureConfig wormhole" onClick="openConfig['Galaxy']()"></button>
 					<p>You have <span class="big _galaxies" id="span_galaxies"></span> galax<span id="span_galaxyPlural"></span>. The highest number you have ever had is <span class="big _galaxies" id="span_highestGalaxies"></span>.<br>
 					The 60th star currently costs <span class="big _galaxies" id="span_currentGalaxyStarCost"></span> stardust, and will cost <span class="big _galaxies" id="span_nextGalaxyStarCost"></span> in the next galaxy.<br>
 					At your current amount of stardust you can afford <span class="big _galaxies" id="span_currentGalaxyAffordableStars"></span> stars, and will be able to afford <span class="big _galaxies" id="span_nextGalaxyAffordableStars"></span> in the next galaxy.<br>
@@ -178,6 +179,7 @@
 					</div>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_luck" style="display:none">
+					<button class="featureConfig wormhole" onClick="openConfig['Luck']()"></button>
 					<p>You have <span class="big _luck" id="span_luckShards"></span> luck shards.<br>
 					You are generating <span class="big _luck" id="span_luckShardsPerSec"></span> luck shards per second.<br>
 					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down the normal axis cost scaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
@@ -191,6 +193,7 @@
 				<div class="optionsNavigation globalnavigation">
 					<button class="tabtier2 tier2options" onClick="openSubTab('options','options')" id="button_subtab_options_options">Options</button>
 					<button class="tabtier2 tier2options" onClick="openSubTab('options','hotkeys')" id="button_subtab_options_hotkeys" style="filter:brightness(60%)">Hotkeys</button>
+					<button class="tabtier2 tier2options" onClick="openSubTab('options','story')" id="button_subtab_options_story" style="filter:brightness(60%)">Story</button>
 				</div>
 				<div class="subtab options" id="subtab_options_options">
 					<button class="optionsbutton" onClick="selectOption('notation',Object.keys(notations),'notation')">Notation: <span id="notation"></span></button>
@@ -207,6 +210,9 @@
 					<button class="optionsbutton" onClick="selectOption('newsTickerSpeed',[40,60,80,120,160,200,300,400,500,750,999],'speed')">News ticker speed: <span id="span_newsTickerSpeed"></span> px·s<sup>-1</sup></button>
 				</div>
 				<div class="subtab options" id="subtab_options_hotkeys" style="display:none"></div>
+				<div class="subtab options" id="subtab_options_story" style="display:none">
+					<button class="optionsbutton" onClick="showPreviousStory()">Show previous story entries</button>
+				</div>
 			</div>
 			<div class="tab" id="bigtab_statistics" style="display:none">
 				<div class="statisticsNavigation globalnavigation">
@@ -312,7 +318,7 @@
 			</div>
 			<div id="footer" style="z-index: 0">
 				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
-				<a href="changelog.html" target="_blank">Changelog</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | Version <span id="span_currentVersion"></span>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://www.reddit.com/r/incremental_games/comments/15pv5wa/exotic_matter_dimensions_%F0%9D%95%8D13/" target="_blank">Reddit</a> | Version <span id="span_currentVersion"></span>
 			</div>
 		</div>
 		<div id="div_fancyPopupScreen" class="popupScreen">
