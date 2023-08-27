@@ -2015,7 +2015,7 @@ miscStats.chromaPerSec={
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.darkWAxisEffect.format(2),stat.empoweredDarkWAxis.format(2),3)},
 			dependencies:["darkWAxisEffect","empoweredDarkWAxis"],
-			show:function(){return stat.YAxisEffect}
+			show:function(){return stat.darkWAxisEffect.neq(c.d1)&&stat.empoweredDarkWAxis.neq(c.d0)}
 		},
 		{
 			label:luckUpgrades.cinquefolium.chroma.name,
@@ -2031,13 +2031,13 @@ miscStats.chromaPerSec={
 		},
 		{
 			label:prismaticUpgrades.chromaSpeed.name,
-			func:function(){return prismaticUpgrades.chromaSpeed.eff()},
+			func:function(prev){return prev.mul(prismaticUpgrades.chromaSpeed.eff())},
 			text:function(){return "× "+prismaticUpgrades.chromaSpeed.eff().noLeadFormat(2)},
 			show:function(){return g.prismaticUpgrades.chromaSpeed.neq(c.d0)}
 		},
 		{
 			label:prismaticUpgrades.chromaOverdrive.name,
-			func:function(){return prismaticUpgrades.chromaOverdrive.eff.x()},
+			func:function(prev){return prev.mul(prismaticUpgrades.chromaOverdrive.eff.x())},
 			text:function(){return "× "+prismaticUpgrades.chromaOverdrive.eff.x().noLeadFormat(2)},
 			show:function(){return g.prismaticUpgrades.chromaOverdrive.neq(c.d0)}
 		},
