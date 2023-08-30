@@ -93,12 +93,20 @@ const hiddenStatistics = [
 		value:function(){return BEformat(N(g.TotalWormholeResets))+" total, "+BEformat(N(g.WormholeResets))+" with reward";},
 		condition:function(){return unlocked("Hawking Radiation");}
 	},{
-		name:"Total Axis",
-		value:function(){return stat.totalAxis.format();},
+		name:"Total Normal Axis",
+		value:function(){return stat.totalNormalAxis.format();},
 		condition:function(){return true;}
 	},{
 		name:"Total Dark Axis",
 		value:function(){return stat.totalDarkAxis.format();},
+		condition:function(){return unlocked("Dark Matter");}
+	},{
+		name:"Total Anti-Axis",
+		value:function(){return stat.totalAntiAxis.format();},
+		condition:function(){return unlocked("Antimatter");}
+	},{
+		name:"Total Axis (all types)",
+		value:function(){return stat.totalAxis.format();},
 		condition:function(){return unlocked("Dark Matter");}
 	},{
 		name:"Free Axis Softcap Boundaries",
@@ -179,7 +187,7 @@ function masteryDependencies(i){
 	let out = ["knowledgeEffect"]
 	if (Math.floor(i/10)==1) out.push("SAxisEffect","realSAxis")
 	if (Math.floor(i/10)==2) out.push("spatialEnergyEffect")
-	if (Math.floor(i/10)==4) out.push("totalAxis")
+	if (Math.floor(i/10)==4) out.push("totalNormalAxis")
 	if (Math.floor(i/10)==10) out.push("stardustBoost11")
 	// masteries boosting other masteries
 	if (i<40) out.push(masteryDependencies(40+i%10))
@@ -298,10 +306,10 @@ const statTemplates = {
 	},
 	ach209Reward:{
 		label:achievement.label(209),
-		mod:function(){return g.achievement[209]?stat.totalAxis.mul(achievement(209).effect()):c.d0;},
+		mod:function(){return g.achievement[209]?stat.totalNormalAxis.mul(achievement(209).effect()):c.d0;},
 		func:function(prev){return prev.add(this.mod());},
-		text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.totalAxis.format(),achievement(209).effectFormat(achievement(209).effect()),2);},
-		dependencies:["totalAxis"],
+		text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.totalNormalAxis.format(),achievement(209).effectFormat(achievement(209).effect()),2);},
+		dependencies:["totalNormalAxis"],
 		show:function(){return this.mod().neq(c.d0)}
 	},
 	ach210Reward:function(type){
@@ -346,8 +354,8 @@ const statTemplates = {
 			label:achievement.label(526),
 			func:function(prev){return g.achievement[526]?prev.add(achievement(526).effect()):prev;},
 			text:function(){return "+ "+achievement(526).effect().format(3);},
-			dependencies:["totalAxis"],
-			show:function(){return g.achievement[526]&&stat.totalAxis.neq(c.d0)}
+			dependencies:["totalNormalAxis"],
+			show:function(){return g.achievement[526]&&stat.totalNormalAxis.neq(c.d0)}
 		}
 	],
 	ach528Reward:function(type){
@@ -373,6 +381,20 @@ const statTemplates = {
 		func:function(prev){return StudyE(7)?prev.pow(studies[7].luckEffect()):prev},
 		text:function(){return "^ "+studies[7].luckEffect().noLeadFormat(3)},
 		show:function(){return StudyE(7)}
+	},
+	study9:{
+		label:"Study IX",
+		func:function(prev){return StudyE(9)?prev.pow(studies[9].experientiaEffect()):prev},
+		text:function(){return "^ "+studies[9].experientiaEffect().noLeadFormat(4)},
+		show:function(){return StudyE(9)}
+	},
+	antiYAxis:{
+		label:"Anti-Y Axis",
+		mod:function(){return stat.antiYAxisEffect.pow(stat.realantiYAxis)},
+		func:function(prev){return prev.mul(this.mod())},
+		text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiYAxisEffect.noLeadFormat(3),stat.realantiYAxis.noLeadFormat(3),3)},
+		dependencies:["antiYAxisEffect","realantiYAxis"],
+		show:function(){return stat.antiYAxisEffect.neq(c.d1)&&stat.realantiYAxis.neq(c.d0)}
 	}
 }
 function statFormat(formulaShown,formulaHidden,className) {
@@ -475,10 +497,10 @@ miscStats.exoticmatterPerSec={
 		statTemplates.ach501Reward,
 		{
 			label:"Research 1-3",
-			func:function(prev){return g.research.r1_3?prev.mul(Decimal.pow(researchEffect(1,3),stat.totalAxis)):prev;},
-			text:function(){return "× "+Decimal.pow(researchEffect(1,3),stat.totalAxis).format(2)+" "+SSBsmall(researchEffect(1,3).noLeadFormat(2),stat.totalAxis.format(0),3);},
-			dependencies:["totalAxis"],
-			show:function(){return g.research.r1_3&&researchEffect(1,3).neq(c.d1)&&stat.totalAxis.neq(c.d0)}
+			func:function(prev){return g.research.r1_3?prev.mul(Decimal.pow(researchEffect(1,3),stat.totalNormalAxis)):prev;},
+			text:function(){return "× "+Decimal.pow(researchEffect(1,3),stat.totalNormalAxis).format(2)+" "+SSBsmall(researchEffect(1,3).noLeadFormat(2),stat.totalNormalAxis.format(0),3);},
+			dependencies:["totalNormalAxis"],
+			show:function(){return g.research.r1_3&&researchEffect(1,3).neq(c.d1)&&stat.totalNormalAxis.neq(c.d0)}
 		},
 		{
 			label:achievement.label(518),
@@ -540,11 +562,11 @@ miscStats.stardustMultiplier={
 		})(),
 		{
 			label:achievement.label(208),
-			mod:function(){return achievement(208).effect().pow(stat.totalAxis);},
+			mod:function(){return achievement(208).effect().pow(stat.totalNormalAxis);},
 			func:function(prev){return g.achievement[208]?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(achievement(208).effect().noLeadFormat(4),stat.totalAxis.format(0),3);},
-			dependencies:["totalAxis"],
-			show:function(){return g.achievement[208]&&stat.totalAxis.neq(c.d0)}
+			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(achievement(208).effect().noLeadFormat(4),stat.totalNormalAxis.format(0),3);},
+			dependencies:["totalNormalAxis"],
+			show:function(){return g.achievement[208]&&stat.totalNormalAxis.neq(c.d0)}
 		},
 		{
 			label:"U Axis",
@@ -893,7 +915,7 @@ miscStats.XAxisEffect={
 	type:"breakdown",
 	label:"X Axis effect",
 	visible:function(){return stat.axisUnlocked>=1;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		statTemplates.base("2",c.d2,true),
@@ -961,7 +983,7 @@ miscStats.XAxisEffect={
 			label:"Research 2-14",
 			func:function(prev){return g.research.r2_14?prev.pow(researchEffect(2,14)):prev;},
 			text:function(){return "^ "+researchEffect(2,14).noLeadFormat(4);},
-			dependencies:["totalAxis"],
+			dependencies:["realXAxis"],
 			show:function(){return g.research.r2_14&&researchEffect(2,14).neq(c.d0)&&g.XAxis.neq(c.d0)}
 		}
 	]
@@ -970,7 +992,7 @@ miscStats.YAxisEffect={
 	type:"breakdown",
 	label:"Y Axis effect",
 	visible:function(){return stat.axisUnlocked>=2;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		statTemplates.base("0.1",c.d0_1,true),
@@ -996,7 +1018,7 @@ miscStats.ZAxisEffect={
 	type:"breakdown",
 	label:"Z Axis effect",
 	visible:function(){return stat.axisUnlocked>=3;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		{
@@ -1037,7 +1059,7 @@ miscStats.WAxisEffect={
 	type:"breakdown",
 	label:"W Axis effect",
 	visible:function(){return stat.axisUnlocked>=4;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		{
@@ -1068,7 +1090,7 @@ miscStats.VAxisEffect={
 	type:"breakdown",
 	label:"V Axis effect",
 	visible:function(){return stat.axisUnlocked>=5;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		statTemplates.base("3",c.d3,true),
@@ -1108,7 +1130,7 @@ miscStats.UAxisEffect={
 	type:"breakdown",
 	label:"U Axis effect",
 	visible:function(){return stat.axisUnlocked>=6;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		{
@@ -1145,14 +1167,14 @@ miscStats.TAxisEffect={
 	type:"breakdown",
 	label:"T Axis effect",
 	visible:function(){return stat.axisUnlocked>=7;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		{
 			label:"Base",
-			func:function(){return stat.totalAxis.add(c.d10).log10().tetrate(2).div(c.d2).pow10();},
-			text:function(){return "10 ^ "+unbreak("(log("+statFormat("ΣA",stat.totalAxis.format(0),"_exoticmatter")+" + 10) ^^ 2 ÷ 2)");},
-			dependencies:["totalAxis"],
+			func:function(){return stat.totalNormalAxis.add(c.d10).log10().tetrate(2).div(c.d2).pow10();},
+			text:function(){return "10 ^ "+unbreak("(log("+statFormat("ΣA",stat.totalNormalAxis.format(0),"_exoticmatter")+" + 10) ^^ 2 ÷ 2)");},
+			dependencies:["totalNormalAxis"],
 			show:function(){return true}
 		},
 		statTemplates.ach209Reward,
@@ -1176,7 +1198,7 @@ miscStats.SAxisEffect={
 	type:"breakdown",
 	label:"S Axis effect",
 	visible:function(){return stat.axisUnlocked>=8;},
-	category:"Normal axis effects",
+	category:"Axis effects",
 	precision:4,
 	modifiers:[
 		statTemplates.base("1.025",c.d1_025,true),
@@ -1253,7 +1275,106 @@ for (let i=0;i<axisCodes.length;i++) {
 		type:"breakdown",
 		label:"Free "+type+" Axis",
 		visible:function(){return stat["free"+type+"Axis"].neq(c.d0)},
-		category:"Free normal axis",
+		category:"Free axis",
+		precision:2,
+		modifiers:out
+	}
+}
+for (let i=0;i<axisCodes.length;i++) {
+	let type = axisCodes[i]
+	let out = [
+		{
+			label:"Purchased "+type+" Axis",
+			func:function(){return g[type+"Axis"]},
+			text:function(){return g[type+"Axis"].format()},
+			show:function(){return true}
+		},
+		{
+			label:"Free "+type+" Axis",
+			func:function(prev){return prev.add(stat["free"+type+"Axis"])},
+			text:function(){return "+ "+stat["free"+type+"Axis"].noLeadFormat(2)},
+			dependencies:["free"+type+"Axis"],
+			show:function(){return stat["free"+type+"Axis"].neq(c.d0)},
+		},
+		{
+			label:"Not unlocked",
+			func:function(prev){return (stat.axisUnlocked>i)?prev:c.d0},
+			text:function(){return "0"},
+			dependencies:["axisUnlocked"],
+			show:function(){return false} // this should never show
+		}
+	]
+	miscStats["real"+type+"Axis"] = {
+		type:"breakdown",
+		label:"Effective "+type+" Axis",
+		visible:function(){return unlocked("Antimatter")},
+		category:"Effective axis",
+		precision:2,
+		modifiers:out
+	}
+}
+for (let i=0;i<axisCodes.length;i++) {
+	let type = axisCodes[i]
+	let out = [
+		{
+			label:"Purchased Dark "+type+" Axis",
+			func:function(){return g["dark"+type+"Axis"]},
+			text:function(){return g["dark"+type+"Axis"].format()},
+			show:function(){return true}
+		},
+		{
+			label:"Free Dark "+type+" Axis",
+			func:function(prev){return prev.add(stat["freedark"+type+"Axis"])},
+			text:function(){return "+ "+stat["freedark"+type+"Axis"].noLeadFormat(2)},
+			dependencies:["freedark"+type+"Axis"],
+			show:function(){return stat["freedark"+type+"Axis"].neq(c.d0)},
+		},
+		{
+			label:"Not unlocked",
+			func:function(prev){return (g.stardustUpgrades[0]+4>i)?prev:c.d0},
+			text:function(){return "0"},
+			show:function(){return false} // this should never show
+		}
+	]
+	miscStats["realdark"+type+"Axis"] = {
+		type:"breakdown",
+		label:"Effective Dark "+type+" Axis",
+		visible:function(){return Decimal.neq(stat["realdark"+type+"Axis"],g["dark"+type+"Axis"])},
+		category:"Effective axis",
+		newRow:i==0,
+		precision:2,
+		modifiers:out
+	}
+}
+for (let i=0;i<axisCodes.length;i++) {
+	let type = axisCodes[i]
+	let out = [
+		{
+			label:"Purchased Anti-"+type+" Axis",
+			func:function(){return g["anti"+type+"Axis"]},
+			text:function(){return g["anti"+type+"Axis"].format()},
+			show:function(){return true}
+		},
+		{
+			label:"Free Anti-"+type+" Axis",
+			func:function(prev){return prev.add(stat["freeanti"+type+"Axis"])},
+			text:function(){return "+ "+stat["freeanti"+type+"Axis"].noLeadFormat(2)},
+			dependencies:["freeanti"+type+"Axis"],
+			show:function(){return stat["freeanti"+type+"Axis"].neq(c.d0)},
+		},
+		{
+			label:"Not unlocked",
+			func:function(prev){return antiAxisUnlocked(type)?prev:c.d0},
+			text:function(){return "0"},
+			show:function(){return false} // this should never show
+		}
+	]
+	miscStats["realanti"+type+"Axis"] = {
+		type:"breakdown",
+		label:"Effective Anti-"+type+" Axis",
+		visible:function(){return Decimal.neq(stat["realanti"+type+"Axis"],g["anti"+type+"Axis"])},
+		category:"Effective axis",
+		newRow:i==0,
 		precision:2,
 		modifiers:out
 	}
@@ -1262,7 +1383,8 @@ miscStats.darkXAxisEffect={
 	type:"breakdown",
 	label:"Dark X Axis effect",
 	visible:function(){return g.stardustUpgrades[4]>0;},
-	category:"Dark axis effects",
+	category:"Axis effects",
+	newRow:true,
 	precision:2,
 	modifiers:[
 		statTemplates.base("3",c.d3,true),
@@ -1275,7 +1397,7 @@ miscStats.darkYAxisEffect={
 	type:"breakdown",
 	label:"Dark Y Axis effect",
 	visible:function(){return g.stardustUpgrades[4]>0;},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		statTemplates.base("4",c.d4,true),
@@ -1297,14 +1419,22 @@ miscStats.darkYAxisEffect={
 			func:function(prev){return g.research.r14_10?prev.pow(researchEffect(14,10)):prev},
 			text:function(){return "^ "+researchEffect(14,10).format(4)},
 			show:function(){return g.research.r14_10}
-		}
+		},
+		{
+			label:"Anti-V Axis",
+			mod:function(){return [stat.antiVAxisEffect,stat.realantiVAxis,c.d0_01].productDecimals().add(c.d1);},
+			func:function(prev){return prev.pow(this.mod());},
+			text:function(){return "^ "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+unbreak("("+stat.antiVAxisEffect.div(c.e2).noLeadFormat(2)+" × "+stat.realantiVAxis.noLeadFormat(2)+" + 1)")+"</span>";},
+			dependencies:["antiVAxisEffect","realantiVAxis"],
+			show:function(){return stat.antiVAxisEffect.neq(c.d0)&&stat.realantiVAxis.neq(c.d0)}
+		},
 	]
 };
 miscStats.darkZAxisEffect={
 	type:"breakdown",
 	label:"Dark Z Axis effect",
 	visible:function(){return g.stardustUpgrades[4]>0;},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		{
@@ -1327,7 +1457,7 @@ miscStats.darkWAxisEffect={
 	type:"breakdown",
 	label:"Dark W Axis effect",
 	visible:function(){return g.stardustUpgrades[4]>0;},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:3,
 	modifiers:[
 		statTemplates.base("1.15",c.d1_15,true),
@@ -1345,7 +1475,7 @@ miscStats.darkVAxisEffect={
 	type:"breakdown",
 	label:"Dark V Axis effect",
 	visible:function(){return (g.stardustUpgrades[0]>0)&&(g.stardustUpgrades[4]>0);},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		statTemplates.base("10",c.d10,true),
@@ -1356,7 +1486,7 @@ miscStats.darkUAxisEffect={
 	type:"breakdown",
 	label:"Dark U Axis effect",
 	visible:function(){return (g.stardustUpgrades[0]>1)&&(g.stardustUpgrades[4]>0);},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:3,
 	modifiers:[
 		statTemplates.base("1.02",c.d1_02,true),
@@ -1374,7 +1504,7 @@ miscStats.darkTAxisEffect={
 	type:"breakdown",
 	label:"Dark T Axis effect",
 	visible:function(){return (g.stardustUpgrades[0]>2)&&(g.stardustUpgrades[4]>0);},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:2,
 	modifiers:[
 		{
@@ -1395,7 +1525,7 @@ miscStats.darkSAxisEffect={
 	type:"breakdown",
 	label:"Dark S Axis effect",
 	visible:function(){return (g.stardustUpgrades[0]>3)&&(g.stardustUpgrades[4]>0);},
-	category:"Dark axis effects",
+	category:"Axis effects",
 	precision:4,
 	modifiers:[
 		statTemplates.base("1.01",c.d1_01,true),
@@ -1422,11 +1552,11 @@ miscStats.axisCostDivisor={
 		},
 		{
 			label:achievement.label(207),
-			mod:function(){return achievement(207).effect().pow(stat.totalAxis);},
+			mod:function(){return achievement(207).effect().pow(stat.totalNormalAxis);},
 			func:function(prev){return g.achievement[207]?prev.div(this.mod()):prev;},
-			text:function(){return "÷ "+this.mod().format(2)+" "+SSBsmall(achievement(207).effect().noLeadFormat(3),stat.totalAxis.format(0),3);},
-			dependencies:["totalAxis"],
-			show:function(){return g.achievement[207]&&stat.totalAxis.neq(c.d0)}
+			text:function(){return "÷ "+this.mod().format(2)+" "+SSBsmall(achievement(207).effect().noLeadFormat(3),stat.totalNormalAxis.format(0),3);},
+			dependencies:["totalNormalAxis"],
+			show:function(){return g.achievement[207]&&stat.totalNormalAxis.neq(c.d0)}
 		}
 	]
 };
@@ -1469,7 +1599,8 @@ miscStats.axisCostExponent={
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.normalAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.normalAxis.eff().format(3)},
 			show:function(){return g.luckUpgrades.trifolium.normalAxis.neq(c.d0)}
-		}
+		},
+		statTemplates.study9
 	]
 };
 miscStats.darkAxisCostDivisor={
@@ -1523,9 +1654,38 @@ miscStats.darkAxisCostExponent={
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.darkAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.darkAxis.eff().format(3)},
 			show:function(){return g.luckUpgrades.trifolium.darkAxis.neq(c.d0)}
-		}
+		},
+		statTemplates.study9
 	]
 };
+miscStats.antiAxisCostDivisor={
+	type:"breakdown",
+	label:"Anti-axis cost divisor",
+	visible:function(){return stat.antiAxisCostDivisor.neq(c.d1)},
+	category:"Axis costs",
+	precision:2,
+	modifiers:[
+		statTemplates.base("1",c.d1,false),
+		{
+			label:"Anti-W Axis",
+			mod:function(){return stat.antiWAxisEffect.pow(stat.realantiWAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiWAxisEffect.noLeadFormat(2),stat.realantiWAxis.noLeadFormat(3),3)},
+			dependencies:["antiWAxisEffect","realantiWAxis"],
+			show:function(){return stat.antiWAxisEffect.neq(c.d1)&&stat.realantiWAxis.neq(c.d0)}
+		}
+	]
+}
+miscStats.antiAxisCostExponent={
+	type:"breakdown",
+	label:"Anti-axis cost exponent",
+	visible:function(){return stat.antiAxisCostExponent.neq(c.d1)},
+	category:"Axis costs",
+	precision:4,
+	modifiers:[
+		statTemplates.base("1",c.d1,false)
+	]
+}
 miscStats.energyGainSpeed={
 	type:"breakdown",
 	label:"Energy gain",
@@ -1692,7 +1852,7 @@ miscStats.tickspeed={
 			show:function(){return stat.temporalEnergyEffect.neq(c.d1)}
 		},
 		{
-			label:"Time Paradox",
+			label:"Temporal Paradox",
 			func:function(prev){return prev.max(c.d0);},
 			text:function(){return "No negative numbers allowed";},
 			show:function(){return stat.tickspeed.sign==-1}
@@ -1874,7 +2034,8 @@ for (let i=0;i<axisCodes.length;i++) {
 		type:"breakdown",
 		label:"Free dark "+type+" Axis",
 		visible:function(){return stat["freedark"+type+"Axis"].neq(c.d0)},
-		category:"Free dark axis",
+		category:"Free axis",
+		newRow:i==0,
 		precision:2,
 		modifiers:out
 	}
@@ -1926,6 +2087,14 @@ miscStats.knowledgePerSec={
 			func:function(prev){return g.achievement[719]?prev.mul(achievement(719).effect()):prev},
 			text:function(){return "× "+achievement(719).effect()+" "+SSBsmall("(1.202 + 0.0816 × "+N(g.galaxies).format()+")",g.observations.sumDecimals().format(),3)},
 			show:function(){return g.achievement[719]&&g.observations.sumDecimals().gt(c.d0)}
+		},
+		{
+			label:"Anti-T Axis",
+			mod:function(){return stat.antiTAxisEffect.pow(stat.realantiTAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiTAxisEffect.noLeadFormat(2),stat.realantiTAxis.noLeadFormat(3),3)},
+			dependencies:["antiTAxisEffect","realantiTAxis"],
+			show:function(){return stat.antiTAxisEffect.neq(c.d1)&&stat.realantiTAxis.neq(c.d0)}
 		},
 		{
 			label:"Mental Energy",
@@ -2084,7 +2253,8 @@ miscStats.luckShardsPerSec={
 			func:function(){return studies[7].reward(3)},
 			text:function(){return studies[7].reward(3).format(3)},
 			show:function(){return true}
-		}
+		},
+		statTemplates.antiYAxis
 	]
 }
 miscStats.prismaticPerSec={
@@ -2106,7 +2276,8 @@ miscStats.prismaticPerSec={
 			func:function(){return prismaticUpgrades.prismaticSpeed.eff()},
 			text:function(){return "× "+prismaticUpgrades.prismaticSpeed.eff().noLeadFormat(2)},
 			show:function(){return g.prismaticUpgrades.prismaticSpeed.neq(c.d0)}
-		}
+		},
+		statTemplates.antiYAxis
 	]
 }
 miscStats.basePrismaticGain={
@@ -2129,14 +2300,159 @@ miscStats.basePrismaticGain={
 		})()
 	]
 }
-
-for (let i of fullAxisCodes) {
-	miscStats["real"+i+"Axis"]={
-		type:"combined",
-		value:function(){return (((i.length==1)?stat.axisUnlocked:(4+g.stardustUpgrades[0]))>axisCodes.indexOf(i))?g[i+"Axis"].add(stat["free"+i+"Axis"]):c.d0},
-		dependencies:(i.length==1)?["axisUnlocked","free"+i+"Axis"]:["free"+i+"Axis"]
+miscStats.antimatterPerSec={
+	type:"breakdown",
+	label:"Antimatter gain",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Antimatter gain",
+	precision:2,
+	modifiers:[
+		statTemplates.base("1",c.d1,true),
+		{
+			label:"Anti-X Axis",
+			mod:function(){return stat.antiXAxisEffect.pow(stat.realantiXAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiXAxisEffect.noLeadFormat(2),stat.realantiXAxis.noLeadFormat(3),3)},
+			dependencies:["antiXAxisEffect","realantiXAxis"],
+			show:function(){return stat.antiXAxisEffect.neq(c.d1)&&stat.realantiXAxis.neq(c.d0)}
+		},
+		{
+			label:"Anti-S Axis",
+			mod:function(){return stat.antiSAxisEffect.pow(stat.realantiSAxis);},
+			func:function(prev){return prev.pow(this.mod());},
+			text:function(){return "^ "+this.mod().format(4)+" "+SSBsmall(stat.antiSAxisEffect.noLeadFormat(4),stat.freeantiSAxis.noLeadFormat(2),3);},
+			dependencies:["antiSAxisEffect","freeantiSAxis"],
+			show:function(){return stat.antiSAxisEffect.neq(c.d1)&&stat.realantiSAxis.neq(c.d0)}
+		},
+		{
+			label:"Softcap",
+			func:function(prev){let s = studies[9].reward(1);return s.eq(c.d0)?c.d0:prev.gt(s)?s.pow(Decimal.div(prev.log10(),s.log10()).pow(c.d0_1)):prev},
+			text:function(){let v = "<i>x</i>";let s = studies[9].reward(0);return s.eq(c.d0)?"0":(v+"<sup>(log("+v+") ÷ log("+s.format()+"))<sup>0.1</sup></sup>")},
+			show:function(){return stat.antimatterPerSec.gt(studies[9].reward(1))}
+		}
+	]
+}
+miscStats.antiXAxisEffect={
+	type:"breakdown",
+	label:"Anti-X axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	newRow:true,
+	precision:2,
+	modifiers:[
+		statTemplates.base("5",c.d5,true),
+		{
+			label:"Anti-Z Axis",
+			mod:function(){return stat.antiZAxisEffect.pow(stat.realantiZAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiZAxisEffect.noLeadFormat(2),stat.realantiZAxis.noLeadFormat(3),3)},
+			dependencies:["antiZAxisEffect","realantiZAxis"],
+			show:function(){return stat.antiZAxisEffect.neq(c.d1)&&stat.realantiZAxis.neq(c.d0)}
+		}
+	]
+}
+miscStats.antiYAxisEffect={
+	type:"breakdown",
+	label:"Anti-Y axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("1.3",c.d1_3,true)
+	]
+}
+miscStats.antiZAxisEffect={
+	type:"breakdown",
+	label:"Anti-Z axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("1.3",c.d1_3,true),
+		{
+			label:"Anti-U Axis",
+			mod:function(){return stat.antiUAxisEffect.pow(Decimal.mul(stat.realantiUAxis,stat.totalAntiAxis));},
+			func:function(prev){return prev.mul(this.mod());},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiUAxisEffect.noLeadFormat(3),SSBsmall(stat.realantiUAxis.noLeadFormat(2),stat.totalAntiAxis.format(0),2),3);},
+			dependencies:["antiUAxisEffect","realantiUAxis","totalAntiAxis"],
+			show:function(){return stat.antiUAxisEffect.neq(c.d1)&&stat.realantiUAxis.neq(c.d0)&&stat.totalAntiAxis.neq(c.d0)}
+		},
+	]
+}
+miscStats.antiWAxisEffect={
+	type:"breakdown",
+	label:"Anti-W axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:2,
+	modifiers:[
+		{
+			label:"Base",
+			func:function(){return c.d10.pow(Decimal.mul(g.antimatter.add(c.d10).log10().pow(c.d0_25),g.antimatter.add(c.d10).log10().log10().pow(c.d2)))},
+			text:function(){let am=statFormat("AM",g.antimatter.format(),"var(--antimatter)");return "10 ^ (log("+am+" + 10) ^ 0.25 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
+			show:function(){return true}
+		}
+	]
+}
+miscStats.antiVAxisEffect={
+	type:"breakdown",
+	label:"Anti-V axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:2,
+	modifiers:[
+		statTemplates.base("15",c.d15,true)
+	]
+}
+miscStats.antiUAxisEffect={
+	type:"breakdown",
+	label:"Anti-U axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:5,
+	modifiers:[
+		statTemplates.base("1.001",c.d1_001,true)
+	]
+}
+miscStats.antiTAxisEffect={
+	type:"breakdown",
+	label:"Anti-T axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:2,
+	modifiers:[
+		statTemplates.base(()=>c.inf.format(),c.inf,true)
+	]
+}
+miscStats.antiSAxisEffect={
+	type:"breakdown",
+	label:"Anti-S axis effect",
+	visible:function(){return unlocked("Antimatter")},
+	category:"Axis effects",
+	precision:2,
+	modifiers:[
+		statTemplates.base("1.015",N(1.015),true)
+	]
+}
+for (let i=0;i<axisCodes.length;i++) {
+	let type = axisCodes[i]
+	let out = [statTemplates.base("0",c.d0,false)]
+	// additive effects
+	// multiplicative effects
+	// softcap
+	out.push(statTemplates.axisSoftcap(type))
+	// initialize
+	miscStats["freeanti"+type+"Axis"] = {
+		type:"breakdown",
+		label:"Free anti-"+type+" Axis",
+		visible:function(){return stat["freeanti"+type+"Axis"].neq(c.d0)},
+		category:"Free axis",
+		newRow:i==0,
+		precision:2,
+		modifiers:out
 	}
 }
+
 miscStats.empoweredYAxis={
 	type:"combined",
 	value:function(){
@@ -2207,18 +2523,39 @@ miscStats.darkAxisSuperscalingPower={
 	type:"combined",
 	value:function(){return c.d1}
 }
+miscStats.antiAxisScalingStart={
+	type:"combined",
+	value:function(){return c.d8}
+},
+miscStats.antiAxisScalingPower={
+	type:"combined",
+	value:function(){return c.d1}
+}
+miscStats.antiAxisSuperscalingStart={
+	type:"combined",
+	value:function(){return c.d256}
+}
+miscStats.antiAxisSuperscalingPower={
+	type:"combined",
+	value:function(){return c.d1}
+}
 for (let i of axisCodes) {
-	let normalDependencies = ["axisCostDivisor","axisCostExponent","axisScalingStart","axisScalingPower","axisSuperscalingStart","axisSuperscalingPower","spatialSynergismPower"]
-	if (i=="X") normalDependencies.push("stardustBoost5")
+	let normalCostDependencies = ["axisCostDivisor","axisCostExponent","axisScalingStart","axisScalingPower","axisSuperscalingStart","axisSuperscalingPower","spatialSynergismPower"]
+	if (i=="X") normalCostDependencies.push("stardustBoost5")
 	miscStats[i+"AxisCost"]={
 		type:"combined",
 		value:function(){return axisCost(i)},
-		dependencies:normalDependencies,
+		dependencies:normalCostDependencies,
 	}
 	miscStats["dark"+i+"AxisCost"]={
 		type:"combined",
 		value:function(){return darkAxisCost(i)},
 		dependencies:["darkAxisCostDivisor","darkAxisCostExponent","darkAxisScalingStart","darkAxisScalingPower","darkAxisSuperscalingStart","darkAxisSuperscalingPower","spatialSynergismPower"]
+	}
+	miscStats["anti"+i+"AxisCost"]={
+		type:"combined",
+		value:function(){return antiAxisCost(i)},
+		dependencies:["antiAxisCostDivisor","antiAxisCostExponent","antiAxisScalingStart","antiAxisScalingPower","antiAxisSuperscalingStart","antiAxisSuperscalingPower"]
 	}
 }
 miscStats.freeAxisSoftcapStart={
@@ -2237,13 +2574,22 @@ miscStats.axisUnlocked={
 	type:"combined",
 	value:function(){return Math.min(axisCodes.map(i=>g[i+"Axis"].gt(0)?1:0).sum()+1,4+g.stardustUpgrades[0])}
 }
-miscStats.totalAxis={
+miscStats.totalNormalAxis={
 	type:"combined",
 	value:function(){return axisCodes.map(i=>g[i+"Axis"]).sumDecimals()}
 }
 miscStats.totalDarkAxis={
 	type:"combined",
 	value:function(){return axisCodes.map(i=>g["dark"+i+"Axis"]).sumDecimals()}
+}
+miscStats.totalAntiAxis={
+	type:"combined",
+	value:function(){return axisCodes.map(i=>g["anti"+i+"Axis"]).sumDecimals()}
+}
+miscStats.totalAxis={
+	type:"combined",
+	value:function(){return ["Normal","Dark","Anti"].map(x=>stat["total"+x+"Axis"]).sumDecimals()},
+	dependencies:["totalNormalAxis","totalDarkAxis","totalAntiAxis"]
 }
 miscStats.masteryRow1Unlocked={
 	type:"combined",
@@ -2255,13 +2601,13 @@ miscStats.masteryRow2Unlocked={
 }
 miscStats.masteryRow3Unlocked={
 	type:"combined",
-	value:function(){return stat.totalAxis.gte(c.d40)||(g.StardustResets>0)||(g.WormholeResets>0)},
-	dependencies:["totalAxis"]
+	value:function(){return stat.totalNormalAxis.gte(c.d40)||(g.StardustResets>0)||(g.WormholeResets>0)},
+	dependencies:["totalNormalAxis"]
 }
 miscStats.masteryRow4Unlocked={
 	type:"combined",
-	value:function(){return stat.totalAxis.gte(c.d50)||(g.StardustResets>0)||(g.WormholeResets>0)},
-	dependencies:["stardustExoticMatterReq","totalAxis"]
+	value:function(){return stat.totalNormalAxis.gte(c.d50)||(g.StardustResets>0)||(g.WormholeResets>0)},
+	dependencies:["stardustExoticMatterReq","totalNormalAxis"]
 }
 for (let i=5;i<10;i++) {
 	miscStats["masteryRow"+i+"Unlocked"]={
@@ -2446,25 +2792,29 @@ for (let i of Object.keys(miscStats)) {
 	stat[i] = null
 }
 function statGeneration(name) {
-	if (typeof statGenerations[name] == "number") return statGenerations[name]
-	let data = miscStats[name]
-	let dependencies = (data.type=="breakdown")?[data,...data.modifiers].map(x=>(x.dependencies==undefined)?[]:x.dependencies).flat().filter(x=>x!==undefined):(data.dependencies==undefined?[]:data.dependencies)
-	let out = (dependencies.length==0)?0:(dependencies.map(x=>statGeneration(x)).reduce((x,y)=>Math.max(x,y))+1)
-	statGenerations[name] = out
-	return out
+	try {
+		if (typeof statGenerations[name] == "number") return statGenerations[name]
+		let data = miscStats[name]
+		let dependencies = (data.type=="breakdown")?[data,...data.modifiers].map(x=>(x.dependencies==undefined)?[]:x.dependencies).flat().filter(x=>x!==undefined):(data.dependencies==undefined?[]:data.dependencies)
+		let out = (dependencies.length==0)?0:(dependencies.map(x=>statGeneration(x)).reduce((x,y)=>Math.max(x,y))+1)
+		statGenerations[name] = out
+		return out
+	} catch {functionError("statGeneration",arguments)}
 }
 var statOrder
 function updateStat(id) {
-	let data = miscStats[id]
-	if (data.type=="combined") {
-		stat[id] = data.value()
-	} else if (data.type=="breakdown") {
-		let value = data.modifiers[0].func()
-		for (let i of data.modifiers) value = i.func(value)
-		stat[id] = value	
-	} else {
-		error("miscStats["+id+"] has an invalid type")
-	}
+	try {
+		let data = miscStats[id]
+		if (data.type=="combined") {
+			stat[id] = data.value()
+		} else if (data.type=="breakdown") {
+			let value = data.modifiers[0].func()
+			for (let i of data.modifiers) value = i.func(value)
+			stat[id] = value	
+		} else {
+			error("miscStats["+id+"] has an invalid type")
+		}
+	} catch {functionError("updateStat",arguments)}
 }
 function updateStats() {
 	if (debugActive) {
@@ -2489,7 +2839,7 @@ function statBreakdownCategories() {
 		out[i]={contents:contents,active:contents[0]}
 	}
 	breakdownCategories = out
-	d.innerHTML("SSBnav1",categories.sort().map(x => "<button id=\"button_SSBnav1_"+x+"\" class=\"tabtier3\" style=\"filter:brightness("+(x=="Exotic Matter gain"?100:75)+"%)\" onClick=\"toggleActiveBreakdownSection('"+x+"')\">"+x+"</button>").join(""))
+	d.innerHTML("SSBnav1",categories.sort().map(x => "<button id=\"button_SSBnav1_"+x+"\" class=\"tabtier3\" style=\"filter:brightness("+(x=="Exotic Matter gain"?100:75)+"%)\" onClick=\"toggleActiveBreakdownSection('"+x+"');updateHTML()\">"+x+"</button>").join(""))
 	d.innerHTML("SSBtable",Array(maximumSSBModifierLength).fill(0).map((x,i)=>"<tr id=\"SSBtable_row"+i+"\"><td class=\"tablecell\" style=\"width:32vw\" id=\"SSBtable_label"+i+"\"></td><td class=\"tablecell\" style=\"width:32vw\" id=\"SSBtable_text"+i+"\"></td><td class=\"tablecell\" style=\"width:32vw\" id=\"SSBtable_total"+i+"\"></td></tr>").join(""))
 }
 var activeBreakdownSection = "Exotic Matter gain";
@@ -2502,7 +2852,7 @@ function toggleActiveBreakdownSection(x) {
 	for (let i of categories) {
 		d.element("button_SSBnav1_"+i).style.filter = "brightness("+(i==x?100:75)+"%)"
 	}
-	d.innerHTML("SSBnav2",(breakdownCategories[x].contents.length==1)?"":(breakdownCategories[x].contents.map(x => "<button id=\"button_SSBnav2_"+x+"\" class=\"tabtier4\" style=\"filter:brightness("+(x==activeBreakdownTab?100:75)+"%);display:"+(miscStats[x].visible()?"inline-block":"none")+"\" onClick=\"toggleActiveBreakdownTab('"+x+"')\">"+miscStats[x].label+"</button>").join("")))
+	d.innerHTML("SSBnav2",(breakdownCategories[x].contents.length==1)?"":(breakdownCategories[x].contents.map(x => (miscStats[x].newRow?"<br class=\"SSBnav2_br\">":"")+"<button id=\"button_SSBnav2_"+x+"\" class=\"tabtier4\" style=\"filter:brightness("+(x==activeBreakdownTab?100:75)+"%);display:"+(miscStats[x].visible()?"inline-block":"none")+"\" onClick=\"toggleActiveBreakdownTab('"+x+"');updateHTML()\">"+miscStats[x].label+"</button>").join("")))
 	toggleActiveBreakdownTab(breakdownCategories[x].active)
 }
 function toggleActiveBreakdownTab(x){

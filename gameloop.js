@@ -195,8 +195,15 @@ function updateHTML() {
 				let display = breakdownCategories[i].contents.map(x => miscStats[x].visible()).reduce((x,y)=>x||y)
 				d.display("button_SSBnav1_"+i,display?"inline-block":"none")
 			}
-			if (breakdownCategories[activeBreakdownSection].contents.length>1) for (let i of breakdownCategories[activeBreakdownSection].contents) {
-				d.display("button_SSBnav2_"+i,miscStats[i].visible()?"inline-block":"none")
+			if (breakdownCategories[activeBreakdownSection].contents.length>1) {
+				let lineBreaks = []
+				for (let i of breakdownCategories[activeBreakdownSection].contents) {
+					if (miscStats[i].newRow) lineBreaks.push(false)
+					d.display("button_SSBnav2_"+i,miscStats[i].visible()?"inline-block":"none")
+					if (miscStats[i].visible()&&lineBreaks.length>0) lineBreaks[lineBreaks.length-1] = true
+				}
+				let breakList = d.class("SSBnav2_br")
+				for (let i=0;i<lineBreaks.length;i++) breakList[i].style.display = lineBreaks[i]?"inline-block":"none"
 			}
 			let value
 			let data = miscStats[activeBreakdownTab]
@@ -529,17 +536,17 @@ function tick(time) {																																		 // The game loop, which 
 		g.dilatedTime += diff
 		time -= diff
 	}
-	for (let i=0;i<8;i++) if (g.chroma[i].gt(lumenReq(i))) {addLumens(i)}
+	for (let i=0;i<9;i++) if (g.chroma[i].gte(lumenReq(i))) {addLumens(i)}
+	if (StudyE(9)) {
+		for (let i=0;i<3;i++) {
+			if (studies[9].milestoneTimeLeft(i)<=0) {studies[9].completeMilestone(i,false)}
+			else if (g[["exoticmatter","stardust","darkmatter"][i]].gt(studies[9].milestoneReq(i))) {studies[9].completeMilestone(i,true)}
+		}
+	}
 	updateStats()
 
-	// Dilation section
-	if (g.dilationUpgradesUnlocked<4) if (stat.tickspeed.gt(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
 
-
-	// Mastery section
-
-
-	// Options & Display section
+	// Time section
 	if (stat.totalDarkAxis.gte(1000)&&!g.storySnippets.includes("Black hole")) openStory("Black hole");
 	g.timePlayed+=time;
 	o.add("truetimePlayed",stat.tickspeed.mul(time));
@@ -549,6 +556,13 @@ function tick(time) {																																		 // The game loop, which 
 	o.add("truetimeThisWormholeReset",stat.tickspeed.mul(time));
 	g.timeThisSpacetimeReset+=time;
 	o.add("truetimeThisSpacetimeReset",stat.tickspeed.mul(time));
+
+	
+	// Dilation section
+	if (g.dilationUpgradesUnlocked<4) if (stat.tickspeed.gt(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
+
+
+	// Mastery section
 
 
 	// Achievement section

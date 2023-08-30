@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.21",
+	current:"𝕍1.3.22",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -25,6 +25,7 @@ function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toSt
 function error(text) {
 	halt()
 	popup({text:"Error: "+text+".<br>Please tell alemaninc about this.<br>A copy of your savefile has also been attached.<br><a href=\""+discordInvite+"\">Discord</a>",input:btoa(localStorage.getItem("save")),buttons:[]})
+	error = function(){/* if multiple errors are thrown in a chain, only the first appears */}
 }
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
@@ -307,8 +308,6 @@ const c = deepFreeze({		 // c = "constant"
 	ee16			: Decimal.FC_NN(1,2,16),
 	ee100			: Decimal.FC_NN(1,2,100),
 });
-const axisCodes = "XYZWVUTS".split("");
-const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x]).flat()
 function percentOrMult(num,precision=2,classname) {
 	let number,sign
 	if (num.lte(c.d0_1)) {

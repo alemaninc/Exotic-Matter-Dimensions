@@ -224,13 +224,13 @@ const achievementList = {
 			get reward(){return "Masteries in the fourth row are {}% stronger (based on total "+(g.achievement[301]?"normal ":"")+"axis)";},
 			flavor:"\"Look on my matter, ye Mighty, and despair!\"<br>Nothing beside remains.",
 			effect:function(y=this.yellowValue){
-				let out = stat.totalAxis.add(c.d1).log10()
+				let out = stat.totalNormalAxis.add(c.d1).log10()
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d4,c.d5):out.mul(out.div(c.e2).add(c.d1))).fix(c.d0)
 			},
 			effectFormat:x=>x.format(2),
 			formulaText:()=>{
 				let out = "log(ΣA + 1)"
-				return (g.lumens[5].lt(c.d100)?formulaFormat.convSoftcap(out,c.d4,c.d5,stat.totalAxis.gte(9999)):(out+" + "+out+"<sup>2</sup> ÷ 100"))
+				return (g.lumens[5].lt(c.d100)?formulaFormat.convSoftcap(out,c.d4,c.d5,stat.totalNormalAxis.gte(9999)):(out+" + "+out+"<sup>2</sup> ÷ 100"))
 			},
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
@@ -391,7 +391,7 @@ const achievementList = {
 			name:"Leet",
 			description:"Have exactly 1 X axis, 3 Y axis, 3 Z axis and 7 W axis. Does not include free axes.",
 			check:function(){return g.XAxis.eq(c.d1)&&g.YAxis.eq(c.d3)&&g.ZAxis.eq(c.d3)&&g.WAxis.eq(c.d7);},
-			progress:function(){return "Not Completed!";},
+			progress:function(){return (g.XAxis.gt(c.d1)||g.YAxis.gt(c.d3)||g.ZAxis.gt(c.d3)||g.WAxis.gt(c.d7))?"Failed":achievement.percent(axisCodes.slice(0,4).map(x=>g[x+"Axis"]).sumDecimals(),N(14),0);},
 			prevReq:[104],
 			reward:"+33.7% stardust",
 			flavor:"x 4x15 Y 4X15 2 4X15 W 4x15"
@@ -675,12 +675,12 @@ const achievementList = {
 			progress:function(){return "Not Completed!";},
 			get reward(){return "+0.01% to exotic matter, mastery power, stardust and dark matter gain per second spent in the current universe (current total: "+percentOrMult(this.realEffect(),2)+")"},
 			flavor:"The urge to destroy is also a creative urge.",
-			realEffect:function() {
-				let out = g.truetimeThisWormholeReset.div(c.e4).add(c.d1);
-				if (MasteryE(101)) {out = out.pow(masteryEffect(101));}
-				else if (g.achievement[515]) {out = out.pow(masteryEffect(101).sqrt())}
-				return out;
-			}
+			effectExp:function(){
+				if (MasteryE(101)) return masteryEffect(101)
+				if (g.achievement[615]) return masteryEffect(101).pow(c.d0_5)
+				return c.d1
+			},
+			realEffect:function() {return g.truetimeThisWormholeReset.div(c.e4).add(c.d1).pow(this.effectExp());}
 		},
 		502:{
 			name:"Iron Will",
@@ -857,14 +857,13 @@ const achievementList = {
 		520:{
 			name:"Rationing",
 			description:"Destroy the universe with no more than 15 stardust upgrades (note that the axis autobuyer upgrade and Mastery unlocks always persist on reset)",
-			check:function(){return this.owned()<=15;},
-			progress:function(){return this.owned()>15?"Failed":((15-this.owned())+" upgrade"+(this.owned()==14?"":"s")+" left");},
+			check:function(){return effectiveStardustUpgrades()<=15;},
+			progress:function(){let o=effectiveStardustUpgrades();return o>15?"Failed":((15-o)+" upgrade"+(o==14?"":"s")+" left");},
 			get reward(){return (this.yellowValue.eq(c.d0)?"Square":"{}th")+" root the cost of the first level of each Stardust Upgrade"},
 			effect:function(y=this.yellowValue){return y.mul(c.d8).add(c.d2)},
 			effectFormat:x=>x.noLeadFormat(2),
 			yellowBreakpoints:[c.d200,c.e3,0],
 			flavor:"The worst advertisement for Socialism is its adherents.",
-			owned:function(){return g.stardustUpgrades.sum();}
 		},
 		521:{
 			name:"Bejouled",
@@ -917,9 +916,9 @@ const achievementList = {
 			prevReq:[525],
 			get reward(){return "+{} normal and dark S axis effect (based on total normal axis)";},
 			flavor:"",		// intentionally left blank
-			effect:function(){return Decimal.convergentSoftcap(stat.totalAxis.add(c.d1).log10().div(c.e4),c.d0_0004,c.d0_0009)},
+			effect:function(){return Decimal.convergentSoftcap(stat.totalNormalAxis.add(c.d1).log10().div(c.e4),c.d0_0004,c.d0_0009)},
 			effectFormat:x=>x.format(3),
-			formulaText:()=>formulaFormat.convSoftcap("log(ΣA + 1) ÷ 10,000",c.d0_0004,c.d0_0009,stat.totalAxis.gte(9999))
+			formulaText:()=>formulaFormat.convSoftcap("log(ΣA + 1) ÷ 10,000",c.d0_0004,c.d0_0009,stat.totalNormalAxis.gte(9999))
 		},
 		527:{
 			name:"The 4th dimension doesn't exist",
@@ -953,7 +952,7 @@ const achievementList = {
 			name:"Big Bang",
 			description:"Bulk buy 4,800 normal axis at once",
 			check:function(){return unlocked("Hawking Radiation");},	 // checked locally by axis-buying function, but no spoilers
-			progress:function(){return achievement.percent(axisCodes.map(x => maxAffordableAxis(x)).reduce((x,y)=>x.add(y)).sub(stat.totalAxis),c.d4800,0);},
+			progress:function(){return achievement.percent(axisCodes.map(x => maxAffordableAxis(x)).reduce((x,y)=>x.add(y)).sub(stat.totalNormalAxis),c.d4800,0);},
 			reward:"Dark axis cost scaling is 1% weaker",
 			flavor:"Did God create man or did man create God?"
 		}
@@ -1153,7 +1152,7 @@ const achievementList = {
 			description:"Have 5555 total dark axis",
 			check:function(){return stat.totalDarkAxis.gte(5555)},
 			progress:function(){return achievement.percent(stat.totalDarkAxis,N(5555),0)},
-			reward:"+0.5555× Y axis effect",
+			reward:"+0.5555× dark Y axis effect",
 			flavor:"You've got to pick a pocket or two!"
 		},
 		705:{
@@ -1178,8 +1177,8 @@ const achievementList = {
 		707:{
 			name:"Master of the Void",
 			get description(){return "Reach "+c.e30.format()+" mastery power without buying normal axis, having active Masteries, doing stardust resets, buying stars or stardust upgrades or having temporary research"},
-			check:function(){return g.masteryPower.gte(c.e30)&&stat.totalAxis.eq(c.d0)&&g.ach524possible&&(g.TotalStardustResets==0)&&(totalResearch.temporary==0)},
-			progress:function(){return (totalResearch.temporary>0)?"Failed due to having research":(g.stars>0)?"Failed due to having stars":(g.stardustUpgrades.sum()>6)?"Failed due to buying stardust upgrades":(g.TotalStardustResets>0)?"Failed due to stardust resetting":(!g.ach524possible)?"Failed due to having active Masteries":(stat.totalAxis.neq(c.d0))?"Failed due to having axis":achievement.percent(g.masteryPower,c.e30,1)},
+			check:function(){return g.masteryPower.gte(c.e30)&&stat.totalNormalAxis.eq(c.d0)&&g.ach524possible&&(g.TotalStardustResets==0)&&(totalResearch.temporary==0)},
+			progress:function(){return (totalResearch.temporary>0)?"Failed due to having research":(g.stars>0)?"Failed due to having stars":(effectiveStardustUpgrades()>6)?"Failed due to buying stardust upgrades":(g.TotalStardustResets>0)?"Failed due to stardust resetting":(!g.ach524possible)?"Failed due to having active Masteries":(stat.totalNormalAxis.neq(c.d0))?"Failed due to having axis":achievement.percent(g.masteryPower,c.e30,1)},
 			reward:"+{} to the base mastery power gain exponent (based on time since last mastery swap)",
 			flavor:"This is not Iron Will VI",
 			effect:function(){return stat.masteryTimer.log10()},
@@ -1191,7 +1190,7 @@ const achievementList = {
 			get req(){return betaActive?N("7.77e777"):N("8.88e888")},
 			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
 			check:function(){return achievement(501).realEffect().gte(this.req)},
-			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)},
+			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)+"<br>(Estimated real time to get: "+timeFormat(this.req.root(achievement(501).effectExp()).sub(c.d1).mul(c.e4).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))+")"},
 			reward:"Masteries 101 and 103 can be activated simultaneously",
 			flavor:"God is a philosophical black hole - the point where reason breaks down."
 		},
@@ -1201,7 +1200,7 @@ const achievementList = {
 			prevReq:[708],
 			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
 			check:function(){return achievement(501).realEffect().gte(this.req)},
-			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)},
+			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)+"<br>(Estimated real time to get: "+timeFormat(this.req.root(achievement(501).effectExp()).sub(c.d1).mul(c.e4).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))+")"},
 			get reward(){return "The "+achievement.label(501)+" reward divides dark axis costs"},
 			flavor:"God not only plays dice, but sometimes throws them where they cannot be seen."
 		},
@@ -1211,7 +1210,7 @@ const achievementList = {
 			prevReq:[709],
 			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
 			check:function(){return achievement(501).realEffect().gte(this.req)},
-			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)},
+			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)+"<br>(Estimated real time to get: "+timeFormat(this.req.root(achievement(501).effectExp()).sub(c.d1).mul(c.e4).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))+")"},
 			get reward(){return "Mastery 103 is "+(betaActive?9:4)+"× stronger"},
 			flavor:"Auschwitz will forever remain the black hole of the entire human history"
 		},
@@ -1219,10 +1218,10 @@ const achievementList = {
 			name:"Moonlight Capital",
 			description:"Generate 1 chroma per second with 40 stars or less",
 			check:function(){return g.ach711Progress<41},
-			progress:function(){return g.ach711Progress==61?"1 chroma per second has not been reached in the current Spacetime":("Best is "+g.ach711Progress+" stars")},
-			get reward(){return "Unlock Mastery 105, and Mastery 105 works with {}% efficiency "+((g.ach711Progress==0)?"":("(based on least number of stars that 1 chroma per second was generated with"+((g.ach711Progress>40)?"":(". Current best: "+g.ach711Progress))+")"))},
+			progress:function(){return g.ach711Progress===61?"1 chroma per second has not been reached in the current Spacetime":("Best is "+g.ach711Progress+" stars")},
+			get reward(){return "Unlock Mastery 105, and Mastery 105 works with {}% efficiency "+((g.ach711Progress===0)?"":("(based on least number of stars that 1 chroma per second was generated with"+((g.ach711Progress>40)?"":(". Current best: "+g.ach711Progress))+")"))},
 			flavor:"I only know two pieces; one is 'Clair de lune' and the other isn't",
-			effect:function(){return (g.ach711Progress==0)?c.d1:(g.ach711Progress>40)?c.d0:N(0.91-g.ach711Progress/50)},
+			effect:function(){return (g.ach711Progress===0)?c.d1:(g.ach711Progress>40)?c.d0:N(0.91-g.ach711Progress/50)},
 			effectFormat:x=>x.mul(c.e2).format(),
 			formulaText:()=>"(★ = 0) ? 100 : 91 - ★ × 2"
 		},
@@ -1237,7 +1236,7 @@ const achievementList = {
 		713:{
 			name:"V's Achievements",
 			description:"Have all Chromatic research active simultaneously",
-			check:function(){return this.active()==6},
+			check:function(){return this.active()===6},
 			progress:function(){return achievement.percent(N(this.active()),c.d6,0)},
 			active:function(){return [7,8,9].map(x=>g.research["r10_"+x]?2:g.research["r9_"+x]?1:0).sum()},
 			get reward(){return "Reduce the cost multiplier per Chromatic research to {}×"+(g.lumens[5].gte(c.d360)?"":" (must have 360 yellow lumens for this to take effect)")},
@@ -1265,7 +1264,7 @@ const achievementList = {
 		715:{
 			name:"Metastable",
 			description:"Complete the fourth level of Study IV with just one Stardust reset",
-			check:function(){return (g.activeStudy==4)&(g.studyCompletions[4]>2)&&(g.TotalStardustResets<2)},
+			check:function(){return (g.activeStudy===4)&(g.studyCompletions[4]>2)&&(g.TotalStardustResets<2)},
 			progress:function(){return (g.studyCompletions[4]<3)?"Complete Study IV 3 times first":(g.activeStudy!==4)?"Enter Study IV first":g.TotalStardustResets>1?"Failed":"Still possible"},
 			reward:"The third reward of Study IV is 11.1% stronger",
 			flavor:"Nature abhors a vacuum, and if I can only walk with sufficient carelessness I am sure to be filled.",
@@ -1314,8 +1313,8 @@ const achievementList = {
 			req:N(44059),
 			description:"Reach 44,059 total normal and dark axis",
 			prevReq:[719],
-			check:function(){return Decimal.add(stat.totalAxis,stat.totalDarkAxis).gte(this.req)},
-			progress:function(){return achievement.percent(Decimal.add(stat.totalAxis,stat.totalDarkAxis),this.req,0)},
+			check:function(){return stat.totalAxis.gte(this.req)},
+			progress:function(){return achievement.percent(stat.totalAxis,this.req,0)},
 			get reward(){return "Each observation increases knowledge gain by (20.20 + 8.16 × [number of galaxies])%, compounding with itself (currently: "+this.effect().format()+"×)"},
 			flavor:"\"This is a house, Do you want to live here?\" - Stat Mark, 2020",
 			effect:function(){return c.d0_0816.mul(g.galaxies).add(c.d1_202).pow(g.observations.sumDecimals())}

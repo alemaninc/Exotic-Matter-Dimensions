@@ -87,7 +87,7 @@ const research = (function(){
 	}
 	return {
 		r1_3: {
-			description:function(){return "Gain "+researchEffect(1,3).noLeadFormat(2)+"× more exotic matter per normal axis owned (current total: "+researchEffect(1,3).pow(stat.totalAxis).format(2)+"×)";},
+			description:function(){return "Gain "+researchEffect(1,3).noLeadFormat(2)+"× more exotic matter per normal axis owned (current total: "+researchEffect(1,3).pow(stat.totalNormalAxis).format(2)+"×)";},
 			adjacent_req:[],
 			condition:[], 
 			visibility:function(){return true;},
@@ -728,7 +728,7 @@ const research = (function(){
 		},
 		r9_14: {
 			adjacent_req:["r8_14"],
-			condition:[{check:function(){return g.stardust.gt(studies[4].unlockReq())},text:function(){return g.stardust.format()+" / "+studies[4].unlockReq().format()+" stardust"}},{check:function(){return g.stardustUpgrades.sum()<7},text:function(){return "with no more than "+g.stardustUpgrades.sum()+" / 6 Stardust upgrades"},joinWithPrevious:true},totalStudyReq(6)],
+			condition:[{check:function(){return g.stardust.gt(studies[4].unlockReq())},text:function(){return g.stardust.format()+" / "+studies[4].unlockReq().format()+" stardust"}},{check:function(){return effectiveStardustUpgrades()<7},text:function(){return "with no more than "+effectiveStardustUpgrades()+" / 6 Stardust upgrades"},joinWithPrevious:true},totalStudyReq(6)],
 			visibility:function(){return g.studyCompletions.sum()>5;},
 			type:"study",
 			basecost:N(1200),
@@ -948,16 +948,20 @@ const research = (function(){
 		...(()=>{
 			let out = {}
 			for (let i of [5,11]) out["r15_"+i] = {
-				numDesc:function(){return researchEffect(15,i).mul(c.e2).noLeadFormat(2)},
-				formulaDesc:function(){return "log<sup>[2]</sup>(L + 10) × "+researchPower(15,i).mul(c.e2).noLeadFormat(3)},
-				description:function(){return (i==11?"Black":"White")+" lumens boost research 13-8 even further (currently: "+numOrFormula("r15_"+i)+"% stronger, additive with 15-"+(i==11?"5":"11")+")"},
+				numDesc:function(){return percentOrMult(researchEffect(15,i))},
+				formulaDesc:function(){
+					if (researchPower(15,i).eq(c.d1)&&researchEffect(15,i).lt(c.d10)) return "log<sup>[2]</sup>(L + 10) × 100%"
+					let out = "(log<sup>[2]</sup>(L + 10) + 1)"+formulaFormat.exp(researchPower(15,i))
+					return researchEffect(15,i).gte(c.d10)?out:"100 × ("+out+" - 1)"
+				},
+				description:function(){return (i==11?"Black":"White")+" lumens boost research 13-8 even further (currently: "+numOrFormula("r15_"+i)+")"},
 				adjacent_req:(i==11)?["r13_11","r14_10","r15_9"]:["r13_5","r14_6","r15_7"],
 				condition:[{check:function(){return achievement.ownedInTier(7)>=7},text:function(){return achievement.ownedInTier(7)+" / 7 Tier 7 achievements"}}],
 				visibility:function(){return true},
 				type:"normal",
 				basecost:N(1760),
 				icon:icon.lumen(i==11?7:6)+icon.arr+icon.chroma(6),
-				effect:function(power){return g.lumens[i==11?7:6].add(c.d10).log10().log10().mul(power)}
+				effect:function(power){return g.lumens[i==11?7:6].add(c.d10).log10().log10().add(c.d1).pow(power)}
 			}
 			return out
 		})(),
@@ -1194,6 +1198,14 @@ const research = (function(){
 			basecost:N(2500),
 			icon:icon.study([[50,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.cos(Math.PI*x/180),50+35*Math.sin(Math.PI*x/180),5])])
 		},
+		r23_11: {
+			adjacent_req:["r19_11","r20_12","r21_13","r22_14","r23_15"],
+			condition:[{check:function(){return g.hawkingradiation.gt(studies[9].unlockReq())},text:function(){return g.hawkingradiation.format()+" / "+studies[9].unlockReq().format()+" hawking radiation"}}],
+			visibility:function(){return true;},
+			type:"study",
+			basecost:N(2500),
+			icon:icon.study([[15,30,4],[15,70,4],[35,50,4],[55,30,4],[55,50,4],[55,70,4],[75,30,4],[75,50,4],[85,40,4]])
+		},
 		r24_4:{
 			description:function(){return "Luck shard gain is "+numOrFormula("r24_5")+(researchEffect(24,5)?"×":"%")+" faster (based on stardust)"},
 			adjacent_req:["r24_5"],
@@ -1278,8 +1290,8 @@ function researchPower(row,col) {
 	if (row==7&&col==5&&g.achievement[616]) out = out.mul(1+totalResearch.overall()/300)
 	if (row==13&&col==8) {
 		let mult = g.achievement[718]?N(1.026):c.d1
-		if (g.research.r15_5) mult = mult.add(researchEffect(15,5))
-		if (g.research.r15_11) mult = mult.add(researchEffect(15,11))
+		if (g.research.r15_5) mult = mult.mul(researchEffect(15,5))
+		if (g.research.r15_11) mult = mult.mul(researchEffect(15,11))
 		out = out.mul(mult)
 	}
 	if (research["r"+row+"_"+col].group=="spatialsynergism") out = out.mul(stat.spatialSynergismPower)
@@ -1304,9 +1316,7 @@ function researchCost(x,owned=g.research) {
 		let mult = g.achievement[713]?achievement(713).effect():c.d4
 		output=output.mul(mult.pow(ownedResearchInGroup("light").filter(i=>researchRow(i)==researchRow(x)).length))
 	} else if (research[x].group=="lightaugment") {
-		let mult = 1
-		for (let i=2;i<=ownedResearchInGroup("lightaugment").length;i++) mult*=i
-		output=output.mul(mult)
+		output=output.mul([c.d1,c.d1,c.d2,c.d6,N(24),c.d120,N(720),N(5040),N(40320)][ownedResearchInGroup("lightaugment").length])
 	}
 	// hyper 2
 	if (x=="r9_2") output = output.mul(2**studyPower(3))
@@ -1339,8 +1349,9 @@ function updateResearchTree() {
 	d.element("researchContainer").style.height = (74*researchRowsUnlocked())+"px"
 	let visible = visibleResearch()
 	let unknown = unknownResearch()
+	let rowsUnlocked = researchRowsUnlocked()
 	for (let row=1;row<=researchRows;row++) {
-		if (row>researchRowsUnlocked()) {
+		if (row>rowsUnlocked) {
 			d.tr("researchRow"+row,false);
 		} else {
 			d.tr("researchRow"+row,true);
@@ -1370,17 +1381,16 @@ function generateResearchCanvas() {
 	researchCanvas.style.height = (researchRowsUnlocked()*74)+"px";
 	researchCanvas.height = researchRowsUnlocked()*74;
 	researchContext.clearRect(0, 0, researchCanvas.width, researchCanvas.height);
-	let count = 0;
-	for (let res of visibleResearch()) {
+	let visible = visibleResearch(), unknown = unknownResearch()
+	for (let res of unknown) {
 		if (res=="r6_9") continue;
-		for (let res2 of research[res].adjacent_req) if (visibleResearch().includes(res2)) {
+		for (let res2 of research[res].adjacent_req) if (visible.includes(res)||visible.includes(res2)) {
 			if (res2=="r6_9") continue;
 			researchContext.moveTo(researchCol(res)*74-37,researchRow(res)*74-37);
 			researchContext.lineTo(researchCol(res2)*74-37,researchRow(res2)*74-37);
-			count++;
 		}
 	}
-	researchContext.strokeStyle = "#FFFFFF";
+	researchContext.strokeStyle = "#cccccc";
 	researchContext.lineWidth = 2;
 	researchContext.stroke();
 }
@@ -1556,13 +1566,29 @@ function buySingleResearch(row,col,force=false) {
 	for (let ach of secretAchievementEvents.researchBuy) addSecretAchievement(ach);
 	return regenerateCanvas;
 }
+function asceticMaxBuyResearch(id,recursion=false) { // buys only 1 adjacent research and only if one is not already owned
+	if (g.research[id]) return
+	let [r,c] = [researchRow(id),researchCol(id)]
+	if (!availableResearch(r,c)) {
+		let adj = id
+		if (recursion) do {
+			adj = research[adj].adjacent_req.sort((a,b)=>Decimal.gt(researchCost(a),researchCost(b)))[0] // cheapest
+		} while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0))
+		asceticMaxBuyResearch(adj,true)
+	}
+	buySingleResearch(r,c)
+	if (!recursion) {
+		updateResearchTree()
+		generateResearchCanvas()
+	}
+}
 function buyResearch(row,col,max=g.buyMaxResearch) {
 	let regenerateCanvas = false
 	if (max) {
 		let toBePurchased = allParentResearch(row,col).filter(x => (!g.research[x] && research[x].type == "normal") || (x == "r"+row+"_"+col));
 		for (let i of toBePurchased) regenerateCanvas = regenerateCanvas || buySingleResearch(researchRow(i),researchCol(i));
 	} else {
-		regenerateCanvas = buySingleResearch(row,col);
+		regenerateCanvas = asceticMaxBuyResearch("r"+row+"_"+col)
 	}
 	updateResearchTree();
 	if (regenerateCanvas) generateResearchCanvas();
@@ -1641,19 +1667,9 @@ const researchLoadouts = {
 	},
 	load:function(string){
 		showingResearchLoadouts=false
-		function buy(id) { // buys only 1 adjacent research and only if one is not already owned
-			if (g.research[id]) return
-			let [r,c] = [researchRow(id),researchCol(id)]
-			if (!availableResearch(r,c)) {
-				let adj = id
-				do {
-					adj = research[adj].adjacent_req[0]
-				} while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0))
-				buy(adj)
-			}
-			buyResearch(r,c,false)
-		}
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) buy(i)
+		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) asceticMaxBuyResearch(i)
+		updateResearchTree()
+		generateResearchCanvas()
 		popup({text:"Successfully loaded!",buttons:[["Close",""]]})
 	}
 }
@@ -1665,7 +1681,7 @@ function importResearch() {
 		text:"Import your research build here:",
 		input:"",
 		buttons:[
-			["Confirm","let researchBuild = popupInput().split(',');for (let i of researchBuild) buyResearch(researchRow(i),researchCol(i))"],
+			["Confirm","let researchBuild = popupInput().split(',');for (let i of researchBuild) {asceticMaxBuyResearch(i)}"],
 			["Close",""]
 		]
 	})
