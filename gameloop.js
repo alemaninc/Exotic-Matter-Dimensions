@@ -220,6 +220,7 @@ function updateHTML() {
 					if (next.show !== undefined) display = next.show()
 					d.tr("SSBtable_row"+i,display)
 					if (display) {
+						d.element("SSBtable_row"+i).style.color=next.color??""
 						d.innerHTML("SSBtable_label"+i,next.label)
 						d.innerHTML("SSBtable_text"+i,next.text(oldvalue))
 						d.innerHTML("SSBtable_total"+i,value.format(data.precision))

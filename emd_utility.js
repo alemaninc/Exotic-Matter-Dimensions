@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.22",
+	current:"𝕍1.3.23",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -54,14 +54,11 @@ function popup(data) {
 	d.innerHTML("span_fancyPopupText",data.text)
 	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
 	d.innerHTML("span_fancyPopupButtons","")
-	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
+	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"hidePopup();"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
 }
-function popupInput() {
-	return d.element("span_fancyPopupInput").value
-}
-function functionError(functionName,argumentList) {
-	error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")
-}
+function hidePopup() {d.display('div_fancyPopupScreen','none')}
+function popupInput() {return d.element("span_fancyPopupInput").value}
+function functionError(functionName,argumentList) {error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")}
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
 function BEformat(value,precision=0) {return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");}
 const c = deepFreeze({		 // c = "constant"

@@ -1122,11 +1122,11 @@ const research = (function(){
 		})(),
 		r18_8: {
 			adjacent_req:["r17_7","r17_9","r18_6","r18_10"],
-			condition:[{check:function(){return g.masteryPower.gt(studies[8].unlockReq())},text:function(){return g.masteryPower.format()+" / "+studies[8].unlockReq().format()+" mastery power"}},{check:function(){return g.ach524possible},text:function(){return "without having active Masteries in the current Wormhole"},joinWithPrevious:true},{check:function(){return totalResearch.temporary<28},text:function(){return ", more than "+totalResearch.temporary+" / 27 temporary Research"},joinWithPrevious:true},{check:function(){return g.stardustUpgrades[4]==0},text:function(){return "or buying the fifth Stardust Upgrade"},joinWithPrevious:true}],
+			condition:[{check:function(){return g.masteryPower.gt(studies[8].unlockReq())},text:function(){return g.masteryPower.format()+" / "+studies[8].unlockReq().format()+" mastery power"}},{check:function(){return g.ach524possible},text:function(){return "without having active Masteries in the current Wormhole"},joinWithPrevious:true},{check:function(){return g.stardustUpgrades[4]==0},text:function(){return "or buying the fifth Stardust Upgrade"},joinWithPrevious:true}],
 			visibility:function(){return true;},
 			type:"study",
 			basecost:N(3000),
-			icon:icon.study([[15,15,5],[15,50,5],[15,85,5],[45,15,5],[45,85,5],[65,50,5],[85,15,5],[85,15,5]])
+			icon:icon.study([[15,25,5],[15,50,5],[15,75,5],[45,25,5],[45,75,5],[65,50,5],[85,25,5],[85,75,5]])
 		},
 		r19_7:{
 			description:function(){return "+"+researchEffect(19,7).noLeadFormat(3)+" base mastery power exponent (this is currently a "+stat.masteryTimer.pow(researchEffect(19,7)).format(2)+"× multiplier to mastery power gain)"},
@@ -1196,7 +1196,7 @@ const research = (function(){
 			visibility:function(){return true;},
 			type:"study",
 			basecost:N(2500),
-			icon:icon.study([[50,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.cos(Math.PI*x/180),50+35*Math.sin(Math.PI*x/180),5])])
+			icon:icon.study([[50,45,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
 		},
 		r23_11: {
 			adjacent_req:["r19_11","r20_12","r21_13","r22_14","r23_15"],
@@ -1445,7 +1445,7 @@ function showResearchInfo(row,col) {
 		out1.push("<span style=\"font-size:10px;color:#ff0000\">Study "+researchName+"<br>Purchasing this will unlock a Study. If you can do a Wormhole reset under special restrictions, you will gain a permanent reward.</span>");
 	}
 	if (res.group !== undefined) out1.push("<span style=\"font-size:10px;color:"+researchGroupList[res.group].color+"\">"+researchGroupList[res.group].description+"</span>")
-	out1.push(res.type=="study"?fullStudyNames[studies.filter(x=>x!==null).map(x=>x.research).indexOf(id)+1]:res.description());
+	out1.push(res.type=="study"?fullStudyNames[studies.map(x=>x.research).indexOf(id)]:res.description());
 	if (res.type == "permanent") {out2.push("Need "+researchCost(id).format()+" total Discover"+(researchCost(id).eq(c.d1)?"y":"ies"))}
 	else {out2.push("Cost: "+researchCost(id).format()+" Discover"+(researchCost(id).eq(c.d1)?"y":"ies"))}
 	if (res.condition.length>0) {
@@ -1663,14 +1663,16 @@ const researchLoadouts = {
 	save:function(){
 		showingResearchLoadouts=false
 		g.researchLoadouts[researchLoadoutSelected-1].savedResearch = nonPermanentResearchList.filter(x=>g.research[x])
-		popup({text:"Successfully saved!",buttons:[["Close","researchLoadouts.open()"]]})
+		notify("Successfully loaded!","var(--research)")
+		researchLoadouts.open()
 	},
-	load:function(string){
+	load:function(){
 		showingResearchLoadouts=false
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) asceticMaxBuyResearch(i)
+		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) {let r=researchRow(i),c=researchCol(i);availableResearch(r,c)?buySingleResearch(r,c):asceticMaxBuyResearch(i)}
 		updateResearchTree()
 		generateResearchCanvas()
-		popup({text:"Successfully loaded!",buttons:[["Close",""]]})
+		notify("Successfully loaded!","var(--research)")
+		hidePopup()
 	}
 }
 function exportResearch() {

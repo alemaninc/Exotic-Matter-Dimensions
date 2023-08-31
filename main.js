@@ -1284,7 +1284,7 @@ function darkStarEffect1(x=stat.realDarkStars) {
 }
 function darkStarEffect3SoftcapInc() {	
 	let out = c.d10
-	if (g.achievement[717]) out = out.mul(c.d1_03)
+	if (g.achievement[803]) out = out.mul(c.d1_03)
 	return out
 }
 function darkStarEffect3(x) {
@@ -1826,7 +1826,7 @@ const lightEffect = [
 			let out = x.gt(c.d50)?x.div(c.d25).sub(c.d1).ln().add(c.d2).div(c.d4):x.div(c.e2)
 			return out.gt(c.d1)?out.mul(c.d200).sub(c.d199).sqrt().add(c.d99).div(c.e2):out
 		},
-		format:function(x){return x.gte(c.d10)?x.noLeadFormat(3):x.mul(c.d100).noLeadFormat(3)},
+		format:function(x){return x.gte(c.d10)?x.noLeadFormat(3):x.mul(c.d100).noLeadFormat(x.gte(c.d1)?5:3)},
 		formula:function(){
 			if (g.lumens[3].lt(c.d50)) return "L"
 			if (lightCache.currentEffect[3].lt(c.d1)) return "ln(L ÷ 25 - 1) × 25 + 50"

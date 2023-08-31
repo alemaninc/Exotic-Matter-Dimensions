@@ -245,7 +245,8 @@ const statTemplates = {
 			func:function(prev){return Decimal.convergentSoftcap(prev,g[type+"Axis"].mul(stat.freeAxisSoftcapStart),g[type+"Axis"].mul(stat.freeAxisSoftcapLimit));},
 			text:function(){return formulaFormat.convSoftcap("<i>x</i>",g[type+"Axis"].mul(stat.freeAxisSoftcapStart),g[type+"Axis"].mul(stat.freeAxisSoftcapLimit),true)},
 			dependencies:["freeAxisSoftcapStart","freeAxisSoftcapLimit"],
-			show:function(){return Decimal.div(stat["free"+type+"Axis"],g[type+"Axis"]).gt(stat.freeAxisSoftcapStart)} // circular references are legal in show()
+			show:function(){return Decimal.div(stat["free"+type+"Axis"],g[type+"Axis"]).gt(stat.freeAxisSoftcapStart)}, // circular references are legal in show()
+			color:"var(--exoticmatter)"
 		};
 	},
 	funcOnly:function(callback){return { // for modifiers which are never shown
@@ -293,7 +294,8 @@ const statTemplates = {
 			func:function(prev){return prev.mul(stat.tickspeed);},
 			text:function(){return "× "+stat.tickspeed.format(3);},
 			dependencies:["tickspeed"],
-			show:function(){return stat.tickspeed.neq(c.d1)}
+			show:function(){return stat.tickspeed.neq(c.d1)},
+			color:"var(--time)"
 		}
 		else return {
 			label:label,
@@ -380,13 +382,15 @@ const statTemplates = {
 		label:"Study VII",
 		func:function(prev){return StudyE(7)?prev.pow(studies[7].luckEffect()):prev},
 		text:function(){return "^ "+studies[7].luckEffect().noLeadFormat(3)},
-		show:function(){return StudyE(7)}
+		show:function(){return StudyE(7)},
+		color:"#cc0000"
 	},
 	study9:{
 		label:"Study IX",
 		func:function(prev){return StudyE(9)?prev.pow(studies[9].experientiaEffect()):prev},
 		text:function(){return "^ "+studies[9].experientiaEffect().noLeadFormat(4)},
-		show:function(){return StudyE(9)}
+		show:function(){return StudyE(9)},
+		color:"#cc0000"
 	},
 	antiYAxis:{
 		label:"Anti-Y Axis",
@@ -635,7 +639,8 @@ miscStats.stardustExponent={
 			label:"Study IV",
 			func:function(prev){return StudyE(4)?[prev,c.d0_5,g.TotalStardustResets].decimalPowerTower():prev},
 			text:function(){return "^ "+c.d0_5.pow(g.TotalStardustResets).noLeadFormat(3)+" "+SSBsmall("0.5",g.TotalStardustResets,3)},
-			show:function(){return StudyE(4)&&(g.TotalStardustResets!==0)}
+			show:function(){return StudyE(4)&&(g.TotalStardustResets!==0)},
+			color:"#cc0000"
 		},
 		{
 			label:"Galaxy Penalty 2",
@@ -775,7 +780,8 @@ miscStats.darkmatterPerSec={
 			label:"Study VIII",
 			func:function(prev){return ((!StudyE(8))||prev.lt(g.masteryPower))?prev:g.masteryPower.lt(c.d1)?g.masteryPower:Decimal.div(prev.log10(),g.masteryPower.log10()).mul(c.d10).pow(g.masteryPower.log10())},
 			text:function(){return g.masteryPower.lt(c.d1)?("min(<i>x</i>, "+g.masteryPower.format(2)+")"):("(10 × log(<i>x</i>) ÷ log("+g.masteryPower.format(2)+")) ^ log("+g.masteryPower.format(2)+")")},
-			show:function(){return StudyE(8)&&prev.gt(g.masteryPower)}
+			show:function(){return StudyE(8)&&prev.gt(g.masteryPower)},
+			color:"#cc0000"
 		}
 	]
 };
@@ -885,7 +891,8 @@ miscStats.baseMasteryPowerExponent={
 			mod:function(){return secretAchievementPoints/1e16},
 			func:function(prev){return prev}, // the reward is a lie! how cruel of alemaninc.
 			text:function(){return "<span onClick=\"addSecretAchievement(9)\">+ "+this.mod().toFixed(16)+"</span>";},
-			show:function(){return secretAchievementPoints>0;}
+			show:function(){return secretAchievementPoints>0;},
+			color:"#808080"
 		}
 	]
 };
@@ -1339,7 +1346,7 @@ for (let i=0;i<axisCodes.length;i++) {
 	miscStats["realdark"+type+"Axis"] = {
 		type:"breakdown",
 		label:"Effective Dark "+type+" Axis",
-		visible:function(){return Decimal.neq(stat["realdark"+type+"Axis"],g["dark"+type+"Axis"])},
+		visible:function(){return unlocked("Antimatter")},
 		category:"Effective axis",
 		newRow:i==0,
 		precision:2,
@@ -1372,7 +1379,7 @@ for (let i=0;i<axisCodes.length;i++) {
 	miscStats["realanti"+type+"Axis"] = {
 		type:"breakdown",
 		label:"Effective Anti-"+type+" Axis",
-		visible:function(){return Decimal.neq(stat["realanti"+type+"Axis"],g["anti"+type+"Axis"])},
+		visible:function(){return unlocked("Antimatter")},
 		category:"Effective axis",
 		newRow:i==0,
 		precision:2,
@@ -1388,6 +1395,13 @@ miscStats.darkXAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("3",c.d3,true),
+		{
+			label:achievement.label(802),
+			mod:function(){return g.observations[3].div(c.e2).add(c.d1)},
+			func:function(prev){return g.achievement[802]?prev.mul(thi.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)},
+			show:function(){return g.achievement[802]}
+		},
 		statTemplates.timeResearch(16,9),
 		statTemplates.darkStarEffect2("X"), 
 		statTemplates.masteryPow(61)
@@ -1855,7 +1869,8 @@ miscStats.tickspeed={
 			label:"Temporal Paradox",
 			func:function(prev){return prev.max(c.d0);},
 			text:function(){return "No negative numbers allowed";},
-			show:function(){return stat.tickspeed.sign==-1}
+			show:function(){return stat.tickspeed.sign==-1},
+			color:"var(--time2)"
 		}
 	]
 };
@@ -2072,7 +2087,8 @@ miscStats.knowledgePerSec={
 			func:function(prev){return prev.add(c.d1).pow(stat.observationEffect).sub(c.d1);},
 			text:function(){return unbreak("(<i>x</i> + 1)")+" ^ "+stat.observationEffect.noLeadFormat(3)+" - 1"},
 			dependencies:["observationEffect"],
-			show:function(){return stat.observationEffect.neq(c.d1)}
+			show:function(){return stat.observationEffect.neq(c.d1)},
+			color:"var(--research)"
 		},
 		{
 			label:"Research 7-5",
@@ -2491,6 +2507,7 @@ miscStats.axisScalingPower={
 	value:function(){
 		let out=c.d1
 		if (g.achievement[502]) out = out.mul(c.d0_95);
+		if (g.achievement[717]) out = out.mul(c.d1.sub(achievement(717).effect().div(c.e2)))
 		return out
 	}
 }
@@ -2512,6 +2529,7 @@ miscStats.darkAxisScalingPower={
 		let out=c.d1
 		if (g.achievement[503]) out = out.mul(c.d0_95);
 		if (g.achievement[530]) out = out.mul(c.d0_99);
+		if (g.achievement[717]) out = out.mul(c.d1.sub(achievement(717).effect().div(c.e2)))
 		return out
 	}
 }

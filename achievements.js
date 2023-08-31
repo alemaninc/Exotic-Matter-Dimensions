@@ -687,7 +687,7 @@ const achievementList = {
 			get description(){return "Reach "+BEformat(c.e50)+" exotic matter without stardust-resetting or having research in the current universe";},
 			check:function(){return g.exoticmatter.gt(c.e50)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e50,1):"Failed";},
-			reward:"Dark axis cost scaling is 5% weaker",
+			reward:"Normal axis cost scaling is 5% weaker",
 			flavor:"What does not kill you makes you stronger"
 		},
 		503:{
@@ -696,7 +696,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.e130)&&stat.ironWill;},
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e130,1):"Failed";},
 			prevReq:[502],
-			reward:"Normal axis cost scaling is 5% weaker",
+			reward:"Dark axis cost scaling is 5% weaker",
 			flavor:"You're only given a little spark of madness. You mustn't lose it"
 		},
 		504:{
@@ -1283,20 +1283,15 @@ const achievementList = {
 			beta:true
 		},
 		717:{
-			name:"Base 3",
-			description:"Destroy the universe having at least 3 times more of each normal axis than the following normal axis, with at least 1 S axis.",
-			check:function(){
-				if (stat.realSAxis.eq(c.d0)) return false
-				for (let i=0;i<7;i++) if (Decimal.lt(stat["real"+axisCodes[i]+"Axis"],stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3))) return false
-				return true
-			},
-			progress:function(){
-				if (stat.realSAxis.eq(c.d0)) return "Need an S axis"
-				for (let i=6;i>=0;i--) if (Decimal.lt(g[axisCodes[i]+"Axis"],g[axisCodes[i+1]+"Axis"].mul(c.d3))) return g[axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+g[axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"
-				return "Wormhole now to get this achievement!"
-			},
-			reward:"The softcap of the 3rd dark star effect is 3% slower",
-			flavor:"\"Reaching Base 3 Needs a massive 1.00E100<br>Which takes 2 hours to do<br>Base 3 is the final base. You have to reach<br>ω^ω^ω Which takes 1 day to do.\"<br>- Stat Mark",
+			name:"Ant God's Discoveries",
+			description:"Buy a Spatial Synergism research",
+			check:function(){return g.research.r17_1||g.research.r17_15},
+			progress:function(){return "Not Completed!"},
+			get reward(){return "The normal and dark axis cost scaling is {}% weaker (based on highest-ever exotic matter)"},
+			effect:function(){return Decimal.convergentSoftcap(g.exoticmatterThisSpacetimeReset.add(c.d1).log10().div(c.e7).add(c.d1).log2(),c.d25,c.d50)},
+			effectFormat:x=>x.toFixed(3),
+			formulaText:function(){return formulaFormat.convSoftcap("log<sub>2</sub>(log(EM) ÷ "+c.e7.format()+" + 1)",c.d25,c.d50,this.effect().gt(c.d25))},
+			flavor:"This is my song and no one can take it away<br>It's been so long, but now you're here, here to stay<br>And I wonder if you know what it means to find your dreams come true",
 			beta:true
 		},
 		718:{
@@ -1336,8 +1331,25 @@ const achievementList = {
 			get description(){return "Reach "+c.d2_1e67.format()+" hawking radiation"},
 			check:function(){return g.hawkingradiation.gte(c.d2_1e67)},
 			progress:function(){return achievement.percent(g.hawkingradiation,c.d2_1e67,1)},
-			reward:"TBD",
+			reward:"+1% dark X axis effect per black hole observation",
 			flavor:"Every revolution evaporates and leaves behind only the slime of a new bureaucracy.",
+			beta:true
+		},
+		803:{
+			name:"Base 3",
+			description:"Have at least 3 times more of each normal axis than the following normal axis, with at least 1 S axis.",
+			check:function(){
+				if (stat.realSAxis.eq(c.d0)) return false
+				for (let i=0;i<7;i++) if (Decimal.lt(stat["real"+axisCodes[i]+"Axis"],stat["real"+axisCodes[i+1]+"Axis"].mul(c.d3))) return false
+				return true
+			},
+			progress:function(){
+				if (stat.realSAxis.eq(c.d0)) return "Need an S axis"
+				for (let i=6;i>=0;i--) if (Decimal.lt(g[axisCodes[i]+"Axis"],g[axisCodes[i+1]+"Axis"].mul(c.d3))) return g[axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+g[axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"
+				return "Wormhole now to get this achievement!"
+			},
+			reward:"The softcap of the 3rd dark star effect is 3% slower",
+			flavor:"\"Reaching Base 3 Needs a massive 1.00E100<br>Which takes 2 hours to do<br>Base 3 is the final base. You have to reach<br>ω^ω^ω Which takes 1 day to do.\"<br>- Stat Mark",
 			beta:true
 		}
 	}
@@ -1391,14 +1403,14 @@ const secretAchievementList = {
 	},
 	7:{
 		name:"Rasputin",
-		description:"Import \"cat\" as a savefile",
+		description:"Import \"cat\" as a promotion code",
 		check:function(){return true;}, // checked locally
 		flavor:"There was a cat that really was gone",
 		rarity:3
 	},
 	8:{
 		name:"Help Wanted",
-		description:"Import \"alemaninc\" as a savefile",
+		description:"Import \"alemaninc\" as a promotion code",
 		check:function(){return true;}, // checked locally
 		flavor:"Have you considered becoming an EMD beta tester? Well, what if I told you that <b>all players already are beta testers?</b>",
 		rarity:3
@@ -1606,13 +1618,13 @@ const secretAchievementList = {
 	}
 }
 const achievementEvents = {
-	axisBuy:[101,102,103,104,113,207,208,209,210,217,303,304,305,505,526,527,704,719],
+	axisBuy:[101,102,103,104,113,207,208,209,210,217,303,304,305,505,526,527,704,719,803],
 	gameloop:[105,106,107,108,109,110,111,112,114,115,202,203,204,205,206,211,212,213,214,215,302,306,307,308,309,310,311,312,408,409,410,411,413,502,503,504,517,529,605,606,610,615,705,706,707,708,709,710,711,714],
 	stardustUpgrade:[216,301,402,403,404,405,406,407,602],
 	starBuy:[401,519,528,612],
-	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609,715,717],
+	wormholeResetBefore:[501,506,507,508,509,510,512,516,518,520,521,522,523,524,525,608,609,715],
 	wormholeResetAfter:[604,614,802],
-	researchBuy:[601,611,613,616,712,713,801],
+	researchBuy:[601,611,613,616,712,713,717,801],
 	lumenGain:[603,607,718],
 	galaxyGain:[701,702,703],
 }
