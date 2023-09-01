@@ -108,7 +108,10 @@
 						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis  (<span id="span_affordableDarkAxis"></span>)</button><br>
 						<div id="div_darkAxisContainer" style="width:900px"></div>
 						<div>You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
-						<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')"></button></div>
+						<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')">
+							<div id="span_realDarkStars" style="position:absolute;font-size:8px;top:6px;right:6px;text-align:right;color:rgba(0,0,0,0.4);"></div>
+							<div id="span_darkStarMainText"></div>
+						</button></div>
 					</div>
 					<div id="div_darkMatterLocked">You must buy the relevant Stardust Upgrade in order to generate dark matter</div>
 				</div>
@@ -137,7 +140,7 @@
 					<div id="discoveryPanel">
 						<p style="column-count:2">You have <span id="span_knowledge" class="big _research"></span> knowledge, giving a <span id="span_knowledgeEffect" class="big _research"></span>% boost to all Masteries.<br>
 						You are gaining <span id="span_knowledgePerSec" class="big _research"></span> knowledge per second (based on mastery power and observations)<br>
-						You have <span id="span_discoveryDisplay" class="big _research"></span> Discoveries<br>
+						You have <span id="span_discoveryDisplay" class="big _research"></span> Discoveries <button id="button_projectedResearchCost" onClick="projectedResearchCost()">i</button><br>
 						Next at <span id="span_discoveryKnowledgeReq" class="big _research"></span> knowledge</p>
 						<button class="observation" id="button_observation0" onClick="buyMaxObservations(0)">Observe exotic matter<br>(Need <span id="span_observeCost0"></span> exotic matter)</button>
 						<button class="observation" id="button_observation1" onClick="buyMaxObservations(1)">Observe nebulae<br>(Need <span id="span_observeCost1"></span> stardust)</button>
@@ -182,14 +185,17 @@
 					<button class="featureConfig wormhole" onClick="openConfig['Luck']()"></button>
 					<p>You have <span class="big _luck" id="span_luckShards"></span> luck shards.<br>
 					You are generating <span class="big _luck" id="span_luckShardsPerSec"></span> luck shards per second.<br>
-					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down the normal axis cost scaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
+					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down the normal and dark axis cost superscaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
 					<table id="table_luckUpgrades"></table>
 					<div style="float:right;text-align:right;margin-right:20px;" id="div_luckSpendOptions" style="text-align:right;"></div>
+					<button style="float:right" onClick="respecLuckUpgrades()" class="starbuybutton">Respec Luck Upgrades (forces a Wormhole reset)</button>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_prismatic" style="display:none">
-					<button class="featureConfig wormhole" onClick="openConfig['Luck']()"></button>
+					<button class="featureConfig wormhole" onClick="openConfig['Prismatic']()"></button>
 				</div>
-				<div class="subtab wormhole" id="subtab_wormhole_antimatter" style="display:none"></div>
+				<div class="subtab wormhole" id="subtab_wormhole_antimatter" style="display:none">
+					<button class="featureConfig wormhole" onClick="openConfig['Antimatter']()"></button>
+				</div>
 			</div>
 			<div class="tab" id="bigtab_options" style="display:none;font-size:0;">
 				<div class="optionsNavigation globalnavigation">
@@ -266,7 +272,6 @@
 				<div class="subtab achievements" id="subtab_achievements_wormholeMilestones" style="display:none">
 					<p>Gain increasing quality of life boosts as you complete more Tier 5 achievements. You currently have <span class="big _wormhole" id="span_wormholeMilestoneT5Achievements"></span> Tier 5 achievements.</p>
 					<div id="wormholeMilestoneContainer"></div>
-					<p id="span_nextWormholeMilestone" style="color:#808080"></p>
 				</div>
 			</div>
 			<div class="tab" id="bigtab_automation" style="display:none">

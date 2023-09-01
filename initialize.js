@@ -12,6 +12,13 @@ const initSteps = [
 	}}},
 	{function:function(){for (let i of Object.keys(researchGroupList)) researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group==i).map(x=>x[0])}},
 	{function:function(){load(JSON.parse(localStorage.getItem("save")));}},
+	{function:function(){
+		for (let i=1;i<studies.length;i++) {
+			let max = 0
+			for (let j=3;j>=0;j--) if (studies[i].goal(j).neq(c.e100)) {max = j+1;break}
+			studies[0].effectiveMaxCompletions[i] = max
+		}
+	}},
 	{function:function(){HTMLGenerator()}},
 	{function:function(){
 		d.innerHTML("span_currentVersion",version.current)

@@ -228,5 +228,12 @@ const HTPtexts = [
 			"Each Galaxy you gain will dramatically increase star costs, but provide a boost in return.",
 			"If the star penalty proves to be too difficult for you, you can destroy the Galaxies you have created - however, gaining or losing Galaxies forces a Wormhole reset."
 		]
+	},
+	{
+		name:"Luck",
+		visibility:function(){return unlocked("Luck")},
+		paragraphs:[
+			"Once you complete Study VII, you will start generating luck shards"
+		]
 	}
 ].sort((a,b)=>(a.name>b.name)?1:-1)

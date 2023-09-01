@@ -272,18 +272,23 @@ function updateHTML() {
 		d.display("button_subtab_achievements_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none");
 		if (activeSubtabs.achievements=="mainAchievements") {
 			for (let i of Object.keys(achievementList)) d.innerHTML("span_perTier"+i+"AchievementReward",achievement.perAchievementReward[i].value())
+			for (let i of achievement.withMilestones) if (g.achievement[i]) {
+				d.element("div_achievement"+i).style["background-color"] = "rgba(0,"+(achievement(i).fullCompletionCheck()?"255,0":"204,204")+",0.5)"
+				d.element("div_achievement"+i).style["border-color"] = "#00"+(achievement(i).fullCompletionCheck()?"ff00":"cccc")
+			}
 		} else if (activeSubtabs.achievements=="wormholeMilestones") {
 			d.innerHTML("span_wormholeMilestoneT5Achievements",achievement.ownedInTier(5))
 			let tier5achs = achievement.ownedInTier(5)
 			let nextMilestoneNum = achievement.ownedInTier(5)==30?undefined:Object.keys(wormholeMilestoneList).filter(x=>x>tier5achs)[0]
 			let nextMilestone = achievement.ownedInTier(5)==30?undefined:wormholeMilestoneList[nextMilestoneNum]
-			for (let i in wormholeMilestoneList) {
-				d.display("div_wormholeMilestone"+i,tier5achs>=Number(i)?"inline-block":"none")
+			let allUnlocked = tier5achs===30
+ 			for (let i in wormholeMilestoneList) {
+				d.display("div_wormholeMilestone"+i,allUnlocked?"inline-block":(Number(nextMilestoneNum)>=Number(i))?"inline-block":"none")
+				d.element("div_wormholeMilestone"+i).style.filter = allUnlocked?"":(nextMilestoneNum==i)?"brightness(50%)":""
 			}
 			d.innerHTML("span_wormholeMilestone9Effect",stat.wormholeMilestone9Effect.format(4))
 			d.innerHTML("span_wormholeMilestone18Effect",timeFormat(wormholeMilestone18Effect()))
 			d.innerHTML("span_wormholeMilestone27Effect",wormholeMilestone27Effect().format(2))
-			d.innerHTML("span_nextWormholeMilestone",(achievement.ownedInTier(5)==30)?"":("At "+nextMilestoneNum+" achievements: "+(nextMilestone.text??nextMilestone.static)))
 		}
 	}
 	if (activeTab=="stardust") {
@@ -346,8 +351,9 @@ function updateHTML() {
 				if (showFormulas) darkStarButtonText += " (Need "+darkStarReqFormula()+" total dark axis)"
 				else darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(stat.maxAffordableDarkStars.max(g.darkstars)).format(0)+" dark axis)"
 				darkStarButtonText += "<br><br>"+darkStarEffectHTML();
-				d.innerHTML("span_darkstars",BEformat(g.darkstars)+((stat.realDarkStars.neq(g.darkstars))?("<span class=\"small\"> (effective "+stat.realDarkStars.noLeadFormat(3)+")</span>"):""));
-				d.innerHTML("button_darkstar",darkStarButtonText);
+				d.innerHTML("span_darkstars",BEformat(g.darkstars));
+				d.innerHTML("span_realDarkStars",Decimal.eq(g.darkstars,stat.realDarkStars)?"":("Effective: "+stat.realDarkStars.noLeadFormat(3)))
+				d.innerHTML("span_darkStarMainText",darkStarButtonText);
 				for (let i=0;i<8;i++) {
 					let type = axisCodes[i];
 					d.display("button_dark"+type+"Axis",(4+g.stardustUpgrades[0]>i)?"inline-block":"none")
@@ -432,6 +438,7 @@ function updateHTML() {
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10) × 10",stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
 			d.innerHTML("span_knowledgePerSec",stat.knowledgePerSec.format(2));
 			d.element("researchContainer").style["padding-bottom"] = d.element("discoveryPanel").clientHeight+"px"
+			d.display("button_projectedResearchCost",unlocked("Light")?"inline-block":"none")
 			for (let i=0;i<4;i++) {
 				d.element("button_observation"+i).style["background-color"] = g[observationResources[i]].gte(observationCost(i))?"rgba(179,204,255,0.75)":"rgba(128,153,204,0.75)"
 				d.innerHTML("span_observeCost"+i,BEformat(observationCost(i)));
@@ -518,13 +525,19 @@ function updateHTML() {
 					d.innerHTML("span_affordable"+type+"Runes",affordableLuckRunes(type).max(c.d1).format())
 					d.innerHTML("span_"+type+"RuneCost",luckRuneCost(type,affordableLuckRunes(type).max(c.d1)).noLeadFormat(2))
 					for (let upg of luckUpgradeList[type]) {
-						d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordableLuckUpgrades(type,upg).format()+")")
-						d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg).format())
+						let affordable = affordableLuckUpgrades(type,upg).max(c.d1)
+						d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordable.format()+")")
+						d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
 						d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?luckUpgrades[type][upg].formula():arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
 					}
 				} else {
 					d.tr("tr_"+type+"Runes",false)
 				}
+			}
+			d.display("div_luckSpendOptions",g.research.r24_5?"inline-block":"none")
+			if (g.research.r24_5) for (let p of [0,1,10,25,50,100]) {
+				d.class("button_luckShardPercentageOption"+p,"luckPercentageOption "+(g.luckShardSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
+				d.class("button_luckRunePercentageOption"+p,"luckPercentageOption "+(g.luckRuneSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
 			}
 		}
 	}
@@ -606,6 +619,8 @@ function tick(time) {																																		 // The game loop, which 
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
 	if (typeof g.activeChroma == "number") generateChroma(g.activeChroma,stat.chromaPerSec.mul(time))
+	if (unlocked("Luck")) o.add("luckShards",stat.luckShardsPerSec.mul(time))
+
 
 	// Automation section
 	if ((g.stardustUpgrades[1] > 0) && (g.axisAutobuyerOn)) axisAutobuyerProgress+=time/autobuyerMeta.interval("axis");

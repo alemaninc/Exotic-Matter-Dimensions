@@ -18,7 +18,7 @@
 	--galaxyboosts:#99ff99;
 	--galaxypenalties:#ff9999;
 	--luck:#339966;
-	--prismatic:-webkit-conic-gradient(#fcc,#ffc,#cfc,#cff,#ccf,#fcf,#fcc);
+	--prismatic:conic-gradient(#fcc,#ffc,#cfc,#cff,#ccf,#fcf,#fcc);
 	--exp:#ffcc00;
 	--antimatter:#990000;
 }
@@ -786,6 +786,18 @@ tab {
 	padding:5px;
 	z-index:3
 }
+#button_projectedResearchCost {
+	height:16px;
+	width:16px;
+	font-size:12px;
+	font-family: 'Courier New', Courier, monospace;
+	border-style:solid;
+	border-radius:8px;
+	border-color:var(--research);
+	border-width:1px;
+	color:var(--research);
+	background:rgba(0,0,0,0);
+}
 .observation {
 	width:140px;
 	height:45px;
@@ -1089,6 +1101,14 @@ tab {
 .luckPercentageOption {
 	width:50px;
 	border-radius:5px;
+}
+.luckPercentageOption.active {
+	background-color:var(--luck);
+	border-color:#063;
+}
+.luckPercentageOption.inactive {
+	background-color:#cccccc;
+	border-color:#999999;
 }
 .buyLuckRunes {
 	height:60px;

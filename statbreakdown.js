@@ -303,7 +303,8 @@ const statTemplates = {
 			func:function(prev){return prev.mul(this.mod());},
 			text:function(){return "× "+this.mod().format(3)+(stat.tickspeed.gt(c.d1)&&exp().neq(c.d1)?(" "+SSBsmall(stat.tickspeed.noLeadFormat(3),exp().noLeadFormat(4),3)):"");},
 			dependencies:["tickspeed",dependencies].flat(),
-			show:function(){return stat.tickspeed.neq(c.d1)&&exp().neq(c.d0)}
+			show:function(){return stat.tickspeed.neq(c.d1)&&exp().neq(c.d0)},
+			color:(label=="Tickspeed"?"var(--time)":"inherit")
 		}
 	},
 	ach209Reward:{
@@ -779,8 +780,8 @@ miscStats.darkmatterPerSec={
 		{
 			label:"Study VIII",
 			func:function(prev){return ((!StudyE(8))||prev.lt(g.masteryPower))?prev:g.masteryPower.lt(c.d1)?g.masteryPower:Decimal.div(prev.log10(),g.masteryPower.log10()).mul(c.d10).pow(g.masteryPower.log10())},
-			text:function(){return g.masteryPower.lt(c.d1)?("min(<i>x</i>, "+g.masteryPower.format(2)+")"):("(10 × log(<i>x</i>) ÷ log("+g.masteryPower.format(2)+")) ^ log("+g.masteryPower.format(2)+")")},
-			show:function(){return StudyE(8)&&prev.gt(g.masteryPower)},
+			text:function(){let mp=statFormat("MP",g.masteryPower.format(2),"_mastery");return g.masteryPower.lt(c.d1)?("min(<i>x</i>, "+mp+")"):("(10 × log(<i>x</i>) ÷ log("+mp+")) ^ log("+mp+")")},
+			show:function(){return StudyE(8)&&stat.darkmatterPerSec.gt(g.masteryPower)},
 			color:"#cc0000"
 		}
 	]
@@ -1018,7 +1019,15 @@ miscStats.YAxisEffect={
 			show:function(){return stat.stardustBoost2.neq(c.d1)}
 		},
 		statTemplates.masteryMul(22),
-		statTemplates.res1_8
+		statTemplates.res1_8,
+		{
+			label:achievement.label(804),
+			mod:function(){return N(1.123).pow(stat.realDarkStars.div(7))},
+			func:function(prev){return g.achievement[804]?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall("1.123","floor("+stat.realDarkStars.noLeadFormat(3)+" ÷ 7)",3)},
+			dependencies:["realDarkStars"],
+			show:function(){return g.achievement[804]}
+		}
 	]
 };
 miscStats.ZAxisEffect={
@@ -1262,7 +1271,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		show:function(){return g.research.r3_2&&researchEffect(3,2).neq(c.d0)}
 	})
 	if (i<7) out.push({
-		label:luckUpgrades.cinquefolium.axis.name,
+		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
 		func:function(prev){return prev.add(g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
 		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
 		show:function(){return g.luckUpgrades.cinquefolium.axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
@@ -1398,7 +1407,7 @@ miscStats.darkXAxisEffect={
 		{
 			label:achievement.label(802),
 			mod:function(){return g.observations[3].div(c.e2).add(c.d1)},
-			func:function(prev){return g.achievement[802]?prev.mul(thi.mod()):prev},
+			func:function(prev){return g.achievement[802]?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().noLeadFormat(2)},
 			show:function(){return g.achievement[802]}
 		},
@@ -1609,7 +1618,7 @@ miscStats.axisCostExponent={
 			show:function(){return g.achievement[801]&&MasteryE(62)}
 		},
 		{
-			label:luckUpgrades.trifolium.normalAxis.name,
+			label:"Trifolium "+luckUpgrades.trifolium.normalAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.normalAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.normalAxis.eff().format(3)},
 			show:function(){return g.luckUpgrades.trifolium.normalAxis.neq(c.d0)}
@@ -1664,7 +1673,7 @@ miscStats.darkAxisCostExponent={
 			show:function(){return stat.dimensionalEnergyEffect.neq(c.d1)}
 		},
 		{
-			label:luckUpgrades.trifolium.darkAxis.name,
+			label:"Trifolium "+luckUpgrades.trifolium.darkAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.darkAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.darkAxis.eff().format(3)},
 			show:function(){return g.luckUpgrades.trifolium.darkAxis.neq(c.d0)}
@@ -1927,7 +1936,7 @@ miscStats.HRMultiplier={
 		},
 		statTemplates.timeResearch(16,7),
 		{
-			label:luckUpgrades.cinquefolium.radiation.name,
+			label:"Cinquefolium "+luckUpgrades.cinquefolium.radiation.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.radiation.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.radiation.eff().format()},
 			show:function(){return g.luckUpgrades.cinquefolium.radiation.neq(c.d0)}
@@ -2041,6 +2050,12 @@ for (let i=0;i<axisCodes.length;i++) {
 		text:function(){return "+ "+researchEffect(3,14).noLeadFormat(2);},
 		show:function(){return g.research.r3_14&&researchEffect(3,14).neq(c.d0)}
 	})
+	if (i==1) out.push({
+		label:"Luck Shards",
+		func:function(prev){return prev.add(luckShardEffect1())},
+		text:function(){return "+ "+luckShardEffect1().format(2)},
+		show:function(){return unlocked("Luck")}
+	})
 	// multiplicative effects
 	// softcap
 	out.push(statTemplates.axisSoftcap("dark"+type))
@@ -2101,7 +2116,7 @@ miscStats.knowledgePerSec={
 		{
 			label:achievement.label(719),
 			func:function(prev){return g.achievement[719]?prev.mul(achievement(719).effect()):prev},
-			text:function(){return "× "+achievement(719).effect()+" "+SSBsmall("(1.202 + 0.0816 × "+N(g.galaxies).format()+")",g.observations.sumDecimals().format(),3)},
+			text:function(){return "× "+achievement(719).effect().format(2)+" "+SSBsmall("(1.202 + 0.0816 × "+N(g.galaxies).format()+")",g.observations.sumDecimals().format(),3)},
 			show:function(){return g.achievement[719]&&g.observations.sumDecimals().gt(c.d0)}
 		},
 		{
@@ -2203,7 +2218,7 @@ miscStats.chromaPerSec={
 			show:function(){return stat.darkWAxisEffect.neq(c.d1)&&stat.empoweredDarkWAxis.neq(c.d0)}
 		},
 		{
-			label:luckUpgrades.cinquefolium.chroma.name,
+			label:"Cinquefolium "+luckUpgrades.cinquefolium.chroma.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.chroma.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.chroma.eff()},
 			show:function(){return g.luckUpgrades.cinquefolium.chroma.neq(c.d0)}
@@ -2270,7 +2285,18 @@ miscStats.luckShardsPerSec={
 			text:function(){return studies[7].reward(3).format(3)},
 			show:function(){return true}
 		},
-		statTemplates.antiYAxis
+		...(()=>{
+			let out = []
+			for (let res of ["r24_4"]) out[res] = {
+				label:"Research "+researchOut(res),
+				func:function(prev){return g.research[res]?prev.mul(researchEffect(researchRow(res),researchCol(res))):prev},
+				text:function(){return "× "+researchEffect(researchRow(res),researchCol(res)).format(2)},
+				show:function(){return g.research[res]}
+			}
+			return out
+		})(),
+		statTemplates.antiYAxis,
+		statTemplates.tickspeed()
 	]
 }
 miscStats.prismaticPerSec={
@@ -2293,7 +2319,8 @@ miscStats.prismaticPerSec={
 			text:function(){return "× "+prismaticUpgrades.prismaticSpeed.eff().noLeadFormat(2)},
 			show:function(){return g.prismaticUpgrades.prismaticSpeed.neq(c.d0)}
 		},
-		statTemplates.antiYAxis
+		statTemplates.antiYAxis,
+		statTemplates.tickspeed()
 	]
 }
 miscStats.basePrismaticGain={
@@ -2495,7 +2522,7 @@ for (let i of empowerableDarkAxis) {
 	miscStats["unempoweredDark"+i+"Axis"]={
 		type:"combined",
 		value:function(){return stat["realdark"+i+"Axis"].sub(stat["empoweredDark"+i+"Axis"])},
-		dependencies:["real"+i+"Axis","empowered"+i+"Axis"]
+		dependencies:["real"+i+"Axis","empoweredDark"+i+"Axis"]
 	}
 }
 miscStats.axisScalingStart={
@@ -2517,7 +2544,10 @@ miscStats.axisSuperscalingStart={
 }
 miscStats.axisSuperscalingPower={
 	type:"combined",
-	value:function(){return c.d1}
+	value:function(){
+		let out=luckShardEffect2()
+		return out
+	}
 }
 miscStats.darkAxisScalingStart={
 	type:"combined",
@@ -2539,7 +2569,10 @@ miscStats.darkAxisSuperscalingStart={
 }
 miscStats.darkAxisSuperscalingPower={
 	type:"combined",
-	value:function(){return c.d1}
+	value:function(){
+		let out=luckShardEffect2()
+		return out
+	}
 }
 miscStats.antiAxisScalingStart={
 	type:"combined",
@@ -2788,7 +2821,7 @@ miscStats.wormholeDarkAxisReq={type:"combined",value:function(){
 miscStats.ironWill={type:"combined",value:function(){return g.StardustResets==0&&g.TotalStardustResets==0&&totalResearch.temporary==0}}
 miscStats.wormholeMilestone9Effect={type:"combined",value:function(){return wormholeMilestone9Effect()}}
 miscStats.knowledgeEffect={type:"combined",value:function(){return Decimal.convergentSoftcap(g.knowledge.add(c.d10).log10().log10().mul(c.d10),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap)},dependencies:["knowledgeEffectCap"]}
-miscStats.knowledgeEffectCap={type:"combined",value:function(){return c.d50.add(studies[8].reward(1))}}
+miscStats.knowledgeEffectCap={type:"combined",value:function(){return studies[8].reward(1)}}
 miscStats.extraDiscoveries_add={type:"combined",value:function(){
 	let out = c.d0
 	if (g.achievement[604]) out = out.add(achievement(604).effValue())
@@ -2801,7 +2834,13 @@ miscStats.extraDiscoveries_mul={type:"combined",value:function(){
 	return out
 }}
 miscStats.chromaGainBase={type:"combined",value:function(){return g.achievement[607]?achievement(607).effect():c.d3}}
-miscStats.spatialSynergismPower={type:"combined",value:function(){return luckUpgrades.quatrefolium.synergism.eff()}}
+miscStats.spatialSynergismPower={
+	type:"combined",
+	value:function(){return [
+		luckUpgrades.quatrefolium.synergism.eff(),
+		studies[9].reward(3).div(c.e2).add(c.d1)
+	].productDecimals()}
+}
 
 const statGenerations = {}
 const stat = {}

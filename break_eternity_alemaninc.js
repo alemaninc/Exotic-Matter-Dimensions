@@ -804,7 +804,7 @@
 			if (Decimal.lt(value,start)) return N(value);
 			value=value.layerplus(-layer);
 			start=start.layerplus(-layer);
-			return Decimal.pow(start,value.mul(power.add(1)).sub(start).log(start).root(power.add(1))).layerplus(layer);
+			return Decimal.pow(start,value.mul(power.add(1)).sub(start.mul(power)).log(start).root(power.add(1))).layerplus(layer);
 		};
 
 		Decimal.logarithmicSoftcap = function (value,start,power,layer=0) {
