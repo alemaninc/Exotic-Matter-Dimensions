@@ -67,7 +67,10 @@ const initSteps = [
 		gameloop = window.setInterval(auto_tick,50);
 		fineGrainLoop = window.setInterval(fineGrainTick,10);
 	}},
-	{function:function(){d.element("span_footerDiscord").href = discordInvite}},
+	{function:function(){
+		d.element("span_footerDiscord").href = discordInvite
+		d.display("span_discordPoll",Date.now()<1694293080000?"inline-block":"none")
+	}},
 	{function:function(){
 		d.innerHTML("newsline",randomNewsItem())
 		openTopLevelDiv("game");

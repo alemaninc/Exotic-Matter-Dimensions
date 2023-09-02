@@ -784,7 +784,7 @@ const research = (function(){
 			let out = []
 			for (let i=0;i<3;i++) out.push(["r10_"+(i+7),{
 				numDesc:function(){return researchEffect(10,i+7).format(2)},
-				formulaDesc:function(){return "((((log(C ÷ 1,000 + 1)<sup>3</sup>) ÷ ((log<sub>"+lightData[i].baseScale.toString()+"</sub>(C ÷ 1,000 + 1) + 0.5)<sup>2</sup> ÷ 2 + 0.875)) + 1)<sup>2</sup>"+formulaFormat.add(g.achievement[613]?c.d3:c.d0)+")"+formulaFormat.exp(researchPower(10,i+7))},
+				formulaDesc:function(){return "((((log(C ÷ 1,000 + 1)<sup>3</sup>) ÷ ((log<sub>"+lightData[i].baseScale.toString()+"</sub>(C ÷ 1,000 + 1) + 0.5)<sup>2</sup> ÷ 2 + 0.875)) + 1)<sup>2</sup>"+formulaFormat.add(g.achievement[613]?achievement(613).effect():c.d0)+")"+formulaFormat.exp(researchPower(10,i+7))},
 				description:function(){return "Chroma increases "+numOrFormula("r10_"+(i+7))+"× faster (based on "+lightNames[i+3]+" chroma)"},
 				adjacent_req:["r9_"+(i+7)],
 				condition:[{check:function(){return g.chroma[i+3].gt(c.e9)},text:function(){return g.chroma[i+3].format()+" / "+BEformat(c.e9)+" "+lightNames[i+3]+" chroma"}},unconnectedResearchReq("r10_5")],
@@ -857,7 +857,7 @@ const research = (function(){
 		r13_5:{
 			numDesc:function(){return researchEffect(13,5).noLeadFormat(3)},
 			formulaDesc:function(){return "(log(L + 1)<sup>2</sup> ÷ 100 + 1)"+expFormat(researchPower(13,5).neg())},
-			description:function(){return "Yellow light weakens the second galaxy penalty (currently: ^"+numOrFormula("r13_5")+")"},
+			description:function(){return "Yellow lumens weaken the second galaxy penalty (currently: ^"+numOrFormula("r13_5")+")"},
 			adjacent_req:["r13_7"],
 			condition:[lightAugmentReq(5)],
 			visibility:function(){return true},

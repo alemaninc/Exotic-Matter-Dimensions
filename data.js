@@ -40,7 +40,7 @@ const studies = [
 	{
 		name:"Big Bang Theory",
 		unlockReq:function(){return N(["e7e3","e1e4","e12500","e4e4"][studyPower(2)])},
-		description:function() {return "Star costs increase much faster and stars must be purchased in a different order, but each unspent star acts as a free dark star";},
+		description:function() {return "Star costs increase much faster and stars must be purchased in a different order, but each unspent star acts as a free dark star.";},
 		research:"r5_9",
 		goal:function(comp=studyPower(2)) {return [c.d800,c.d950,c.d1100,N(2100)][comp];},
 		reward:function(num,comp=g.studyCompletions[2]) {
@@ -125,7 +125,7 @@ const studies = [
 	},
 	{
 		name:"Event Horizon",
-		unlockReq:function(){return [N(500),N(1000),N(2000),N(4000)][studyPower(6)]},
+		unlockReq:function(){return [N(500),N(1000),c.e100,c.e100][studyPower(6)]},
 		effect:function(p=stat.totalDarkAxis.div(studies[6].goal()).min(c.d1)){return N(27+3*studyPower(6)).pow(c.d1.sub(p)).pow10()},
 		description:function(){return "The game runs "+this.effect(c.d0).format()+"× slower. However, as you get closer to the goal of the Study this penalty gradually reduces up to a minimum of 10×."},
 		research:"r16_8",
@@ -139,7 +139,7 @@ const studies = [
 		reward_desc:function(){return [
 			"The effect of tickspeed on chroma gain is raised to the power of "+studyRewardHTML(6,1,4),
 			"Tickspeed<sup>"+studyRewardHTML(6,2,3)+"</sup> affects the base gain of knowledge",
-			"Research 8-2 is "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned"
+			"Research 8-2 is "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned (currently: "+percentOrMult(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))+")"
 		]},
 	},
 	{

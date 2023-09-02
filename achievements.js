@@ -1368,10 +1368,6 @@ const achievementList = {
 			reward:"+12.3% Y axis effect per 7 dark stars",
 			flavor:"Read the stars and see my scars",
 			beta:true
-		},
-		805:{
-			name:"Stone Age",
-			description:"Complete the fourth level of Study V without spending any Discoveries",
 		}
 	}
 };
@@ -1454,7 +1450,7 @@ const secretAchievementList = {
 	11:{
 		name:"You do know how these work, right?",
 		description:"Respec Research without having any research.",
-		check:function(){return g.researchRespec&&(!Object.values(g.research).includes(true));},
+		check:function(){return g.researchRespec&&(!nonPermanentResearchList.map(x=>g.research[x]).includes(true));},
 		flavor:"<a style=\"color:#ffffff\" href=\"https://books.google.co.uk/books/about/Quantum_Physics_For_Dummies.html?id=pRRq8vCFvzEC&source=kp_book_description&redir_esc=y\">Studies will help</a>",
 		rarity:3
 	},

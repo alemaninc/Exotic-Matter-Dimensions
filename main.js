@@ -1563,7 +1563,7 @@ function wormholeReset() {
 			g.studyCompletions[g.activeStudy]=Math.min(g.studyCompletions[g.activeStudy]+1,4);
 			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(x!==studies[g.activeStudy].research))
 			respecResearch();
-			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {buySingleResearch(researchRow(i),researchCol(i))}}
+			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {asceticMaxBuyResearch(i)}}
 			generateResearchCanvas();
 		}
 		g.activeStudy=0;
@@ -1756,10 +1756,13 @@ function generateChroma(x,amount) {
 		let spendFactor = lightComponents(x).map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div(amount.mul(chromaCostFactor(x))).min(c.d1)
 		if (spendFactor.eq(c.d0)) {
 			if (g.haltChromaIfLacking) {g.activeChroma=null}
-			else {for (let i=0;i<9;i++) if (g.chroma[i].eq(c.d0)) {
-				g.activeChroma=i
-				return
-			}}
+			else {
+				for (let i of lightComponents[g.activeChroma]) if (g.chroma[i].eq(c.d0)) {
+					g.activeChroma=i
+					return
+				}
+				g.activeChroma=0
+			}
 		} else {
 			for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub([amount,chromaCostFactor(x),spendFactor].productDecimals()).fix(c.d0)
 			g.chroma[x] = g.chroma[x].add(amount.mul(spendFactor)).fix(c.d0)
