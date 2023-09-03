@@ -1757,7 +1757,7 @@ function generateChroma(x,amount) {
 		if (spendFactor.eq(c.d0)) {
 			if (g.haltChromaIfLacking) {g.activeChroma=null}
 			else {
-				for (let i of lightComponents[g.activeChroma]) if (g.chroma[i].eq(c.d0)) {
+				for (let i of lightComponents(g.activeChroma)??[]) if (g.chroma[i].eq(c.d0)) {
 					g.activeChroma=i
 					return
 				}
