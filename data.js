@@ -106,7 +106,7 @@ const studies = [
 	},
 	{
 		name:"Scientific Illiteracy",
-		unlockReq:function(){return [N("e4000"),N("e5880"),betaActive?N("e15625"):c.e100,c.ee100][studyPower(5)]},
+		unlockReq:function(){return [N("e4000"),N("e5880"),betaActive?N("e15625"):c.ee100,c.ee100][studyPower(5)]},
 		difficultyConstant:function(){return [c.d32,N(64),N(128),N(256)][studyPower(5)]},
 		description:function(){return "Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."},
 		research:"r2_8",

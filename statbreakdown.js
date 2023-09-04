@@ -2056,6 +2056,12 @@ for (let i=0;i<axisCodes.length;i++) {
 		text:function(){return "+ "+luckShardEffect1().format(2)},
 		show:function(){return unlocked("Luck")}
 	})
+	if (i<7) out.push({
+		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
+		func:function(prev){return prev.add(g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
+		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
+		show:function(){return g.luckUpgrades.cinquefolium.axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+	})
 	// multiplicative effects
 	// softcap
 	out.push(statTemplates.axisSoftcap("dark"+type))

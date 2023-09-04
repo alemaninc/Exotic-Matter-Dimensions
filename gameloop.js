@@ -597,7 +597,7 @@ function tick(time) {																																		 // The game loop, which 
 
 
 	// Study section
-	if (g.activeStudy !== 0) if (!g.research[studies[g.activeStudy].research]) {
+	if (g.activeStudy !== 0) if ((!g.research[studies[g.activeStudy].research]) || ((g.studyCompletions[g.activeStudy]>=studies[0].effectiveMaxCompletions[g.activeStudy])&&(g.studyCompletions[g.activeStudy]<4))) {
 		popup({text:"You have been forcefully removed from Study "+g.activeStudy+" due to the presence of a bug. Sorry!",buttons:[["Close",""]]})
 		g.activeStudy=0
 	}
