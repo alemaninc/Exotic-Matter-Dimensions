@@ -1,6 +1,6 @@
 "use strict";
 const basesave = {
-	exoticmatter:c.d0,
+	exoticmatter:c.d100,
 	exoticmatterThisStardustReset:c.d0,
 	exoticmatterThisWormholeReset:c.d0,
 	exoticmatterThisSpacetimeReset:c.d0,
