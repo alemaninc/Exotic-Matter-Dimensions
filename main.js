@@ -1,6 +1,6 @@
 "use strict";
 const basesave = {
-	exoticmatter:c.d100,
+	exoticmatter:c.d0,
 	exoticmatterThisStardustReset:c.d0,
 	exoticmatterThisWormholeReset:c.d0,
 	exoticmatterThisSpacetimeReset:c.d0,
@@ -1052,7 +1052,7 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	if (g.research.r7_8) scaling_power = scaling_power.mul(researchEffect(7,8));
 	let scaling_start = g.achievement[703]?achievement(703).effect():c.d25
 	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(effx,scaling_start,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(effx.gte(c.d10)?c.d1_5:c.d1);
-	cost = cost.mul(galaxyEffects[3].penalty.value(gal).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
+	cost = cost.mul(galaxyEffects[3].penalty.value(gal)).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
 	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	// hyper-3 cost reductions
