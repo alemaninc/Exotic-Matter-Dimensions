@@ -37,7 +37,7 @@ const basesave = {
 	fastestSpacetimeReset:c.d9e15,
 	storySnippets:[],
 	timeLeft:0,
-	dilatedTime:5000e9990,
+	dilatedTime:0,
 	dilationPower:1,
 	dilationUpgrades:[null,0,0,0,0],
 	dilationUpgradesUnlocked:0,
