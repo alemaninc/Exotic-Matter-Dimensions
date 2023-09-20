@@ -2914,6 +2914,12 @@ for (var i = 0; i < 10; ++i)
 			return N(safeguard.slog(x)).slog_coefficient(x);
 		};
 
+		Decimal.prototype.aps = function(p) {
+			if (p.eq(1)) return this
+			if (this.mul(p).lt(1e-10)) return this.mul(p)
+			return this.add(1).pow(p).sub(1)
+		}
+
 		Decimal.prototype.format = function(precision) {
 			return BEformat(this,precision);
 		};
@@ -3047,8 +3053,8 @@ const notations = {
 		return "E"+((x.mag>=1e10)?Math.log10(Math.log10(x.mag)):Math.log10(x.mag)).toFixed(3)+"#"+height.toLocaleString("en-US")
 	},
 	"Infinity":function(x,sub="Infinity"){
-		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
-		let infinities = x.log(constant.d2).div(constant.d1024)
+		if (x.gte("eeeee6")) return (Math.log2(x.quad_slog(constant.d10).toNumber())/1024).toFixed(6)+"Ω"
+		let infinities = x.log2().div(constant.d1024)
 		if (infinities.lt(constant.d1)) return infinities.toFixed(6)+"∞"
 		if (infinities.lt(constant.e6)) return infinities.toPrecision(6)+"∞"
 		return notations[sub](infinities,sub)+"∞"

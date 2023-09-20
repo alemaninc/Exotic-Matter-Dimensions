@@ -61,6 +61,10 @@ const initSteps = [
 	{function:function(){for (let i=0;i<newsList.length;i++) if (typeof newsList[i].text!=="string") error("News item #"+i+" is undefined")}},
 	{function:function(){d.display("foo","none")}},
 	{function:function(){
+		openTab(g.activeTab)
+		for (let i of Object.keys(g.activeSubtabs)) openSubTab(i,g.activeSubtabs[i])
+	}},
+	{function:function(){
 		updateHTML();
 		fineGrainTick();
 		if (gameHalted) return
@@ -80,8 +84,7 @@ const initSteps = [
 	{function:function(){
 		unlockFeature("Light",g.research.r8_8)
 		unlockFeature("Galaxies",g.research.r12_8)
-		unlockFeature("Prismatic",g.research.r20_8)
-	}}
+	},onImport:true}
 ]
 var loadProgress = 0;
 var initTick = Date.now();

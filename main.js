@@ -24,8 +24,11 @@ const basesave = {
 	timePlayed:0,
 	truetimePlayed:c.d0,
 	featuresUnlocked:[],
+	featureUnlockTimes:{},
 	colortheme:"Default",
 	footerDisplay:"All tabs",
+	activeTab:"main",
+	activeSubtabs:Object.fromEntries(Object.keys(subtabList).map(x=>[x,subtabList[x][0]])),
 	timeThisStardustReset:0,
 	truetimeThisStardustReset:c.d0,
 	fastestStardustReset:c.d9e15,
@@ -53,6 +56,7 @@ const basesave = {
 		stardust:true,
 		darkmatter:false,
 		hr:true,
+		antimatter:false
 	},
 	glowOptions:{
 		buyAxis:true,
@@ -69,6 +73,9 @@ const basesave = {
 		createGalaxy:false,
 		buyLuckRune:true,
 		buyLuckUpgrade:false,
+		buyPrismaticUpgrade:true,
+		buyRefundablePrismaticUpgrade:false,
+		buyAntiAxis:true
 	},
 	confirmations:{
 		toggleMastery:false,
@@ -188,12 +195,12 @@ const basesave = {
 	luckShardSpendFactor:c.d0,
 	luckRuneSpendFactor:c.d0,
 	prismatic:c.d0,
-	prismaticUpgrades:Object.fromEntries(Object.keys(prismaticUpgrades).map(x=>[x,c.d0])),
+	prismaticUpgrades:Object.fromEntries(prismaticUpgradeList.map(x=>[x,c.d0])),
 	prismaticSpendFactor:c.d0,
 	study9:{
 		xp:c.d0,
-		milestoneCompletions:[0,0,0],
-		milestoneStartTimes:Array(3)
+		start:0,
+		resets:0
 	},
 	antimatter:c.d0,
 	antiXAxis:c.d0,
@@ -204,9 +211,12 @@ const basesave = {
 	antiUAxis:c.d0,
 	antiTAxis:c.d0,
 	antiSAxis:c.d0,
+	study10Options:Array(3)
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = ["Y"]
+const empowerableDarkAxis = ["W"];
+const empowerableAntiAxis = ["V"];
 var timeSinceGameOpened = 0;								 // "halted" achievements were being awarded randomly on load
 var totalAchievements = 0;
 var totalSecretAchievements = 0;
@@ -357,7 +367,6 @@ function stardustUpgradeCost(x,y=g.stardustUpgrades[x-1]) {
 	if (y>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
 	let cost = baseStardustUpgradeCosts[x-1][y];
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
-	if (StudyE(9)) cost = cost.pow(studies[9].experientiaEffect())
 	if (g.achievement[602]&&x==3) cost = cost.pow(c.d0_9)
 	if (g.achievement[520]&&y==0) cost = cost.root(achievement(520).effect());
 	if (g.achievement[612]) cost = cost.pow(achievement(612).effect()**g.stars)
@@ -373,9 +382,12 @@ function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.
 	if (completions == studies[0].effectiveMaxCompletions[studyNum]) return format(N(studies[studyNum].reward(rewardNum,completions)));
 	return arrowJoin(format(N(studies[studyNum].reward(rewardNum,completions))),format(N(studies[studyNum].reward(rewardNum,completions+1))));
 }
-function studyPower(x){return Math.min(g.studyCompletions[x],3)}
+function studyPower(x){
+	if (x===10) for (let i=3;i>=0;i--) if (g.research[studies[10].research[i]]) return i // allow retrying previous triads
+	return Math.min(g.studyCompletions[x],3)
+}
 function studyRewardBoost(studyNum,rewardNum) {
-	if (rewardNum==2) return c.d1
+	if (rewardNum==2) return studies[10].reward(4)
 	if (rewardNum==3) {
 		let out = lightCache.currentEffect[0]
 		let studyAchievements = [null,608,609,705,715]
@@ -428,10 +440,12 @@ function incrementExoticMatter(x) {
 	x=x.fix(0);
 	for (let i of exoticmatterVariables) o.add(i,x)
 }
+const timedFeatures = ["Antimatter"]
 function unlockFeature(x,condition) {
 	if (!g.featuresUnlocked.includes(x)&&condition) {
 		g.featuresUnlocked.push(x);
 		openStory(x);
+		if (timedFeatures.includes(x)) g.featureUnlockTimes[x] = g.timePlayed
 	}
 }
 function unlocked(x) {
@@ -448,7 +462,7 @@ const storyEntries = {
 	get ["Galaxies"](){return "<p>The dark matter has made your stars unstable, and now if you have more than 60 in close proximity to each other they'll all collapse.</p><p>You'll need to practice working with stronger, smaller <span class=\"_galaxies\">galaxies</span> to succeed.</p>"},
 	get ["Luck"](){return "<p>In the beginning it was so easy to create <span class=\"_exoticmatter\">space</span>, to form <span class=\"_stars\">stars</span> and <span class=\"_research\">discover</span> the universe.</p><p>What has happened now? What was once enough exotic matter to create "+g.totalexoticmatter.mul(realAxisCostDivisor("X")).root(realAxisCostExponent("X")).div(c.d5).log(c.d6).floor().add(c.d1).format()+" metres of X axis now only provides "+maxAffordableAxis("X").format()+"; new observations come rarely, if at all. A galaxy of 61 stars will now never come to be, no matter how long you wait.</p><p>It's almost as if an <span class=\"blue\">invisible blue hand</span> is putting 'diminishing returns for balance' in your way to annoy you. But perhaps, if <span class=\"_luck\">luck</span> is not on your side, you can create your own?</p>"},
 	get ["Prismatic"](){function c(x){return "<span class=\""+x+"\">"+x+"</span>"};return "<p>The exotic matter is now "+c("green")+"; hawking radiation is "+c("blue")+"; the stars are "+c("white")+" specks in the distance surrounded by nebulae of "+c("cyan")+" research papers. At the far end of the universe are dark "+c("red")+" rifts to the "+numword(visibleStudies().length)+" Study dimensions you've discovered, all against a backdrop of "+c("magenta")+" and "+c("yellow")+" crafted from the essence of pure achievement.</p><p>This is such an eyesore! It looks almost like something out of a coloring book... you feel determined to blend the <span class=\"_prismatic\">colors</span> together to create a beautiful universe, though you don't see how that will help you.</p>"},
-	get ["Antimatter"](){"<p></p>"}
+	get ["Antimatter"](){return "<p>The universe is perfectly balanced, the exotic matter pulling everything apart and the dark matter holding it together.</p><p>How long has it been this way? A year? Ten years? "+timeFormat(g.truetimePlayed)+"?</p><p>For as long as you remember, you've been drifting through this void of sixteen dimensions, creating space and filling it with stars and galaxies... but what is it all for? Is there something watching you? Are you a part of some callous celestial experiment?</p><p>Surely that can't be true... either way, you resolve to tear your way out of this place and you won't let anything stop you. Perhaps disrupting the balance with a <span class=\"_antimatter\">new substance</span> is a good start?</p>"}
 }
 function openStory(x) {
 	if (storyEntries[x]!==undefined) {
@@ -470,7 +484,7 @@ const axisEffectHTML = {
 	Y:"Increase X axis effect by +{e}×",
 	YEmpowered:"Empowered Y axis multiply the X axis effect instead of adding to it",
 	darkY:"All dark axis are {e}× cheaper",
-	antiY:"Luck shard and prismatic gain is multiplied by {e}",
+	antiY:"Luck shard, prismatic and antimatter gain is multiplied by {e}",
 	Z:"Exotic matter gain is multiplied by {e} (based on exotic matter)",
 	darkZ:"Dark matter gain is multiplied by {e} (based on exotic matter)",
 	antiZ:"Multiply the anti-X axis effect by {e}",
@@ -481,6 +495,7 @@ const axisEffectHTML = {
 	V:"All normal axis are {e}× cheaper",
 	darkV:"Normal V axis is {e}% stronger",
 	antiV:"Dark Y axis is {e}% stronger",
+	antiVEmpowered:"Empowered Anti-V axis boost the anti-T axis by the same amount they boost the dark V axis",
 	U:"Stardust gain is multiplied by {e} (based on unspent stardust)",
 	darkU:"Dark matter gain is multiplied by {e} per dark axis owned<br><span class=\"small\">(currently: {e2}×)</span>",
 	antiU:"The anti-Z axis effect is multiplied by {e} per anti-axis owned<br><span class=\"small\">(currently: {e2}×)</span>",
@@ -863,6 +878,7 @@ function updateMasteryLayout() {
 	for (let i of document.getElementsByClassName("masteryActive"+g.masteryContainerStyle)) i.style.display=g.masteryActivityShown?"inline-block":"none"
 }
 function stardustExoticMatterReqText() {
+	if (stat.stardustExponent.eq(c.d0)) return "(Need Infinite exotic matter)"
 	if (stat.pendingstardust.lte(g.stardust)||g.exoticmatter.lt(stat.stardustExoticMatterReq)) return "(Need "+BEformat(g.stardust.floor().add(c.d1).root(stat.stardustExponent).div(stat.stardustMultiplier).dilate(studies[4].reward(1).recip()).max(c.d10).mul(stat.stardustExoticMatterReq.div(c.d10)))+" exotic matter)";
 	else if (stat.pendingstardust.lt(c.e3)) return "(Next at "+BEformat(stat.pendingstardust.add(c.d1).floor().root(stat.stardustExponent).div(stat.stardustMultiplier).dilate(c.d2).mul(stat.stardustExoticMatterReq.div(c.d10)))+" exotic matter)";
 	return "";
@@ -923,13 +939,16 @@ function stardustReset() {
 }
 function stardustBoostBoost(x) {
 	let out = c.d1;
-	if (x==1) if (g.achievement[507]) out=out.mul(achievement(507).effect().div(c.e2).add(c.d1));
-	if (x==4) if (g.achievement[508]) out=out.mul(achievement(508).effect().div(c.e2).add(c.d1));
-	if (x==7) {
+	if (x===1) if (g.achievement[507]) out=out.mul(achievement(507).effect().div(c.e2).add(c.d1));
+	if (x===4) {
+		if (g.achievement[508]) out=out.mul(achievement(508).effect().div(c.e2).add(c.d1));
+		if (g.research.r10_14) out=out.mul(researchEffect(10,14))
+	}
+	if (x===7) {
 		if (g.achievement[509]) out=out.mul(achievement(509).effect().div(c.e2).add(c.d1));
 		if (g.research.r5_14) out=out.mul(Decimal.pow(stat.neuralEnergyEffect,researchEffect(5,14)))
 	}
-	if (x%3==0) if (g.research.r13_11) out = out.mul(researchEffect(13,11))
+	if (x%3===0) if (g.research.r13_11) out = out.mul(researchEffect(13,11))
 	return out;
 }
 const stardustBoostText = [
@@ -944,22 +963,16 @@ const stardustBoostText = [
 	"V Axis is {v}{t} stronger",
 	"Dark stars are {v}× cheaper",
 	"Increase the exponent of the Z axis effect formula by {v}",
-	"Row 10 Masteries are {v}% stronger",
+	"Row 10 Masteries are {v}{t} stronger",
 	"Increase the exponent of the hawking radiation gain formula by {v}"
 ]
 function formatStardustBoost(x){
 	let val = stat["stardustBoost"+x]
-	if ([2,3,6,8].includes(x)) return (val.gte(c.d10)?val:val.sub(c.d1).mul(c.e2)).noLeadFormat(2)
+	if ([2,3,6,8,11].includes(x)) return (val.gte(c.d10)?val:val.sub(c.d1).mul(c.e2)).noLeadFormat(2)
 	return val.noLeadFormat([7,10,12].includes(x)?4:[4,9].includes(x)?3:2)
 }
 const showStardustBoostFormula = {
-	1:function(){
-		let mult1 = "(1 + S ÷ 10)<sup>0.5</sup>"
-		let mult2 = g.stardust.gt("ee6.6666666666")?("Ξ<sup>[2]</sup>"+formulaFormat.convSoftcap("log<sup>[2]</sup>(S + 1) × 1.5 - 1",c.d9,c.d12,true)):"10<sup>log(S + 1)<sup>1.5</sup> × 0.1</sup>"
-		let base = stardustBoostBoost(1).eq(c.d1)?(mult1+" × "+mult2):("("+mult1+" × "+mult2+")<sup>"+stardustBoostBoost(1).noLeadFormat(3))
-		if (stat.stardustBoost1.lt(c.ee12)) return base
-		return "Ξ<sup>[2]</sup>"+formulaFormat.convSoftcap("log<sup>[2]</sup>("+base+")",c.d12,c.d15,true)
-	},
+	1:function(){return "((1 + S ÷ 10)<sup>0.5</sup> × 10<sup>log(S + 1)<sup>1.5</sup> × 0.1</sup>)"+formulaFormat.exp(stardustBoostBoost(1))},
 	2:function(){return "(1 + log(S + 1) × 0.075)"+formulaFormat.exp(stardustBoostBoost(2))},
 	3:function(){return "("+formulaFormat.linSoftcap("log(S ÷ "+c.e7.format()+" + 1)<sup>0.7</sup> ÷ 2",c.d10,c.d1,g.stardust.gt(1.6324e79))+" + 1)"+formulaFormat.exp(stardustBoostBoost(3))},
 	4:function(){return "(log(S<sup>0.05</sup> + 10)<sup>1 ÷ 3</sup> - 1)"+formulaFormat.mult(stardustBoostBoost(4))},
@@ -1041,7 +1054,7 @@ function exportStarAllocatorBuild() {
 	})
 }
 function starCost(x=g.stars,gal=g.galaxies) {
-	if (x>=60) return c.maxvalue
+	if (x>=starCap()) return c.maxvalue
 	x=N(x)
 	let effx=x
 	if (g.research.r8_14) effx = effx.sub(researchEffect(8,14).toNumber());
@@ -1050,13 +1063,13 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	let scaling_power = c.d2_5;
 	scaling_power = scaling_power.mul(c.d1.sub(studies[2].reward(1).div(c.e2)));
 	if (g.research.r7_8) scaling_power = scaling_power.mul(researchEffect(7,8));
+	if ((x>40)&&(gal>=galaxyEffects[4].req)) scaling_power = scaling_power.mul(galaxyEffects[4].penalty.value(gal).mul(x-40).add(c.d1))
 	let scaling_start = g.achievement[703]?achievement(703).effect():c.d25
 	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(effx,scaling_start,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(effx.gte(c.d10)?c.d1_5:c.d1);
 	cost = cost.mul(galaxyEffects[3].penalty.value(gal).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
 	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	// hyper-3 cost reductions
-	if (StudyE(9)) cost = cost.pow(studies[9].experientiaEffect())
 	if (g.research.r6_2) cost = cost.root(stat.stelliferousEnergyEffect.pow(researchEffect(6,2)));
 	if (g.research.r7_11) cost = cost.pow(researchEffect(7,11).pow(g.darkstars));
 	if (g.research.r13_7) cost = cost.pow(researchEffect(13,7))
@@ -1065,6 +1078,7 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	if (g.achievement[701]&&x<40) cost = cost.pow(0.6+x/100)
 	if (MasteryE(105)) cost = cost.pow(masteryEffect(105))
 	cost = cost.pow(luckUpgrades.quatrefolium.star.eff())
+	if (g.achievement[811]) cost = cost = [cost,N(0.97),N(g.highestGalaxiesSpacetime-g.galaxies)]
 	// hyper-2 cost reductions
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stardustUpgrades.sum()));
 	if (g.achievement[702]) cost = cost.div(achievement(702).effect().pow(x**2))
@@ -1152,7 +1166,7 @@ function formatStarEffect(x) {
 	return starEffect(x).format(x==64?3:2)
 }
 function showStarEffectFormula(x) {
-	if (x==42) return c.e18.format()
+	if (x==42) return "10<sup>18</sup>"
 	if ([11,12,13,14].includes(x)) {
 		let modifier
 		if (x==11) modifier = " × (1 - 1 ÷ log<sup>[2]</sup>((EM + 1) × "+c.e10.format()+"))"
@@ -1264,7 +1278,8 @@ function maxStars(row) {
 function availableStarRow(row) {
 	return (maxStars(row)>[1,2,3,4].map(x=>g.star[x+10*row]?1:0).sum());
 }
-const empowerableDarkAxis = ["W"];
+function starCap(){return Math.max(g.galaxies,60)}
+
 function buyDarkAxis(x) {
 	if (g.darkmatter.gt(darkAxisCost(x))&&(4+g.stardustUpgrades[0]>axisCodes.indexOf(x))) {
 		o.sub("darkmatter",darkAxisCost(x));
@@ -1296,7 +1311,7 @@ function darkStarEffect3(x) {
 	x=(x==undefined)?stat.realDarkStars:N(x);
 	if (x.lte(c.e2)) return x;
 	let inc = darkStarEffect3SoftcapInc()
-	return Decimal.convergentSoftcap(x.div(inc).sub(c.d9).ln().mul(inc).add(c.e2),c.d150,c.d200);
+	return Decimal.convergentSoftcap(x.sub(c.e2).div(inc).add(c.d1).ln().mul(inc).add(c.e2),c.d150,c.d200);
 }
 function darkStarEffectHTML() {
 	let v1 = stat.realDarkStars;
@@ -1328,7 +1343,7 @@ function darkAxisCost(type,axis) {
 	axis = Decimal.semiexpScaling(axis,stat.darkAxisSuperscalingStart,realDarkAxisSuperscalePower(type));
 	axis = Decimal.linearScaling(axis,stat.darkAxisScalingStart,realDarkAxisScalePower(type));
 	if (type=="X") cost = axis.pow(c.d1_2).add(c.d1).pow10();
-	else if (type=="Y") cost = Decimal.pow(c.e2,axis.add(c.d1));
+	else if (type=="Y") cost = axis.add(c.d1).mul(c.d2).pow10();
 	else if (type=="Z") cost = axis.add(c.d10).pow10();
 	else if (type=="W") cost = axis.pow(c.d1_5).add(c.d15).pow10();
 	else if (type=="V") cost = axis.pow(c.d1_25).add(c.d30).pow10();
@@ -1384,7 +1399,7 @@ function darkStarPriceMod(type) {
 		if (g.research.r16_12) output=output.mul(researchEffect(16,12))
 		output = output.mul(luckUpgrades.quatrefolium.darkstar.eff())
 	} else if (type=="pow") {
-		output = StudyE(9)?studies[9].experientiaEffect():c.d1
+		output = c.d1
 	} else {
 		error("Cannot access darkStarPriceMod("+type+")")
 	}
@@ -1434,8 +1449,8 @@ function darkStarEffect2Level(axis,x) {
 function darkStarEffect2LevelFormula(axis) {
 	let out = "floor(★ ÷ 8) + max(0, min(★ mod 8"+formulaFormat.add(N(-axisCodes.indexOf(axis)))+", 1))"
 	if (stat.realDarkStars.gte(c.d80)) {
-		if (axis=="W") out = formulaFormat.linSoftcap(out,c.d10,c.d3,true)
-		if (axis=="S") out = formulaFormat.logSoftcap(out,c.d10,c.d9,true)
+		if (axis=="W") out = formulaFormat.linSoftcap("<br>"+out+"<br>",c.d10,c.d3,true)
+		if (axis=="S") out = formulaFormat.logSoftcap("<br>"+out+"<br>",c.d10,c.d9,true)
 	}
 	return formulaFormat(formulaFormat.bracketize(out)+" × 10%")
 }
@@ -1474,14 +1489,14 @@ function energyTypesUnlocked() {
 	return Math.max(0,g.stardustUpgrades[4]-1);
 }
 function energyEffect(x) {
-	if (x+1>energyTypesUnlocked()) return c.d1;
+	if (x>=energyTypesUnlocked()) return c.d1;
 	let type=g[energyTypes[x]+"Energy"];
 	let resource=[g.exoticmatter,g.stardust,g.darkmatter,g.XAxis,g.masteryPower,c.d10,g.hawkingradiation,g.knowledge,c.d10,c.d10][x];
 	let softcap=[c.d0_25,c.d0_25,c.d0_25,c.d4,c.d0_25,c.inf,c.d0_25,c.d0_25,c.d0_5,c.d1][x];
 	let inc=[c.d0_1,c.d0_1,c.d0_1,c.d0_5,c.d0_1,c.d0_25,c.d0_05,c.d0_025,c.d0_1,c.d0_1][x];
 	let eff=((type.gt(resource))&&(resource.gt(c.d1))) ? type.log(resource).log10().mul(StudyE(3)?c.d1:stat.energyEffectBoost).mul(inc).add(c.d1) : c.d1;
 	if (eff.gt(softcap.add(c.d1))&&(!StudyE(3))) eff=softcap.mul(eff.sub(c.d1).div(softcap).ln().div(c.d10).add(c.d1)).add(c.d1);
-	if (x==8) eff = eff.recip()
+	if (x===8) eff = eff.recip()
 	return StudyE(3)?eff.pow(studies[3].energyPowerConstant()):eff;
 }
 function energySpeedMult(x) {
@@ -1561,7 +1576,7 @@ function wormholeReset() {
 	if (g.activeStudy!==0) {
 		if (stat.totalDarkAxis.gte(studies[g.activeStudy].goal())) {
 			g.studyCompletions[g.activeStudy]=Math.min(g.studyCompletions[g.activeStudy]+1,4);
-			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(x!==studies[g.activeStudy].research))
+			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(research[x].type!=="study"))
 			respecResearch();
 			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {asceticMaxBuyResearch(i)}}
 			generateResearchCanvas();
@@ -1686,7 +1701,7 @@ function wormholeMilestoneText(x) {
 function visibleStudies() {
 	let out = [];
 	for (let i=1;i<Object.keys(studies).length;i++) {
-		if (!g.research[studies[i].research]) {
+		if (!g.research[(i===10)?studies[10].research[0]:studies[i].research]) {
 			if ((g.studyCompletions[i]==studies[0].effectiveMaxCompletions[i])&&(!g.completedStudiesShown)) {continue}
 			if (!((g.studyCompletions[i]>0)||g.researchVisibility.includes(studies[i]["research"])||StudyE(i))) {continue}
 		}
@@ -1695,6 +1710,7 @@ function visibleStudies() {
 	return out;
 }
 function StudyE(x) {
+	if (x<10) if (StudyE(10)) if ([[1,4,7],[2,5,8],[3,6,9],g.study10Options].includes(x)) return true
 	if (g.activeStudy==x) return true;
 	return false;
 }
@@ -1709,9 +1725,8 @@ function updateStudyDiv(index) {
 		d.display("div_study"+index,"none");
 	}
 }
-function updateAllStudyDivs() {
-	for (let i=1;i<Object.keys(studies).length;i++) {updateStudyDiv(i);}
-}
+function updateAllStudyDivs() {for (let i=1;i<Object.keys(studies).length;i++) {updateStudyDiv(i);}}
+function currentStudyResearch() {return (g.activeStudy===0)?"":(g.activeStudy===10)?studies[10].research[studyPower(10)]:studies[g.activeStudy].research}
 function enterStudy(x) {
 	g.researchRespec=false
 	wormholeReset();
@@ -1721,15 +1736,14 @@ function enterStudy(x) {
 	if (StudyE(5)) {
 		respecResearch()
 		if (g.activeStudy!==0) { // study 10 proofing
-			let studyRes = studies[g.activeStudy].research
+			let studyRes = currentStudyResearch()
 			buySingleResearch(researchRow(studyRes),researchCol(studyRes),true)
 		}
 		updateResearchTree()
 	}
 	if (StudyE(9)) {
-		g.study9.experientia = c.d0
-		g.study9.milestoneDifficulty = [0,0,0]
-		g.study9.milestoneStartTimes = Array(3).fill(Date.now())
+		g.study9.xp = c.d0
+		g.study9.resets = 0
 	}
 }
 const studyButtons = {
@@ -1750,22 +1764,20 @@ const studyButtons = {
 	class:function(x) {return ["enabled","trapped","enabled","disabled","disabled"][studyButtons.state(x)]}
 }
 function generateChroma(x,amount) {
-	if (lightComponents(x)==null) {
-		g.chroma[x] = g.chroma[x].add(amount).fix(c.d0)
-	} else {
-		let spendFactor = lightComponents(x).map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div(amount.mul(chromaCostFactor(x))).min(c.d1)
-		if (spendFactor.eq(c.d0)) {
-			if (g.haltChromaIfLacking) {g.activeChroma=null}
-			else {
-				for (let i of lightComponents(g.activeChroma)??[]) if (g.chroma[i].eq(c.d0)) {
-					g.activeChroma=i
-					return
-				}
-				g.activeChroma=0
-			}
+	while (amount.gt(c.d0)) {
+		if (lightComponents(x)==null) {
+			g.chroma[x] = g.chroma[x].add(amount).fix(c.d0)
+			break
 		} else {
-			for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub([amount,chromaCostFactor(x),spendFactor].productDecimals()).fix(c.d0)
-			g.chroma[x] = g.chroma[x].add(amount.mul(spendFactor)).fix(c.d0)
+			let toGenerate = lightComponents(x).map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div(chromaCostFactor(x)).min(amount)
+			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
+				g.activeChroma=null;return
+			} else {
+				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).fix(c.d0)
+				g.chroma[x] = g.chroma[x].add(toGenerate).fix(c.d0)
+				amount = amount.sub(toGenerate)
+				if (amount.neq(c.d0)) for (let i of lightComponents(x)) if (g.chroma[i].eq(c.d0)) {x=i;g.activeChroma=i}
+			}
 		}
 	}
 }
@@ -1795,13 +1807,13 @@ const lightData = [
 	{baseReq:c.e3,baseScale:c.d3,effect:"The base gain of hawking radiation is raised to the power of {x}"},
 	{baseReq:c.e5,baseScale:c.d1_5,effect:"Research 7-5 affects the base gain of knowledge with {x}{s} effect<br><span class=\"small\">(this is currently an approximate {e}× boost to knowledge gain if Research 7-5 is owned)</span>"},
 	{baseReq:c.e5,baseScale:c.d2_5,effect:"Increase the mastery power base gain exponent by {x}<br><span class=\"small\">(this is currently a {e}× boost to mastery power gain)</span>"},
-	{baseReq:c.e5,baseScale:c.d1_1,effect:"The rewards of {x} achievements will become stronger."+["See next effect","See all effects"].map((x,i)=>"<button class=\"genericbutton reviewYellowLight\" onClick=\"reviewYellowLight("+i+")\" id=\"button_reviewYellowLight"+i+"\">"+x+"</button>").join("")},
+	{baseReq:c.e5,baseScale:c.d1_1,effect:"The rewards of {x} achievements will become stronger.<br>"+["See next effect","See all effects"].map((x,i)=>"<button class=\"genericbutton reviewYellowLight\" onClick=\"reviewYellowLight("+i+")\" id=\"button_reviewYellowLight"+i+"\">"+x+"</button>").join("")},
 	{baseReq:c.e10,baseScale:c.d10,effect:"The star cost is raised to the power of {x}"},
 	{baseReq:c.e10,baseScale:c.d10,effect:"Chroma generation is {x}{s} cheaper"},
 	{baseReq:N(1e110),baseScale:c.e10,effect:"Chroma gain is multiplied by {x}"}
 ]
 function lumenCostScale(i) {
-	if (i==8) return prismaticUpgrades.lumenThresholdReduction3.eff()
+	if (i==8) return prismaticUpgrades.lumenThresholdReduction1.eff()
 	if ([6,7].includes(i)) return prismaticUpgrades.lumenThresholdReduction2.eff()
 	let out = lightData[i].baseScale
 	return out.sub(c.d1).mul(prismaticUpgrades.lumenThresholdReduction3.eff()).add(c.d1)
@@ -1871,9 +1883,9 @@ const lightEffect = [
 		}
 	},
 	{
-		value:function(x=g.lumens[8]){return N(11111).pow(Decimal.linearSoftcap(x,N(111),c.d0_1))},
+		value:function(x=g.lumens[8]){return c.e5.pow(Decimal.linearSoftcap(x,c.inflog.div(c.d5),c.d0_2))},
 		format:function(x){return x.format()},
-		formula:function(){return "11,111<sup>"+formulaFormat.linSoftcap("L",N(111),c.d0_1,g.lumens[8].gte(c.e2))+"</sup>"}
+		formula:function(){return "10<sup>5 × "+formulaFormat.linSoftcap("L",c.inflog.div(c.d5),c.d0_2,g.lumens[8].gte(c.inflog.div(c.d5)))+"</sup>"}
 	}
 ]
 var lightCache = {
@@ -1905,8 +1917,10 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 function effectiveGalaxies(effNum,isBoost,owned=g.galaxies) {
 	return (owned>=galaxyEffects[effNum].req)?N(owned-galaxyEffects[effNum].req+1):c.d0
 }
-function effectiveGalaxyFormulaText(effNum,isBoost) {
-	return effNum==1?"G":("max(G"+formulaFormat.add(N(1-galaxyEffects[effNum].req))+", 0)")
+function effectiveGalaxyFormulaText(effNum,isBoost,data={}) {
+	let add = 1+(data.add??0)-galaxyEffects[effNum].req
+	let max = (data.add??0)+(data.max??0)
+	return (add>=max)?("G"+formulaFormat.add(N(add))):("max(G"+formulaFormat.add(N(add))+", "+BEformat(max)+")")
 }
 const galaxyEffects = [
 	null,
@@ -1975,10 +1989,25 @@ const galaxyEffects = [
 			format:function(e){return e.format()},
 			formula:function(){return this.base().format()+"<sup>"+effectiveGalaxyFormulaText(3,0)+"<sup>3</sup></sup>"}
 		}
+	},
+	{
+		req:6,
+		boost:{
+			value:function(n=g.galaxies){return effectiveGalaxies(4,1,n).add(c.d1).pow(c.d0_5)},
+			text:function(){return "The base gain of prismatic is increased to ((<i>x</i> + 1)<sup>{}</sup> - 1)"},
+			format:function(e){return e.noLeadFormat(4)},
+			formula:function(){return effectiveGalaxyFormulaText(4,1,{add:1})+"<sup>0.5</sup>"}
+		},
+		penalty:{
+			value:function(n=g.galaxies){return effectiveGalaxies(4,0,n).mul(c.d10).max(c.d1).log10().pow(c.d1_5).div(c.e2)},
+			text:function(){return "The star cost superscaling is {}% stronger per star above 40"},
+			format:function(e){return e.mul(c.e2).noLeadFormat(2)},
+			formula:function(){return "(log("+effectiveGalaxyFormulaText(4,0,{max:0.1})+") + 1)<sup>1.5</sup>"}
+		}
 	}
 ]
 function gainGalaxy() {
-	if (g.stars==60) {
+	if (g.stars==starCap()) {
 		g.galaxies++
 		if (g.galaxies>g.highestGalaxies) g.highestGalaxies=g.galaxies
 		if (g.galaxies>g.highestGalaxiesSpacetime) g.highestGalaxiesSpacetime=g.galaxies
@@ -2013,6 +2042,7 @@ function formatGalaxyEffect(num,type,gal=g.galaxies) {
 
 function runeTypeUnlocked(type) {
 	if (type=="trifolium") return g.research.r24_5
+	if (type=="quatrefolium") return g.research.r24_3
 	return false
 }
 function affordableLuckRunes(type) {
@@ -2029,7 +2059,7 @@ function buyLuckRunes(type) {
 function unspentLuckRunes(type) {return Decimal.sub(g.totalLuckRunes[type],g.spentLuckRunes[type])}
 function affordableLuckUpgrades(type,upg) {
 	if (g.luckRuneSpendFactor.eq(c.d0)) return unspentLuckRunes(type).gte(luckUpgradeCost(type,upg,c.d1))?c.d1:c.d0
-	return Decimal.affordGeometricSeries(unspentLuckRunes(type).mul(g.luckRuneSpendFactor),luckRunes[type].upgBaseCost,luckRunes[type].upgScale,g.luckUpgrades[type][upg])
+	return Decimal.affordGeometricSeries(unspentLuckRunes(type).mul(g.luckRuneSpendFactor),luckRunes[type].upgBaseCost,luckRunes[type].upgScale,g.luckUpgrades[type][upg]).max(unspentLuckRunes(type).gte(luckUpgradeCost(type,upg,c.d1))?c.d1:c.d0)
 }
 function luckUpgradeCost(type,upg,amount=affordableLuckUpgrades(type,upg)) {
 	if (g.luckUpgrades[type][upg].add(amount).gte(luckRunes[type].noRoundThreshold)) return Decimal.sumGeometricSeries(amount,luckRunes[type].upgBaseCost,luckRunes[type].upgScale,g.luckUpgrades[type][upg])
@@ -2041,9 +2071,12 @@ function luckUpgradeCost(type,upg,amount=affordableLuckUpgrades(type,upg)) {
 	return N(out)
 }
 function buyLuckUpgrade(type,upg) {
-	let amount = affordableLuckUpgrades(type,upg)
-	g.spentLuckRunes[type] = g.spentLuckRunes[type].add(luckUpgradeCost(type,upg,amount))
-	g.luckUpgrades[type][upg] = g.luckUpgrades[type][upg].add(amount)
+	if (luckUpgradeUnlocked(type,upg)) {
+		let amount = affordableLuckUpgrades(type,upg)
+		g.spentLuckRunes[type] = g.spentLuckRunes[type].add(luckUpgradeCost(type,upg,amount))
+		g.luckUpgrades[type][upg] = g.luckUpgrades[type][upg].add(amount)
+		if (amount.neq(c.d0)) addAchievement(807)
+	}
 }
 function respecLuckUpgrades() {
 	for (let type of luckRuneTypes) {
@@ -2052,13 +2085,17 @@ function respecLuckUpgrades() {
 	}
 	wormholeReset()
 }
-function luckShardEffect1(x=g.luckShards) {return x.add(c.d1).log10().add(c.d10).log10().pow(c.d2_3).sub(c.d1).mul(c.e2)}
-function luckShardEffect2(x=g.luckShards) {return (x.gt(c.ee10)?N(5/9).pow(x.slog(10)).mul(6561/1250):c.d1.sub(x.add(c.d10).log10().log10().div(c.e2)))}
-function luckShardEffect1Formula() {return "100 × (log<sup>[2]</sup>((LS + 1) × "+c.e10.format()+")<sup>2.3</sup> - 1)"}
+function luckUpgradeUnlocked(type,upg) {
+	let func = luckUpgrades[type][upg].unlocked
+	return (func===undefined)?true:func()
+}
+function luckShardEffect1(x=g.luckShards) {return x.add(c.d1).log10().add(c.d10).log10().pow(c.d2_3).sub(c.d1).mul(c.e2).mul(prismaticUpgrades.prismRune.eff.y())}
+function luckShardEffect2(x=g.luckShards) {return (x.gt(c.ee10)?N(5/9).pow(x.quad_slog(10)).mul(6561/1250):c.d1.sub(x.add(c.d10).log10().log10().div(c.e2)))}
+function luckShardEffect1Formula() {return prismaticUpgrades.prismRune.eff.y().mul(c.e2).noLeadFormat(4)+" × (log<sup>[2]</sup>((LS + 1) × "+c.e10.format()+")<sup>2.3</sup> - 1)"}
 // the formula for effect 2 uses linear super-logarithms rather than the regular quadratic, so simply slog(LS) cannot be used
 function luckShardEffect2Formula(x=g.luckShards) {
 	if (x.gte(c.ee10)) {
-		let height = x.slog(10).floor().format()
+		let height = x.quad_slog(10).floor().format()
 		let out = "0.5556<sup>log<sup>["+height+"]</sup>(LS) + "+height+"</sup> × 5.2488"
 		return luckShardEffect2().gt(c.d0_1)?("100 × (1 - "+out+")"):out
 	}
@@ -2073,18 +2110,22 @@ function affordablePrismaticUpgrades(upg) {
 		if (g.prismaticSpendFactor.eq(c.d0)) return available.gt(data.scale.pow(owned).mul(data.baseCost))?c.d1:c.d0
 		return Decimal.affordGeometricSeries(available,data.baseCost,data.scale,owned)
 	} else { // limited
+		if (g.prismaticSpendFactor.eq(c.d0)) return available.gt(data.cost())?c.d1:c.d0
+		if (singlePrismaticUpgradeCost(upg).gt(g.prismatic)) return c.d0 // avoid laggy binary search
 		// binary search to find the highest buyable level
 		let lower = c.d0
 		let upper = data.max.sub(c.d1)
-		let middle = lower.add(upper).div(c.d2).ceil()
-		while (lower.neq(middle)||upper.neq(middle)) {
+		let middle
+		do {
+			middle = lower.add(upper).div(c.d2).ceil()
 			if (available.gt(data.cost(middle))) lower = middle
 			else upper = middle
-		}
+		} while (upper.sub(lower).gt(c.d1))
+		middle = upper
 		function canAfford(levels) {
 			let spent = c.d0
 			for (let i=levels.toNumber()-1;i>=owned.toNumber();i--) {
-				let diff = data.cost(i)
+				let diff = data.cost(N(i))
 				if (spent.div(diff).gt(c.d16)) break
 				spent = spent.add(diff)
 			}
@@ -2109,16 +2150,41 @@ function prismaticUpgradeCost(upg,amount){
 		return out
 	}
 }
+function singlePrismaticUpgradeCost(upg) {
+	let data = prismaticUpgrades[upg]
+	return (data.max === undefined) ? data.scale.pow(g.prismaticUpgrades[upg]).mul(data.baseCost) : data.cost()
+}
 function buyPrismaticUpgrade(upg) {
-	let affordable = affordablePrismaticUpgrades(upg)
-	let cost = prismaticUpgradeCost(upg,affordable)
-	g.prismatic = g.prismatic.sub(cost)
-	g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].add(affordable)
+	if ((prismaticUpgrades[upg].unlockReq??(()=>true))()) {
+		let affordable = affordablePrismaticUpgrades(upg)
+		let cost = prismaticUpgradeCost(upg,affordable)
+		g.prismatic = g.prismatic.sub(cost)
+		g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].add(affordable)
+	}
+}
+function buyMaxPrismaticUpgrades() {for (let i of nonRefundablePrismaticUpgrades) buyPrismaticUpgrade(i)}
+function refundPrismaticUpgrade(upg) {
+	if (g.prismaticUpgrades[upg].eq(c.d0)) {notify("There is nothing to refund!",achievement.tierColors[8].secondary)}
+	else {g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].sub(c.d1)}
+}
+function prismaticUpgradeEffectHTML(upg) {
+	let out = prismaticUpgrades[upg].desc
+	for (let i of prismaticUpgrades[upg].variables) out = out.replace("{"+i+"}","<span id=\"span_prismaticUpgrade_"+upg+"_"+i+"\"></span>")
+	return out
+}
+function prismaticUpgradeName(upg) {return "Prismatic Upgrade "+((prismaticUpgrades[upg].refundable)?("R"+(refundablePrismaticUpgrades.indexOf(upg)+1)):(nonRefundablePrismaticUpgrades.indexOf(upg)+1))+" \""+prismaticUpgrades[upg].name+"\""}
+function prismaitcUpgradeUnlocked(upg) {
+	let func = prismaticUpgrades[upg].unlockReq
+	return (func===undefined)?true:func()
 }
 
 function antiAxisUnlocked(type) {
-	if (["V","U","T","S","R","Q","P","O"].includes(type)) return false
-	return true
+	if (["U","T","S","R","Q","P","O"].includes(type)) return
+	if ((type==="V")&&(!g.research.r24_11)) return false
+	if ((type==="U")&&(!g.research.r24_13)) return false
+	if ((type==="T")&&(!g.research.r25_13)) return false
+	if ((type==="S")&&(!g.research.r26_13)) return false
+	return 4+g.stardustUpgrades[0]>axisCodes.indexOf(type)
 }
 function realAntiAxisCostDivisor(type) {
 	let output = stat.antiAxisCostDivisor;
@@ -2144,28 +2210,28 @@ function antiAxisCost(type,axis) {
 	let cost = null;
 	axis = Decimal.semiexpScaling(axis,stat.antiAxisSuperscalingStart,realAntiAxisSuperscalePower(type));
 	axis = Decimal.linearScaling(axis,stat.antiAxisScalingStart,realAntiAxisScalePower(type));
-	if (type=="X") cost = axis.add(c.d1).pow10();
-	else if (type=="Y") cost = c.d50.pow(axis).mul(c.e3);
-	else if (type=="Z") cost = axis.pow(c.d2).add(c.d10).pow10();
-	else if (type=="W") cost = axis.pow(c.d2).add(axis).add(c.d10).pow10();
-	else if (type=="V") cost = c.maxvalue;
+	if (type=="X") cost = c.d25.pow(axis).mul(c.e9);
+	else if (type=="Y") cost = c.d2.mul(axis).add(c.d12).pow10();
+	else if (type=="Z") cost = axis.pow(c.d2).add(c.d15).pow10();
+	else if (type=="W") cost = axis.pow(c.d2).add(axis).add(c.d20).pow10();
+	else if (type=="V") cost = axis.pow(c.d2).mul(c.d2).add(c.d40).pow10();
 	else if (type=="U") cost = c.maxvalue;
 	else if (type=="T") cost = c.maxvalue;
 	else if (type=="S") cost = c.maxvalue;
 	else functionError("axisCost",type)
-	cost = cost.pow(realAxisCostExponent(type));
-	cost = cost.div(realAxisCostDivisor(type));
+	cost = cost.pow(realAntiAxisCostExponent(type));
+	cost = cost.div(realAntiAxisCostDivisor(type));
 	return cost;
 }
 function maxAffordableAntiAxis(type,am=g.antimatter) {
 	if (antiAxisCost(type).gte(am)&&am.eq(g.antimatter)) return g["anti"+type+"Axis"];
-	let effective_AM = am.mul(realAntiAxisCostDivisor(type)).root(antiAxisCostExponent(type));
+	let effective_AM = am.mul(realAntiAxisCostDivisor(type)).root(realAntiAxisCostExponent(type));
 	let axis;			 // prevent "lexical declaration cannot appear in single-statement context"
-	if (type=="X") axis = effective_AM.lte(c.d10)?c.dm1:effective_AM.log10().sub(c.d1);
-	else if (type=="Y") axis = effective_AM.lte(c.e3)?c.dm1:effective_AM.div(c.e3).log(c.d50);
-	else if (type=="Z") axis = effective_AM.lte(c.e10)?c.dm1:effective_AM.log10().sub(c.d10).pow(c.d0_5);
-	else if (type=="W") axis = effective_AM.lte(c.e10)?c.dm1:effective_AM.log10().sub(9.75).pow(c.d0_5).sub(c.d0_5);
-	else if (type=="V") axis = c.dm1;
+	if (type=="X") axis = effective_AM.lte(c.e9)?c.dm1:effective_AM.div(c.e9).log(c.d25);
+	else if (type=="Y") axis = effective_AM.lte(c.e12)?c.dm1:effective_AM.log10().sub(c.d12).div(c.d2);
+	else if (type=="Z") axis = effective_AM.lte(c.e15)?c.dm1:effective_AM.log10().sub(c.d15).pow(c.d0_5);
+	else if (type=="W") axis = effective_AM.lte(c.e20)?c.dm1:effective_AM.log10().sub(19.75).pow(c.d0_5).sub(c.d0_5);
+	else if (type=="V") axis = effective_AM.lte(c.e40)?c.dm1:effective_AM.log10().sub(c.d40).div(c.d2).pow(c.d0_5);
 	else if (type=="U") axis = c.dm1;
 	else if (type=="T") axis = c.dm1;
 	else if (type=="S") axis = c.dm1;
@@ -2175,29 +2241,37 @@ function maxAffordableAntiAxis(type,am=g.antimatter) {
 	return axis.floor().add(c.d1);
 }
 function buyAntiAxis(x) {
-	if (g.antimatter.gte(antiAxisCost(x))&&antiAxisUnlocked(type)) {
+	if (g.antimatter.gte(antiAxisCost(x))&&antiAxisUnlocked(x)) {
 		o.sub("antimatter",antiAxisCost(x));
 		o.add("anti"+x+"Axis",c.d1);
 	}
 	if (g.antiSAxis.gt(c.d0)) g.ach525possible=false;
 	for (let i of achievementEvents.axisBuy) addAchievement(i);
 }
-
 function buyMaxAntiAxis(caps) {
-	for (let j=0; j<stat.axisUnlocked; j++) {
-		let amount = caps[j]=="u"?maxAffordableAxis(axisCodes[j]):Decimal.min(maxAffordableAxis(axisCodes[j]),N(caps[j]));
+	for (let j=0;j<g.stardustUpgrades[0]+4;j++) {
+		let type = axisCodes[j]
+		if (!antiAxisUnlocked(type)) continue
+		let amount = caps[j]=="u"?maxAffordableAntiAxis(axisCodes[j]):Decimal.min(maxAffordableAntiAxis(axisCodes[j]),N(caps[j]));
 		if (amount=="NA") continue;
-		if (amount.lte(g[axisCodes[j]+"Axis"])) continue;
-		if (axisCost(axisCodes[j],amount.sub(c.d1)).lt(g.exoticmatter)) o.sub("exoticmatter",axisCost(axisCodes[j],amount.sub(c.d1)));
-		g[axisCodes[j]+"Axis"]=amount;
+		if (amount.lte(g["anti"+axisCodes[j]+"Axis"])) continue;
+		if (antiAxisCost(axisCodes[j],amount.sub(c.d1)).lt(g.antimatter)) o.sub("antimatter",antiAxisCost(axisCodes[j],amount.sub(c.d1)));
+		g["anti"+axisCodes[j]+"Axis"]=amount;
 	}
-	g.exoticmatter=g.exoticmatter.max(c.d0); // maxAffordableAxis() doesn't seem to work properly because people are getting negative EM.
-	if (g.SAxis.gt(c.d0)) g.ach525possible=false;
+	if (g.antiSAxis.gt(c.d0)) g.ach525possible=false;
 	for (let i of achievementEvents.axisBuy) addAchievement(i);
-	if (axisCodes.map(x => g[x+"Axis"].eq(c.d0)).includes(false)) g.ach526possible=false;
-	if (axisCodes.map(x => g[x+"Axis"]).sumDecimals().sub(totalBefore).gte(c.d4800)) addAchievement(530);
-	unlockFeature("Masteries",g.XAxis.gt(c.d0));
 }
+function antiAxisDimBoostPower(type){
+	let out = c.d1
+	if ((type==="S")&&g.research.r26_14) out = out.mul(researchEffect(26,14))
+	return out
+}
+function antiAxisDimBoost(type,next=false) {
+	let x = g["anti"+type+"Axis"]
+	if (next) x = x.add(c.d1)
+	return x.div(c.e3).add(c.d1).ln().add(c.d1).pow(c.d0_9).sub(c.d1).mul(antiAxisDimBoostPower(type)).add(c.d1)
+}
+function antiAxisDimBoostFormula(type){return "(ln("+type+" ÷ 1,000 + 1)<sup>0.9</sup> - 1) × "+antiAxisDimBoostPower(type).mul(c.e2).noLeadFormat(3)+"%"}
 
 const topResources = [
 	{
@@ -2253,17 +2327,13 @@ const topResources = [
 		condition:function(){return StudyE(7);}
 	},
 	{
-		text:function(){return "<span class=\"_exp\">"+g.study9.xp.format()+" experientia (^<span class=\"red\">"+studies[9].experientiaEffect().noLeadFormat(2)+"</span>)"},
+		text:function(){return "<span class=\"_exp\">"+g.study9.xp.format()+"</span> experientia (^<span class=\"red\">"+studies[9].experientiaEffect().noLeadFormat(2)+"</span>)"},
 		condition:function(){return StudyE(9);}
 	},
-	...(()=>{
-		let out = []
-		for (let i=0;i<3;i++) out.push({
-			text:function(){return "<span class=\"_exp\">"+studies[9].milestoneTimeLeft(i).toFixed(1)+"s</span> left to reach <span class=\"_exp\">"+studies[9].milestoneReq(i).format()+" "+["exotic matter","stardust","dark matter"][i]},
-			condition:function(){return StudyE(9);}
-		})
-		return out
-	})()
+	{
+		text:function(){return "<span class=\"_exp\">"+(studies[9].timePer()-g.timeThisWormholeReset).toFixed(1)+"s</span> left until reset (<span class=\"_exp\">"+studies[9].formatChange()+" XP</span>)"},
+		condition:function(){return StudyE(9);}
+	},
 ];
 function updateTopResourceModal() {
 	for (let i=0;i<topResources.length;i++) {
@@ -2341,9 +2411,17 @@ const openConfig = (()=>{
 			{text:(g.glowOptions.createGalaxy?"G":"No g")+"low if a galaxy can be created",onClick:toggle("g.glowOptions.createGalaxy")}
 		])},
 		"Luck":function(){showConfigModal("Luck",[
-			{text:(g.glowOptions.buyLuckRune?"G":"No g")+"low if luck runes can be purchased",onClick:toggle("g.glowOptions.buyLuckRune")},
+			{text:(g.glowOptions.buyLuckRune?"G":"No g")+"low if enough luck runes can be purchased for an upgrade",onClick:toggle("g.glowOptions.buyLuckRune")},
 			{text:(g.glowOptions.buyLuckUpgrade?"G":"No g")+"low if luck upgrades can be purchased",onClick:toggle("g.glowOptions.buyLuckUpgrade")}
-		])}
+		])},
+		"Prismatic":function(){showConfigModal("Prismatic",[
+			{text:(g.glowOptions.buyPrismaticUpgrade?"G":"No g")+"low if non-refundable prismatic upgrades can be purchased",onClick:toggle("g.glowOptions.buyPrismaticUpgrade")},
+			{text:(g.glowOptions.buyRefundablePrismaticUpgrade?"G":"No g")+"low if refundable prismatic upgrades can be purchased",onClick:toggle("g.glowOptions.buyRefundablePrismaticUpgrade")}
+		])},
+		"Antimatter":function(){showConfigModal("Antimatter",[
+			{text:"Antimatter amount shown "+(g.topResourcesShown.antimatter?"on top of screen":"in Antimatter subtab"),onClick:toggle("g.topResourcesShown.antimatter")},
+			{text:(g.glowOptions.buyAntiAxis?"G":"No g")+"low if anti-axis can be purchased",onClick:toggle("g.glowOptions.buyAntiAxis")},
+		])},
 	}
 })()
 function endgameColor() {

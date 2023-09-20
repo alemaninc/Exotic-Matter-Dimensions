@@ -23,7 +23,7 @@ function updateHTML() {
 	d.class("button_wormholeReset",stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"wormholeResetButton":"lockedStardustResetButton");
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";
 	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
-	let showFooter = (g.footerDisplay=="All tabs")?true:(g.footerDisplay=="Only Axis tab")?(activeTab=="main"&&activeSubtabs.main=="axis"):(g.footerDisplay=="None")?false:undefined
+	let showFooter = (g.footerDisplay=="All tabs")?true:(g.footerDisplay=="Only Axis tab")?(g.activeTab=="main"&&g.activeSubtabs.main=="axis"):(g.footerDisplay=="None")?false:undefined
 	d.display("footer",showFooter?"inline-block":"none")
 	if (showFooter) ProgressBar()
 	for (let tab of tabList) {
@@ -45,9 +45,9 @@ function updateHTML() {
 			d.display("button_bigtab_"+tab,"none")
 		}
 	}
-	if (activeTab=="main") {
-		if (StudyE(1)) {if (activeSubtabs.main!=="offlineTime") openSubTab("main","offlineTime")};
-		if (activeSubtabs.main=="axis") {
+	if (g.activeTab=="main") {
+		if (StudyE(1)) {if (g.activeSubtabs.main!=="offlineTime") openSubTab("main","offlineTime")};
+		if (g.activeSubtabs.main=="axis") {
 			d.display("div_exoticmatter_disabledTop",g.topResourcesShown.exoticmatter?"none":"inline-block")
 			if (!g.topResourcesShown.exoticmatter) {
 				d.innerHTML("span_exoticmatter_disabledTop",g.exoticmatter.format())
@@ -74,7 +74,7 @@ function updateHTML() {
 				d.display("button_empowered"+name+"Axis",stat["empowered"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empowered"+name+"AxisAmount",stat["empowered"+name+"Axis"].noLeadFormat(2));
 			}
-		} else if (activeSubtabs.main=="masteries") {
+		} else if (g.activeSubtabs.main=="masteries") {
 			showMasteryInfo(shownMastery,1)
 			for (let i of ["div","br"]) d.display(i+"_masteryPower_disabledTop",g.topResourcesShown.masteryPower?"none":"inline-block")
 			if (!g.topResourcesShown.masteryPower) {
@@ -102,7 +102,7 @@ function updateHTML() {
 			} else {
 				g.masteryContainerStyle = "Legacy"
 			}
-		} else if (activeSubtabs.main=="offlineTime") {
+		} else if (g.activeSubtabs.main=="offlineTime") {
 			g.dilationPower = Number(d.element('dilationSpeedupFactor').value)
 			d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 			d.innerHTML("span_overclockSpeedupFactor",N(stat.baseOverclockSpeedup).noLeadFormat(3))
@@ -139,15 +139,15 @@ function updateHTML() {
 				d.display("div_timeLoop","none")
 			}
 		}
-	} else if (activeTab=="options") {
-		if (activeSubtabs.options=="options") {
+	} else if (g.activeTab=="options") {
+		if (g.activeSubtabs.options=="options") {
 			d.innerHTML("colortheme",g.colortheme);
 			d.innerHTML("notation",g.notation);
 			d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off");
 			d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
 			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
 			d.innerHTML("span_newsTickerSpeed",g.newsTickerSpeed)
-		} else if (activeSubtabs.options=="hotkeys") {
+		} else if (g.activeSubtabs.options=="hotkeys") {
 			for (let name in hotkeys.hotkeyList) {
 				let hotkey = hotkeys.hotkeyList[name]
 				if (hotkey.visible()) {
@@ -158,9 +158,8 @@ function updateHTML() {
 				}
 			}
 		}
-	} else if (activeTab=="statistics") {
-		d.display("button_subtab_statistics_previousPrestiges",unlocked("Stardust")?"inline-block":"none");
-		if (activeSubtabs.statistics=="mainStatistics") {
+	} else if (g.activeTab=="statistics") {
+		if (g.activeSubtabs.statistics=="mainStatistics") {
 			for (let i=0;i<mainStatistics.length;i++) {
 				if (mainStatistics[i].condition()) {
 					d.tr("mainStatRow"+i,true);
@@ -169,7 +168,7 @@ function updateHTML() {
 					d.tr("mainStatRow"+i,false);
 				}
 			}
-		} else if (activeSubtabs.statistics=="hiddenStatistics") {
+		} else if (g.activeSubtabs.statistics=="hiddenStatistics") {
 			for (let i=0;i<hiddenStatistics.length;i++) {
 				if (hiddenStatistics[i].condition()) {
 					d.tr("hiddenStatRow"+i,true);
@@ -178,7 +177,7 @@ function updateHTML() {
 					d.tr("hiddenStatRow"+i,false);
 				}
 			}
-		} else if (activeSubtabs.statistics=="largeNumberVisualization") {
+		} else if (g.activeSubtabs.statistics=="largeNumberVisualization") {
 			d.innerHTML("span_largeNumberVisualizationRequirement",BEformat(c.e10))
 			for (let i=0;i<largeNumberVisualizationVariables.length;i++) {
 				if (largeNumberVisualizationVariables[i].value().gt(c.e10)) {
@@ -189,7 +188,7 @@ function updateHTML() {
 					d.display("div_largeNumberVisualization"+i,"none")
 				}
 			}
-		} else if (activeSubtabs.statistics=="statBreakdown") {
+		} else if (g.activeSubtabs.statistics=="statBreakdown") {
 			let categories = Object.keys(breakdownCategories)
 			for (let i of categories) {
 				let display = breakdownCategories[i].contents.map(x => miscStats[x].visible()).reduce((x,y)=>x||y)
@@ -227,7 +226,7 @@ function updateHTML() {
 					}
 				}
 			}
-		} else if (activeSubtabs.statistics=="previousPrestiges") {
+		} else if (g.activeSubtabs.statistics=="previousPrestiges") {
 			d.display("button_previousPrestige_wormholeTab",unlocked("Hawking Radiation")?"inline-block":"none")
 			for (let i=1;i<11;i++) {
 				let stardustExists = i<=g.previousStardustRuns.last10.length
@@ -267,16 +266,17 @@ function updateHTML() {
 			}
 		}
 	}
-	if (activeTab=="achievements") {
+	if (g.activeTab=="achievements") {
 		d.display("button_subtab_achievements_secretAchievements",(totalSecretAchievements>0)?"inline-block":"none");
 		d.display("button_subtab_achievements_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none");
-		if (activeSubtabs.achievements=="mainAchievements") {
+		if (g.activeSubtabs.achievements=="mainAchievements") {
 			for (let i of Object.keys(achievementList)) d.innerHTML("span_perTier"+i+"AchievementReward",achievement.perAchievementReward[i].value())
 			for (let i of achievement.withMilestones) if (g.achievement[i]) {
-				d.element("div_achievement"+i).style["background-color"] = "rgba(0,"+(achievement(i).fullCompletionCheck()?"255,0":"204,204")+",0.5)"
-				d.element("div_achievement"+i).style["border-color"] = "#00"+(achievement(i).fullCompletionCheck()?"ff00":"cccc")
+				let fullCompletion = achievement(i).milestones()===achievement(i).maxMilestones
+				d.element("div_achievement"+i).style["background-color"] = "rgba(0,"+(fullCompletion?"255,0":"204,204")+",0.5)"
+				d.element("div_achievement"+i).style["border-color"] = "#00"+(fullCompletion?"ff00":"cccc")
 			}
-		} else if (activeSubtabs.achievements=="wormholeMilestones") {
+		} else if (g.activeSubtabs.achievements=="wormholeMilestones") {
 			d.innerHTML("span_wormholeMilestoneT5Achievements",achievement.ownedInTier(5))
 			let tier5achs = achievement.ownedInTier(5)
 			let nextMilestoneNum = achievement.ownedInTier(5)==30?undefined:Object.keys(wormholeMilestoneList).filter(x=>x>tier5achs)[0]
@@ -291,13 +291,13 @@ function updateHTML() {
 			d.innerHTML("span_wormholeMilestone27Effect",wormholeMilestone27Effect().format(2))
 		}
 	}
-	if (activeTab=="stardust") {
+	if (g.activeTab=="stardust") {
 		if (StudyE(1)) openTab("wormhole");
 		d.display("div_stardust_disabledTop",g.topResourcesShown.stardust?"none":"inline-block")
 		if (!g.topResourcesShown.stardust) d.innerHTML("span_stardust_disabledTop",g.stardust.format())
-		if (activeSubtabs.stardust=="stardustBoosts") {
+		if (g.activeSubtabs.stardust=="stardustBoosts") {
 			for (let i=1;i<3+g.stardustUpgrades[2];i++) d.innerHTML("span_stardustBoost"+i+"Value",showFormulas?showStardustBoostFormula[i]():formatStardustBoost(i))
-			for (let i of [2,3,6,8]) d.innerHTML("span_stardustBoost"+i+"Tooltip",(stat["stardustBoost"+i].gte(c.d10)||showFormulas)?"×":"%")
+			for (let i of [2,3,6,8,11]) d.innerHTML("span_stardustBoost"+i+"Tooltip",(stat["stardustBoost"+i].gte(c.d10)||showFormulas)?"×":"%")
 			d.innerHTML("span_stardustBoost4Tooltip",g.masteryPower.add(c.d1).pow(stat.stardustBoost4).format(2));
 			d.innerHTML("span_stardustBoost5Tooltip",stat.stardustBoost5.pow(g.XAxis).format(2));
 			d.innerHTML("span_stardustBoost7Tooltip",stat.stardustBoost7.pow(stardustBoost7Exp()).format(2))
@@ -310,7 +310,7 @@ function updateHTML() {
 				d.innerHTML("span_stardustUpgrade"+i+"Level",g.stardustUpgrades[i-1])
 				d.display("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])||g.showingCappedStardustUpgrades)?"inline-block":"none")
 			}
-		} else if (activeSubtabs.stardust=="stars") {
+		} else if (g.activeSubtabs.stardust=="stars") {
 			d.display("starContainerLegacy",g.starContainerStyle=="Legacy"?"inline-block":"none")
 			d.display("starContainerModern",g.starContainerStyle=="Modern"?"inline-block":"none")
 			d.innerHTML("span_starCost",BEformat(starCost()));
@@ -332,7 +332,7 @@ function updateHTML() {
 			d.display("button_maxFullStarRows",[1,2,3,4,5,6,7,8,9,10].map(x => maxStars(x)).includes(4)?"inline-block":"none");
 			d.innerHTML("span_nextStarRow",g.stars>=40?"":("The next star you buy will go in row <span class=\"big _stars\">"+starRow(g.stars+1)+"</span>"));
 			d.element("starContainerModern").style["padding-bottom"] = d.element("starPanel").clientHeight+"px"
-		} else if (activeSubtabs.stardust=="darkMatter") {
+		} else if (g.activeSubtabs.stardust=="darkMatter") {
 			d.display("div_darkMatterUnlocked",g.stardustUpgrades[4]==0?"none":"inline-block")
 			d.display("div_darkMatterLocked",g.stardustUpgrades[4]==0?"inline-block":"none")
 			if (g.stardustUpgrades[4]!==0) {
@@ -346,7 +346,6 @@ function updateHTML() {
 				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gt(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
 				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
 				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
-				let effect3diff = darkStarEffect3(stat.realDarkStars.add(c.d1)).sub(stat.darkStarEffect3);
 				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkstarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
 				if (showFormulas) darkStarButtonText += " (Need "+darkStarReqFormula()+" total dark axis)"
 				else darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(stat.maxAffordableDarkStars.max(g.darkstars)).format(0)+" dark axis)"
@@ -366,7 +365,7 @@ function updateHTML() {
 							d.innerHTML("span_realdark"+type+"Axis","Effective: "+stat["realdark"+type+"Axis"].noLeadFormat(2));
 						}
 						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(c.d0))?(" + "+BEformat(stat["freedark"+type+"Axis"],2)):""));
-						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"].noLeadFormat([2,2,2,3,2,3,2,4][i]));
+						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"].noLeadFormat([2,2,2,3,3,3,2,4][i]));
 						d.innerHTML("span_dark"+type+"AxisCost",BEformat(stat["dark"+type+"AxisCost"]));
 					}
 					let v1 = stat.realDarkStars;
@@ -379,7 +378,7 @@ function updateHTML() {
 					d.innerHTML("span_empoweredDark"+name+"AxisAmount",BEformat(stat["empoweredDark"+name+"Axis"],2));
 				}
 			}
-		} else if (activeSubtabs.stardust=="energy") {
+		} else if (g.activeSubtabs.stardust=="energy") {
 			for (let i=0;i<energyTypes.length;i++) {
 				if (energyTypesUnlocked()>i) {
 					d.display(energyTypes[i]+"EnergyDiv","inline-block");
@@ -394,7 +393,7 @@ function updateHTML() {
 			d.display("div_energyLocked",energyTypesUnlocked()==0?"inline-block":"none")
 		}
 	}
-	if (activeTab=="automation") {
+	if (g.activeTab=="automation") {
 		if (StudyE(1)) openTab("wormhole")
 		for (let id of Object.keys(autobuyers)) { // Autobuyer stuff
 			d.display(id+"Autobuyer",autobuyers[id].unlockReq()?"inline-block":"none");
@@ -428,10 +427,10 @@ function updateHTML() {
 		for (let i=0;i<5;i++) g.stardustUpgradeAutobuyerCaps[i]=d.element("stardustUpgradeAutobuyerMax"+(i+1)).value
 		g.starAutobuyerCap=d.element("starAutobuyerMax").value;
 	}
-	if (activeTab=="wormhole") {
+	if (g.activeTab=="wormhole") {
 		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
-		if (activeSubtabs.wormhole=="research") {
+		if (g.activeSubtabs.wormhole=="research") {
 			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format()+" / "+g.totalDiscoveries.format());
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
@@ -450,17 +449,17 @@ function updateHTML() {
 			}
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
-		} else if (activeSubtabs.wormhole=="studies") {
+		} else if (g.activeSubtabs.wormhole=="studies") {
 			for (let i of visibleStudies()) {
 				d.innerHTML("span_study"+i+"Description",studies[i].description())
 				d.innerHTML("button_study"+i,studyButtons.text(i))
 				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
 				d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));
 			}
-		} else if (activeSubtabs.wormhole=="light") {
+		} else if (g.activeSubtabs.wormhole=="light") {
 			d.innerHTML("span_chromaPerSec",stat.chromaPerSec.format(2))
 			d.innerHTML("span_unspentStarsLight",g.stars)
-			d.innerHTML("span_baseChroma",stat.chromaGainBase.pow(g.stars-60).noLeadFormat(2))
+			d.innerHTML("span_baseChroma",stat.chromaGainBase.pow(g.stars-starCap()).noLeadFormat(2))
 			d.display("lightContainer2",lightTiersUnlocked()>1?"inline-block":"none")
 			d.display("lightContainer3",lightTiersUnlocked()>2?"inline-block":"none")
 			for (let i=0;i<[0,3,6,8,9][lightTiersUnlocked()];i++) {
@@ -487,15 +486,17 @@ function updateHTML() {
 				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
 				d.display("div_grayLight",lightTiersUnlocked()==4?"inline-block":"none")
 			}
-		} else if (activeSubtabs.wormhole=="galaxies") {
+		} else if (g.activeSubtabs.wormhole=="galaxies") {
 			d.innerHTML("span_galaxies",g.galaxies)
 			d.innerHTML("span_galaxyPlural",g.galaxies==1?"y":"ies")
 			d.innerHTML("span_highestGalaxies",g.highestGalaxies)
-			d.innerHTML("span_currentGalaxyStarCost",starCost(59).format())
-			d.innerHTML("span_nextGalaxyStarCost",starCost(59,g.galaxies+1).format())
+			d.innerHTML("span_galaxyFinalStarOrdinal",ordinal(starCap()))
+			d.innerHTML("span_currentGalaxyStarCost",starCost(starCap()-1).format())
+			d.innerHTML("span_nextGalaxyStarCost",starCost(starCap()-1,g.galaxies+1).format())
 			d.innerHTML("span_currentGalaxyAffordableStars",affordableStars())
 			d.innerHTML("span_nextGalaxyAffordableStars",affordableStars(g.galaxies+1))
-			d.class("button_gainGalaxy","galaxyButton "+(g.stars==60?"active":"locked"))
+			d.class("button_gainGalaxy","galaxyButton "+(g.stars==starCap()?"active":"locked"))
+			d.innerHTML("span_galaxyStarRequirement",BEformat(starCap()))
 			d.class("button_destroyGalaxies","galaxyButton "+(g.galaxies==0?"locked":"active"))
 			for (let i=1;i<galaxyEffects.length;i++) {
 				if (g.highestGalaxies+1>=galaxyEffects[i].req) {
@@ -512,11 +513,11 @@ function updateHTML() {
 				break
 			}
 			d.innerHTML("span_galaxyEffectTooltip",tooltip)
-		} else if (activeSubtabs.wormhole=="luck") {
+		} else if (g.activeSubtabs.wormhole=="luck") {
 			d.innerHTML("span_luckShards",g.luckShards.format(2))
 			d.innerHTML("span_luckShardsPerSec",stat.luckShardsPerSec.format(2))
-			d.innerHTML("span_luckShardEff1",showFormulas?luckShardEffect1Formula():luckShardEffect1().format(2))
-			d.innerHTML("span_luckShardEff2",showFormulas?luckShardEffect2Formula():luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).format(2):luckShardEffect2().format(3))
+			d.innerHTML("span_luckShardEff1",showFormulas?formulaFormat(luckShardEffect1Formula()):luckShardEffect1().format(2))
+			d.innerHTML("span_luckShardEff2",showFormulas?formulaFormat(luckShardEffect2Formula()):luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).format(2):luckShardEffect2().format(3))
 			d.innerHTML("span_luckShardEff2Sign",luckShardEffect2().gt(c.d0_1)?"%":"×")
 			for (let type of luckRuneTypes) {
 				if (runeTypeUnlocked(type)) {
@@ -525,10 +526,15 @@ function updateHTML() {
 					d.innerHTML("span_affordable"+type+"Runes",affordableLuckRunes(type).max(c.d1).format())
 					d.innerHTML("span_"+type+"RuneCost",luckRuneCost(type,affordableLuckRunes(type).max(c.d1)).noLeadFormat(2))
 					for (let upg of luckUpgradeList[type]) {
-						let affordable = affordableLuckUpgrades(type,upg).max(c.d1)
-						d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordable.format()+")")
-						d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
-						d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?luckUpgrades[type][upg].formula():arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
+						if (luckUpgradeUnlocked(type,upg)) {
+							d.display("button_"+type+upg,"inline-block")
+							let affordable = affordableLuckUpgrades(type,upg).max(c.d1)
+							d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordable.format()+")")
+							d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
+							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?luckUpgrades[type][upg].formula():arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
+						} else {
+							d.display("button_"+type+upg,"none")
+						}
 					}
 				} else {
 					d.tr("tr_"+type+"Runes",false)
@@ -539,36 +545,86 @@ function updateHTML() {
 				d.class("button_luckShardPercentageOption"+p,"luckPercentageOption "+(g.luckShardSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
 				d.class("button_luckRunePercentageOption"+p,"luckPercentageOption "+(g.luckRuneSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
 			}
+		} else if (g.activeSubtabs.wormhole=="prismatic") {
+			d.innerHTML("span_prismatic",g.prismatic.format(2))
+			d.innerHTML("span_prismaticPerSec",stat.prismaticPerSec.format(2))
+			for (let upg of prismaticUpgradeList) {
+				let data = prismaticUpgrades[upg]
+				if (prismaitcUpgradeUnlocked(upg)) {
+					d.display("button_prismaticUpgrade_"+upg,"inline-block")
+					let affordable = affordablePrismaticUpgrades(upg)
+					let owned = g.prismaticUpgrades[upg]
+					let unlimited = ((typeof data.max) == "undefined")
+					d.innerHTML("span_prismaticUpgrade_"+upg+"_Purchased",(owned.format()+(unlimited?"":(" / "+data.max.format())))+"<br>(+"+affordable.max(c.d1).format()+")")
+					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost","Cost: "+(showFormulas?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format()))
+					let maxed = unlimited?false:Decimal.eq(owned,data.max)
+					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,showFormulas?formulaFormat(data.formula[i]()):maxed?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length==1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
+					let classList = ["prismaticUpgrade"]
+					if (data.refundable) classList.push("refundable")
+					if (maxed) {classList.push("maxed","unlocked")} else if (affordable.eq(c.d0)) {classList.push("locked")} else {classList.push("unlocked")}
+					d.class("button_prismaticUpgrade_"+upg,classList.join(" "))
+				} else {
+					d.display("button_prismaticUpgrade_"+upg,"none")
+				}
+			}
+			for (let p of [0,1,10,25,50,100]) d.class("button_prismaticPercentageOption"+p,"prismaticPercentageOption "+(g.prismaticSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
+		} else if (g.activeSubtabs.wormhole=="antimatter") {
+			if (!g.topResourcesShown.antimatter) {
+				for (let i of ["div","br"]) d.display(i+"_antimatter_disabledTop",g.topResourcesShown.antimatter?"none":"inline-block")
+				d.innerHTML("span_antimatter_disabledTop",g.antimatter.format())
+				d.innerHTML("span_antimatterPerSec_disabledTop",stat.antimatterPerSec.format(2))
+			}
+			d.innerHTML("span_affordableAntiAxis",axisCodes.filter(x=>antiAxisUnlocked(x)).map(x=>maxAffordableAntiAxis(x).sub(g["anti"+x+"Axis"])).sumDecimals().format())
+			for (let i=0;i<8;i++) {
+				let type = axisCodes[i];
+				let unlocked = antiAxisUnlocked(type)
+				d.display("button_anti"+type+"Axis",unlocked?"inline-block":"none")
+				if (unlocked) {
+					d.class("button_anti"+type+"Axis",g.antimatter.gt(stat["anti"+type+"AxisCost"])?"antiaxisbutton":"lockedaxisbutton");
+					if (Decimal.eq(g["anti"+type+"Axis"],stat["realanti"+type+"Axis"])) {
+						d.display("span_realanti"+type+"Axis","none")
+					} else {
+						d.display("span_realanti"+type+"Axis","inline-block")
+						d.innerHTML("span_realanti"+type+"Axis","Effective: "+stat["realanti"+type+"Axis"].noLeadFormat(2));
+					}
+					d.innerHTML("span_anti"+type+"AxisAmount",BEformat(g["anti"+type+"Axis"])+((stat["freeanti"+type+"Axis"].gt(c.d0))?(" + "+BEformat(stat["freeanti"+type+"Axis"],2)):""));
+					d.innerHTML("span_anti"+type+"AxisEffect",stat["anti"+type+"AxisEffect"].noLeadFormat([2,3,3,2,3,5,0,4][i]));
+					d.innerHTML("span_anti"+type+"AxisCost",BEformat(stat["anti"+type+"AxisCost"]));
+				}
+				let v1 = antiAxisDimBoost(type);
+				let v2 = antiAxisDimBoost(type,true);
+				function formatBoost(x){return (x.gt(c.d2)?x.sub(c.d1).mul(c.e2).noLeadFormat(4):x.sub(c.d1).mul(c.e2).toFixed(2))+"%"}
+				d.innerHTML("span_antiAxisBoost"+type,showFormulas?antiAxisDimBoostFormula(type):v1.gt(c.d3)?formatBoost(v1):arrowJoin(formatBoost(v1),formatBoost(v2)));
+			}
+			for (let name of empowerableAntiAxis) {
+				d.display("button_empoweredAnti"+name+"Axis",stat["empoweredAnti"+name+"Axis"].gt(c.d0)?"inline-block":"none");
+				d.innerHTML("span_empoweredAnti"+name+"AxisAmount",BEformat(stat["empoweredAnti"+name+"Axis"],2));
+			}
 		}
 	}
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
 	if (time==0) return // no point causing lag
-	if (StudyE(3)&&(!overclockActive)) {
+	if ((StudyE(3)||StudyE(9))&&(!overclockActive)) {
 		let diff = time-0.05
 		g.dilatedTime += diff
 		time -= diff
 	}
 	for (let i=0;i<9;i++) if (g.chroma[i].gte(lumenReq(i))) {addLumens(i)}
-	if (StudyE(9)) {
-		for (let i=0;i<3;i++) {
-			if (studies[9].milestoneTimeLeft(i)<=0) {studies[9].completeMilestone(i,false)}
-			else if (g[["exoticmatter","stardust","darkmatter"][i]].gt(studies[9].milestoneReq(i))) {studies[9].completeMilestone(i,true)}
-		}
-	}
+	g.timePlayed+=time;
+	g.timeThisStardustReset+=time;
+	g.timeThisWormholeReset+=time;
+	g.timeThisSpacetimeReset+=time;
+	if (StudyE(9)) if (g.timeThisWormholeReset>=studies[9].timePer()) studies[9].reset()
 	updateStats()
 
 
 	// Time section
 	if (stat.totalDarkAxis.gte(1000)&&!g.storySnippets.includes("Black hole")) openStory("Black hole");
-	g.timePlayed+=time;
 	o.add("truetimePlayed",stat.tickspeed.mul(time));
-	g.timeThisStardustReset+=time;
 	o.add("truetimeThisStardustReset",stat.tickspeed.mul(time));
-	g.timeThisWormholeReset+=time;
 	o.add("truetimeThisWormholeReset",stat.tickspeed.mul(time));
-	g.timeThisSpacetimeReset+=time;
 	o.add("truetimeThisSpacetimeReset",stat.tickspeed.mul(time));
 
 	
@@ -597,8 +653,9 @@ function tick(time) {																																		 // The game loop, which 
 
 
 	// Study section
-	if (g.activeStudy !== 0) if ((!g.research[studies[g.activeStudy].research]) || ((g.studyCompletions[g.activeStudy]>=studies[0].effectiveMaxCompletions[g.activeStudy])&&(g.studyCompletions[g.activeStudy]<4))) {
-		popup({text:"You have been forcefully removed from Study "+g.activeStudy+" due to the presence of a bug. Sorry!",buttons:[["Close",""]]})
+	if (g.activeStudy !== 0) if ((!g.research[currentStudyResearch()]) || ((g.studyCompletions[g.activeStudy]>=studies[0].effectiveMaxCompletions[g.activeStudy])&&(g.studyCompletions[g.activeStudy]<4))) {
+		popup({text:"You have been forcefully removed from Study "+roman(g.activeStudy)+" due to the presence of a bug. Sorry!",buttons:[["Close",""]]})
+		wormholeReset()
 		g.activeStudy=0
 	}
 
@@ -619,7 +676,9 @@ function tick(time) {																																		 // The game loop, which 
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
 	if (typeof g.activeChroma == "number") generateChroma(g.activeChroma,stat.chromaPerSec.mul(time))
-	if (unlocked("Luck")) o.add("luckShards",stat.luckShardsPerSec.mul(time))
+	if (g.studyCompletions[7]>0) o.add("luckShards",stat.luckShardsPerSec.mul(time))
+	if (g.research.r20_8) o.add("prismatic",stat.prismaticPerSec.mul(time))
+	if (g.studyCompletions[9]>0) o.add("antimatter",stat.antimatterPerSec.mul(time))
 
 
 	// Automation section

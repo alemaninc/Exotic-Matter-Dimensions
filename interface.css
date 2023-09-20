@@ -63,6 +63,9 @@
 	color:var(--wormhole_text);
 	text-shadow:var(--wormhole_glow);
 }
+._wormhole_noGlow {
+	color:var(--wormhole_text);
+}
 ._research {color:var(--research);}
 ._galaxies {color:var(--galaxies);}
 ._galaxyboosts {color:var(--galaxyboosts);}
@@ -112,9 +115,6 @@ table {
 	display:inline-block;
 	text-align:center;
 	table-layout:fixed;
-}
-th {
-	text-decoration:underline
 }
 button,div {
 	display:inline-block;
@@ -403,7 +403,10 @@ tab {
 	bottom:0px;
 	left:0px;
 	width:100%;
-	z-index:1
+	z-index:1;
+	padding-left:40px;
+	padding-right:40px;
+  box-sizing: border-box;
 }
 #masteryPanel {
 	min-height:75px;
@@ -625,7 +628,7 @@ tab {
 	width:180px
 }
 #button_maxDarkAxis {
-	background-color:#990099;
+	background-color:var(--darkmatter);
 	color:#ffffff;
 	padding:10px;
 	border-radius:10px;
@@ -633,7 +636,7 @@ tab {
 	height:50px;
 }
 .darkaxisbutton {
-	background-color:#990099;
+	background-color:var(--darkmatter);
 	color:#ffffff;
 	padding:10px;
 	border-radius:10px;
@@ -642,7 +645,7 @@ tab {
 	margin:4px
 }
 .darkstarbutton {
-	background-color:#990099;
+	background-color:var(--darkmatter);
 	color:#ffffff;
 	padding:4px;
 	border-radius:16px;
@@ -1024,12 +1027,12 @@ tab {
 #div_blueLight {
 	background-color:rgba(0,0,51,0.9);
 	border-color:rgba(0,0,153,0.9);
-	color:#0000cc;
+	color:#0000ff;
 }
 #button_blueChromaGen {
 	background-color: rgba(0,0,102,0.9);
 	border-color: #000099;
-	color:#0000cc;
+	color:#0000ff;
 }
 .blue {color:#0000ff}
 #div_cyanLight {
@@ -1098,17 +1101,21 @@ tab {
 	color:rgba(255,255,255,0.9);
 	padding:10px;
 }
-.luckPercentageOption {
+.luckPercentageOption, .prismaticPercentageOption {
 	width:50px;
 	border-radius:5px;
+}
+.luckPercentageOption.inactive, .prismaticPercentageOption {
+	background-color:#cccccc;
+	border-color:#999999;
 }
 .luckPercentageOption.active {
 	background-color:var(--luck);
 	border-color:#063;
 }
-.luckPercentageOption.inactive {
-	background-color:#cccccc;
-	border-color:#999999;
+.prismaticPercentageOption.active {
+	background:var(--prismatic);
+	border-color:#333;
 }
 .buyLuckRunes {
 	height:60px;
@@ -1123,6 +1130,48 @@ tab {
 	border-radius:12px;
 	background-color:#132;
 	color:var(--luck);
+}
+#button_maxPrismaticUpgrades {
+	background:var(--prismatic);
+	color:#000000;
+	padding:10px;
+	border-radius:10px;
+	width:250px;
+	height:50px;
+}
+.prismaticUpgrade {
+	height:120px;
+	width:200px;
+	border-radius:12px;
+	color:#000000;
+}
+.prismaticUpgrade.locked {background-color: #999999;}
+.prismaticUpgrade.unlocked {background:var(--prismatic);}
+.prismaticUpgrade.refundable {height:200px;}
+.prismaticUpgrade.maxed {filter:brightness(50%)}
+.refundPrismaticUpgrade {
+	height:24px;
+	width:200px;
+	border-radius:12px;
+	color:#000000;
+	background-color:#999999;
+}
+#button_maxAntiAxis {
+	background-color:var(--antimatter);
+	color:#ffffff;
+	padding:10px;
+	border-radius:10px;
+	width:250px;
+	height:50px;
+}
+.antiaxisbutton {
+	background-color:var(--antimatter);
+	color:#ffffff;
+	padding:10px;
+	border-radius:10px;
+	width:200px;
+	height:125px;
+	margin:4px
 }
 @keyframes text-grow {
 	0% {font-size: 80%}

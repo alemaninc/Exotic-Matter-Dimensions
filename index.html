@@ -22,12 +22,12 @@
 			</table>
 			<div class="navigation globalnavigation">
 				<button id="button_bigtab_main" onClick="openTab('main')" class="bigtab">Main</button>
+				<button id="button_bigtab_stardust" onClick="openTab('stardust')" class="bigtab" style="display:none;filter:brightness(60%)">Stardust</button>
+				<button id="button_bigtab_wormhole" onClick="openTab('wormhole')" class="bigtab" style="display:none;filter:brightness(60%)">Wormhole</button>
+				<button id="button_bigtab_achievements" onClick="openTab('achievements')" class="bigtab" style="filter:brightness(60%)">Achievements</button>
+				<button id="button_bigtab_automation" onClick="openTab('automation')" class="bigtab" style="display:none;filter:brightness(60%)">Automation</button>
 				<button id="button_bigtab_options" onClick="openTab('options')" class="bigtab" style="filter:brightness(60%)">Options</button>
 				<button id="button_bigtab_statistics" onClick="openTab('statistics')" class="bigtab" style="filter:brightness(60%)">Statistics</button>
-				<button id="button_bigtab_achievements" onClick="openTab('achievements')" class="bigtab" style="filter:brightness(60%)">Achievements</button>
-				<button id="button_bigtab_stardust" onClick="openTab('stardust')" class="bigtab" style="display:none;filter:brightness(60%)">Stardust</button>
-				<button id="button_bigtab_automation" onClick="openTab('automation')" class="bigtab" style="display:none;filter:brightness(60%)">Automation</button>
-				<button id="button_bigtab_wormhole" onClick="openTab('wormhole')" class="bigtab" style="display:none;filter:brightness(60%)">Wormhole</button>
 			</div><hr>
 			<div class="tab" id="bigtab_main">																																		<!-- This is a tab, the game is coded so that only one can be displayed at a time. -->
 				<div class="mainNavigation globalnavigation">
@@ -105,7 +105,7 @@
 					<button class="featureConfig stardust" onClick="openConfig['Dark Matter']()"></button>
 					<div id="div_darkMatterUnlocked">
 						<p><span id="div_darkmatter_disabledTop">You have <span class="big _darkmatter" id="span_darkmatter_disabledTop"></span> dark matter<br>You are gaining <span class="big _darkmatter" id="span_darkmatterPerSec_disabledTop"></span> dark matter per second</span><br id="br_darkmatter_disabledTop">Dark matter gain is multiplied by <span class="big _darkmatter" id="span_baseDarkMatterGain"></span> (based on stardust)<br>For every <span class="big _darkmatter" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="big _darkmatter" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free</p>
-						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis  (<span id="span_affordableDarkAxis"></span>)</button><br>
+						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis (<span id="span_affordableDarkAxis"></span>)</button><br>
 						<div id="div_darkAxisContainer" style="width:900px"></div>
 						<div>You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
 						<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')">
@@ -127,7 +127,7 @@
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','light')" id="button_subtab_wormhole_light" style="display:none;filter:brightness(60%)">Light</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','galaxies')" id="button_subtab_wormhole_galaxies" style="display:none;filter:brightness(60%)">Galaxies</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','luck')" id="button_subtab_wormhole_luck" style="display:none;filter:brightness(60%)">Luck</button>
-					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','prismatic')" id="button_subtab_wormhole_prismatic" style="display:none;filter:brightness(60%)">Prismatic/button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','prismatic')" id="button_subtab_wormhole_prismatic" style="display:none;filter:brightness(60%)">Prismatic</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','antimatter')" id="button_subtab_wormhole_antimatter" style="display:none;filter:brightness(60%)">Antimatter</button>
 				</div>
 				<p id="div_hr_disabledTop">You have <span id="span_hr_disabledTop" class="big _wormhole"></span> Hawking radiation</p>
@@ -170,10 +170,10 @@
 				<div class="subtab wormhole" id="subtab_wormhole_galaxies" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Galaxy']()"></button>
 					<p>You have <span class="big _galaxies" id="span_galaxies"></span> galax<span id="span_galaxyPlural"></span>. The highest number you have ever had is <span class="big _galaxies" id="span_highestGalaxies"></span>.<br>
-					The 60th star currently costs <span class="big _galaxies" id="span_currentGalaxyStarCost"></span> stardust, and will cost <span class="big _galaxies" id="span_nextGalaxyStarCost"></span> in the next galaxy.<br>
+					The <span id="span_galaxyFinalStarOrdinal"></span> star currently costs <span class="big _galaxies" id="span_currentGalaxyStarCost"></span> stardust, and will cost <span class="big _galaxies" id="span_nextGalaxyStarCost"></span> in the next galaxy.<br>
 					At your current amount of stardust you can afford <span class="big _galaxies" id="span_currentGalaxyAffordableStars"></span> stars, and will be able to afford <span class="big _galaxies" id="span_nextGalaxyAffordableStars"></span> in the next galaxy.<br>
 					Gaining or losing galaxies forces a Wormhole reset.</p>
-					<button onClick="gainGalaxy()" id="button_gainGalaxy">Gain a galaxy (requires 60 stars)</button>
+					<button onClick="gainGalaxy()" id="button_gainGalaxy">Gain a galaxy (requires <span id="span_galaxyStarRequirement"></span> stars)</button>
 					<button onClick="loseGalaxyPopup()" id="button_destroyGalaxies">Destroy galaxies</button><br>
 					<div id="div_galaxyEffects">
 						<h4 style="text-decoration:underline;color:rgba(255,255,0,0.9);">Galaxy Effects</h4>
@@ -192,9 +192,17 @@
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_prismatic" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Prismatic']()"></button>
+					<p>You have <span class="big _prismatic" id="span_prismatic"></span> prismatic.<br>
+					You are generating <span class="big _prismatic" id="span_prismaticPerSec"></span> prismatic per second (based on total lumens).</p>
+					<button id="button_maxPrismaticUpgrades" onClick="buyMaxPrismaticUpgrades()">Buy Max Non-Refundable Upgrades</button><br>
+					<div id="div_prismaticUpgrades"></div><br><br><div id="div_refundablePrismaticUpgrades"></div><br>
+					<div style="float:right;text-align:right;margin-right:20px;" id="div_prismaticSpendOptions" style="text-align:right;"></div>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_antimatter" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Antimatter']()"></button>
+					<p><span id="div_antimatter_disabledTop">You have <span class="big _antimatter" id="span_antimatter_disabledTop"></span> antimatter<br>You are gaining <span class="big _antimatter" id="span_antimatterPerSec_disabledTop"></span> antimatter per second</span><br id="br_antimatter_disabledTop">Each anti-axis increases the effective number of the respective normal and dark axis.</p>
+					<button id="button_maxAntiAxis" onClick="buyMaxAntiAxis(Array(12).fill('u'))">Buy Max Anti-Axis (<span id="span_affordableAntiAxis"></span>)</button><br>
+					<div id="div_antiAxisContainer" style="width:900px"></div>
 				</div>
 			</div>
 			<div class="tab" id="bigtab_options" style="display:none;font-size:0;">

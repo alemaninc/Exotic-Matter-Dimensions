@@ -123,7 +123,7 @@ const HTPtexts = [
 			"{0}"
 		],
 		dynamics:[
-			()=>(unlocked("Light")||g.stars==60)?"It is impossible to have more than 60 stars.":""
+			()=>(unlocked("Light")||g.stars==starCap())?("It is impossible to have more than "+BEformat(starCap())+" stars."):""
 		]
 	},
 	{
@@ -215,18 +215,24 @@ const HTPtexts = [
 		name:"Light",
 		visibility:function(){return unlocked("Light")},
 		paragraphs:[
-			"In Light, you can generate different colors of chroma. The amount of chroma gained is based on how many stars you have: if you have 60 stars (the maximum), a base of 1 chroma per second is gained. However, if you have less than 60 stars, chroma gain is divided by 3 for every star below 60.",
+			"In Light, you can generate different colors of chroma. The amount of chroma gained is based on how many stars you have: if you have {0} stars (the maximum), a base of 1 chroma per second is gained. However, if you have less than {0} stars, chroma gain is divided by 3 for every star below {0}.",
 			"If you gain sufficient chroma of a type, you gain a lumen, giving one of a variety of boosts. The requirement to gain lumens grows exponentially, but the factor by which it increases varies between colors.",
 			"Red, green and blue chroma can be generated for free. However, other colors of chroma must instead be created from other colors, using their chroma in the process."
+		],
+		dynamics:[
+			()=>BEformat(starCap())
 		]
 	},
 	{
 		name:"Galaxies",
 		visibility:function(){return unlocked("Galaxies")},
 		paragraphs:[
-			"Once you reach 60 stars, it is impossible to buy more. Instead, you can gain Galaxies.",
+			"Once you reach {0} stars, it is impossible to buy more. Instead, you can gain Galaxies.",
 			"Each Galaxy you gain will dramatically increase star costs, but provide a boost in return.",
 			"If the star penalty proves to be too difficult for you, you can destroy the Galaxies you have created - however, gaining or losing Galaxies forces a Wormhole reset."
+		],
+		dynamics:[
+			()=>BEformat(starCap())
 		]
 	},
 	{

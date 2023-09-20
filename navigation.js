@@ -4,15 +4,14 @@ function openTopLevelDiv(id) {
 	for (let i of siblings) i.style.display="none";
 	d.display(id,"inline-block");
 }
-var activeTab = "main"
 const tabVisibility = {
 	main:function(){return true},
+	stardust:function(){return unlocked("Stardust")},
+	wormhole:function(){return unlocked("Hawking Radiation")},
+	achievements:function(){return true},
+	automation:function(){return g.stardustUpgrades[1]!==0},
 	options:function(){return true},
 	statistics:function(){return true},
-	achievements:function(){return true},
-	stardust:function(){return unlocked("Stardust")},
-	automation:function(){return g.stardustUpgrades[1]!==0},
-	wormhole:function(){return unlocked("Hawking Radiation")}
 }
 function openTab(id) {
 	if (debugActive) {if (!tabList.includes(id)) {error("Could not open tab \""+id+"\"")}}
@@ -28,7 +27,7 @@ function openTab(id) {
 	d.display("bigtab_"+id,"inline-block");
 	for (let i of d.class("bigtab")) i.style.filter = "brightness(60%)"
 	d.element("button_bigtab_"+id).style.filter = "brightness(100%)"
-	activeTab=id
+	g.activeTab=id
 	updateHTML()
 }
 // visible defaults to true if undefined, glow defaults to false if undefined
@@ -47,31 +46,6 @@ const subtabProperties = {
 		offlineTime:{
 			glow:function(){return (overclockActive&&g.glowOptions.overclock)}
 		}
-	},
-	options:{
-		options:{},
-		hotkeys:{},
-		story:{
-			visible:function(){return unlocked("Stardust")}
-		}
-	},
-	statistics:{
-		mainStatistics:{},
-		hiddenStatistics:{},
-		largeNumberVisualization:{},
-		statBreakdown:{},
-		previousPrestiges:{
-			visible:function(){return unlocked("Stardust")}
-		}
-	},
-	achievements:{
-		mainAchievements:{},
-		secretAchievements:{
-			visible:function(){return totalSecretAchievements>0}
-		},
-		wormholeMilestones:{
-			visible:function(){return unlocked("Hawking Radiation")}
-		},
 	},
 	stardust:{
 		stardustBoosts:{
@@ -93,14 +67,6 @@ const subtabProperties = {
 		},
 		energy:{
 			visible:function(){return unlocked("Energy")}
-		}
-	},
-	automation:{
-		automation:{
-			glow:function(){
-				let data = Object.entries(autobuyers);
-				for (let auto of data) if (auto[1].unlockReq()&&g[auto[0]+"AutobuyerUpgrades"]!==autobuyerMeta.cap(auto[0])&&g[auto[1].resource].gt(autobuyerMeta.cost(auto[0]))) return true;
-			}
 		}
 	},
 	wormhole:{
@@ -131,23 +97,64 @@ const subtabProperties = {
 			visible:function(){return unlocked("Luck")},
 			glow:function(){
 				for (let type of luckRuneTypes) {
-					if (g.glowOptions.buyLuckRune) if (affordableLuckRunes(type).gt(c.d0)) return true
-					if (g.glowOptions.buyLuckUpgrade) for (let upg of luckUpgradeList[type]) if (affordableLuckUpgrades(type,upg).gt(c.d0)) return true
+					let unlockedUpgs = luckUpgradeList[type].filter(upg=>luckUpgradeUnlocked(type,upg))
+					if (g.glowOptions.buyLuckRune) if (affordableLuckRunes(type).gte(unlockedUpgs.map(upg=>luckUpgradeCost(type,upg,c.d1)).reduce((x,y)=>x.min(y)))) return true
+					if (g.glowOptions.buyLuckUpgrade) for (let upg of unlockedUpgs) if (affordableLuckUpgrades(type,upg).gt(c.d0)) return true
 				}
 				return false
 			}
 		},
 		prismatic:{
-			visible:function(){return unlocked("Prismatic")}
+			visible:function(){return unlocked("Prismatic")},
+			glow:function(){
+				if (g.glowOptions.buyPrismaticUpgrade) for (let upg of nonRefundablePrismaticUpgrades.filter(x=>prismaitcUpgradeUnlocked(x))) if (singlePrismaticUpgradeCost(upg).lt(g.prismatic)) return true
+				if (g.glowOptions.buyRefundablePrismaticUpgrade) for (let upg of refundablePrismaticUpgrades.filter(x=>prismaitcUpgradeUnlocked(x))) if (singlePrismaticUpgradeCost(upg).lt(g.prismatic)) return true
+				return false
+			}
 		},
 		antimatter:{
-			visible:function(){return unlocked("Antimatter")}
+			visible:function(){return unlocked("Antimatter")},
+			glow:function(){
+				if (g.glowOptions.buyDarkAxis) {for (let i of axisCodes.filter(x=>antiAxisUnlocked(x))) {if (g.antimatter.gt(antiAxisCost(i))) {return true}}};
+			}
 		}
-	}
+	},
+	achievements:{
+		mainAchievements:{},
+		secretAchievements:{
+			visible:function(){return totalSecretAchievements>0}
+		},
+		wormholeMilestones:{
+			visible:function(){return unlocked("Hawking Radiation")}
+		},
+	},
+	automation:{
+		automation:{
+			glow:function(){
+				let data = Object.entries(autobuyers);
+				for (let auto of data) if (auto[1].unlockReq()&&g[auto[0]+"AutobuyerUpgrades"]!==autobuyerMeta.cap(auto[0])&&g[auto[1].resource].gt(autobuyerMeta.cost(auto[0]))) return true;
+			}
+		}
+	},
+	options:{
+		options:{},
+		hotkeys:{},
+		story:{
+			visible:function(){return unlocked("Stardust")}
+		}
+	},
+	statistics:{
+		mainStatistics:{},
+		hiddenStatistics:{},
+		largeNumberVisualization:{},
+		statBreakdown:{},
+		previousPrestiges:{
+			visible:function(){return unlocked("Stardust")}
+		}
+	},
 }
 const tabList = Object.keys(subtabProperties)
 const subtabList = Object.fromEntries(Object.entries(subtabProperties).map(x=>[x[0],Object.keys(x[1])]))
-var activeSubtabs = Object.fromEntries(Object.entries(subtabList).map(x=>[x[0],x[1][0]]))
 function openSubTab(parentTab,id) {
 	if (debugActive) {
 		if (!Object.keys(subtabList).includes(parentTab)) {error("Could not open subtab of tab \""+parentTab+"\"")}
@@ -161,16 +168,26 @@ function openSubTab(parentTab,id) {
 	d.display("subtab_"+parentTab+"_"+id,"inline-block");
 	for (let i of d.class("tier2"+parentTab)) i.style.filter = "brightness(60%)"
 	d.element("button_subtab_"+parentTab+"_"+id).style.filter = "brightness(100%)"
-	activeSubtabs[parentTab]=id
+	g.activeSubtabs[parentTab]=id
 	updateHTML()
 }
 const hotkeys = {
+	tryOpenTab:function(num){
+		let count = 0
+		for (let i of tabList) {
+			if (tabVisibility[i]()) count++
+			if (count==num) {
+				openTab(i)
+				return
+			}
+		}
+	},
 	tryOpenSubTab:function(num){
-		if (subtabList[activeTab].length>=num) {if (subtabProperties[activeTab][subtabList[activeTab][num-1]].visible()) {openSubTab(activeTab,subtabList[activeTab][num-1])}}
+		if (subtabList[g.activeTab].length>=num) {if (subtabProperties[g.activeTab][subtabList[g.activeTab][num-1]].visible()) {openSubTab(g.activeTab,subtabList[g.activeTab][num-1])}}
 	},
 	hotkeyList:{
-		...Object.fromEntries(tabList.map((x,i)=>["Open "+toTitleCase(x)+" tab",{baseKey:"Digit"+((i+1)%10),down:()=>openTab(x),visible:()=>tabVisibility[x]()}])),
-		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+x+(x==1?"st":x==2?"nd":x==3?"rd":"th")+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["down",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
+		...Object.fromEntries(countTo(tabList.length).map(x=>["Open "+ordinal(x)+" tab",Object.fromEntries([["baseKey","Digit"+(x%10)],["down",()=>hotkeys.tryOpenTab(x)],["visible",()=>true]])])),
+		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+ordinal(x)+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["down",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
 		"Overclock":{baseKey:"KeyO",down:()=>toggleOverclock(),visible:()=>true},
 		"Freeze time":{baseKey:"shift+KeyO",down:()=>toggleFreeze(),visible:()=>true},
 		"Stardust reset":{baseKey:"KeyS",down:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},

@@ -48,16 +48,16 @@ const previousPrestige = {
 			visibility:function(){return unlocked("Stardust")}
 		},
 		{
-			label:"Most rewarding run this Spacetime",
+			label:"Most rewarding run this Matrix",
 			layer:3,
 			location:function(){return g.previousStardustRuns.spacetime.highest},
-			visibility:function(){return unlocked("Spacetime")}
+			visibility:function(){return unlocked("Matrix")}
 		},
 		{
-			label:"Fastest run this Spacetime",
+			label:"Fastest run this Matrix",
 			layer:3,
 			location:function(){return g.previousStardustRuns.spacetime.fastest},
-			visibility:function(){return unlocked("Spacetime")}
+			visibility:function(){return unlocked("Matrix")}
 		},
 		{
 			label:"Most rewarding run this Wormhole",
@@ -92,22 +92,22 @@ const previousPrestige = {
 			visibility:function(){return unlocked("Hawking Radiation")}
 		},
 		{
-			label:"Most rewarding run this Spacetime",
+			label:"Most rewarding run this Matrix",
 			layer:3,
 			location:function(){return g.previousWormholeRuns.spacetime.highest},
-			visibility:function(){return unlocked("Spacetime")}
+			visibility:function(){return unlocked("Matrix")}
 		},
 		{
-			label:"Fastest run this Spacetime",
+			label:"Fastest run this Matrix",
 			layer:3,
 			location:function(){return g.previousWormholeRuns.spacetime.fastest},
-			visibility:function(){return unlocked("Spacetime")}
+			visibility:function(){return unlocked("Matrix")}
 		},
 		{
-			label:"Most efficient run this Spacetime",
+			label:"Most efficient run this Matrix",
 			layer:3,
 			location:function(){return g.previousWormholeRuns.spacetime.efficientest},
-			visibility:function(){return unlocked("Spacetime")}
+			visibility:function(){return unlocked("Matrix")}
 		}
 	],
 	buildListNodes: document.getElementsByClassName("previousPrestigeBuildList"),

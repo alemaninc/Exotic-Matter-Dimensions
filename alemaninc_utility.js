@@ -133,7 +133,8 @@ function roman(number) { // generates a roman numeral. Monospace fonts are recom
 	return out;
 }
 function dictionary(key,array) {
-	return array.map(x => x[0]).includes(key)?array[array.map(x => x[0]).indexOf(key)][1]:undefined;
+	for (let i of array) if (i[0]==key) return i[1]
+	return undefined
 }
 function halfFunction(x) {
 	return (typeof x == "function")?x():x;
@@ -171,7 +172,7 @@ function numword(num,precision=3) {
 			num -= amount*illionValue
 		}
 	}
-	out += illionOut.joinWithAnd()
+	out += illionOut[illionOut.length-1].includes(" and ")?illionOut.join(", "):illionOut.joinWithAnd()
 	if (num%1!==0&&precision>0) {
 		let decimals = String(num.toFixed(precision)).slice(2).split("")
 		while (decimals[decimals.length-1]=="0") decimals.splice(decimals.length-1)

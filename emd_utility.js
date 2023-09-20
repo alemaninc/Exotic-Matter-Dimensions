@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.27",
+	current:"𝕍1.3.28",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -71,6 +71,7 @@ const c = deepFreeze({		 // c = "constant"
 	dm0_1			: Decimal.FC_NN(-1,0,0.1),
 	dm0_03		: Decimal.FC_NN(-1,0,0.03),
 	eme6			: Decimal.FC_NN(1,1,-1e6),
+	eme5			: Decimal.FC_NN(1,1,-1e5),
 	em40			: Decimal.FC_NN(1,1,-40),
 	em16			: Decimal.FC_NN(1,1,-16),
 	em8				: Decimal.FC_NN(1,0,1e-8),
@@ -150,6 +151,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_308		: Decimal.FC_NN(1,0,1.308),
 	d1_337		: Decimal.FC_NN(1,0,1.337),
 	d1_379654224:Decimal.FC_NN(1,0,1.379654224),
+	d1_4			: Decimal.FC_NN(1,0,1.4),
 	d1_5			: Decimal.FC_NN(1,0,1.5),
 	d1_75			: Decimal.FC_NN(1,0,1.75),
 	d2_3			: Decimal.FC_NN(1,0,2.3),
@@ -270,6 +272,7 @@ const c = deepFreeze({		 // c = "constant"
 	e24				: Decimal.FC_NN(1,1,24),
 	e25				: Decimal.FC_NN(1,1,25),
 	e30				: Decimal.FC_NN(1,1,30),
+	e40				: Decimal.FC_NN(1,1,40),
 	e43				: Decimal.FC_NN(1,1,43),
 	e45				: Decimal.FC_NN(1,1,45),
 	e50				: Decimal.FC_NN(1,1,50),
@@ -320,6 +323,7 @@ function percentOrMult(num,precision=2,classname) {
 	if (typeof classname == "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
 }
+function numberOfDigits(num){return num.max(c.d1).log10().floor().add(c.d1)}
 function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
 formulaFormat.bracketize = function(str) {
 	let out = (str.search(" ")==-1)?str:("("+str+")")
