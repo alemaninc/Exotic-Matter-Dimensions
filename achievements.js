@@ -774,7 +774,7 @@ const achievementList = {
 			progress:function(){return g.timeThisWormholeReset<18?(timeFormat(18-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
 			prevReq:[509],
 			reward:"The game runs {}% faster (based on total Discoveries)",
-			effect:function(){let b = g.totalDiscoveries.div(c.e3),s = achievement(805).effect().div(c.e2);return g.achievement[805]?(b.gt(s)?Decimal.mul(b.pow(c.d0_01),s.pow(c.d0_99)):b).add(c.d1):b.min(c.d1_25)},
+			effect:function(){let b = g.totalDiscoveries.div(c.e3),s = achievement(805).effect().div(c.e2);return g.achievement[805]?(b.gt(s)?Decimal.mul(b.pow(c.d0_01),s.pow(c.d0_99)):b).add(c.d1):b.add(c.d1).min(c.d1_25)},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
 			formulaText:()=>g.achievement[805]?("min(D ÷ 10, D<sup>0.01</sup>"+formulaFormat.mult(achievement(805).effect().pow(c.d0_99).mul(10**-0.01),4)+")"):"min(D ÷ 10, 25)",
 			flavor:"w		 h		 i		 c		 h					 f		 o		 l		 l		 o		 w		 s					 i		 t		 s					 o		 w		 n					 s		 p		 e		 c		 i		 a		 l					 l		 a		 w		 s",

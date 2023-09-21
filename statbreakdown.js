@@ -1724,7 +1724,7 @@ miscStats.darkAxisCostExponent={
 miscStats.antiAxisCostDivisor={
 	type:"breakdown",
 	label:"Anti-axis cost divisor",
-	visible:function(){return stat.antiAxisCostDivisor.neq(c.d1)},
+	visible:function(){return (g.studyCompletions[9]>0)&&stat.antiAxisCostDivisor.neq(c.d1)},
 	category:"Axis costs",
 	precision:2,
 	modifiers:[
@@ -1742,7 +1742,7 @@ miscStats.antiAxisCostDivisor={
 miscStats.antiAxisCostExponent={
 	type:"breakdown",
 	label:"Anti-axis cost exponent",
-	visible:function(){return stat.antiAxisCostExponent.neq(c.d1)},
+	visible:function(){return (g.studyCompletions[9]>0)&&stat.antiAxisCostExponent.neq(c.d1)},
 	category:"Axis costs",
 	precision:4,
 	modifiers:[

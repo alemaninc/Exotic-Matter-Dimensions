@@ -893,7 +893,7 @@ function attemptStardustReset(showPopups=false) {
 	if (stat.pendingstardust.gt(g.stardust)) {
 		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
 			popup({
-				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[501])?"forfeit your Iron Will run":"Stardust reset")+"?",
+				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?",
 				buttons:[["Confirm","if (stat.pendingstardust.gt(g.stardust)) {stardustReset()} else {notify('Insufficient exotic matter to stardust reset!','#ff9900','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
 			})
 		} else {
@@ -1078,7 +1078,7 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	if (g.achievement[701]&&x<40) cost = cost.pow(0.6+x/100)
 	if (MasteryE(105)) cost = cost.pow(masteryEffect(105))
 	cost = cost.pow(luckUpgrades.quatrefolium.star.eff())
-	if (g.achievement[811]) cost = cost = [cost,N(0.97),N(g.highestGalaxiesSpacetime-g.galaxies)]
+	if (g.achievement[811]) cost = cost = [cost,N(0.97),N(g.highestGalaxiesSpacetime-gal)]
 	// hyper-2 cost reductions
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stardustUpgrades.sum()));
 	if (g.achievement[702]) cost = cost.div(achievement(702).effect().pow(x**2))
@@ -2179,6 +2179,7 @@ function prismaitcUpgradeUnlocked(upg) {
 }
 
 function antiAxisUnlocked(type) {
+	if (g.studyCompletions[9]===0) return false
 	if (["U","T","S","R","Q","P","O"].includes(type)) return
 	if ((type==="V")&&(!g.research.r24_11)) return false
 	if ((type==="U")&&(!g.research.r24_13)) return false
@@ -2377,7 +2378,7 @@ const openConfig = (()=>{
 		"Stardust Boost":function(){showConfigModal("Stardust Boost",[
 			{text:"Stardust amount shown "+(g.topResourcesShown.stardust?"on top of screen":"in Stardust tab"),onClick:toggle("g.topResourcesShown.stardust")},
 			{text:"Stardust reset confirmation "+(g.confirmations.stardustReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.stardustReset")},
-			{text:"Stardust reset confirmation "+(g.confirmations.ironWillStardustReset?"en":"dis")+"abled in Iron Will",onClick:toggle("g.confirmations.ironWillStardustReset")},
+			{text:"Stardust reset confirmation "+(g.confirmations.ironWillStardustReset?"en":"dis")+"abled in Iron Will",onClick:toggle("g.confirmations.ironWillStardustReset"),visible:function(){return g.achievement[502]}},
 			{text:(g.glowOptions.buyStardustUpgrade?"G":"No g")+"low if Stardust Upgrade can be purchased",onClick:toggle("g.glowOptions.buyStardustUpgrade")},
 			{text:(g.showingCappedStardustUpgrades?"Show":"Hid")+"ing capped Stardust Upgrades",onClick:"toggle('showingCappedStardustUpgrades')"}
 		])},
