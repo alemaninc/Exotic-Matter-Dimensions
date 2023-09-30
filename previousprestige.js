@@ -1,6 +1,6 @@
 const previousPrestige = {
 	masteries: function() {
-		return g.activeMasteries.map((x,index) => (x==null)?null:(x+index*10)).filter(x => typeof x == "number")
+		return g.activeMasteries.map((x,index) => (x===null)?null:(x+index*10)).filter(x => typeof x === "number")
 	},
 	stars: function() {
 		return starList.filter(x=>g.star[x])
@@ -124,18 +124,18 @@ const previousPrestige = {
 	},
 	showBuild:function(layer,type,index){
 		let location
-		if (layer=="stardust") {
-			if (type=="last") {
+		if (layer==="stardust") {
+			if (type==="last") {
 				location = g.previousStardustRuns.last10[index]
-			} else if (type=="record") {
+			} else if (type==="record") {
 				location = previousPrestige.stardustRunsStored[index].location()
 			} else {
 				error("Cannot access previousPrestige.showBuild("+layer+","+type+","+index+")")
 			}
-		} else if (layer=="wormhole") {
-			if (type=="last") {
+		} else if (layer==="wormhole") {
+			if (type==="last") {
 				location = g.previousWormholeRuns.last10[index]
-			} else if (type=="record") {
+			} else if (type==="record") {
 				location = previousPrestige.wormholeRunsStored[index].location()
 			} else {
 				error("Cannot access previousPrestige.showBuild("+layer+","+type+","+index+")")

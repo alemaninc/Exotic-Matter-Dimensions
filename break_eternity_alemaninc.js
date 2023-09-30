@@ -2840,7 +2840,7 @@ for (var i = 0; i < 10; ++i)
 			let safeguard = Decimal.fromComponents(this.sign,this.layer,this.mag);
 			let x = safeguard.quad_slog().toNumber();
 			let height = callback(x);
-			if (height==x) return safeguard;
+			if (height===x) return safeguard;
 			let neg_height = 0;					// The function breaks at negative heights
 			while (height<0) {
 				height++;
@@ -2852,7 +2852,7 @@ for (var i = 0; i < 10; ++i)
 		};
 
 		Decimal.prototype.layerplus = function(x) {
-			if (x==0) return this
+			if (x===0) return this
 			let safeguard = Decimal.fromComponents(this.sign,this.layer,this.mag)
 			if (x>0) {
 				for (let i=0;i<x;i++) safeguard = safeguard.pow10()
@@ -2863,9 +2863,9 @@ for (var i = 0; i < 10; ++i)
 		}
 
 		Decimal.prototype.dilate = function (exponent,layer) {
-			if (exponent==1) return this
+			if (exponent===1) return this
 			let safeguard = Decimal.fromComponents(this.sign,this.layer,this.mag);
-			if (layer == undefined) layer = 1;
+			if (layer === undefined) layer = 1;
 			return safeguard.layerplus(-layer).safepow(exponent).layerplus(layer);
 		};
 
@@ -2988,7 +2988,7 @@ Object.defineProperty(JSON,"validDecimal",{
 	value:function validDecimal(x) {
 		if (x instanceof Decimal) return true;
 		if (typeof x !== "string") return false;	// Regular numbers will remain numeric in JSON.
-		if (x=="0") return true;									// Special case for Decimal 0
+		if (x==="0") return true;									// Special case for Decimal 0
 		if (N(x).isNaN()) return false;					 
 		if (N(x).eq(constant.d0)) return false;					// If the variable evaluates to 0 but did not get stored as such, it's not a decimal.
 		return true;															// If all of the above tests were false, it's probably a Decimal.
@@ -3044,7 +3044,7 @@ const notations = {
 	"Engineering":function(x,sub="Engineering",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0) {x=x.mul(1.0000001);return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(constant.d3).floor().mul(constant.d3).toNumber().toLocaleString("en-US")}
+		if (leadingEs===0) {x=x.mul(1.0000001);return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(constant.d3).floor().mul(constant.d3).toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Engineering"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Hyper-E":function(x,sub="Hyper-E"){
@@ -3062,13 +3062,13 @@ const notations = {
 	"Logarithm":function(x,sub="Logarithm",p=3) {
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0) {x=x.mul(1.0000001);return "e"+notationSupport.formatSmall(x.log10(),p)}
+		if (leadingEs===0) {x=x.mul(1.0000001);return "e"+notationSupport.formatSmall(x.log10(),p)}
 		return Array(leadingEs+1).join("e")+notations["Logarithm"](x.layerplus(-leadingEs),sub,4)
 	},
 	"Mixed scientific":function(x,sub="Mixed scientific",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs==0)	return notations[x.gt(constant.e33)?"Scientific":"Standard"](x,sub,p)
+		if (leadingEs===0)	return notations[x.gt(constant.e33)?"Scientific":"Standard"](x,sub,p)
 		return Array(leadingEs+1).join("e")+notations["Mixed scientific"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Scientific":function(x,sub="Scientific",p=2){
@@ -3076,13 +3076,13 @@ const notations = {
 		let leadingEs = notationSupport.leadingEs(x)
 		if (x.layerplus(-leadingEs).gte(constant.ee4)) p--
 		if (x.layerplus(-leadingEs).gte(constant.ee5)) p--
-		if (leadingEs==0) {x=x.mul(1.0000001);return x.log10().mod(constant.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")}
+		if (leadingEs===0) {x=x.mul(1.0000001);return x.log10().mod(constant.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Scientific"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Standard":function(x,sub="Standard",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = Math.max(x.layer-((x.mag>=33)?1:2),0)    // standard notation adds leading e's at ee33 rather than ee6
-		if (leadingEs==0) {
+		if (leadingEs===0) {
 			if (x.lt(constant.e33)) return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+["M","B","T","Qa","Qt","Sx","Sp","Oc","No"][Math.floor(x.log10().toNumber()/3-2)]
 			let e0 = ["","U","D","T","Qa","Qt","Sx","Sp","O","N"]
 			let e1 = ["","Dc","Vg","Tg","Qd","Qi","Se","St","Og","Nn"]
@@ -3093,12 +3093,12 @@ const notations = {
 			let firste3 = e3vals.map(x=>x>0).indexOf(true)
 			let out = ""
 			for (let i=firste3;i<Math.min(firste3+2,11);i++) {
-				if (e3vals[i]==0) continue;
+				if (e3vals[i]===0) continue;
 				let values = String(e3vals[i]).padStart(3,"0").split("")
-				if (e3vals[i]>1||i==10) out+=e0[values[2]]+e1[values[1]]+e2[values[0]]
+				if (e3vals[i]>1||i===10) out+=e0[values[2]]+e1[values[1]]+e2[values[0]]
 				out+=e3[i]
 			}
-			if (out.substring(out.length-1)=="-") out = out.substring(0,out.length-1)
+			if (out.substring(out.length-1)==="-") out = out.substring(0,out.length-1)
 			if (height>=1e5) out += "s"
 			else out = x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+out
 			return out
@@ -3120,7 +3120,7 @@ const notations = {
 function gformat(value,precision=0,notation="Scientific",subnotation="Scientific") {
 	if ([value,precision,notation,subnotation].includes(undefined)) functionError("gformat",arguments)
 	let x=N(value);
-	if (x.sign==-1) return "-"+gformat(x.abs(),precision,notation,subnotation);
+	if (x.sign===-1) return "-"+gformat(x.abs(),precision,notation,subnotation);
 	if (x.eq(constant.maxvalue)) return "Infinite";
 	if (x.eq(constant.maxvalue.recip())) return "0"
 	if (x.isNaN()) return "NaN";
@@ -3149,16 +3149,16 @@ function timeFormat(x) {
 function rateFormat(x) {
 	x = N(x);
 	if (!Decimal.valid(x)) throw "Cannot access rateFormat("+x+")"
-	if (x.sign == 0) return "0 per second"
-	if (x.sign == -1) return "-"+rateFormat(x.neg())
+	if (x.sign === 0) return "0 per second"
+	if (x.sign === -1) return "-"+rateFormat(x.neg())
 	if (x.eq(constant.d1)) return "1 per second"
 	if (x.gt(constant.d1)) return x.noLeadFormat(2)+" per second"
 	if (x.lt(constant.d1)) return "1 per "+timeFormat(x.recip())
 	throw "Cannot access rateFormat("+x+")"
 }
 function decimalStructuredClone(obj) {
-	if (typeof obj == "object") {
-		if (obj == null) {
+	if (typeof obj === "object") {
+		if (obj === null) {
 			return null
 		} else if (obj instanceof Array) {
 			return obj.map(x=>decimalStructuredClone(x))

@@ -30,9 +30,9 @@ function unbreak(str) { // prevent targeting inside HTML tags
 	let inTag = false
 	let out = ""
 	for (let i of str.split("")) {
-		if (i=="<") inTag=true
-		else if (i==">") inTag=false
-		if (i==" "&&(!inTag)) out+="&nbsp;"
+		if (i==="<") inTag=true
+		else if (i===">") inTag=false
+		if (i===" "&&(!inTag)) out+="&nbsp;"
 		else out+=i
 	}
 	return out
@@ -133,11 +133,11 @@ function roman(number) { // generates a roman numeral. Monospace fonts are recom
 	return out;
 }
 function dictionary(key,array) {
-	for (let i of array) if (i[0]==key) return i[1]
+	for (let i of array) if (i[0]===key) return i[1]
 	return undefined
 }
 function halfFunction(x) {
-	return (typeof x == "function")?x():x;
+	return (typeof x === "function")?x():x;
 }
 const numwordIllionsDictionary = ["thousand",...["m","b","tr","quadr","quint","sext","sept","oct","non"].map(x=>x+"illion"),...(()=>{
 	let out = []
@@ -145,14 +145,14 @@ const numwordIllionsDictionary = ["thousand",...["m","b","tr","quadr","quint","s
 	return out
 })()]
 function numword(num,precision=3) {
-	if (num==0) return "zero"
+	if (num===0) return "zero"
 	let out = (num>0?"":"minus ")
 	num=Math.abs(num)
 	// for 1-999
 	function smallInteger(x) {
 		let smallIntOutput = ""
 		if (x>99) {
-			smallIntOutput = ["one","two","three","four","five","six","seven","eight","nine"][Math.floor(x/100-1)]+" hundred"+(x%100==0?"":" and ")
+			smallIntOutput = ["one","two","three","four","five","six","seven","eight","nine"][Math.floor(x/100-1)]+" hundred"+(x%100===0?"":" and ")
 			x=x%100
 		}
 		if (x>19) {
@@ -168,27 +168,27 @@ function numword(num,precision=3) {
 		let illionValue = 1e3**(illion+1)
 		let amount = Math.floor(num/illionValue)
 		if (amount>0) {
-			illionOut.push(smallInteger(amount)+(illion==-1?"":(" "+numwordIllionsDictionary[illion])))
+			illionOut.push(smallInteger(amount)+(illion===-1?"":(" "+numwordIllionsDictionary[illion])))
 			num -= amount*illionValue
 		}
 	}
 	out += illionOut[illionOut.length-1].includes(" and ")?illionOut.join(", "):illionOut.joinWithAnd()
 	if (num%1!==0&&precision>0) {
 		let decimals = String(num.toFixed(precision)).slice(2).split("")
-		while (decimals[decimals.length-1]=="0") decimals.splice(decimals.length-1)
+		while (decimals[decimals.length-1]==="0") decimals.splice(decimals.length-1)
 		out+=" point "+decimals.map(x=>["zero","one","two","three","four","five","six","seven","eight","nine"][x]).join(" ")
 	}
 	return out
 }
 function pluralize(num,word) {
-	if (num==1) return "one "+word
+	if (num===1) return "one "+word
 	return numword(num)+" "+word+"s"
 }
 function lookupGetter(x,y){
 	return String(Object.getOwnPropertyDescriptor(x,y).get)
 }
 function toTitleCase(str) {
-	if (str == undefined) crash("toTitleCase() input \""+str+"\" is undefined.")
+	if (str === undefined) throw "toTitleCase() input \""+str+"\" is undefined."
 	return str.replace(
 		/\w\S*/g,
 		function(txt) {
@@ -196,10 +196,10 @@ function toTitleCase(str) {
 		}
 	);
 }
-function ordinal(num){return num+(((num%10==1)&&(num%100!==11))?"st":((num%10==2)&&(num%100!==12))?"nd":((num%10==3)&&(num%100!==13))?"rd":"th")}
+function ordinal(num){return num+(((num%10===1)&&(num%100!==11))?"st":((num%10===2)&&(num%100!==12))?"nd":((num%10===3)&&(num%100!==13))?"rd":"th")}
 const d = {		// d for "document"
 	element(elem) {
-		if (typeof elem == "object") return elem;		// if input is already an element
+		if (typeof elem === "object") return elem;		// if input is already an element
 		return document.getElementById(elem);				// if input is an id. Both retrieve an element, this is error detection.
 	},
 	innerHTML(element,value) {
@@ -213,8 +213,8 @@ const d = {		// d for "document"
 	2 elements: id, value
 	*/
 	class() {
-		if (arguments.length==1) return document.getElementsByClassName(arguments[0]);	 // gets elements by class name
-		if (arguments.length==2) d.element(arguments[0]).className = arguments[1];			 // sets the class of an element
+		if (arguments.length===1) return document.getElementsByClassName(arguments[0]);	 // gets elements by class name
+		if (arguments.length===2) d.element(arguments[0]).className = arguments[1];			 // sets the class of an element
 	},
 	tr(id,state) {
 		if (state) d.element(id).removeAttribute("hidden");				// shows and hides table rows

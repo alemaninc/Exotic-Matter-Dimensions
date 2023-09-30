@@ -147,31 +147,27 @@ input {
 	height:50px;
 }
 .axisbutton {
+	padding:10px;
+	border-radius:10px;
+	width:200px;
+	height:125px;
+	margin:4px
+}
+.axisbutton.available {
 	background-color:rgba(0,153,153,0.9);
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px
 }
-.lockedaxisbutton {
+.axisbutton.locked {
 	background-color:rgba(153,153,153,0.9);
 	color:#000000;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px
 }
-.empoweredaxis {
+.axisbutton.empowered {
 	background-color:var(--axis_empowerment);
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px
+}
+.axisbutton.corrupted {
+	background-color:rgba(153,128,153,0.9);
+	color:#000000;
 }
 .tablecell {
 	border:2px solid rgba(0,153,0,0.9);
@@ -453,25 +449,12 @@ tab {
 	border-color:rgba(255,255,0,0.5);
 }
 #div_stardustBoost7 {font-size:90%}
-.stardustupgradebutton {
+.axisbutton.stardustupgrade {
 	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px;
 }
-.maxedstardustupgradebutton {
-	background-image:url("img/stardustbackground.png");
-	background-size:cover;
-	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px;
+.axisbutton.stardustupgrade.maxed {
 	filter:brightness(50%)
 }
 .starbutton.legacy {
@@ -635,14 +618,9 @@ tab {
 	width:250px;
 	height:50px;
 }
-.darkaxisbutton {
+.axisbutton.dark {
 	background-color:var(--darkmatter);
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px
 }
 .darkstarbutton {
 	background-color:var(--darkmatter);
@@ -650,7 +628,7 @@ tab {
 	padding:4px;
 	border-radius:16px;
 	width:400px;
-	height:160px;
+	height:200px;
 }
 .lockeddarkstarbutton {
 	background-color:#999999;
@@ -658,7 +636,7 @@ tab {
 	padding:4px;
 	border-radius:16px;
 	width:400px;
-	height:160px
+	height:200px;
 }
 .globalnavigation {
 	text-align:center;
@@ -768,16 +746,9 @@ tab {
 	border-radius:12px;
 	color:#66ccff;
 }
-.researchLoadoutSelected {
-	height:40px;
-	width:180px;
-	margin:8px;
+.researchLoadout.selected {
 	background-color:rgba(68,136,204,0.9);
-	border-style:solid;
-	border-width:2px;
 	border-color:rgba(51,102,153,0.9);
-	border-radius:12px;
-	color:#66ccff;
 }
 #discoveryPanel {
 	position:fixed;
@@ -1164,14 +1135,19 @@ tab {
 	width:250px;
 	height:50px;
 }
-.antiaxisbutton {
+.axisbutton.anti {
 	background-color:var(--antimatter);
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:200px;
-	height:125px;
-	margin:4px
+}
+.corruptionContainer {
+	height:150px;
+	width:600px;
+	background-color:#505;
+	color:rgba(255,153,255,0.6);
+	border-style:solid;
+	border-width:3px;
+	border-radius:15px;
+	border-color:#303;
 }
 @keyframes text-grow {
 	0% {font-size: 80%}

@@ -56,7 +56,7 @@
 		<div id="logContainer"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script>
-const notation = (localStorage.getItem("save")==undefined)?"Mixed scientific":localStorage.getItem("save").notation
+const notation = (localStorage.getItem("save")===undefined)?"Mixed scientific":localStorage.getItem("save").notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const contributors = {
 	"Hedrauta":"#00cc00",
@@ -75,7 +75,6 @@ const logEntries = [
 		["BALANCE","The 'Mind-bending Curvature' achievements are easier, and the reward of III is stronger"],
 		["BALANCE","The magenta lumen softcap has been significantly pushed back"],
 		["BALANCE","The first dark star effect now works when the base gain is less than 1 by multiplying it instead"],
-		["BALANCE","Galaxies have a new pair of effects at 6 or above"],
 		["CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"],
 		["CONTENT","Added Tier 8 achievements"],
 		["CONTENT","Research is now extended to TBD rows and TBD studies"],
@@ -85,6 +84,12 @@ const logEntries = [
 		["QOL","The reward of 'Superpowered' has been changed"]
 	]},
 	*/
+	{name:"𝕍1.3.30 (2023-09-30)",changes:[
+		["BUGFIX","Fixed research 14-2 having no effect"],
+		["BUGFIX","Chroma generation will no longer turn off randomly for no (visible) reason"],
+		["INTERFACE","Dark star button is now taller and the cost formula has an additional line break"],
+		["INTERFACE","\"You have completed all Tier <i>x</i> achievements!\" notification is now the correct color"]
+	]},
 	{name:"𝕍1.3.29 (2023-09-21)",changes:[
 		["BUGFIX","'Hyperspeed IV' giving 100% less effect than it should"],
 		["BUGFIX","Antimatter-related sections showing in the stat breakdown"],
@@ -92,6 +97,7 @@ const logEntries = [
 	]},
 	{name:"𝕍1.3.28 (2023-09-20)",changes:[
 		["BALANCE","'<img src=\"img/blob.png\" alt=\"Blob\" height=\"32\" width=\"32\">' secret achievement is now Rare (from Common)"],
+		["BALANCE","Galaxies have a new pair of effects at 6 or above"],
 		["BUGFIX","Stardust exotic matter requirement no longer displays NaN in Study IV above 54 stardust resets"],
 		["BUGFIX","Stardust Boost 11 now correctly shows the percentage rather than the multiplier as a percentage (eg. 25% showed as 1.25%)"],
 		["BUGFIX","Hopefully fixed a bizarre bug which only one player seems to have"],
@@ -845,7 +851,7 @@ const logEntries = [
 	{name:"v0 (2022-01-05)",changes:["Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts"]}
 ]
 for (let i of logEntries) {
-	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\">"+i.name+"</button><div class=\"panel\"><table>"+i.changes.map(x => (typeof x == "object")?("<tr><td style=\"width:200px"+(x.length==3?(";color:"+contributors[x[2]]):"")+"\">"+x[0]+"</td><td style=\"width:calc(100vw - 200px)"+(x.length==3?(";color:"+contributors[x[2]]):"")+"\">"+x[1]+(x.length==3?(" (by "+x[2]+")"):"")+"</td></tr>"):("<tr><td colspan=\"2\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+"</table></div>"
+	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\">"+i.name+"</button><div class=\"panel\"><table>"+i.changes.map(x => (typeof x === "object")?("<tr><td style=\"width:200px"+(x.length===3?(";color:"+contributors[x[2]]):"")+"\">"+x[0]+"</td><td style=\"width:calc(100vw - 200px)"+(x.length===3?(";color:"+contributors[x[2]]):"")+"\">"+x[1]+(x.length===3?(" (by "+x[2]+")"):"")+"</td></tr>"):("<tr><td colspan=\"2\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+"</table></div>"
 }
 var acc = document.getElementsByClassName("accordion");
 

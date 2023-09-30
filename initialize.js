@@ -2,15 +2,15 @@
 var gameloop
 var fineGrainLoop
 var debugActive
-try{debugActive=alemanicHash(window.location.href.substring(0,23),16)=="9N6fJbOtGsMg5k65"}catch{debugActive=false}
+try{debugActive=alemanicHash(window.location.href.substring(0,23),16)==="9N6fJbOtGsMg5k65"}catch{debugActive=false}
 var betaActive=debugActive
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
 	{function:function(){if(debugActive){
 		for(let id of Object.keys(research)){validateResearch(id)}
-		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type=="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
+		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type==="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
 	}}},
-	{function:function(){for (let i of Object.keys(researchGroupList)) researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group==i).map(x=>x[0])}},
+	{function:function(){for (let i of Object.keys(researchGroupList)) researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group===i).map(x=>x[0])}},
 	{function:function(){load(JSON.parse(localStorage.getItem("save")));}},
 	{function:function(){
 		for (let i=1;i<studies.length;i++) {
@@ -26,7 +26,7 @@ const initSteps = [
 	}},
 	{function:function(){for (let i of countTo(9,true)) {updateLightCache(i)}},onImport:true},
 	{function:function(){for (let tier of Object.keys(achievementList)) {achievement.perAchievementReward[tier].currentVal = achievement.perAchievementReward[tier].calc(achievement.ownedInTier(tier))}},onImport:true},
-	{function:function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type=="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}}},
+	{function:function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type==="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}}},
 	{function:function(){for (let i of Object.keys(miscStats)) statGeneration(i)}},
 	{function:function(){statOrder = Object.keys(statGenerations).sort((a,b)=>statGenerations[a]-statGenerations[b])}},
 	{function:function(){updateStats()},onImport:true},
@@ -55,8 +55,8 @@ const initSteps = [
 	{function:function(){addSecretAchievement(2);},onImport:true},
 	{function:function(){statBreakdownCategories();}},
 	{function:function(){for (let i of Object.keys(subtabProperties)) {for (let j of Object.keys(subtabProperties[i])) {
-		if (subtabProperties[i][j].visible==undefined) subtabProperties[i][j].visible = ()=>true
-		if (subtabProperties[i][j].glow==undefined) subtabProperties[i][j].glow = ()=>false
+		if (subtabProperties[i][j].visible===undefined) subtabProperties[i][j].visible = ()=>true
+		if (subtabProperties[i][j].glow===undefined) subtabProperties[i][j].glow = ()=>false
 	}}}},
 	{function:function(){for (let i=0;i<newsList.length;i++) if (typeof newsList[i].text!=="string") error("News item #"+i+" is undefined")}},
 	{function:function(){d.display("foo","none")}},
@@ -82,8 +82,8 @@ const initSteps = [
 		initComplete = true;
 	}},
 	{function:function(){
-		unlockFeature("Light",g.research.r8_8)
-		unlockFeature("Galaxies",g.research.r12_8)
+		if (g.research.r8_8) unlockFeature("Light")
+		if (g.research.r12_8) unlockFeature("Galaxies")
 	},onImport:true}
 ]
 var loadProgress = 0;

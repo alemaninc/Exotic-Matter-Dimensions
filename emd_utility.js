@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.29",
+	current:"𝕍1.3.30",
 	nextUpdateHint:"Explore",
 }
 /*
@@ -30,7 +30,7 @@ function error(text) {
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
 	nextSecretAchievementRarity:function(){
-		function countByRarity(x){return Object.values(secretAchievementList).filter(i=>i.rarity==x).length}
+		function countByRarity(x){return Object.values(secretAchievementList).filter(i=>i.rarity===x).length}
 		let diffs = countTo(5).map(x=>countByRarity(x+1)/countByRarity(x+2))
 		return diffs.indexOf(diffs.reduce((x,y)=>Math.max(x,y)))+3
 	}
@@ -320,14 +320,14 @@ function percentOrMult(num,precision=2,classname) {
 		number=(num.gte(c.d1)?"+":"")+num.sub(c.d1).mul(c.e2).noLeadFormat(precision)
 		sign="%"
 	}
-	if (typeof classname == "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
+	if (typeof classname === "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
 }
 function numberOfDigits(num){return num.max(c.d1).log10().floor().add(c.d1)}
 function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
 formulaFormat.bracketize = function(str) {
-	let out = (str.search(" ")==-1)?str:("("+str+")")
-	while (out.substring(0,2)=="(("&&out.substring(out.length-2)=="))") out = out.substring(1,out.length-1)
+	let out = (str.search(" ")===-1)?str:("("+str+")")
+	while (out.substring(0,2)==="(("&&out.substring(out.length-2)==="))") out = out.substring(1,out.length-1)
 	return out
 }
 formulaFormat.add = function(v,p=3) {return v.gt(c.d0)?(" + "+v.noLeadFormat(p)):v.lt(c.d0)?(" - "+v.neg().noLeadFormat(p)):""}

@@ -34,6 +34,7 @@
 					<button class="tabtier2 tier2main" onClick="openSubTab('main','axis')" id="button_subtab_main_axis">Axis</button>
 					<button class="tabtier2 tier2main" onClick="openSubTab('main','masteries')" style="display:none;filter:brightness(60%)" id="button_subtab_main_masteries">Masteries</button>
 					<button class="tabtier2 tier2main" onClick="openSubTab('main','offlineTime')" style="filter:brightness(60%)" id="button_subtab_main_offlineTime">Offline Time</button>
+					<button class="tabtier2 tier2main" onClick="openSubTab('main','corruption')" style="filter:brightness(60%)" id="button_subtab_main_corruption">Corruption</button>
 				</div>
 				<div class="subtab main" id="subtab_main_axis">
 					<button class="featureConfig main" onClick="openConfig['Axis']()"></button>
@@ -72,6 +73,7 @@
 						<p>The next Wormhole reset will give <span id="span_wormholeAmplificationMult" class="big _time"></span>× more rewards at the cost of <span id="span_wormholeAmplificationCost" class="big _time"></span> seconds of dilated time</p>
 					</div>
 				</div>
+				<div class="subtab main" id="subtab_main_corruption" style="display:none"></div>
 			</div>
 			<div class="tab" id="bigtab_stardust" style="display:none">
 				<div class="stardustNavigation globalnavigation">
@@ -188,7 +190,7 @@
 					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down the normal and dark axis cost superscaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
 					<table id="table_luckUpgrades"></table>
 					<div style="float:right;text-align:right;margin-right:20px;" id="div_luckSpendOptions" style="text-align:right;"></div>
-					<button style="float:right" onClick="respecLuckUpgrades()" class="starbuybutton">Respec Luck Upgrades (forces a Wormhole reset)</button>
+					<button style="float:right" onClick="respecLuckUpgrades()" class="starbuybutton" id="button_respecLuckUpgrades">Respec Luck Upgrades (forces a Wormhole reset)</button>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_prismatic" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Prismatic']()"></button>

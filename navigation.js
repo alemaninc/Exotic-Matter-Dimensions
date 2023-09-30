@@ -16,7 +16,7 @@ const tabVisibility = {
 function openTab(id) {
 	if (debugActive) {if (!tabList.includes(id)) {error("Could not open tab \""+id+"\"")}}
 	if (StudyE(1)) {
-		if (id=="main") {
+		if (id==="main") {
 			openSubTab("main","offlineTime")
 		} else if (["stardust","automation"].includes(id)&&StudyE(1)) {
 			notify("This tab is disabled in Study I","#990000","#ffffff")
@@ -35,16 +35,19 @@ const subtabProperties = {
 	main:{
 		axis:{
 			glow:function(){
-				if (autobuyerMeta.interval("axis")==0.1&&g.axisAutobuyerOn) return false;
+				if (autobuyerMeta.interval("axis")===0.1&&g.axisAutobuyerOn) return false;
 				if (g.glowOptions.buyAxis) {for (let i=0;i<8;i++) {if (g.exoticmatter.gt(axisCost(axisCodes[i]))&&(stat.axisUnlocked>i)) {return true}}};
 			}
 		},
 		masteries:{
 			visible:function(){return unlocked("Masteries")},
-			glow:function(){if (g.glowOptions.emptyMasteryRow) {for (let i=1;i<=totalMasteryRows;i++) {if ((g.activeMasteries[i]==0)&&(stat["masteryRow"+i+"Unlocked"])) {return true}}};}
+			glow:function(){if (g.glowOptions.emptyMasteryRow) {for (let i=1;i<=totalMasteryRows;i++) {if ((g.activeMasteries[i]===0)&&(stat["masteryRow"+i+"Unlocked"])) {return true}}};}
 		},
 		offlineTime:{
 			glow:function(){return (overclockActive&&g.glowOptions.overclock)}
+		},
+		corruption:{
+			visible:function(){return unlocked("Corruption")}
 		}
 	},
 	stardust:{
@@ -60,7 +63,7 @@ const subtabProperties = {
 		darkMatter:{
 			visible:function(){return unlocked("Dark Matter")},
 			glow:function(){
-				if (autobuyerMeta.interval("darkAxis")==0.1&&g.darkAxisAutobuyerOn) return false;
+				if (autobuyerMeta.interval("darkAxis")===0.1&&g.darkAxisAutobuyerOn) return false;
 				if (g.glowOptions.buyDarkAxis) {for (let i=0;i<4+g.stardustUpgrades[0];i++) {if (g.darkmatter.gt(darkAxisCost(axisCodes[i]))) {return true}}};
 				if (g.glowOptions.gainDarkStar&&stat.totalDarkAxis.gte(stat.darkStarReq)) {return true};
 			}
@@ -82,14 +85,14 @@ const subtabProperties = {
 		light:{
 			visible:function(){return unlocked("Light")},
 			glow:function(){
-				if (lightTiersUnlocked()==0) {return false}
+				if (lightTiersUnlocked()===0) {return false}
 				if (g.glowOptions.noChromaGeneration&&(typeof g.activeChroma!=="number")) {return true}
 			}
 		},
 		galaxies:{
 			visible:function(){return unlocked("Galaxies")},
 			glow:function(){
-				if (g.glowOptions.createGalaxy&&g.stars==60) return true
+				if (g.glowOptions.createGalaxy&&g.stars===60) return true
 				return false
 			}
 		},
@@ -160,7 +163,7 @@ function openSubTab(parentTab,id) {
 		if (!Object.keys(subtabList).includes(parentTab)) {error("Could not open subtab of tab \""+parentTab+"\"")}
 		if (!subtabList[parentTab].includes(id)) {error("Could not open subtab \""+id+"\" of tab \""+parentTab+"\"")}
 	}
-	if (StudyE(1)&&(parentTab=="main")&&(id!=="offlineTime")) {
+	if (StudyE(1)&&(parentTab==="main")&&(id!=="offlineTime")) {
 		notify("This subtab is disabled in Study I","#990000","#ffffff")
 		return
 	}
@@ -176,7 +179,7 @@ const hotkeys = {
 		let count = 0
 		for (let i of tabList) {
 			if (tabVisibility[i]()) count++
-			if (count==num) {
+			if (count===num) {
 				openTab(i)
 				return
 			}
@@ -213,8 +216,8 @@ function formatHotkey(key) {
 	let parts = key.split("+")
 	let mainKey = parts[parts.length-1]
 	let out = mainKey
-	if (mainKey.substring(0,5)=="Digit") {out = mainKey.substring(5)}
-	else if (mainKey.substring(0,3)=="Key") {out = mainKey.substring(3)}
+	if (mainKey.substring(0,5)==="Digit") {out = mainKey.substring(5)}
+	else if (mainKey.substring(0,3)==="Key") {out = mainKey.substring(3)}
 	parts[parts.length-1] = out
 	return parts.join("+")
 }
@@ -222,7 +225,7 @@ function hotkeyHandler(isUp){
 	return function(e) {
 		if (e.ctrlKey) return // if switching tab or whatever
 		if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) { // if inputting something
-			if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key=="9") addSecretAchievement(10)
+			if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key==="9") addSecretAchievement(10)
 			return
 		}
 		if (StudyE(1)) {	
@@ -236,7 +239,7 @@ function hotkeyHandler(isUp){
 			g.hotkeys[hotkeys.toBeChanged]=key
 			hotkeys.isChanging=false
 		} else {
-			for (let i of Object.keys(g.hotkeys)) if (g.hotkeys[i]==key) if (hotkeys.hotkeyList[i].visible()) {
+			for (let i of Object.keys(g.hotkeys)) if (g.hotkeys[i]===key) if (hotkeys.hotkeyList[i].visible()) {
 				let data = hotkeys.hotkeyList[i]
 				if (isUp) {if (data.up!==undefined) hotkeys.hotkeyList[i].up()}
 				else {if (data.down!==undefined) hotkeys.hotkeyList[i].down()}

@@ -58,7 +58,7 @@ const mainStatistics = [
 		condition:function(){return g.fastestWormholeReset.neq(c.d9e15);}
 	},{
 		name:"Achievements earned",
-		value:function(){return totalAchievements+(totalSecretAchievements==0?"":(" (+ "+totalSecretAchievements+" secret)"));},
+		value:function(){return totalAchievements+(totalSecretAchievements===0?"":(" (+ "+totalSecretAchievements+" secret)"));},
 		condition:function(){return totalAchievements+totalSecretAchievements>0;}
 	}
 ];
@@ -191,7 +191,7 @@ const largeNumberVisualizationNumbers = [
 function largeNumberVisualizationShown(num) {
 	let out
 	for (let i of largeNumberVisualizationNumbers) {
-		if (i.value.lte(num) && (i.visible==undefined?true:i.visible())) out = i
+		if (i.value.lte(num) && (i.visible===undefined?true:i.visible())) out = i
 	}
 	return out
 }
@@ -202,19 +202,20 @@ function visualiseLargeNumber(x) {
 	return unbreak("("+comparison.name+") × "+x.div(comparison.value).format(3))
 }
 function SSBsmall(x,y,hyper) {
-	let symbol=(hyper==2)?" × ":(hyper==3)?" ^ ":" ? ";
+	let symbol=(hyper===2)?" × ":(hyper===3)?" ^ ":" ? ";
 	return ("<span class=\"small\">"+unbreak("("+x+" "+symbol+" "+y+")")+"</span>").replaceAll("<span&nbsp;class=\"small\">","<span class=\"small\">");
 }
 function masteryDependencies(i){
-	if (typeof i == "array") return Array.removeDuplicates(i.map(x=>masteryDependencies(x)))
+	if (typeof i === "array") return Array.removeDuplicates(i.map(x=>masteryDependencies(x)))
 	let out = ["knowledgeEffect"]
-	if (Math.floor(i/10)==1) out.push("SAxisEffect","realSAxis")
-	if (Math.floor(i/10)==2) out.push("spatialEnergyEffect")
-	if (Math.floor(i/10)==4) out.push("totalNormalAxis")
-	if (Math.floor(i/10)==10) out.push("stardustBoost11")
+	if (Math.floor(i/10)===1) out.push("SAxisEffect","realSAxis")
+	if (Math.floor(i/10)===2) out.push("spatialEnergyEffect")
+	if (Math.floor(i/10)===4) out.push("totalNormalAxis")
+	if (Math.floor(i/10)===10) out.push("stardustBoost11")
 	// masteries boosting other masteries
 	if (i<40) out.push(masteryDependencies(40+i%10))
-	if (Math.floor(i/10)==8) out.push(masteryDependencies([91,92]))
+	if (Math.floor(i/10)===8) out.push(masteryDependencies([91,92]))
+	if (i===104) out.push(masteryDependencies(112))
 	return Array.removeDuplicates(out.flat())
 }
 const statTemplates = {
@@ -287,8 +288,8 @@ const statTemplates = {
 	}},
 	row6Star:function(id){return {
 		label:"Star "+id,
-		func:function(prev){return g.star[id]?prev.add(starEffect(id==64?64:60)):prev;},
-		text:function(){return "+ "+starEffect(id==64?64:60).format(2);},
+		func:function(prev){return g.star[id]?prev.add(starEffect(id===64?64:60)):prev;},
+		text:function(){return "+ "+starEffect(id===64?64:60).format(2);},
 		show:function(){return g.star[id]}
 	}},
 	darkMatterFreeAxis:function(type){
@@ -301,18 +302,18 @@ const statTemplates = {
 		};
 	},
 	darkStarEffect2:function(axis){
-		let hyper = (axis=="V")?2:3
+		let hyper = (axis==="V")?2:3
 		return {
 			label:"Dark Stars",
 			mod:function(){return darkStarEffect2Level(axis).div(c.d10).add(c.d1);},
-			func:(axis=="V")?function(prev){return prev.mul(this.mod());}:function(prev){return prev.pow(this.mod())},
+			func:(axis==="V")?function(prev){return prev.mul(this.mod());}:function(prev){return prev.pow(this.mod())},
 			text:function(){return [null,null,"×","^"][hyper]+" "+this.mod().noLeadFormat(3);},
 			dependencies:["realDarkStars"],
 			show:function(){return this.mod().neq(c.d1)}
 		};
 	},
 	tickspeed:function(exp,label="Tickspeed",dependencies=[]){
-		if (exp==undefined) return {
+		if (exp===undefined) return {
 			label:"Tickspeed",
 			func:function(prev){return prev.mul(stat.tickspeed);},
 			text:function(){return "× "+stat.tickspeed.format(3);},
@@ -327,7 +328,7 @@ const statTemplates = {
 			text:function(){return "× "+this.mod().format(3)+(stat.tickspeed.gt(c.d1)&&exp().neq(c.d1)?(" "+SSBsmall(stat.tickspeed.noLeadFormat(3),exp().noLeadFormat(4),3)):"");},
 			dependencies:["tickspeed",dependencies].flat(),
 			show:function(){return stat.tickspeed.neq(c.d1)&&exp().neq(c.d0)},
-			color:(label=="Tickspeed"?"var(--time)":"inherit")
+			color:(label==="Tickspeed"?"var(--time)":"inherit")
 		}
 	},
 	ach209Reward:{
@@ -819,13 +820,6 @@ miscStats.darkmatterPerSec={
 			show:function(){return stat.gravitationalEnergyEffect.neq(c.d1)}
 		},
 		statTemplates.study7,
-		{
-			label:"Study VIII",
-			func:function(prev){return ((!StudyE(8))||prev.lt(g.masteryPower))?prev:g.masteryPower.lt(c.d1)?g.masteryPower:Decimal.div(prev.log10(),g.masteryPower.log10()).mul(c.d10).pow(g.masteryPower.log10())},
-			text:function(){let mp=statFormat("MP",g.masteryPower.format(2),"_mastery");return g.masteryPower.lt(c.d1)?("min(<i>x</i>, "+mp+")"):("(10 × log(<i>x</i>) ÷ log("+mp+")) ^ log("+mp+")")},
-			show:function(){return StudyE(8)&&stat.darkmatterPerSec.gt(g.masteryPower)},
-			color:"#cc0000"
-		},
 		statTemplates.study9,
 		statTemplates.tickspeed(),
 	]
@@ -1312,7 +1306,7 @@ for (let i=0;i<axisCodes.length;i++) {
 	let out = [statTemplates.base("0",c.d0,false)]
 	// additive effects
 	out.push(statTemplates.darkMatterFreeAxis(type))
-	if (i==0) out.push(
+	if (i===0) out.push(
 		{
 			label:achievement.label(108),
 			func:function(prev){return g.achievement[108]?prev.add(g.ZAxis.mul(achievement(108).effect())):prev;},
@@ -1321,7 +1315,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		},
 		statTemplates.masteryAdd(51)
 	)
-	if (i==1) out.push(
+	if (i===1) out.push(
 		{
 			label:achievement.label(107),
 			func:function(prev){return g.achievement[107]?prev.add(c.d1):prev},
@@ -1344,7 +1338,7 @@ for (let i=0;i<axisCodes.length;i++) {
 	})
 	if (i<4) {out.push(statTemplates.row2Star(i+21))} else {out.push(statTemplates.row6Star(i+57))}
 	if (i<7) out.push(statTemplates.ach210Reward(axisCodes[i+1]))
-	if (i==7) out.push({
+	if (i===7) out.push({
 		label:"Research 3-2",
 		func:function(prev){return g.research.r3_2?prev.add(researchEffect(3,2)):prev},
 		text:function(){return "+ "+researchEffect(3,2).noLeadFormat(2);},
@@ -1353,11 +1347,11 @@ for (let i=0;i<axisCodes.length;i++) {
 	if (i<7) out.push({
 		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
 		func:function(prev){return prev.add(g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
-		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
+		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
 		show:function(){return g.luckUpgrades.cinquefolium.axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
 	})
 	// multiplicative effects
-	if (i==0) out.push({
+	if (i===0) out.push({
 		label:"Spatial Energy",
 		func:function(prev){return prev.mul(stat.spatialEnergyEffect);},
 		text:function(){return "× "+stat.spatialEnergyEffect.format(4);},
@@ -1377,7 +1371,7 @@ for (let i=0;i<axisCodes.length;i++) {
 	}
 }
 for (let group of ["","dark","anti"]) {
-	let groupName = ((group=="")?"":(group=="dark")?"Dark ":"Anti-")
+	let groupName = ((group==="")?"":(group==="dark")?"Dark ":"Anti-")
 	for (let i=0;i<axisCodes.length;i++) {
 		let type = axisCodes[i]
 		let out = [
@@ -1416,7 +1410,7 @@ for (let group of ["","dark","anti"]) {
 			type:"breakdown",
 			label:"Effective "+groupName+type+" Axis",
 			visible:function(){return unlocked("Antimatter")&&Decimal.neq(g[group+type+"Axis"],stat["real"+group+type+"Axis"])},
-			newRow:((group!=="")&&(type=="X")),
+			newRow:(group!=="")&&(type==="X"),
 			category:"Effective axis",
 			precision:2,
 			modifiers:out
@@ -1682,7 +1676,7 @@ miscStats.darkAxisCostDivisor={
 			text:function(){return "× "+achievement(501).realEffect().format(2)},
 			show:function(){return g.achievement[709]}
 		},
-		statTemplates.study9
+		statTemplates.study9,
 	]
 };
 miscStats.darkAxisCostExponent={
@@ -1935,7 +1929,7 @@ miscStats.tickspeed={
 			label:"Temporal Paradox",
 			func:function(prev){return prev.max(c.d0);},
 			text:function(){return "No negative numbers allowed";},
-			show:function(){return stat.tickspeed.sign==-1},
+			show:function(){return stat.tickspeed.sign===-1},
 			color:"var(--time2)"
 		}
 	]
@@ -2098,7 +2092,7 @@ for (let i=0;i<axisCodes.length;i++) {
 	let out = [statTemplates.base("0",c.d0,false)]
 	// additive effects
 	out.push(statTemplates.ach528Reward(type))
-	if (i==0) out.push(
+	if (i===0) out.push(
 		{
 			label:"Research 3-6",
 			func:function(prev){return g.research.r3_6?prev.add(researchEffect(3,6).mul(g.darkSAxis)):prev;},
@@ -2113,20 +2107,20 @@ for (let i=0;i<axisCodes.length;i++) {
 		}
 	)
 	if (i<3) out.push({
-		label:i==2?achievement.label(305):achievement.label(303,true),
+		label:i===2?achievement.label(305):achievement.label(303,true),
 		effectors:[303,304,305].filter(x=>x-i>302),
 		mod:function(){return this.effectors.map(x=>g.achievement[x]?1:0).sum()},
 		func:function(prev){return prev.add(this.mod())},
 		text:function(){return "+ "+this.mod()},
 		show:function(){return this.effectors.map(x=>g.achievement[x]).includes(true)}
 	})
-	if (i==7) out.push({
+	if (i===7) out.push({
 		label:"Research 3-14",
 		func:function(prev){return g.research.r3_14?prev.add(researchEffect(3,14)):prev;},
 		text:function(){return "+ "+researchEffect(3,14).noLeadFormat(2);},
 		show:function(){return g.research.r3_14&&researchEffect(3,14).neq(c.d0)}
 	})
-	if (i==1) out.push({
+	if (i===1) out.push({
 		label:"Luck Shards",
 		func:function(prev){return prev.add(luckShardEffect1())},
 		text:function(){return "+ "+luckShardEffect1().format(2)},
@@ -2134,8 +2128,8 @@ for (let i=0;i<axisCodes.length;i++) {
 	})
 	if (i<7) out.push({
 		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
-		func:function(prev){return prev.add(g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
-		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
+		func:function(prev){return prev.add(g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
+		text:function(){return "+ "+g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g["dark"+type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
 		show:function(){return g.luckUpgrades.cinquefolium.axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
 	})
 	// multiplicative effects
@@ -2147,7 +2141,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		label:"Free dark "+type+" Axis",
 		visible:function(){return stat["freedark"+type+"Axis"].neq(c.d0)},
 		category:"Free axis",
-		newRow:i==0,
+		newRow:i===0,
 		precision:2,
 		modifiers:out
 	}
@@ -2231,11 +2225,11 @@ miscStats.observationEffect={
 			let out = []
 			for (let i=0;i<4;i++) out.push({
 				label:["Exotic Matter","Nebula","Dark Matter","Black Hole"][i]+" observations",
-				base:function(){return g.observations[i].mul(i==3?c.d0_2:c.d0_1).add(c.d1)},
+				base:function(){return g.observations[i].mul(i===3?c.d0_2:c.d0_1).add(c.d1)},
 				mod:function(){return this.base().gt(c.d10)?this.base().mul(c.e2).pow(c.d1div3):this.base()},
 				func:function(prev){return prev.mul(this.mod())},
 				text:function(){
-					out = this.base().gt(c.d10)?SSBsmall("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i==3?"20":"10")+" + 100)","(1 ÷ 3)",3):("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i==3?"0.2":"0.1")+" + 1)")
+					out = this.base().gt(c.d10)?SSBsmall("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i===3?"20":"10")+" + 100)","(1 ÷ 3)",3):("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i===3?"0.2":"0.1")+" + 1)")
 					return "× "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+out+"</span>"
 				},
 				show:function(){return g.observations[i].gt(c.d0)}
@@ -2416,7 +2410,7 @@ miscStats.prismaticPerSec={
 		{
 			label:"Galaxy Boost 4",
 			func:function(prev){return prev.aps(galaxyEffects[4].boost.value())},
-			text:function(){return "(<i>x</i> + 1) ^ "+formatGalaxyEffect(4,"boost")+" - 1"},
+			text:function(){return "(<i>x</i> + 1) ^ "+galaxyEffects[4].boost.value().noLeadFormat(4)+" - 1"},
 			show:function(){return g.galaxies>=galaxyEffects[4].req}
 		},
 		{
@@ -2437,6 +2431,14 @@ miscStats.prismaticPerSec={
 		})(),
 		statTemplates.antiYAxis,
 		statTemplates.timeResearch(17,8),
+		{
+			label:"Mastery 111",
+			mod:function(){return Decimal.pow(masteryEffect(104),masteryEffect(111))},
+			func:function(prev){return MasteryE(111)?prev.mul(this.mod()):prev},
+			text:function(){return this.mod().format(2)+" "+SSBsmall(masteryEffect(104).format(2),masteryEffect(111).noLeadFormat(2),3)},
+			dependencies:masteryDependencies(111),
+			show:function(){return MasteryE(111)}
+		},
 		statTemplates.tickspeed()
 	]
 }
@@ -2618,7 +2620,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		label:"Free anti-"+type+" Axis",
 		visible:function(){return stat["freeanti"+type+"Axis"].neq(c.d0)},
 		category:"Free axis",
-		newRow:i==0,
+		newRow:i===0,
 		precision:2,
 		modifiers:out
 	}
@@ -2736,7 +2738,7 @@ miscStats.antiAxisSuperscalingPower={
 }
 for (let i of axisCodes) {
 	let normalCostDependencies = ["axisCostDivisor","axisCostExponent","axisScalingStart","axisScalingPower","axisSuperscalingStart","axisSuperscalingPower","spatialSynergismPower"]
-	if (i=="X") normalCostDependencies.push("stardustBoost5")
+	if (i==="X") normalCostDependencies.push("stardustBoost5")
 	miscStats[i+"AxisCost"]={
 		type:"combined",
 		value:function(){return axisCost(i)},
@@ -2950,7 +2952,11 @@ miscStats.darkStarScalingStart={
 		return out
 	}
 }
-miscStats.darkStarScalingPower={type:"combined",value:function(){return c.d1}}
+miscStats.darkStarScalingPower={type:"combined",value:function(){
+	let out = c.d1
+	if (g.achievement[813]) out = out.mul(c.d0_95)
+	return out
+}}
 miscStats.darkStarReq={type:"combined",value:function(){return darkStarReq()},dependencies:[masteryDependencies(63),"darkStarScalingStart","darkStarScalingPower","stardustBoost9","gravitationalEnergyEffect"].flat()}
 miscStats.maxAffordableDarkStars={type:"combined",value:function(){return maxAffordableDarkStars()},dependencies:miscStats.darkStarReq.dependencies}
 for (let i=0;i<energyTypes.length;i++) {
@@ -2958,10 +2964,10 @@ for (let i=0;i<energyTypes.length;i++) {
 	miscStats[energyTypes[i]+"EnergyEffect"]={type:"combined",value:function(){return energyEffect(i)},dependencies:["energyEffectBoost"]}
 }
 miscStats.wormholeDarkAxisReq={type:"combined",value:function(){
-	if (g.activeStudy==0) return c.e3;
+	if (g.activeStudy===0) return c.e3;
 	return N(studies[g.activeStudy].goal());
 }}
-miscStats.ironWill={type:"combined",value:function(){return g.StardustResets==0&&g.TotalStardustResets==0&&totalResearch.temporary==0}}
+miscStats.ironWill={type:"combined",value:function(){return g.StardustResets===0&&g.TotalStardustResets===0&&totalResearch.temporary===0}}
 miscStats.wormholeMilestone9Effect={type:"combined",value:function(){return wormholeMilestone9Effect()}}
 miscStats.knowledgeEffect={type:"combined",value:function(){return Decimal.convergentSoftcap(g.knowledge.add(c.d10).log10().log10().mul(c.d10),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap)},dependencies:["knowledgeEffectCap"]}
 miscStats.knowledgeEffectCap={type:"combined",value:function(){return studies[8].reward(1)}}
@@ -2993,10 +2999,10 @@ for (let i of Object.keys(miscStats)) {
 }
 function statGeneration(name) {
 	try {
-		if (typeof statGenerations[name] == "number") return statGenerations[name]
+		if (typeof statGenerations[name] === "number") return statGenerations[name]
 		let data = miscStats[name]
-		let dependencies = (data.type=="breakdown")?[data,...data.modifiers].map(x=>(x.dependencies==undefined)?[]:x.dependencies).flat().filter(x=>x!==undefined):(data.dependencies==undefined?[]:data.dependencies)
-		let out = (dependencies.length==0)?0:(dependencies.map(x=>statGeneration(x)).reduce((x,y)=>Math.max(x,y))+1)
+		let dependencies = (data.type==="breakdown")?[data,...data.modifiers].map(x=>(x.dependencies===undefined)?[]:x.dependencies).flat().filter(x=>x!==undefined):(data.dependencies===undefined?[]:data.dependencies)
+		let out = (dependencies.length===0)?0:(dependencies.map(x=>statGeneration(x)).reduce((x,y)=>Math.max(x,y))+1)
 		statGenerations[name] = out
 		return out
 	} catch {functionError("statGeneration",arguments)}
@@ -3005,9 +3011,9 @@ var statOrder
 function updateStat(id) {
 	try {
 		let data = miscStats[id]
-		if (data.type=="combined") {
+		if (data.type==="combined") {
 			stat[id] = data.value()
-		} else if (data.type=="breakdown") {
+		} else if (data.type==="breakdown") {
 			let value = data.modifiers[0].func()
 			for (let i of data.modifiers) value = i.func(value)
 			stat[id] = value	
@@ -3032,27 +3038,27 @@ function updateStats() {
 var breakdownCategories = {}
 /* generate the breakdown categories variable */
 function statBreakdownCategories() {
-	let categories = Array.removeDuplicates(Object.values(miscStats).filter(x=>x.type=="breakdown").map(x => x.category));
+	let categories = Array.removeDuplicates(Object.values(miscStats).filter(x=>x.type==="breakdown").map(x => x.category));
 	let out = {}
 	for (let i of categories) {
-		let contents = Array.removeDuplicates(Object.keys(miscStats).filter(x => miscStats[x].category==i))
+		let contents = Array.removeDuplicates(Object.keys(miscStats).filter(x => miscStats[x].category===i))
 		out[i]={contents:contents,active:contents[0]}
 	}
 	breakdownCategories = out
-	d.innerHTML("SSBnav1",categories.sort().map(x => "<button id=\"button_SSBnav1_"+x+"\" class=\"tabtier3\" style=\"filter:brightness("+(x=="Exotic Matter gain"?100:75)+"%)\" onClick=\"toggleActiveBreakdownSection('"+x+"');updateHTML()\">"+x+"</button>").join(""))
+	d.innerHTML("SSBnav1",categories.sort().map(x => "<button id=\"button_SSBnav1_"+x+"\" class=\"tabtier3\" style=\"filter:brightness("+(x==="Exotic Matter gain"?100:75)+"%)\" onClick=\"toggleActiveBreakdownSection('"+x+"');updateHTML()\">"+x+"</button>").join(""))
 	d.innerHTML("SSBtable","<tr><th class=\"tablecell\">Source</th><th class=\"tablecell\">Modifier</th><th class=\"tablecell\">Subtotal</th></tr>"+Array(maximumSSBModifierLength).fill(0).map((x,i)=>"<tr id=\"SSBtable_row"+i+"\"><td class=\"tablecell\" style=\"width:32vw\" id=\"SSBtable_label"+i+"\"></td><td class=\"tablecell\" style=\"width:32vw\" id=\"SSBtable_text"+i+"\"></td><td class=\"tablecell\" style=\"width:32vw\" id=\"SSBtable_total"+i+"\"></td></tr>").join(""))
 }
 var activeBreakdownSection = "Exotic Matter gain";
 var activeBreakdownTab = "exoticmatterPerSec";
 var activeBreakdownTabModifierLength = miscStats[activeBreakdownTab].modifiers.length
-const maximumSSBModifierLength = Object.values(miscStats).filter(x=>x.type=="breakdown").map(x => x.modifiers.length).reduce((x,y)=>Math.max(x,y))
+const maximumSSBModifierLength = Object.values(miscStats).filter(x=>x.type==="breakdown").map(x => x.modifiers.length).reduce((x,y)=>Math.max(x,y))
 function toggleActiveBreakdownSection(x) {
 	activeBreakdownSection = x
 	let categories = Object.keys(breakdownCategories)
 	for (let i of categories) {
-		d.element("button_SSBnav1_"+i).style.filter = "brightness("+(i==x?100:75)+"%)"
+		d.element("button_SSBnav1_"+i).style.filter = "brightness("+(i===x?100:75)+"%)"
 	}
-	d.innerHTML("SSBnav2",(breakdownCategories[x].contents.length==1)?"":(breakdownCategories[x].contents.map(x => (miscStats[x].newRow?"<br class=\"SSBnav2_br\">":"")+"<button id=\"button_SSBnav2_"+x+"\" class=\"tabtier4\" style=\"filter:brightness("+(x==activeBreakdownTab?100:75)+"%);display:"+(miscStats[x].visible()?"inline-block":"none")+"\" onClick=\"toggleActiveBreakdownTab('"+x+"');updateHTML()\">"+miscStats[x].label+"</button>").join("")))
+	d.innerHTML("SSBnav2",(breakdownCategories[x].contents.length===1)?"":(breakdownCategories[x].contents.map(x => (miscStats[x].newRow?"<br class=\"SSBnav2_br\">":"")+"<button id=\"button_SSBnav2_"+x+"\" class=\"tabtier4\" style=\"filter:brightness("+(x===activeBreakdownTab?100:75)+"%);display:"+(miscStats[x].visible()?"inline-block":"none")+"\" onClick=\"toggleActiveBreakdownTab('"+x+"');updateHTML()\">"+miscStats[x].label+"</button>").join("")))
 	toggleActiveBreakdownTab(breakdownCategories[x].active)
 }
 function toggleActiveBreakdownTab(x){
@@ -3060,6 +3066,6 @@ function toggleActiveBreakdownTab(x){
 	breakdownCategories[activeBreakdownSection].active=x;
 	activeBreakdownTabModifierLength = miscStats[x].modifiers.length
 	let categories = breakdownCategories[activeBreakdownSection].contents
-	if (categories.length>1) for (let i of categories) d.element("button_SSBnav2_"+i).style.filter = "brightness("+(i==x?100:75)+"%)"
+	if (categories.length>1) for (let i of categories) d.element("button_SSBnav2_"+i).style.filter = "brightness("+(i===x?100:75)+"%)"
 }
 var breakdownTabList = Object.entries(miscStats).sort(function(a,b){return a[1].label>b[1].label;}).map(x => x[0]);

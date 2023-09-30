@@ -6,7 +6,7 @@ function updateHTML() {
 			d.display("wormholeAnimation","none");
 			wormholeAnimationActive=false;
 		} else if (Date.now()-wormholeAnimationStart>8000) {
-			unlockFeature("Hawking Radiation",true);
+			unlockFeature("Hawking Radiation");
 			d.display("wormholeAnimation","inline-block");
 			d.element("wormholeAnimation").style.opacity = 2-(Date.now()-wormholeAnimationStart)/8000;
 		} else {
@@ -23,7 +23,7 @@ function updateHTML() {
 	d.class("button_wormholeReset",stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"wormholeResetButton":"lockedStardustResetButton");
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";
 	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
-	let showFooter = (g.footerDisplay=="All tabs")?true:(g.footerDisplay=="Only Axis tab")?(g.activeTab=="main"&&g.activeSubtabs.main=="axis"):(g.footerDisplay=="None")?false:undefined
+	let showFooter = (g.footerDisplay==="All tabs")?true:(g.footerDisplay==="Only Axis tab")?(g.activeTab==="main"&&g.activeSubtabs.main==="axis"):(g.footerDisplay==="None")?false:undefined
 	d.display("footer",showFooter?"inline-block":"none")
 	if (showFooter) ProgressBar()
 	for (let tab of tabList) {
@@ -45,9 +45,9 @@ function updateHTML() {
 			d.display("button_bigtab_"+tab,"none")
 		}
 	}
-	if (g.activeTab=="main") {
+	if (g.activeTab==="main") {
 		if (StudyE(1)) {if (g.activeSubtabs.main!=="offlineTime") openSubTab("main","offlineTime")};
-		if (g.activeSubtabs.main=="axis") {
+		if (g.activeSubtabs.main==="axis") {
 			d.display("div_exoticmatter_disabledTop",g.topResourcesShown.exoticmatter?"none":"inline-block")
 			if (!g.topResourcesShown.exoticmatter) {
 				d.innerHTML("span_exoticmatter_disabledTop",g.exoticmatter.format())
@@ -58,7 +58,7 @@ function updateHTML() {
 				let type = axisCodes[i];
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
 				if (stat.axisUnlocked>i) {
-					d.class("button_"+type+"Axis",g.exoticmatter.gt(stat[type+"AxisCost"])?"axisbutton":"lockedaxisbutton");
+					d.class("button_"+type+"Axis","axisbutton "+(corruption.list.axis.isCorrupted(type)?"corrupted":g.exoticmatter.gt(stat[type+"AxisCost"])?"available":"locked"));
 					if (Decimal.eq(g[type+"Axis"],stat["real"+type+"Axis"])) {
 						d.display("span_real"+type+"Axis","none")
 					} else {
@@ -74,7 +74,7 @@ function updateHTML() {
 				d.display("button_empowered"+name+"Axis",stat["empowered"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empowered"+name+"AxisAmount",stat["empowered"+name+"Axis"].noLeadFormat(2));
 			}
-		} else if (g.activeSubtabs.main=="masteries") {
+		} else if (g.activeSubtabs.main==="masteries") {
 			showMasteryInfo(shownMastery,1)
 			for (let i of ["div","br"]) d.display(i+"_masteryPower_disabledTop",g.topResourcesShown.masteryPower?"none":"inline-block")
 			if (!g.topResourcesShown.masteryPower) {
@@ -83,17 +83,17 @@ function updateHTML() {
 			}
 			for (let i=1;i<=totalMasteryRows;i++) d.tr("masteryRow"+i+g.masteryContainerStyle,stat["masteryRow"+i+"Unlocked"]>0)
 			let list = Object.keys(masteryData)
-			if (g.masteryContainerStyle == "Legacy") {
+			if (g.masteryContainerStyle === "Legacy") {
 				for (let i of list) {
-					d.display("button_mastery"+i+"Legacy",(stat["masteryRow"+Math.floor(i/10)+"Unlocked"]&&((masteryData[i].req==undefined)?true:masteryData[i].req()))?"inline-block":"none")
+					d.display("button_mastery"+i+"Legacy",(stat["masteryRow"+Math.floor(i/10)+"Unlocked"]&&((masteryData[i].req===undefined)?true:masteryData[i].req()))?"inline-block":"none")
 					d.element("button_mastery"+i+"Legacy").style["background-color"] = MasteryE(i)?"rgba(0,255,0,0.9)":"rgba(204,204,204,0.9)"
 					d.innerHTML("span_mastery"+i+"BoostLegacy",masteryBoost(i).eq(c.d1)?"":(masteryBoost(i).mul(c.e2).noLeadFormat(3)+"%"))
 					d.innerHTML("span_mastery"+i+"ActiveLegacy",MasteryE(i)?"Active":"Inactive")
 					d.innerHTML("span_mastery"+i+"TextLegacy",masteryText(i))
 				}
-			} else if (g.masteryContainerStyle == "Modern") {
+			} else if (g.masteryContainerStyle === "Modern") {
 				for (let i of list) {
-					d.display("button_mastery"+i+"Modern",(stat["masteryRow"+Math.floor(i/10)+"Unlocked"]&&((masteryData[i].req==undefined)?true:masteryData[i].req()))?"inline-block":"none")
+					d.display("button_mastery"+i+"Modern",(stat["masteryRow"+Math.floor(i/10)+"Unlocked"]&&((masteryData[i].req===undefined)?true:masteryData[i].req()))?"inline-block":"none")
 					d.element("button_mastery"+i+"Modern").style["background-color"] = MasteryE(i)?"rgba(0,255,0,0.3)":"rgba(128,128,128,0.2)"
 					d.innerHTML("span_mastery"+i+"BoostModern",masteryBoost(i).eq(c.d1)?"":(masteryBoost(i).mul(c.e2).noLeadFormat(3)+"%"))
 					d.innerHTML("span_mastery"+i+"ActiveModern",MasteryE(i)?"Active":"Inactive")
@@ -102,7 +102,7 @@ function updateHTML() {
 			} else {
 				g.masteryContainerStyle = "Legacy"
 			}
-		} else if (g.activeSubtabs.main=="offlineTime") {
+		} else if (g.activeSubtabs.main==="offlineTime") {
 			g.dilationPower = Number(d.element('dilationSpeedupFactor').value)
 			d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 			d.innerHTML("span_overclockSpeedupFactor",N(stat.baseOverclockSpeedup).noLeadFormat(3))
@@ -122,8 +122,8 @@ function updateHTML() {
 					if (g.dilationUpgradesUnlocked>=i) {
 						d.display("div_dilationUpgrade"+i,"inline-block")
 						d.innerHTML("span_dilationUpgrade"+i+"Effect",(g.dilationUpgrades[i]<dilationUpgrades[i].cap)?arrowJoin(dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]),dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]+1)):dilationUpgrades[i].effectFormat(g.dilationUpgrades[i]))
-						d.innerHTML("span_dilationUpgrade"+i+"Cost",(g.dilationUpgrades[i]==dilationUpgrades[i].cap)?"Maxed":("Cost: "+timeFormat(dilationUpgrades[i].cost())+" of dilated time"))
-						d.element("div_dilationUpgrade"+i).style["filter"] = "brightness("+((g.dilationUpgrades[i]==dilationUpgrades[i].cap)?50:(dilationUpgrades[i].cost()<g.dilatedTime)?100:80)+"%)"
+						d.innerHTML("span_dilationUpgrade"+i+"Cost",(g.dilationUpgrades[i]===dilationUpgrades[i].cap)?"Maxed":("Cost: "+timeFormat(dilationUpgrades[i].cost())+" of dilated time"))
+						d.element("div_dilationUpgrade"+i).style["filter"] = "brightness("+((g.dilationUpgrades[i]===dilationUpgrades[i].cap)?50:(dilationUpgrades[i].cost()<g.dilatedTime)?100:80)+"%)"
 					} else {
 						d.display("div_dilationUpgrade"+i,"none")
 					}
@@ -138,16 +138,27 @@ function updateHTML() {
 			} else {
 				d.display("div_timeLoop","none")
 			}
+		} else if (g.activeSubtabs.main==="corruption") {
+			for (let i of corruption.all) {
+				if (corruption.list[i].visible()) {
+					d.display("div_corruption_"+i,"inline-block")
+					d.innerHTML("span_corruption_"+i+"_start",corruption.list[i].start().format())
+					d.innerHTML("span_corruption_"+i+"_power",corruption.list[i].power().mul(c.e2).noLeadFormat(3)+"%")
+					d.innerHTML("span_corruption_"+i+"_formula",corruption.formula(i))
+				} else {
+					d.display("div_corruption_"+i,"none")
+				}
+			}
 		}
-	} else if (g.activeTab=="options") {
-		if (g.activeSubtabs.options=="options") {
+	} else if (g.activeTab==="options") {
+		if (g.activeSubtabs.options==="options") {
 			d.innerHTML("colortheme",g.colortheme);
 			d.innerHTML("notation",g.notation);
 			d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off");
 			d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
 			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
 			d.innerHTML("span_newsTickerSpeed",g.newsTickerSpeed)
-		} else if (g.activeSubtabs.options=="hotkeys") {
+		} else if (g.activeSubtabs.options==="hotkeys") {
 			for (let name in hotkeys.hotkeyList) {
 				let hotkey = hotkeys.hotkeyList[name]
 				if (hotkey.visible()) {
@@ -158,8 +169,8 @@ function updateHTML() {
 				}
 			}
 		}
-	} else if (g.activeTab=="statistics") {
-		if (g.activeSubtabs.statistics=="mainStatistics") {
+	} else if (g.activeTab==="statistics") {
+		if (g.activeSubtabs.statistics==="mainStatistics") {
 			for (let i=0;i<mainStatistics.length;i++) {
 				if (mainStatistics[i].condition()) {
 					d.tr("mainStatRow"+i,true);
@@ -168,7 +179,7 @@ function updateHTML() {
 					d.tr("mainStatRow"+i,false);
 				}
 			}
-		} else if (g.activeSubtabs.statistics=="hiddenStatistics") {
+		} else if (g.activeSubtabs.statistics==="hiddenStatistics") {
 			for (let i=0;i<hiddenStatistics.length;i++) {
 				if (hiddenStatistics[i].condition()) {
 					d.tr("hiddenStatRow"+i,true);
@@ -177,7 +188,7 @@ function updateHTML() {
 					d.tr("hiddenStatRow"+i,false);
 				}
 			}
-		} else if (g.activeSubtabs.statistics=="largeNumberVisualization") {
+		} else if (g.activeSubtabs.statistics==="largeNumberVisualization") {
 			d.innerHTML("span_largeNumberVisualizationRequirement",BEformat(c.e10))
 			for (let i=0;i<largeNumberVisualizationVariables.length;i++) {
 				if (largeNumberVisualizationVariables[i].value().gt(c.e10)) {
@@ -188,7 +199,7 @@ function updateHTML() {
 					d.display("div_largeNumberVisualization"+i,"none")
 				}
 			}
-		} else if (g.activeSubtabs.statistics=="statBreakdown") {
+		} else if (g.activeSubtabs.statistics==="statBreakdown") {
 			let categories = Object.keys(breakdownCategories)
 			for (let i of categories) {
 				let display = breakdownCategories[i].contents.map(x => miscStats[x].visible()).reduce((x,y)=>x||y)
@@ -215,7 +226,7 @@ function updateHTML() {
 					value = next.func(oldvalue);
 					let display = true;
 					if (i>0) if (value.eq(oldvalue)) display = false;
-					if (i==0&&(value.eq(c.d0)||value.eq(c.d1))) display = false;
+					if (i===0&&(value.eq(c.d0)||value.eq(c.d1))) display = false;
 					if (next.show !== undefined) display = next.show()
 					d.tr("SSBtable_row"+i,display)
 					if (display) {
@@ -226,7 +237,7 @@ function updateHTML() {
 					}
 				}
 			}
-		} else if (g.activeSubtabs.statistics=="previousPrestiges") {
+		} else if (g.activeSubtabs.statistics==="previousPrestiges") {
 			d.display("button_previousPrestige_wormholeTab",unlocked("Hawking Radiation")?"inline-block":"none")
 			for (let i=1;i<11;i++) {
 				let stardustExists = i<=g.previousStardustRuns.last10.length
@@ -266,36 +277,36 @@ function updateHTML() {
 			}
 		}
 	}
-	if (g.activeTab=="achievements") {
+	if (g.activeTab==="achievements") {
 		d.display("button_subtab_achievements_secretAchievements",(totalSecretAchievements>0)?"inline-block":"none");
 		d.display("button_subtab_achievements_wormholeMilestones",achievement.ownedInTier(5)>0?"inline-block":"none");
-		if (g.activeSubtabs.achievements=="mainAchievements") {
+		if (g.activeSubtabs.achievements==="mainAchievements") {
 			for (let i of Object.keys(achievementList)) d.innerHTML("span_perTier"+i+"AchievementReward",achievement.perAchievementReward[i].value())
 			for (let i of achievement.withMilestones) if (g.achievement[i]) {
 				let fullCompletion = achievement(i).milestones()===achievement(i).maxMilestones
 				d.element("div_achievement"+i).style["background-color"] = "rgba(0,"+(fullCompletion?"255,0":"204,204")+",0.5)"
 				d.element("div_achievement"+i).style["border-color"] = "#00"+(fullCompletion?"ff00":"cccc")
 			}
-		} else if (g.activeSubtabs.achievements=="wormholeMilestones") {
+		} else if (g.activeSubtabs.achievements==="wormholeMilestones") {
 			d.innerHTML("span_wormholeMilestoneT5Achievements",achievement.ownedInTier(5))
 			let tier5achs = achievement.ownedInTier(5)
-			let nextMilestoneNum = achievement.ownedInTier(5)==30?undefined:Object.keys(wormholeMilestoneList).filter(x=>x>tier5achs)[0]
-			let nextMilestone = achievement.ownedInTier(5)==30?undefined:wormholeMilestoneList[nextMilestoneNum]
+			let nextMilestoneNum = achievement.ownedInTier(5)===30?undefined:Object.keys(wormholeMilestoneList).filter(x=>x>tier5achs)[0]
+			let nextMilestone = achievement.ownedInTier(5)===30?undefined:wormholeMilestoneList[nextMilestoneNum]
 			let allUnlocked = tier5achs===30
  			for (let i in wormholeMilestoneList) {
 				d.display("div_wormholeMilestone"+i,allUnlocked?"inline-block":(Number(nextMilestoneNum)>=Number(i))?"inline-block":"none")
-				d.element("div_wormholeMilestone"+i).style.filter = allUnlocked?"":(nextMilestoneNum==i)?"brightness(50%)":""
+				d.element("div_wormholeMilestone"+i).style.filter = allUnlocked?"":(nextMilestoneNum===i)?"brightness(50%)":""
 			}
 			d.innerHTML("span_wormholeMilestone9Effect",stat.wormholeMilestone9Effect.format(4))
 			d.innerHTML("span_wormholeMilestone18Effect",timeFormat(wormholeMilestone18Effect()))
 			d.innerHTML("span_wormholeMilestone27Effect",wormholeMilestone27Effect().format(2))
 		}
 	}
-	if (g.activeTab=="stardust") {
+	if (g.activeTab==="stardust") {
 		if (StudyE(1)) openTab("wormhole");
 		d.display("div_stardust_disabledTop",g.topResourcesShown.stardust?"none":"inline-block")
 		if (!g.topResourcesShown.stardust) d.innerHTML("span_stardust_disabledTop",g.stardust.format())
-		if (g.activeSubtabs.stardust=="stardustBoosts") {
+		if (g.activeSubtabs.stardust==="stardustBoosts") {
 			for (let i=1;i<3+g.stardustUpgrades[2];i++) d.innerHTML("span_stardustBoost"+i+"Value",showFormulas?showStardustBoostFormula[i]():formatStardustBoost(i))
 			for (let i of [2,3,6,8,11]) d.innerHTML("span_stardustBoost"+i+"Tooltip",(stat["stardustBoost"+i].gte(c.d10)||showFormulas)?"×":"%")
 			d.innerHTML("span_stardustBoost4Tooltip",g.masteryPower.add(c.d1).pow(stat.stardustBoost4).format(2));
@@ -305,17 +316,17 @@ function updateHTML() {
 			/* Stardust boost table */ for (let i=3;i<13;i++) d.display("div_stardustBoost"+i,((g.stardustUpgrades[2]>(i-3))?"inline-block":"none"));
 			/* Stardust upgrade buttons */
 			for (let i=1;i<6;i++) {
-				d.class("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]==stat["stardustUpgrade"+i+"Cap"])||g.confirmations.buyStardustUpgrade)?"maxedstardustupgradebutton":stat["stardustUpgrade"+i+"Cost"].lte(g.stardust)?"stardustupgradebutton":"lockedaxisbutton")
-				d.innerHTML("span_stardustUpgrade"+i+"Tooltip",(g.stardustUpgrades[i-1]==stat["stardustUpgrade"+i+"Cap"])?(stardustUpgradeNames[i]+" Path has been maxed"):(stardustUpgradeTooltip[i]()+"<br><br>Cost: "+stat["stardustUpgrade"+i+"Cost"].format(0)+" stardust"))
+				d.class("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]===stat["stardustUpgrade"+i+"Cap"])||g.confirmations.buyStardustUpgrade)?"axisbutton stardustupgrade maxed":stat["stardustUpgrade"+i+"Cost"].lte(g.stardust)?"axisbutton stardustupgrade":"axisbutton locked")
+				d.innerHTML("span_stardustUpgrade"+i+"Tooltip",(g.stardustUpgrades[i-1]===stat["stardustUpgrade"+i+"Cap"])?(stardustUpgradeNames[i]+" Path has been maxed"):(stardustUpgradeTooltip[i]()+"<br><br>Cost: "+stat["stardustUpgrade"+i+"Cost"].format(0)+" stardust"))
 				d.innerHTML("span_stardustUpgrade"+i+"Level",g.stardustUpgrades[i-1])
 				d.display("button_stardustUpgrade"+i,((g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"])||g.showingCappedStardustUpgrades)?"inline-block":"none")
 			}
-		} else if (g.activeSubtabs.stardust=="stars") {
-			d.display("starContainerLegacy",g.starContainerStyle=="Legacy"?"inline-block":"none")
-			d.display("starContainerModern",g.starContainerStyle=="Modern"?"inline-block":"none")
+		} else if (g.activeSubtabs.stardust==="stars") {
+			d.display("starContainerLegacy",g.starContainerStyle==="Legacy"?"inline-block":"none")
+			d.display("starContainerModern",g.starContainerStyle==="Modern"?"inline-block":"none")
 			d.innerHTML("span_starCost",BEformat(starCost()));
 			let rowsShown = starRowsShown()
-			if (g.starContainerStyle=="Legacy") {
+			if (g.starContainerStyle==="Legacy") {
 				for (let i of dynamicStars) {if (rowsShown.includes(Math.floor(i/10))) {d.innerHTML("span_star"+i+"EffectLegacy",showFormulas?formulaFormat(showStarEffectFormula(i)):formatStarEffect(i))}}
 			}
 			for (let row=1;row<11;row++) {
@@ -332,9 +343,9 @@ function updateHTML() {
 			d.display("button_maxFullStarRows",[1,2,3,4,5,6,7,8,9,10].map(x => maxStars(x)).includes(4)?"inline-block":"none");
 			d.innerHTML("span_nextStarRow",g.stars>=40?"":("The next star you buy will go in row <span class=\"big _stars\">"+starRow(g.stars+1)+"</span>"));
 			d.element("starContainerModern").style["padding-bottom"] = d.element("starPanel").clientHeight+"px"
-		} else if (g.activeSubtabs.stardust=="darkMatter") {
-			d.display("div_darkMatterUnlocked",g.stardustUpgrades[4]==0?"none":"inline-block")
-			d.display("div_darkMatterLocked",g.stardustUpgrades[4]==0?"inline-block":"none")
+		} else if (g.activeSubtabs.stardust==="darkMatter") {
+			d.display("div_darkMatterUnlocked",g.stardustUpgrades[4]===0?"none":"inline-block")
+			d.display("div_darkMatterLocked",g.stardustUpgrades[4]===0?"inline-block":"none")
 			if (g.stardustUpgrades[4]!==0) {
 				for (let i of ["div","br"]) d.display(i+"_darkmatter_disabledTop",g.topResourcesShown.darkmatter?"none":"inline-block")
 				if (!g.topResourcesShown.darkmatter) {
@@ -357,16 +368,16 @@ function updateHTML() {
 					let type = axisCodes[i];
 					d.display("button_dark"+type+"Axis",(4+g.stardustUpgrades[0]>i)?"inline-block":"none")
 					if (4+g.stardustUpgrades[0]>i) {
-						d.class("button_dark"+type+"Axis",g.darkmatter.gt(stat["dark"+type+"AxisCost"])?"darkaxisbutton":"lockedaxisbutton");
+						d.class("button_dark"+type+"Axis","axisbutton "+(corruption.list.darkAxis.isCorrupted(type)?"corrupted":g.darkmatter.gt(stat["dark"+type+"AxisCost"])?"dark":"locked"));
 						if (Decimal.eq(g["dark"+type+"Axis"],stat["realdark"+type+"Axis"])) {
 							d.display("span_realdark"+type+"Axis","none")
 						} else {
 							d.display("span_realdark"+type+"Axis","inline-block")
 							d.innerHTML("span_realdark"+type+"Axis","Effective: "+stat["realdark"+type+"Axis"].noLeadFormat(2));
 						}
-						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(c.d0))?(" + "+BEformat(stat["freedark"+type+"Axis"],2)):""));
+						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(c.d0))?(" + "+stat["freedark"+type+"Axis"].noLeadFormat(2)):""));
 						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"].noLeadFormat([2,2,2,3,3,3,2,4][i]));
-						d.innerHTML("span_dark"+type+"AxisCost",BEformat(stat["dark"+type+"AxisCost"]));
+						d.innerHTML("span_dark"+type+"AxisCost",darkAxisCost(type,g["dark"+type+"Axis"],true).format());
 					}
 					let v1 = stat.realDarkStars;
 					let v2 = realDarkStars(stat.maxAffordableDarkStars.max(g.darkstars.add(c.d1)));
@@ -378,7 +389,7 @@ function updateHTML() {
 					d.innerHTML("span_empoweredDark"+name+"AxisAmount",BEformat(stat["empoweredDark"+name+"Axis"],2));
 				}
 			}
-		} else if (g.activeSubtabs.stardust=="energy") {
+		} else if (g.activeSubtabs.stardust==="energy") {
 			for (let i=0;i<energyTypes.length;i++) {
 				if (energyTypesUnlocked()>i) {
 					d.display(energyTypes[i]+"EnergyDiv","inline-block");
@@ -390,10 +401,10 @@ function updateHTML() {
 					d.display(energyTypes[i]+"EnergyDiv","none");
 				}
 			}
-			d.display("div_energyLocked",energyTypesUnlocked()==0?"inline-block":"none")
+			d.display("div_energyLocked",energyTypesUnlocked()===0?"inline-block":"none")
 		}
 	}
-	if (g.activeTab=="automation") {
+	if (g.activeTab==="automation") {
 		if (StudyE(1)) openTab("wormhole")
 		for (let id of Object.keys(autobuyers)) { // Autobuyer stuff
 			d.display(id+"Autobuyer",autobuyers[id].unlockReq()?"inline-block":"none");
@@ -427,10 +438,10 @@ function updateHTML() {
 		for (let i=0;i<5;i++) g.stardustUpgradeAutobuyerCaps[i]=d.element("stardustUpgradeAutobuyerMax"+(i+1)).value
 		g.starAutobuyerCap=d.element("starAutobuyerMax").value;
 	}
-	if (g.activeTab=="wormhole") {
+	if (g.activeTab==="wormhole") {
 		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
-		if (g.activeSubtabs.wormhole=="research") {
+		if (g.activeSubtabs.wormhole==="research") {
 			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format()+" / "+g.totalDiscoveries.format());
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
@@ -445,18 +456,18 @@ function updateHTML() {
 			d.element("button_researchRespec").style["background-color"] = g.researchRespec?"rgba(128,255,204,0.75)":"rgba(179,204,255,0.75)";
 			d.element("button_buyMaxResearch").style["background-color"] = g.buyMaxResearch?"rgba(255,204,128,0.75)":"rgba(179,204,255,0.75)";
 			if (showingResearchLoadouts) {
-				for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),researchLoadoutSelected==(i+1)?"researchLoadoutSelected":"researchLoadout")
+				for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),"researchLoadout"+(researchLoadoutSelected===(i+1)?" selected":""))
 			}
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
-		} else if (g.activeSubtabs.wormhole=="studies") {
+		} else if (g.activeSubtabs.wormhole==="studies") {
 			for (let i of visibleStudies()) {
 				d.innerHTML("span_study"+i+"Description",studies[i].description())
 				d.innerHTML("button_study"+i,studyButtons.text(i))
 				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
 				d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));
 			}
-		} else if (g.activeSubtabs.wormhole=="light") {
+		} else if (g.activeSubtabs.wormhole==="light") {
 			d.innerHTML("span_chromaPerSec",stat.chromaPerSec.format(2))
 			d.innerHTML("span_unspentStarsLight",g.stars)
 			d.innerHTML("span_baseChroma",stat.chromaGainBase.pow(g.stars-starCap()).noLeadFormat(2))
@@ -467,12 +478,12 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"Chroma",g.chroma[i].format())
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
-				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i==5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
-				d.element("button_"+name+"ChromaGen").style["background-color"]=(g.activeChroma==i)?"#000000":""
-				if (lightComponents(i)==null) {
-					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
+				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i===5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
+				d.element("button_"+name+"ChromaGen").style["background-color"]=(g.activeChroma===i)?"#000000":""
+				if (lightComponents(i)===null) {
+					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
 				} else {
-					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma==i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents(i).map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")					
+					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents(i).map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")					
 				}
 			}
 			d.innerHTML("span_greenLightBoost",arrowJoin(lightCache.currentEffect[1].pow(g.SAxis).format(2),lightCache.nextEffect[1].pow(g.SAxis).format(2)))
@@ -484,20 +495,20 @@ function updateHTML() {
 			}
 			if (lightTiersUnlocked()>2) {
 				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
-				d.display("div_grayLight",lightTiersUnlocked()==4?"inline-block":"none")
+				d.display("div_grayLight",lightTiersUnlocked()===4?"inline-block":"none")
 			}
-		} else if (g.activeSubtabs.wormhole=="galaxies") {
+		} else if (g.activeSubtabs.wormhole==="galaxies") {
 			d.innerHTML("span_galaxies",g.galaxies)
-			d.innerHTML("span_galaxyPlural",g.galaxies==1?"y":"ies")
+			d.innerHTML("span_galaxyPlural",g.galaxies===1?"y":"ies")
 			d.innerHTML("span_highestGalaxies",g.highestGalaxies)
 			d.innerHTML("span_galaxyFinalStarOrdinal",ordinal(starCap()))
 			d.innerHTML("span_currentGalaxyStarCost",starCost(starCap()-1).format())
 			d.innerHTML("span_nextGalaxyStarCost",starCost(starCap()-1,g.galaxies+1).format())
 			d.innerHTML("span_currentGalaxyAffordableStars",affordableStars())
 			d.innerHTML("span_nextGalaxyAffordableStars",affordableStars(g.galaxies+1))
-			d.class("button_gainGalaxy","galaxyButton "+(g.stars==starCap()?"active":"locked"))
+			d.class("button_gainGalaxy","galaxyButton "+(g.stars===starCap()?"active":"locked"))
 			d.innerHTML("span_galaxyStarRequirement",BEformat(starCap()))
-			d.class("button_destroyGalaxies","galaxyButton "+(g.galaxies==0?"locked":"active"))
+			d.class("button_destroyGalaxies","galaxyButton "+(g.galaxies===0?"locked":"active"))
 			for (let i=1;i<galaxyEffects.length;i++) {
 				if (g.highestGalaxies+1>=galaxyEffects[i].req) {
 					d.tr("tr_galaxyEffects"+i,true)
@@ -513,7 +524,7 @@ function updateHTML() {
 				break
 			}
 			d.innerHTML("span_galaxyEffectTooltip",tooltip)
-		} else if (g.activeSubtabs.wormhole=="luck") {
+		} else if (g.activeSubtabs.wormhole==="luck") {
 			d.innerHTML("span_luckShards",g.luckShards.format(2))
 			d.innerHTML("span_luckShardsPerSec",stat.luckShardsPerSec.format(2))
 			d.innerHTML("span_luckShardEff1",showFormulas?formulaFormat(luckShardEffect1Formula()):luckShardEffect1().format(2))
@@ -531,7 +542,7 @@ function updateHTML() {
 							let affordable = affordableLuckUpgrades(type,upg).max(c.d1)
 							d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordable.format()+")")
 							d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
-							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?luckUpgrades[type][upg].formula():arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
+							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
 						} else {
 							d.display("button_"+type+upg,"none")
 						}
@@ -541,11 +552,12 @@ function updateHTML() {
 				}
 			}
 			d.display("div_luckSpendOptions",g.research.r24_5?"inline-block":"none")
+			d.display("button_respecLuckUpgrades",g.research.r24_5?"inline-block":"none")
 			if (g.research.r24_5) for (let p of [0,1,10,25,50,100]) {
 				d.class("button_luckShardPercentageOption"+p,"luckPercentageOption "+(g.luckShardSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
 				d.class("button_luckRunePercentageOption"+p,"luckPercentageOption "+(g.luckRuneSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
 			}
-		} else if (g.activeSubtabs.wormhole=="prismatic") {
+		} else if (g.activeSubtabs.wormhole==="prismatic") {
 			d.innerHTML("span_prismatic",g.prismatic.format(2))
 			d.innerHTML("span_prismaticPerSec",stat.prismaticPerSec.format(2))
 			for (let upg of prismaticUpgradeList) {
@@ -554,11 +566,11 @@ function updateHTML() {
 					d.display("button_prismaticUpgrade_"+upg,"inline-block")
 					let affordable = affordablePrismaticUpgrades(upg)
 					let owned = g.prismaticUpgrades[upg]
-					let unlimited = ((typeof data.max) == "undefined")
+					let unlimited = ((typeof data.max) === "undefined")
 					d.innerHTML("span_prismaticUpgrade_"+upg+"_Purchased",(owned.format()+(unlimited?"":(" / "+data.max.format())))+"<br>(+"+affordable.max(c.d1).format()+")")
 					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost","Cost: "+(showFormulas?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format()))
 					let maxed = unlimited?false:Decimal.eq(owned,data.max)
-					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,showFormulas?formulaFormat(data.formula[i]()):maxed?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length==1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
+					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,showFormulas?formulaFormat(data.formula[i]()):maxed?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length===1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
 					let classList = ["prismaticUpgrade"]
 					if (data.refundable) classList.push("refundable")
 					if (maxed) {classList.push("maxed","unlocked")} else if (affordable.eq(c.d0)) {classList.push("locked")} else {classList.push("unlocked")}
@@ -568,9 +580,9 @@ function updateHTML() {
 				}
 			}
 			for (let p of [0,1,10,25,50,100]) d.class("button_prismaticPercentageOption"+p,"prismaticPercentageOption "+(g.prismaticSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")
-		} else if (g.activeSubtabs.wormhole=="antimatter") {
+		} else if (g.activeSubtabs.wormhole==="antimatter") {
+			for (let i of ["div","br"]) d.display(i+"_antimatter_disabledTop",g.topResourcesShown.antimatter?"none":"inline-block")
 			if (!g.topResourcesShown.antimatter) {
-				for (let i of ["div","br"]) d.display(i+"_antimatter_disabledTop",g.topResourcesShown.antimatter?"none":"inline-block")
 				d.innerHTML("span_antimatter_disabledTop",g.antimatter.format())
 				d.innerHTML("span_antimatterPerSec_disabledTop",stat.antimatterPerSec.format(2))
 			}
@@ -580,7 +592,7 @@ function updateHTML() {
 				let unlocked = antiAxisUnlocked(type)
 				d.display("button_anti"+type+"Axis",unlocked?"inline-block":"none")
 				if (unlocked) {
-					d.class("button_anti"+type+"Axis",g.antimatter.gt(stat["anti"+type+"AxisCost"])?"antiaxisbutton":"lockedaxisbutton");
+					d.class("button_anti"+type+"Axis","axisbutton "+(corruption.list.antiAxis.isCorrupted(type)?"corrupted":g.antimatter.gt(stat["anti"+type+"AxisCost"])?"anti":"locked"));
 					if (Decimal.eq(g["anti"+type+"Axis"],stat["realanti"+type+"Axis"])) {
 						d.display("span_realanti"+type+"Axis","none")
 					} else {
@@ -605,19 +617,23 @@ function updateHTML() {
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
-	if (time==0) return // no point causing lag
+	if (time===0) return // no point causing lag
 	if ((StudyE(3)||StudyE(9))&&(!overclockActive)) {
 		let diff = time-0.05
 		g.dilatedTime += diff
 		time -= diff
 	}
-	for (let i=0;i<9;i++) if (g.chroma[i].gte(lumenReq(i))) {addLumens(i)}
+	for (let i=0;i<9;i++) {
+		if (g.chroma[i].gte(lumenReq(i))) {addLumens(i)}
+		if (lightData[i].updateEveryTick !== undefined) {if (lightData[i].updateEveryTick()) updateLightCache(i)}
+	}
 	g.timePlayed+=time;
 	g.timeThisStardustReset+=time;
 	g.timeThisWormholeReset+=time;
 	g.timeThisSpacetimeReset+=time;
 	if (StudyE(9)) if (g.timeThisWormholeReset>=studies[9].timePer()) studies[9].reset()
 	updateStats()
+	if (g.achievement[717]&&(!unlocked("Corruption"))) for (let i of corruption.all) if (corruption.list[i].visible()) unlockFeature("Corruption")
 
 
 	// Time section
@@ -640,7 +656,7 @@ function tick(time) {																																		 // The game loop, which 
 	for (let ach of secretAchievementEvents.gameloop) addSecretAchievement(ach);
 	for (let ach of secretAchievementEvents.luckyGameloop) if (Math.random()<secretAchievementList[ach].chance(time)) addSecretAchievement(ach);
 	lagAchievementTicks = (deltatime>1)?(lagAchievementTicks+1):0;
-	fpsAchievementTicks = ((deltatime==0.05)&&(!StudyE(3)))?(fpsAchievementTicks+1):0;
+	fpsAchievementTicks = ((deltatime===0.05)&&(!StudyE(3)))?(fpsAchievementTicks+1):0;
 	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
 	if (stat.chromaPerSec.gte(c.d1)) g.ach711Progress = Math.min(g.ach711Progress,g.stars)
 	
@@ -671,11 +687,11 @@ function tick(time) {																																		 // The game loop, which 
 		o.add("baseMasteryPowerGain",deltaBaseMasteryPowerGain().mul(time));
 		o.add("masteryPower",stat.masteryPowerPerSec.mul(time));
 	}
-	if (achievement.ownedInTier(5)==30&&g.activeStudy==0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
+	if (achievement.ownedInTier(5)===30&&g.activeStudy===0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
 	if (achievement.ownedInTier(5)>=10) incrementStardust(stat.tickspeed.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
-	if (typeof g.activeChroma == "number") generateChroma(g.activeChroma,stat.chromaPerSec.mul(time))
+	if (typeof g.activeChroma === "number") generateChroma(g.activeChroma,stat.chromaPerSec.mul(time))
 	if (g.studyCompletions[7]>0) o.add("luckShards",stat.luckShardsPerSec.mul(time))
 	if (g.research.r20_8) o.add("prismatic",stat.prismaticPerSec.mul(time))
 	if (g.studyCompletions[9]>0) o.add("antimatter",stat.antimatterPerSec.mul(time))
@@ -695,22 +711,22 @@ function tick(time) {																																		 // The game loop, which 
 	}
 	if (achievement.ownedInTier(5)>=3 && g.stardustUpgradeAutobuyerOn) stardustUpgradeAutobuyerProgress+=time/autobuyerMeta.interval("stardustUpgrade");
 	if (stardustUpgradeAutobuyerProgress > 1) {
-		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]=="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
+		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]==="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
 		stardustUpgradeAutobuyerProgress%=1;
 	}
 	if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");
 	if (starAutobuyerProgress > 1) {
-		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap=="u"?Infinity:Number(g.starAutobuyerCap))) buyStar();}
+		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap))) buyStar();}
 		if (unspentStars()>0&&g.starAllocatorOn&&(totalStars<g.starAllocatorBuild.length)) for (let i of g.starAllocatorBuild) buyStarUpgrade(i);
 		starAutobuyerProgress%=1;
 	}
 	if (achievement.ownedInTier(5)>=8 && g.stardustAutomatorOn) {
 		let doReset = false;
 		let mode = g.stardustAutomatorMode
-		if (mode == 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)}
-		else if (mode == 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)}
-		else if (mode == 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))}
-		else if (mode == 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))}
+		if (mode === 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)}
+		else if (mode === 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)}
+		else if (mode === 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))}
+		else if (mode === 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))}
 		else {
 			if (achievement.ownedInTier(5)>=8) {popup({text:"Due to an error, stardust automator mode was reverted to the default value of amount of stardust."})}
 			g.stardustAutomatorMode = 0
@@ -721,10 +737,10 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=12 && g.wormholeAutomatorOn) {
 		let doReset = false;
 		let mode = g.wormholeAutomatorMode
-		if (mode == 0) {doReset = stat.pendinghr.gte(g.wormholeAutomatorValue)}
-		else if (mode == 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)}
-		else if (mode == 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))}
-		else if (mode == 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))}
+		if (mode === 0) {doReset = stat.pendinghr.gte(g.wormholeAutomatorValue)}
+		else if (mode === 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)}
+		else if (mode === 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))}
+		else if (mode === 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))}
 		else {
 			if (achievement.ownedInTier(5)>=12) {popup({text:"Due to an error, wormhole automator mode was reverted to the default value of amount of HR."})}
 			g.wormholeAutomatorMode = 0

@@ -1,6 +1,6 @@
 function howToPlay(x) {
 	let htp = HTPtexts[HTPtexts.map(x => x.name).indexOf(x)]
-	let text = "<h1>"+(htp.name=="Galaxies"?"<span onClick=\"secretAchievementList[31].click()\">The Hitchhiker's Guide to the Galaxies</span>":htp.name)+"</h1>"+htp.paragraphs.map(x => "<p>"+x+"</p>").join("")
+	let text = "<h1>"+(htp.name==="Galaxies"?"<span onClick=\"secretAchievementList[31].click()\">The Hitchhiker's Guide to the Galaxies</span>":htp.name)+"</h1>"+htp.paragraphs.map(x => "<p>"+x+"</p>").join("")
 	if (htp.dynamics !== undefined) for (let i=0;i<htp.dynamics.length;i++) text = text.replace("{"+i+"}",htp.dynamics[i]())
 	popup({
 		text:text,
@@ -48,7 +48,7 @@ const HTPtexts = [
 		dynamics:[
 			()=>(g.stars>21||unlocked("Hawking Radiation"))?" Unlike tickspeed, the Overclock multiplier affects things like the 'real' time played.":"",
 			()=>dilationUpgrades[1].effect().toFixed(0),
-			()=>g.dilationUpgradesUnlocked==0?"":"Later in the game, dilated time can also be spent on Dilation Upgrades, which improve Overclock in different ways."
+			()=>g.dilationUpgradesUnlocked===0?"":"Later in the game, dilated time can also be spent on Dilation Upgrades, which improve Overclock in different ways."
 		]
 	},
 	{
@@ -123,7 +123,7 @@ const HTPtexts = [
 			"{0}"
 		],
 		dynamics:[
-			()=>(unlocked("Light")||g.stars==starCap())?("It is impossible to have more than "+BEformat(starCap())+" stars."):""
+			()=>(unlocked("Light")||g.stars===starCap())?("It is impossible to have more than "+BEformat(starCap())+" stars."):""
 		]
 	},
 	{
