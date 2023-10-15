@@ -56,7 +56,7 @@
 		<div id="logContainer"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script>
-const notation = localStorage.getItem("save")??"Mixed scientific"
+const notation = localStorage.getItem("save").notation??"Mixed scientific"
 function format(x,p=0){return gformat(N(x),p,notation)}
 const contributors = {
 	"Hedrauta":"#00cc00",
@@ -71,6 +71,9 @@ const logEntries = [
 	]},
 	next major:
 	*/
+	{name:"𝕍1.4.1 (2023-10-15)",changes:[
+		["BUGFIX","The changelog should now open once more"],
+	]},
 	{name:"𝕍1.4 \"Age Nobly, xhwzwka-Red Cherry Wine ∼ Border of OMCCDV\" (2023-10-15)",changes:[
 		["BALANCE","'Old age' achievement reward has been buffed"],
 		["BALANCE","The 'Mind-bending Curvature' achievements are easier, and the reward of III is stronger"],
