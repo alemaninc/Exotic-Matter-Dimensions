@@ -56,7 +56,8 @@
 		<div id="logContainer"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script>
-const notation = localStorage.getItem("save").notation??"Mixed scientific"
+const save = localStorage.getItem("save")
+const notation = (save===null)?"Mixed scientific":save.notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const contributors = {
 	"Hedrauta":"#00cc00",
@@ -71,6 +72,10 @@ const logEntries = [
 	]},
 	next major:
 	*/
+	{name:"𝕍1.4.3 (2023-10-15)",changes:[
+		["BUGFIX","Mastery rows can be unassigned once more"],
+		["BUGFIX","Saves can be correctly wiped once more"],
+	]},
 	{name:"𝕍1.4.2 (2023-10-15)",changes:[
 		["BUGFIX","Research can now be bought once more"],
 	]},

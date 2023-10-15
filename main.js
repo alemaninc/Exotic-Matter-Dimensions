@@ -675,6 +675,12 @@ function toggleMastery(x) {
 	}
 	g.ach524possible=g.ach524possible&&achievement(524).active();
 }
+function unassignMasteryRow(row) {
+	if (g.activeMasteries[row]!==0) {
+		g.activeMasteries[row]=0
+		masteryReset()
+	}
+}
 function masteryEffect(x) {
 	if (x===11) return g.masteryPower.add(c.d1).pow(masteryBoost(11).mul(c.d0_1));
 	if (x===12) return g.masteryPower.add(c.d1).pow(masteryBoost(12).mul(c.d0_15));
@@ -874,7 +880,7 @@ function showMasteryInfo(x,mode) {	/* mode 1 = text; mode 2 = button */
 		let out2
 		if (masteredRow(row)) {
 			if (MasteryE(x)) {
-				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]=0;masteryReset()\">Unassign Row "+row+" Masteries</button>"
+				out2="<button class=\"genericbutton\" onClick=\"unassignMasteryRow("+row+")\">Unassign Row "+row+" Masteries</button>"
 			} else {
 				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Activate Row "+row+" Masteries</button>"
 			}
@@ -2789,6 +2795,8 @@ function wipeSave(password) {
 		openSubTab("main","axis")
 		updateAchievementsTab()
 		d.display("span_noAchievements","inline-block")
+		for (let i=0;i<9;i++) {updateLightCache(i)}
+		updateStats()
 	} else {
 		popup({text:"Incorrect answer, wiping did not proceed.",buttons:[["Close",""]]});
 	}
