@@ -1,8 +1,8 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.3.30",
-	nextUpdateHint:"Explore",
+	current:"𝕍1.4",
+	nextUpdateHint:"Grand Tour of the Iterated Experiment",
 }
 /*
 	e event message
@@ -33,6 +33,10 @@ const debug = {
 		function countByRarity(x){return Object.values(secretAchievementList).filter(i=>i.rarity===x).length}
 		let diffs = countTo(5).map(x=>countByRarity(x+1)/countByRarity(x+2))
 		return diffs.indexOf(diffs.reduce((x,y)=>Math.max(x,y)))+3
+	},
+	addResearch:function(x){
+		g.research=x
+		if (!g.researchVisibility.includes(x)) g.researchVisibility.push(x)
 	}
 }
 var savecounter=0;

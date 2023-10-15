@@ -2925,7 +2925,7 @@ for (var i = 0; i < 10; ++i)
 		};
 
 		Decimal.prototype.noLeadFormat = function(precision) {
-			if (this.abs().log10().abs().gt(6)) return BEformat(this)
+			if (this.layer !== 0) return BEformat(this)
 			let exponent = this.abs().log10().add(1e-8).floor()
 			for (let i=0;i<precision;i++) if (Decimal.eq_tolerance(this.mul(Decimal.pow(10,i-exponent)),this.mul(Decimal.pow(10,i-exponent)).round(),1e-7)) return BEformat(this,i)
 			return BEformat(this,precision)
@@ -3054,10 +3054,12 @@ const notations = {
 	},
 	"Infinity":function(x,sub="Infinity"){
 		if (x.gte("eeeee6")) return (Math.log2(x.quad_slog(constant.d10).toNumber())/1024).toFixed(6)+"Ω"
-		let infinities = x.log2().div(constant.d1024)
-		if (infinities.lt(constant.d1)) return infinities.toFixed(6)+"∞"
-		if (infinities.lt(constant.e6)) return infinities.toPrecision(6)+"∞"
-		return notations[sub](infinities,sub)+"∞"
+		let infinities = 0
+		while (x.gte(c.e6)) {
+			x = x.log2().div(c.d1024)
+			infinities++
+		}
+		return (x.gt(c.d1)?x.toPrecision(6):x.toFixed(6))+"∞"+((infinities===1)?"":("<sup>"+infinities+"</sup>"))
 	},
 	"Logarithm":function(x,sub="Logarithm",p=3) {
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
@@ -3117,7 +3119,7 @@ const notations = {
 		return [hours,minutes,seconds].map(x=>x.floor().toString().padStart(2,"0")).join(":")
 	}
 }
-function gformat(value,precision=0,notation="Scientific",subnotation="Scientific") {
+function gformat(value,precision=0,notation="Scientific",subnotation=notation) {
 	if ([value,precision,notation,subnotation].includes(undefined)) functionError("gformat",arguments)
 	let x=N(value);
 	if (x.sign===-1) return "-"+gformat(x.abs(),precision,notation,subnotation);

@@ -38,7 +38,10 @@ const initSteps = [
 		for (let i of largeNumberVisualizationNumbers) i.value = N(i.value)
 		largeNumberVisualizationNumbers.sort((a,b)=>a.value-b.value)
 	}},
-	{function:function(){theme();},onImport:true},
+	{function:function(){
+		if ((new Date().getUTCMonth()===3)&&(new Date().getUTCDate()===1)) {g.colortheme = "Light"}
+		theme()
+	},onImport:true},
 	{function:function(){updateResearchTree()},onImport:true},
 	{function:function(){for (let i of Object.keys(research)){resizeResearch(i)}}},
 	{function:function(){generateResearchCanvas();},onImport:true},

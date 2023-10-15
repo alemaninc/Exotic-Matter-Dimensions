@@ -1,6 +1,6 @@
 const previousPrestige = {
 	masteries: function() {
-		return g.activeMasteries.map((x,index) => (x===null)?null:(x+index*10)).filter(x => typeof x === "number")
+		return g.activeMasteries.map((x,index) => (x===0)?null:(x+index*10)).filter(x => typeof x === "number")
 	},
 	stars: function() {
 		return starList.filter(x=>g.star[x])
@@ -146,7 +146,7 @@ const previousPrestige = {
 		popup({
 			text:[
 				["Stars",location.stars.join(","),true],
-				["Masteries",location.masteries.join(","),true],
+				["Masteries",location.masteries.filter(x=>x%10>0).join(","),true],
 				["Research",location.research.join(","),unlocked("Hawking Radiation")]
 			].filter(x => x[2]).map(x => "<p>"+x[0]+"<br><textarea style=\"width:90%;height:40px\">"+x[1]+"</textarea></p>").join(""),
 			buttons:[["Close",""]]

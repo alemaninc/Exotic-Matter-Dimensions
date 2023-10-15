@@ -147,7 +147,7 @@
 						<button class="observation" id="button_observation0" onClick="buyMaxObservations(0)">Observe exotic matter<br>(Need <span id="span_observeCost0"></span> exotic matter)</button>
 						<button class="observation" id="button_observation1" onClick="buyMaxObservations(1)">Observe nebulae<br>(Need <span id="span_observeCost1"></span> stardust)</button>
 						<button class="observation" id="button_observation2" onClick="buyMaxObservations(2)">Observe dark matter<br>(Need <span id="span_observeCost2"></span> dark matter)</button>
-						<button class="observation" id="button_observation3" onClick="buyMaxObservations(3)">Observe black hole<br>(Need <span id="span_observeCost3"></span> hawking radiation)</button>
+						<button class="observation" id="button_observation3" onClick="buyMaxObservations(3)">Observe black hole<br>(Need <span id="span_observeCost3"></span> Hawking radiation)</button>
 						<button class="observation" onClick="for (let i=0;i<4;i++) buyMaxObservations(i)">Max all Observations</button><br>
 						<button class="observation" id="button_researchRespec" onClick="toggle('researchRespec')">Respec Research on next Wormhole</button>
 						<button class="observation" id="button_forceWormhole" onClick="wormholeReset('force')">Force a Wormhole reset</button>
@@ -176,7 +176,7 @@
 					At your current amount of stardust you can afford <span class="big _galaxies" id="span_currentGalaxyAffordableStars"></span> stars, and will be able to afford <span class="big _galaxies" id="span_nextGalaxyAffordableStars"></span> in the next galaxy.<br>
 					Gaining or losing galaxies forces a Wormhole reset.</p>
 					<button onClick="gainGalaxy()" id="button_gainGalaxy">Gain a galaxy (requires <span id="span_galaxyStarRequirement"></span> stars)</button>
-					<button onClick="loseGalaxyPopup()" id="button_destroyGalaxies">Destroy galaxies</button><br>
+					<button onClick="loseGalaxy()" id="button_destroyGalaxies">Destroy a galaxy</button><br>
 					<div id="div_galaxyEffects">
 						<h4 style="text-decoration:underline;color:rgba(255,255,0,0.9);">Galaxy Effects</h4>
 						<table id="table_galaxyEffects"></table>
@@ -330,6 +330,14 @@
 						<button class="automatortoggleon" id="button_wormholeAutomatorToggle" onClick="toggle('wormholeAutomatorOn')"></button><br>
 						<label for="wormholeAutomatorMode">Setting:</label><button class="genericbutton" id="button_wormholeAutomatorMode" onClick="selectOption('wormholeAutomatorMode',countTo(4,true),'mode',x=>wormholeAutomatorModes[x])"></button><br>
 						<input id="wormholeAutomatorValue" type="text"></input>
+					</div>
+					<div class="automatordiv" id="researchAutobuyer" style="display:none">
+						<h3>Research Autobuyer</h3>
+						<button class="automatortoggleon" id="button_researchAutobuyerToggle" onClick="toggle('researchAutobuyerOn')"></button><br>
+						Interval: <span id="span_researchAutobuyerInterval"></span><br>
+						<button id="button_researchAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('research')">Reduce the interval by 5%<br>Cost: <span id="span_researchAutobuyerCost"></span> knowledge</button><br>
+						<label for="researchAutobuyerMode">Setting:</label><button class="genericbutton" id="button_researchAutobuyerMode" onClick="selectOption('researchAutobuyerMode',countTo(1,true),'mode',x=>researchAutobuyerModes[x])"></button><br>
+						<input id="researchAutobuyerValue" type="text"></input>
 					</div>
 				</div>
 			</div>

@@ -56,7 +56,7 @@
 		<div id="logContainer"></div>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script>
-const notation = (localStorage.getItem("save")===undefined)?"Mixed scientific":localStorage.getItem("save").notation
+const notation = localStorage.getItem("save")??"Mixed scientific"
 function format(x,p=0){return gformat(N(x),p,notation)}
 const contributors = {
 	"Hedrauta":"#00cc00",
@@ -70,25 +70,37 @@ const logEntries = [
 
 	]},
 	next major:
-	{name:"𝕍1.4",changes:[
+	*/
+	{name:"𝕍1.4 \"Age Nobly, xhwzwka-Red Cherry Wine ∼ Border of OMCCDV\" (2023-10-15)",changes:[
 		["BALANCE","'Old age' achievement reward has been buffed"],
 		["BALANCE","The 'Mind-bending Curvature' achievements are easier, and the reward of III is stronger"],
 		["BALANCE","The magenta lumen softcap has been significantly pushed back"],
 		["BALANCE","The first dark star effect now works when the base gain is less than 1 by multiplying it instead"],
+		["BALANCE","Study research no longer count as temporary research for Pseudoscience (and several other purposes)"],
+		["BUGFIX","Showing the mastery build of a previous prestige will no longer show rows without an active mastery as, for example, \"10\" for row 1"],
+		["BUGFIX","Stardust and Wormhole reset now correctly reset mastery power to 0 rather than 1"],
+		["BUGFIX?","'Buy all previous research' will no longer buy Energy and Stardust research if used at or beyond 16-4 or 16-12"],
 		["CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"],
 		["CONTENT","Added Tier 8 achievements"],
-		["CONTENT","Research is now extended to TBD rows and TBD studies"],
+		["CONTENT","Research is now extended to 25 rows and 9 studies"],
 		["CONTENT","Added Luck Shards"],
 		["CONTENT","Added Prismatic"],
-		["CONTENT","Added Antimatter"]
-		["QOL","The reward of 'Superpowered' has been changed"]
+		["CONTENT","Added Antimatter"],
+		["INTERFACE","Researches which boost by a quantity raised to a power (such as 8-2) now once again display, for example,\"tickspeed<sup>1.1</sup>\" instead of \"tickspeed ^ 1.1\""],
+		["INTERFACE","Changed the tooltip of the \"Destroy galaxies\" button to \"Destroy a galaxy\""],
+		["INTERFACE","The Modifier column of the stat breakdown is now wider relative to the others"],
+		["INTERFACE","\"Last 10\" tables in previous prestiges now have headers"],
+		["INTERFACE","Generated resources no longer show per-scond gain above "+format("ee9")],
+		["QOL","The reward of 'Superpowered' has been changed"],
+		["QOL","Actions triggered by mouseover are now triggered by click too"],
+		["WHAT","Added the missing MISCELLANEOUS entry to the 𝕍1.3.30 changelog"],
 	]},
-	*/
 	{name:"𝕍1.3.30 (2023-09-30)",changes:[
 		["BUGFIX","Fixed research 14-2 having no effect"],
 		["BUGFIX","Chroma generation will no longer turn off randomly for no (visible) reason"],
 		["INTERFACE","Dark star button is now taller and the cost formula has an additional line break"],
-		["INTERFACE","\"You have completed all Tier <i>x</i> achievements!\" notification is now the correct color"]
+		["INTERFACE","\"You have completed all Tier <i>x</i> achievements!\" notification is now the correct color"],
+		["MISCELLANEOUS","'Destroy galaxies' button now destroys 1 galaxy per click rather than showing a popup"]
 	]},
 	{name:"𝕍1.3.29 (2023-09-21)",changes:[
 		["BUGFIX","'Hyperspeed IV' giving 100% less effect than it should"],

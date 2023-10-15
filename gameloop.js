@@ -252,6 +252,10 @@ function updateHTML() {
 					d.innerHTML("span_last10WormholeRuns_time"+i,timeFormat(g.previousWormholeRuns.last10[i-1].time))
 					d.innerHTML("span_last10WormholeRuns_gain"+i,BEformat(g.previousWormholeRuns.last10[i-1].gain))
 				}
+				if (i===1) {
+					d.tr("last10StardustRuns_row0",!stardustExists)
+					d.tr("last10WormholeRuns_row0",!wormholeExists)
+				}
 			}
 			for (let i of previousPrestige.buildListNodes) i.innerHTML = previousPrestige.shownBuilds().join("/")+" builds"
 			let stardustRuns = previousPrestige.stardustRunsStored
@@ -562,7 +566,7 @@ function updateHTML() {
 			d.innerHTML("span_prismaticPerSec",stat.prismaticPerSec.format(2))
 			for (let upg of prismaticUpgradeList) {
 				let data = prismaticUpgrades[upg]
-				if (prismaitcUpgradeUnlocked(upg)) {
+				if (prismaticUpgradeUnlocked(upg)) {
 					d.display("button_prismaticUpgrade_"+upg,"inline-block")
 					let affordable = affordablePrismaticUpgrades(upg)
 					let owned = g.prismaticUpgrades[upg]
@@ -570,7 +574,7 @@ function updateHTML() {
 					d.innerHTML("span_prismaticUpgrade_"+upg+"_Purchased",(owned.format()+(unlimited?"":(" / "+data.max.format())))+"<br>(+"+affordable.max(c.d1).format()+")")
 					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost","Cost: "+(showFormulas?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format()))
 					let maxed = unlimited?false:Decimal.eq(owned,data.max)
-					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,showFormulas?formulaFormat(data.formula[i]()):maxed?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length===1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
+					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,(showFormulas&&(typeof data.formula[i]==="function"))?formulaFormat(data.formula[i]()):(maxed||(typeof data.formula[i]!=="function"))?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length===1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
 					let classList = ["prismaticUpgrade"]
 					if (data.refundable) classList.push("refundable")
 					if (maxed) {classList.push("maxed","unlocked")} else if (affordable.eq(c.d0)) {classList.push("locked")} else {classList.push("unlocked")}
@@ -599,7 +603,7 @@ function updateHTML() {
 						d.display("span_realanti"+type+"Axis","inline-block")
 						d.innerHTML("span_realanti"+type+"Axis","Effective: "+stat["realanti"+type+"Axis"].noLeadFormat(2));
 					}
-					d.innerHTML("span_anti"+type+"AxisAmount",BEformat(g["anti"+type+"Axis"])+((stat["freeanti"+type+"Axis"].gt(c.d0))?(" + "+BEformat(stat["freeanti"+type+"Axis"],2)):""));
+					d.innerHTML("span_anti"+type+"AxisAmount",BEformat(g["anti"+type+"Axis"])+((stat["freeanti"+type+"Axis"].gt(c.d0))?(" + "+stat["freeanti"+type+"Axis"].noLeadFormat(2)):""));
 					d.innerHTML("span_anti"+type+"AxisEffect",stat["anti"+type+"AxisEffect"].noLeadFormat([2,3,3,2,3,5,0,4][i]));
 					d.innerHTML("span_anti"+type+"AxisCost",BEformat(stat["anti"+type+"AxisCost"]));
 				}
@@ -723,10 +727,10 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=8 && g.stardustAutomatorOn) {
 		let doReset = false;
 		let mode = g.stardustAutomatorMode
-		if (mode === 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)}
-		else if (mode === 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)}
-		else if (mode === 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))}
-		else if (mode === 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))}
+		if (mode === 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)} // at X stardust
+		else if (mode === 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)} // at X seconds
+		else if (mode === 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))} // multiply stardust by X
+		else if (mode === 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))} // power stardust by X
 		else {
 			if (achievement.ownedInTier(5)>=8) {popup({text:"Due to an error, stardust automator mode was reverted to the default value of amount of stardust."})}
 			g.stardustAutomatorMode = 0
@@ -737,10 +741,10 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=12 && g.wormholeAutomatorOn) {
 		let doReset = false;
 		let mode = g.wormholeAutomatorMode
-		if (mode === 0) {doReset = stat.pendinghr.gte(g.wormholeAutomatorValue)}
-		else if (mode === 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)}
-		else if (mode === 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))}
-		else if (mode === 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))}
+		if (mode === 0) {doReset = stat.pendinghr.gte(g.wormholeAutomatorValue)} // at X HR
+		else if (mode === 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)} // at X seconds
+		else if (mode === 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))} // multiply HR by X
+		else if (mode === 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))} // power HR by X
 		else {
 			if (achievement.ownedInTier(5)>=12) {popup({text:"Due to an error, wormhole automator mode was reverted to the default value of amount of HR."})}
 			g.wormholeAutomatorMode = 0
@@ -748,6 +752,21 @@ function tick(time) {																																		 // The game loop, which 
 		if (doReset) attemptWormholeReset(false);
 	}
 	g.wormholeAutomatorValue=d.element("wormholeAutomatorValue").value;
+	if (autobuyers.research.unlockReq() && g.researchAutobuyerOn) researchAutobuyerProgress+=time/autobuyerMeta.interval("research");
+	if (researchAutobuyerProgress > 1) {
+		let bought = false // check if anything was bought
+		if (g.researchAutobuyerMode===0) { // free research
+			while (true) {
+				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x)))
+				if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
+				for (let i of buyable) {buySingleResearch(researchRow(i),researchCol(i))}
+				updateBuyableResearch()
+				bought=true
+			}
+		} else {g.researchAutobuyerMode=0} // error detection
+		if (bought) {updateResearchTree();updateResearchCanvas()}
+		researchAutobuyerProgress%=1;
+	}
 
 	if (g.autosaveIsOn && savecounter > 0) save();
 }

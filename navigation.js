@@ -110,8 +110,8 @@ const subtabProperties = {
 		prismatic:{
 			visible:function(){return unlocked("Prismatic")},
 			glow:function(){
-				if (g.glowOptions.buyPrismaticUpgrade) for (let upg of nonRefundablePrismaticUpgrades.filter(x=>prismaitcUpgradeUnlocked(x))) if (singlePrismaticUpgradeCost(upg).lt(g.prismatic)) return true
-				if (g.glowOptions.buyRefundablePrismaticUpgrade) for (let upg of refundablePrismaticUpgrades.filter(x=>prismaitcUpgradeUnlocked(x))) if (singlePrismaticUpgradeCost(upg).lt(g.prismatic)) return true
+				if (g.glowOptions.buyPrismaticUpgrade) for (let upg of nonRefundablePrismaticUpgrades.filter(x=>prismaticUpgradeUnlocked(x))) if (singlePrismaticUpgradeCost(upg).lt(g.prismatic)) return true
+				if (g.glowOptions.buyRefundablePrismaticUpgrade) for (let upg of refundablePrismaticUpgrades.filter(x=>prismaticUpgradeUnlocked(x))) if (singlePrismaticUpgradeCost(upg).lt(g.prismatic)) return true
 				return false
 			}
 		},

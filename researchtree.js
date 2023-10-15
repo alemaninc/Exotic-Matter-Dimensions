@@ -26,7 +26,6 @@ const research = (function(){
 			text:function(){return g.lumens[i].format()+" / "+this.req().format()+" "+lightNames[i]+" lumens"}
 		}
 	}
-	let betaReq = {check:function(){return betaActive},text:function(){return "Play in Version 𝕍1.3 or higher"}}
 	function studyVResearch(pos,comp,resInt,resOut,amount) {
 		return {
 			description:function(){let eff=researchEffect(researchRow(pos),researchCol(pos));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(2)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
@@ -47,7 +46,7 @@ const research = (function(){
 		let costi = (num===8)?3:Math.floor(num/3)
 		return {
 			numDesc:function(){return researchEffect(row,col).format(3)},
-			formulaDesc:function(){return "10<sup>(log(L<sub>"+(num+1)+"</sub>"+formulaFormat.mult(lightData[num].baseScale.log10().pow(c.d2),3)+" + 10)<sup>2</sup> - 1)"+formulaFormat.mult(researchPower(row,col))+"</sup>"},
+			formulaDesc:function(){return "10<sup>(log(L<sub>"+(num+1)+"</sub>"+formulaFormat.mult(lightData[num].baseScale.log10().pow(c.d1_5).div(c.d10),3)+" + 10)<sup>2</sup> - 1)"+formulaFormat.mult(researchPower(row,col))+"</sup>"},
 			description:function(){return "Prismatic gain is "+numOrFormula(id)+"× faster (based on "+lightNames[num]+" lumens)"},
 			adjacent_req:[["r21_8"],["r21_8"],["r21_8"],["r22_7","r22_8"],["r22_7","r22_9"],["r22_8","r22_9"],["r23_8","r23_9"],["r23_7","r23_8"],["r23_7","r23_9"]][num],
 			condition:[],
@@ -55,7 +54,7 @@ const research = (function(){
 			type:"normal",
 			basecost:Decimal.fromComponents_noNormalize(1,0,[6e3,7500,15e3,48e3][costi]),
 			icon:icon.lumen(num)+icon.arr+icon.prismatic,
-			effect:function(power){return lightData[num].baseScale.log10().pow(c.d2).mul(g.lumens[num]).add(c.d10).log10().pow(c.d2).sub(c.d1).mul(power).pow10()},
+			effect:function(power){return lightData[num].baseScale.log10().pow(c.d1_5).mul(g.lumens[num]).div(c.d10).add(c.d10).log10().pow(c.d2).sub(c.d1).mul(power).pow10()},
 			group:"prismal"
 		}
 	}
@@ -121,7 +120,7 @@ const research = (function(){
 			effect:function(power){return c.d1_5.pow(power);}
 		},
 		r1_5:studyVResearch("r1_5",1,"exoticmatter","exotic matter",c.ee8),
-		r1_6:studyVResearch("r1_6",3,"darkmatter","dark matter",c.ee6),
+		r1_6:studyVResearch("r1_6",3,"darkmatter","dark matter",N("e2e6")),
 		r1_8: {
 			description:function(){return "Multiply the effects of the first seven normal axis by "+researchEffect(1,8).noLeadFormat(2);},
 			adjacent_req:[],
@@ -132,7 +131,7 @@ const research = (function(){
 			icon:icon.normalaxis+icon.plus,
 			effect:function(power){return c.d1_5.pow(power);}
 		},
-		r1_10:studyVResearch("r1_10",4,"masteryPower","mastery power",N("e3000")),
+		r1_10:studyVResearch("r1_10",4,"masteryPower","mastery power",c.ee4),
 		r1_11:studyVResearch("r1_11",2,"stardust","stardust",c.ee5),
 		r1_13: {
 			description:function(){return "Gain "+researchEffect(1,13).noLeadFormat(2)+"× more dark matter per dark axis owned (current total: "+researchEffect(1,13).pow(stat.totalDarkAxis).format(2)+"×)";},
@@ -207,7 +206,7 @@ const research = (function(){
 		r2_10:{
 			numDesc:function(){return researchEffect(2,10).noLeadFormat(3)},
 			formulaDesc:function(){return "((D + 1)<sup>0.25<sup> - 1)"+formulaFormat.mult(researchPower(2,10))},
-			description:function(){return "Stardust gain is multiplied by (hawking radiation)<sup>"+numOrFormula("r2_10")+" (based on total Discoveries)"},
+			description:function(){return "Stardust gain is multiplied by (Hawking radiation)<sup>"+numOrFormula("r2_10")+" (based on total Discoveries)"},
 			adjacent_req:["r1_10","r1_11"],
 			condition:[studyReq(10,2)],
 			visibility:function(){return g.studyCompletions[10]>1},
@@ -329,7 +328,7 @@ const research = (function(){
 			effect:function(power){return c.d15.pow(power);}
 		},
 		r4_6: {
-			description:function(){return "S Axis effect"+formulaFormat.exp(researchPower(4,6),3)+" affects Mastery 11 (current total: ^"+researchEffect(4,6).format(4)+")";},
+			description:function(){return "S Axis effect"+formulaFormat.exp(researchPower(4,6))+" affects Mastery 11 (current total: ^"+researchEffect(4,6).format(4)+")";},
 			adjacent_req:["r3_5","r3_6"],
 			condition:[],
 			visibility:function(){return true;},
@@ -339,7 +338,7 @@ const research = (function(){
 			effect:function(power){return stat.SAxisEffect.pow(stat.realSAxis.mul(power));}
 		},
 		r4_10: {
-			description:function(){return "S Axis effect"+formulaFormat.exp(researchPower(4,10),3)+" affects Mastery 12 (current total: ^"+researchEffect(4,10).format(4)+")";},
+			description:function(){return "S Axis effect"+formulaFormat.exp(researchPower(4,10))+" affects Mastery 12 (current total: ^"+researchEffect(4,10).format(4)+")";},
 			adjacent_req:["r3_10","r3_11"],
 			condition:[],
 			visibility:function(){return true;},
@@ -379,7 +378,7 @@ const research = (function(){
 			effect:function(power){return c.d15.pow(power);}
 		},
 		r5_1: {
-			description:function(){return "The dark energy effect"+formulaFormat.exp(researchEffect(5,1),3)+" boosts T axis effect (currently: ^"+stat.darkEnergyEffect.pow(researchEffect(5,1)).format(4)+")";},
+			description:function(){return "The dark energy effect"+formulaFormat.exp(researchEffect(5,1))+" boosts T axis effect (currently: ^"+stat.darkEnergyEffect.pow(researchEffect(5,1)).format(4)+")";},
 			adjacent_req:["r4_1","r4_2","r4_3"],
 			condition:[],
 			visibility:function(){return achievement.ownedInTier(5)>=15;},
@@ -389,7 +388,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r5_2: {
-			description:function(){return "The stelliferous energy effect"+formulaFormat.exp(researchEffect(5,2),3)+" boosts U axis effect (currently: ^"+stat.stelliferousEnergyEffect.pow(researchEffect(5,2)).format(4)+")";},
+			description:function(){return "The stelliferous energy effect"+formulaFormat.exp(researchEffect(5,2))+" boosts U axis effect (currently: ^"+stat.stelliferousEnergyEffect.pow(researchEffect(5,2)).format(4)+")";},
 			adjacent_req:["r4_1","r4_2","r4_3"],
 			condition:[],
 			visibility:function(){return achievement.ownedInTier(5)>=15;},
@@ -399,7 +398,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r5_3: {
-			description:function(){return "The gravitational energy effect"+formulaFormat.exp(researchEffect(5,3),3)+" boosts dark U axis effect (currently: ^"+stat.gravitationalEnergyEffect.pow(researchEffect(5,3)).format(4)+")";},
+			description:function(){return "The gravitational energy effect"+formulaFormat.exp(researchEffect(5,3))+" boosts dark U axis effect (currently: ^"+stat.gravitationalEnergyEffect.pow(researchEffect(5,3)).format(4)+")";},
 			adjacent_req:["r4_1","r4_2","r4_3"],
 			condition:[],
 			visibility:function(){return achievement.ownedInTier(5)>=15;},
@@ -425,7 +424,7 @@ const research = (function(){
 			icon:icon.study([[25,75,6],[75,25,6]])
 		},
 		r5_13: {
-			description:function(){return "The spatial energy effect"+formulaFormat.exp(researchEffect(5,13),3)+" boosts Row 2 Masteries (currently: ^"+stat.spatialEnergyEffect.pow(researchEffect(5,13)).format(4)+")";},
+			description:function(){return "The spatial energy effect"+formulaFormat.exp(researchEffect(5,13))+" boosts Row 2 Masteries (currently: ^"+stat.spatialEnergyEffect.pow(researchEffect(5,13)).format(4)+")";},
 			adjacent_req:["r4_13","r4_14","r4_15"],
 			condition:[],
 			visibility:function(){return achievement.ownedInTier(5)>=15;},
@@ -435,7 +434,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r5_14: {
-			description:function(){return "The neural energy effect"+formulaFormat.exp(researchEffect(5,14),3)+" boosts Stardust Boost 7 (currently: ^"+stat.neuralEnergyEffect.pow(researchEffect(5,14)).format(4)+")";},
+			description:function(){return "The neural energy effect"+formulaFormat.exp(researchEffect(5,14))+" boosts Stardust Boost 7 (currently: ^"+stat.neuralEnergyEffect.pow(researchEffect(5,14)).format(4)+")";},
 			adjacent_req:["r4_13","r4_14","r4_15"],
 			condition:[],
 			visibility:function(){return achievement.ownedInTier(5)>=15;},
@@ -445,7 +444,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r5_15: {
-			description:function(){return "The meta energy effect"+formulaFormat.exp(researchEffect(5,15),3)+" multiplies tickspeed (currently: ×"+stat.metaEnergyEffect.pow(researchEffect(5,15)).format(4)+")";},
+			description:function(){return "The meta energy effect"+formulaFormat.exp(researchEffect(5,15))+" multiplies tickspeed (currently: ×"+stat.metaEnergyEffect.pow(researchEffect(5,15)).format(4)+")";},
 			adjacent_req:["r4_13","r4_14","r4_15"],
 			condition:[],
 			visibility:function(){return achievement.ownedInTier(5)>=15;},
@@ -455,7 +454,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r6_1: {
-			description:function(){return "The dark energy effect"+formulaFormat.exp(researchEffect(6,1),3)+" boosts Z Axis effect (currently: ^"+stat.darkEnergyEffect.pow(researchEffect(6,1)).format(4)+")";},
+			description:function(){return "The dark energy effect"+formulaFormat.exp(researchEffect(6,1))+" boosts Z Axis effect (currently: ^"+stat.darkEnergyEffect.pow(researchEffect(6,1)).format(4)+")";},
 			adjacent_req:["r5_1","r5_2","r5_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -465,7 +464,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r6_2: {
-			description:function(){return "The stelliferous energy effect"+formulaFormat.exp(researchEffect(6,2),3)+" reduces the star cost (currently: ^"+stat.stelliferousEnergyEffect.pow(researchEffect(6,2).mul(c.dm1)).format(3)+")";},
+			description:function(){return "The stelliferous energy effect"+formulaFormat.exp(researchEffect(6,2))+" reduces the star cost (currently: ^"+stat.stelliferousEnergyEffect.pow(researchEffect(6,2).mul(c.dm1)).format(3)+")";},
 			adjacent_req:["r5_1","r5_2","r5_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -475,7 +474,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r6_3: {
-			description:function(){return "The gravitational energy effect"+formulaFormat.exp(researchEffect(6,3),3)+" divides the dark star cost (currently: ÷"+stat.gravitationalEnergyEffect.pow(researchEffect(6,3)).format(4)+")";},
+			description:function(){return "The gravitational energy effect"+formulaFormat.exp(researchEffect(6,3))+" divides the dark star cost (currently: ÷"+stat.gravitationalEnergyEffect.pow(researchEffect(6,3)).format(4)+")";},
 			adjacent_req:["r5_1","r5_2","r5_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -544,7 +543,7 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d1_25);}
 		},
 		r6_13: {
-			description:function(){return "The spatial energy effect"+formulaFormat.exp(researchEffect(6,13),3)+" boosts V Axis effect (currently: ^"+stat.spatialEnergyEffect.pow(researchEffect(6,13)).format(4)+")";},
+			description:function(){return "The spatial energy effect"+formulaFormat.exp(researchEffect(6,13))+" boosts V Axis effect (currently: ^"+stat.spatialEnergyEffect.pow(researchEffect(6,13)).format(4)+")";},
 			adjacent_req:["r5_13","r5_14","r5_15"],
 			condition:[],
 			visibility:function(){return true;},
@@ -554,7 +553,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r6_14: {
-			description:function(){return "The neural energy effect"+formulaFormat.exp(researchEffect(6,14),3)+" boosts dark W Axis effect (currently: ^"+stat.neuralEnergyEffect.pow(researchEffect(6,14)).format(4)+")";},
+			description:function(){return "The neural energy effect"+formulaFormat.exp(researchEffect(6,14))+" boosts dark W Axis effect (currently: ^"+stat.neuralEnergyEffect.pow(researchEffect(6,14)).format(4)+")";},
 			adjacent_req:["r5_13","r5_14","r5_15"],
 			condition:[],
 			visibility:function(){return true;},
@@ -564,7 +563,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r6_15: {
-			description:function(){return "The meta energy effect"+formulaFormat.exp(researchEffect(6,15),3)+" boosts hawking radiation (currently: ×"+stat.metaEnergyEffect.pow(researchEffect(6,15)).format(4)+")";},
+			description:function(){return "The meta energy effect"+formulaFormat.exp(researchEffect(6,15))+" boosts Hawking radiation (currently: ×"+stat.metaEnergyEffect.pow(researchEffect(6,15)).format(4)+")";},
 			adjacent_req:["r5_13","r5_14","r5_15"],
 			condition:[],
 			visibility:function(){return true;},
@@ -574,7 +573,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r7_1: {
-			description:function(){return "The dark energy effect"+formulaFormat.exp(researchEffect(7,1),2)+" affects stelliferous and meta energy gain (currently: ^"+stat.darkEnergyEffect.pow(researchEffect(7,1)).format(2)+")";},
+			description:function(){return "The dark energy effect"+formulaFormat.exp(researchEffect(7,1))+" affects stelliferous and meta energy gain (currently: ^"+stat.darkEnergyEffect.pow(researchEffect(7,1)).format(2)+")";},
 			adjacent_req:["r6_1","r6_2","r6_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -584,7 +583,7 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d7);}
 		},
 		r7_2: {
-			description:function(){return "The stelliferous energy effect"+formulaFormat.exp(researchEffect(7,2),2)+" affects spatial and neural energy gain (currently: ^"+stat.stelliferousEnergyEffect.pow(researchEffect(7,2)).format(2)+")";},
+			description:function(){return "The stelliferous energy effect"+formulaFormat.exp(researchEffect(7,2))+" affects spatial and neural energy gain (currently: ^"+stat.stelliferousEnergyEffect.pow(researchEffect(7,2)).format(2)+")";},
 			adjacent_req:["r6_1","r6_2","r6_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -594,7 +593,7 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d7);}
 		},
 		r7_3: {
-			description:function(){return "The gravitational energy effect"+formulaFormat.exp(researchEffect(7,3),2)+" affects spatial and meta energy gain (currently: ^"+stat.gravitationalEnergyEffect.pow(researchEffect(7,3)).format(2)+")";},
+			description:function(){return "The gravitational energy effect"+formulaFormat.exp(researchEffect(7,3))+" affects spatial and meta energy gain (currently: ^"+stat.gravitationalEnergyEffect.pow(researchEffect(7,3)).format(2)+")";},
 			adjacent_req:["r6_1","r6_2","r6_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -636,7 +635,7 @@ const research = (function(){
 			effect:function(power){return c.d0_99.pow(power);}
 		},
 		r7_13: {
-			description:function(){return "The spatial energy effect"+formulaFormat.exp(researchEffect(7,13),2)+" affects dark and gravitational energy gain (currently: ^"+stat.spatialEnergyEffect.pow(researchEffect(7,13)).format(2)+")";},
+			description:function(){return "The spatial energy effect"+formulaFormat.exp(researchEffect(7,13))+" affects dark and gravitational energy gain (currently: ^"+stat.spatialEnergyEffect.pow(researchEffect(7,13)).format(2)+")";},
 			adjacent_req:["r6_13","r6_14","r6_15"],
 			condition:[],
 			visibility:function(){return true;},
@@ -646,7 +645,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r7_14: {
-			description:function(){return "The neural energy effect"+formulaFormat.exp(researchEffect(7,14),2)+" affects stelliferous and gravitational energy gain (currently: ^"+stat.neuralEnergyEffect.pow(researchEffect(7,14)).format(2)+")";},
+			description:function(){return "The neural energy effect"+formulaFormat.exp(researchEffect(7,14))+" affects stelliferous and gravitational energy gain (currently: ^"+stat.neuralEnergyEffect.pow(researchEffect(7,14)).format(2)+")";},
 			adjacent_req:["r6_13","r6_14","r6_15"],
 			condition:[],
 			visibility:function(){return true;},
@@ -656,7 +655,7 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d7);}
 		},
 		r7_15: {
-			description:function(){return "The meta energy effect"+formulaFormat.exp(researchEffect(7,15),2)+" affects dark and neural energy gain (currently: ^"+stat.metaEnergyEffect.pow(researchEffect(7,15)).format(2)+")";},
+			description:function(){return "The meta energy effect"+formulaFormat.exp(researchEffect(7,15))+" affects dark and neural energy gain (currently: ^"+stat.metaEnergyEffect.pow(researchEffect(7,15)).format(2)+")";},
 			adjacent_req:["r6_13","r6_14","r6_15"],
 			condition:[],
 			visibility:function(){return true;},
@@ -666,7 +665,7 @@ const research = (function(){
 			effect:function(power){return power;}
 		},
 		r8_2: {
-			description:function(){return "Multiply hawking radiation by tickspeed"+formulaFormat.exp(researchEffect(8,2),3)+" (currently: ×"+stat.tickspeed.pow(researchEffect(8,2)).format(2)+")";},
+			description:function(){return "Multiply Hawking radiation by tickspeed"+formulaFormat.exp(researchEffect(8,2))+" (currently: ×"+stat.tickspeed.pow(researchEffect(8,2)).format(2)+")";},
 			adjacent_req:["r7_1","r7_2","r7_3"],
 			condition:[],
 			visibility:function(){return true;},
@@ -894,7 +893,7 @@ const research = (function(){
 		r10_13:{
 			numDesc:function(){return researchEffect(10,13).noLeadFormat(2)},
 			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(10,13).mul(0.07).noLeadFormat(3)+"</sup>"},
-			description:function(){return "Stardust boosts hawking radiation gain (currently: "+numOrFormula("r10_13")+"×)"},
+			description:function(){return "Stardust boosts Hawking radiation gain (currently: "+numOrFormula("r10_13")+"×)"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
 			visibility:function(){return g.studyCompletions[4]>0},
@@ -1074,7 +1073,7 @@ const research = (function(){
 		r15_9:{
 			numDesc:function(){return researchEffect(15,9).format(2)},
 			formulaDesc:function(){return "(2<sup>L<sup>1 ÷ 3</sup></sup> - 1)"+formulaFormat.exp(researchPower(15,9))},
-			description:function(){return "Blue lumens boost hawking radiation gain (currently: "+numOrFormula("r15_9")+"×)"},
+			description:function(){return "Blue lumens boost Hawking radiation gain (currently: "+numOrFormula("r15_9")+"×)"},
 			adjacent_req:["r13_9"],
 			condition:[lightAugmentReq(2)],
 			visibility:function(){return true},
@@ -1137,7 +1136,7 @@ const research = (function(){
 			group:"time"
 		},
 		r16_7:{
-			description:timeResearchDesc(16,7,"hawking radiation"),
+			description:timeResearchDesc(16,7,"Hawking radiation"),
 			adjacent_req:["r16_8"],
 			condition:[studyReq(6,1)],
 			visibility:function(){return g.studyCompletions[6]>=1},
@@ -1201,7 +1200,7 @@ const research = (function(){
 					description:function(){let eff=researchEffect(row,col);return "The "+(d?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(d?"dark ":"")+a1+" axis]"+(eff.eq(1)?"":eff.gt(1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
 					adjacent_req:adj.sort(),
 					condition:[],
-					visibility:function(){return betaActive},
+					visibility:function(){return true},
 					type:"normal",
 					basecost:N(5*Math.floor(0.25*(r+c)**2+6*(r+c)+67)),
 					icon:icon[(d?"dark":"")+a1+"Axis"]+icon.arr+icon[(d?"dark":"")+a2+"Axis"]+classes[(d?"dark":"exotic")+"matter"]("$"),
@@ -1279,7 +1278,7 @@ const research = (function(){
 			condition:[lumenReq(8,c.d1)],
 			visibility:function(){return true},
 			type:"permanent",
-			basecost:N(33888),
+			basecost:N(38888),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:conic-gradient(rgba(255,0,0,0.5),rgba(0,0,0,0) 5.556%,rgba(128,128,128,0.5) 8.333%,rgba(0,0,0,0) 11.111%,rgba(255,255,0,0.5) 16.667%,rgba(0,0,0,0) 22.222%,rgba(255,255,255,0.5) 25%,rgba(0,0,0,0) 27.778%,rgba(0,255,0,0.5) 33.333%,rgba(0,0,0,0) 38.889%,rgba(255,255,255,0.5) 41.667%,rgba(0,0,0,0) 44.444%,rgba(0,255,255,0.5) 50%,rgba(0,0,0,0) 55.556%,rgba(128,128,128,0.5) 58.333%,rgba(0,0,0,0) 61.111%,rgba(0,0,255,0.5) 66.667%,rgba(0,0,0,0) 72.222%,rgba(0,0,0,0.5) 75%,rgba(0,0,0,0) 77.778%,rgba(255,0,255,0.5) 83.333%,rgba(0,0,0,0) 88.889%,rgba(0,0,0,0.5) 91.667%,rgba(0,0,0,0) 94.444%,rgba(255,0,0,0.5))\"></div>"
 		},
 		r20_9:{
@@ -1299,13 +1298,13 @@ const research = (function(){
 				description:function(){return "Unlock a new Prismatic Upgrade"},
 				adjacent_req:["r20_8"],
 				condition:[studyReq(i,2),[
-					{check:function(){return g.totalLuckRunes.trifolium.gte(1111)},text:function(){return g.totalLuckRunes.trifolium.format()+" / 1,111 trifolium runes"}},
-					{check:function(){return g.lumens.productDecimals().gte(15e25)},text:function(){return "product of all lumens greater than "+g.lumens.productDecimals().format()+" / "+BEformat(15e25)}},
-					{check:function(){return stat.totalAntiAxis.gt(c.d50)},text:function(){return stat.totalAntiAxis.format()+" / 50 total anti-axis"}}
+					{check:function(){return g.totalLuckRunes.trifolium.gte(777)},text:function(){return g.totalLuckRunes.trifolium.format()+" / 777 trifolium runes"}},
+					{check:function(){return Object.values(g.prismaticUpgrades).sumDecimals().gte(betaActive?288:888)},text:function(){return Object.values(g.prismaticUpgrades).sumDecimals().format()+" / "+(betaActive?2:8)+"88 total Prismatic Upgrades"}},
+					{check:function(){return g.antimatter.gt(9.99e28)},text:function(){return g.antimatter.format()+" / "+BEformat(9.99e28)+" antimatter"}}
 				][i-7]],
 				visibility:function(){return g.studyCompletions[i]>1},
 				type:"permanent",
-				basecost:N(11111*i-2e4),
+				basecost:N(11111*i-1e4),
 				icon:"<span class=\"_prismatic\" style=\"font-size:40px\">"+["☘","▼","♅"][i-7]+"</span>"
 			}
 			return out
@@ -1321,7 +1320,7 @@ const research = (function(){
 		},
 		r23_11: {
 			adjacent_req:["r19_11","r20_12","r21_13","r22_14","r23_15"],
-			condition:[{check:function(){return g.hawkingradiation.gt(studies[9].unlockReq())},text:function(){return g.hawkingradiation.format()+" / "+studies[9].unlockReq().format()+" hawking radiation"}}],
+			condition:[{check:function(){return g.hawkingradiation.gt(studies[9].unlockReq())},text:function(){return g.hawkingradiation.format()+" / "+studies[9].unlockReq().format()+" Hawking radiation"}}],
 			visibility:function(){return true;},
 			type:"study",
 			basecost:N(15000),
@@ -1329,7 +1328,7 @@ const research = (function(){
 		},
 		r24_2:{
 			numDesc:function(){return researchEffect(24,2).format(2)},
-			formulaDesc:function(){return "(1 + log(S + 1) ÷ "+c.e6.format()+")"+formulaFormat.exp(researchPower(24,2).mul(c.d2))},
+			formulaDesc:function(){return "(1 + log(DM + 1) ÷ "+c.e6.format()+")"+formulaFormat.exp(researchPower(24,2).mul(c.d2))},
 			description:function(){return "Luck shard gain is "+numOrFormula("r24_2")+"× faster (based on dark matter)"},
 			adjacent_req:["r24_3"],
 			condition:[],
@@ -1345,7 +1344,7 @@ const research = (function(){
 			condition:[studyReq(7,2)],
 			visibility:function(){return g.studyCompletions[7]>1},
 			type:"permanent",
-			basecost:N(37777),
+			basecost:N(47777),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 5%,var(--luck) 7.5%, var(--luck) 17.5%,rgba(0,0,0,0) 20%,rgba(0,0,0,0) 25%)\"></div>"
 		},
 		r24_4:{
@@ -1375,7 +1374,7 @@ const research = (function(){
 			condition:[studyReq(9,1)],
 			visibility:function(){return g.studyCompletions[9]>0},
 			type:"permanent",
-			basecost:N(59999),
+			basecost:N(69999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">V</div>"
 		},
 		r24_12:{
@@ -1396,7 +1395,7 @@ const research = (function(){
 			condition:[studyReq(9,2)],
 			visibility:function(){return g.studyCompletions[9]>1},
 			type:"permanent",
-			basecost:N(69999),
+			basecost:N(99999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">U</div>"
 		},
 		r24_14:{
@@ -1426,11 +1425,11 @@ const research = (function(){
 			condition:[studyReq(7,3)],
 			visibility:function(){return g.studyCompletions[7]>2},
 			type:"permanent",
-			basecost:N(77777),
+			basecost:N(91777),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 4%,var(--luck) 6%, var(--luck) 14%,rgba(0,0,0,0) 16%,rgba(0,0,0,0) 20%)\"></div>"
 		},
 		r25_8: {
-			description:function(){return "Study of Studies: Decision Triad"},
+			description:function(){return "Study of Studies: Decisive Triad"},
 			adjacent_req:["r24_7","r24_8","r24_9"],
 			condition:[studyReq(2,4),studyReq(5,4),studyReq(8,4),studyReq(10,1)],
 			visibility:function(){return (g.studyCompletions[2]===4)&&(g.studyCompletions[5]===4)&&(g.studyCompletions[8]===4)&&(g.studyCompletions[10]>0);},
@@ -1481,7 +1480,7 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 1.667%,var(--luck) 2.5%, var(--luck) 5.833%,rgba(0,0,0,0) 6.667%,rgba(0,0,0,0) 8.333%)\"></div>"
 		},
 		r26_5: {
-			description:function(){return "Study of Studies: Stardust Triad"},
+			description:function(){return "Study of Studies: Stellar Triad"},
 			adjacent_req:["r24_5"],
 			condition:[studyReq(1,4),studyReq(4,4),studyReq(7,4)],
 			visibility:function(){return (g.studyCompletions[1]===4)&&(g.studyCompletions[4]===4)&&(g.studyCompletions[7]===4)},
@@ -1499,7 +1498,7 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(var(--mastery),rgba(0,0,0,0) 3.125%,var(--mastery) 6.25%),repeating-radial-gradient(#ff00ff,rgba(0,0,0,0) 10%,#ff00ff 20%);opacity:0.5\"></div>"
 		},
 		r26_11: {
-			description:function(){return "Study of Studies: Time Triad"},
+			description:function(){return "Study of Studies: Temporal Triad"},
 			adjacent_req:["r24_11"],
 			condition:[studyReq(3,4),studyReq(6,4),studyReq(9,4),studyReq(10,2)],
 			visibility:function(){return (g.studyCompletions[3]===4)&&(g.studyCompletions[6]===4)&&(g.studyCompletions[9]===4)&&(g.studyCompletions[10]>1);},
@@ -1677,9 +1676,12 @@ var buyableResearch = []
 var buyablePermanentResearch = []
 const researchCanvas = d.element("researchCanvas");
 const researchContext = researchCanvas.getContext("2d");
-function updateResearchTree() {
+function updateBuyableResearch() {
 	buyableResearch = Object.keys(research).filter(x=>availableResearch(researchRow(x),researchCol(x))&&(!g.research[x]))
 	buyablePermanentResearch = buyableResearch.filter(x=>research[x].type==="permanent")
+}
+function updateResearchTree() {
+	updateBuyableResearch()
 	d.element("researchContainer").style.height = (74*researchRowsUnlocked())+"px"
 	let visible = visibleResearch()
 	let unknown = unknownResearch()
@@ -1761,8 +1763,10 @@ function researchConditionsMet(id) {
 function darkenResearch(id,visible=visibleResearch()) {
 	return (!g.research[id])&&(researchCost(id).gt((research[id].type==="permanent")?g.totalDiscoveries:unspentDiscoveries())||(!researchConditionsMet(id))||(!availableResearch(researchRow(id),researchCol(id))))
 }
+var researchSelected=""
 function showResearchInfo(row,col) {
 	let id="r"+row+"_"+col
+	researchSelected=id
 	let res=research[id];
 	if (row===6&&col===9&&(!g.research.r6_9)) return;
 	let out1 = [];
@@ -1860,8 +1864,8 @@ function allParentResearch(row,col) {		// This returns all "parent" research; i.
 	let out = ["r"+row+"_"+col];
 	while (true) {
 		let before = out;
-		let nextOut = new Set(out);
-		for (let current of out) for (let j of research[current].adjacent_req) nextOut.add(j);
+		let nextOut = new Set(out);                                           /* avoid issues with SoS connectors */
+		for (let current of out) for (let j of research[current].adjacent_req) if (research[current].visibility()) nextOut.add(j);
 		nextOut = Array.from(nextOut);
 		if (Array.equal(before,nextOut)) return nextOut.reverse();
 		else out = nextOut;
@@ -1869,18 +1873,19 @@ function allParentResearch(row,col) {		// This returns all "parent" research; i.
 }
 function buySingleResearch(row,col,force=false) {
 	let id = "r"+row+"_"+col;
-	if (research[id]===undefined) return;					// research does not exist
+	let data = research[id]
+	if (data===undefined) return;					// research does not exist
 	if ((!availableResearch(row,col))&&(!force)) return;			// prerequisite research not owned
 	if (!researchConditionsMet(id)) return				// special requirement not met		
 	if (g.research[id]) return;										// research already owned
 	let cost = researchCost(id);
-	if (research[id].type==="permanent") {
+	if (data.type==="permanent") {
 		if (cost.gt(g.totalDiscoveries)) return;		// not enough discoveries
 		totalResearch.permanent++
 	} else {
 		if (cost.gt(unspentDiscoveries())) return;	// research too expensive
 		o.add("spentDiscoveries",cost);
-		if (id!=="r6_9") totalResearch.temporary++
+		if ((id!=="r6_9")&&(data.type==="normal")) totalResearch.temporary++ // exclude study research
 	}
 	g.research[id] = true
 	if (g.research.r8_8) unlockFeature("Light")
