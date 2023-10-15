@@ -192,7 +192,7 @@ const studies = [
 	{
 		name:"Scientia est Experientia",
 		unlockReq:function(){return [N(9.99e149),N(9.99e189),c.ee100,c.ee100][studyPower(9)]},
-		description:function(){return "Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>. If not finished within "+studies[9].timePer().toFixed(0)+" seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars. Depending on how much experientia you have, the penalty of this Study is either increased or mitigated. "+studies[0].exactFrames},
+		description:function(){return "Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>. If not finished within 9 seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars. Depending on how much experientia you have, the penalty of this Study is either increased or mitigated. "+studies[0].exactFrames},
 		research:"r23_11",
 		goal:function(comp=studyPower(9)){return N(999)},
 		reward:function(num,comp=g.studyCompletions[9]){
@@ -210,8 +210,7 @@ const studies = [
 			let exp = x.gt(c.d0)?x.div(c.e2).add(c.d1).recip():c.d1.sub(x.div(c.e2))
 			return base.pow(exp)
 		},
-		timePer:function(){return [15,13,11,9][studyPower(9)]},
-		timeLeft:function(type){return this.timePer()-g.timeThisWormholeReset},
+		timeLeft:function(){return 9-g.timeThisWormholeReset},
 		deltaXP:function(x=g.darkstars){
 			let out = x.sub(g.study9.xp.div(c.d10).add(111+g.study9.resets))
 			if (out.sign===-1) out = out.mul(c.d10)

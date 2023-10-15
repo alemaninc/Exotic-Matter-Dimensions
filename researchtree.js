@@ -1523,7 +1523,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(9999),
 			icon:classes.dimension("S")+icon.plus,
-			effect:function(){return c.d9.pow(power)}
+			effect:function(power){return c.d9.pow(power)}
 		},
 		r27_8: {
 			description:function(){return "Study of Studies: Ontological Triad"},

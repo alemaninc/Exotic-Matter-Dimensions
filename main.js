@@ -2381,7 +2381,7 @@ const topResources = [
 		condition:function(){return StudyE(9);}
 	},
 	{
-		text:function(){return "<span class=\"_exp\">"+(studies[9].timePer()-g.timeThisWormholeReset).toFixed(1)+"s</span> left until reset (<span class=\"_exp\">"+studies[9].formatChange()+" XP</span>)"},
+		text:function(){return "<span class=\"_exp\">"+(9-g.timeThisWormholeReset).toFixed(1)+"s</span> left until reset (<span class=\"_exp\">"+studies[9].formatChange()+" XP</span>)"},
 		condition:function(){return StudyE(9);}
 	},
 ];

@@ -1039,12 +1039,32 @@ tab {
 	color:#cccc00;
 }
 .yellow {color: #ffff00}
-#div_whiteLight, #div_blackLight, #div_grayLight {
+#div_whiteLight {
+	background-color:rgba(34,34,34,0.9);
+	border-color:rgba(85,85,85,0.9);
+	color:#bbbbbb;
+}
+#button_whiteChromaGen {
+	background-color: rgba(34,34,34,0.9);
+	border-color: rgba(68,68,68,0.9);
+	color:#aaaaaa;
+}
+#div_blackLight {
 	background-color:rgba(0,0,0,0.9);
 	border-color:rgba(51,51,51,0.9);
 	color:#999999;
 }
-#button_whiteChromaGen, #button_blackChromaGen, #button_grayChromaGen {
+#button_blackChromaGen {
+	background-color: rgba(17,17,17,0.9);
+	border-color: rgba(34,34,34,0.9);
+	color:#888888;
+}
+#div_grayLight {
+	background-color:rgba(17,17,17,0.9);
+	border-color:rgba(68,68,68,0.9);
+	color:#aaaaaa;
+}
+#button_grayChromaGen {
 	background-color: rgba(25,25,25,0.9);
 	border-color: rgba(51,51,51,0.9);
 	color:#999999;

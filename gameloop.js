@@ -635,7 +635,7 @@ function tick(time) {																																		 // The game loop, which 
 	g.timeThisStardustReset+=time;
 	g.timeThisWormholeReset+=time;
 	g.timeThisSpacetimeReset+=time;
-	if (StudyE(9)) if (g.timeThisWormholeReset>=studies[9].timePer()) studies[9].reset()
+	if (StudyE(9)) if (g.timeThisWormholeReset>=9) studies[9].reset()
 	updateStats()
 	if (g.achievement[717]&&(!unlocked("Corruption"))) for (let i of corruption.all) if (corruption.list[i].visible()) unlockFeature("Corruption")
 
