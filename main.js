@@ -1803,7 +1803,7 @@ const studyButtons = {
 	class:function(x) {return ["enabled","trapped","enabled","disabled","disabled"][studyButtons.state(x)]}
 }
 function generateChroma(x,amount) {
-	while (true) {
+	for (let i=0;i<1e3;i++) { // prevent infinite loop
 		let lowestChroma = g.chroma.reduce((x,y)=>x.min(y))
 		if (amount.lt(lowestChroma.div(c.e15))) break
 		if (lightComponents(x)===null) {
