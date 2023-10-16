@@ -1814,7 +1814,7 @@ function generateChroma(x,amount) {
 			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
 				g.activeChroma=null;return
 			} else {
-				for (let i=0;i<9;i++) g.chroma[i] = g.chroma[i].add(amount.div(c.e15)) // prevent lag
+				if (i>9) for (let j=0;j<9;i++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)) // prevent lag
 				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).max(c.d0).fix(c.d0)
 				g.chroma[x] = g.chroma[x].add(toGenerate).max(c.d0).fix(c.d0)
 				amount = amount.sub(toGenerate)
