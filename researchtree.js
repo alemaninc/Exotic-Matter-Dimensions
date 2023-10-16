@@ -1188,24 +1188,24 @@ const research = (function(){
 		},
 		...(()=>{
 			let out = {}
-			for (let r=1;r<8;r++) for (let c=1;c<=r;c++) for (let d of [true,false]) {
-				let row = 17+r-c
-				let col = d?(16-c):c
+			for (let i1=1;i1<8;i1++) for (let i2=1;i2<=i1;i2++) for (let isDark of [true,false]) {
+				let row = 17+i1-i2
+				let col = isDark?(16-i2):i2
 				let adj = []
-				if (row>17||c===1) adj.push("r"+(row-1)+"_"+col)
-				if (c>1) adj.push("r"+row+"_"+(col+(d?1:-1)))
-				let a1 = axisCodes[r]    // the axis based on which costs are reduced
-				let a2 = axisCodes[c-1]  // the axis which has its costs reduced
+				if (row>17||i2===1) adj.push("r"+(row-1)+"_"+col)
+				if (i2>1) adj.push("r"+row+"_"+(col+(isDark?1:-1)))
+				let a1 = axisCodes[i1]    // the axis based on which costs are reduced
+				let a2 = axisCodes[i2-1]  // the axis which has its costs reduced
 				out["r"+row+"_"+col] = {
-					description:function(){let eff=researchEffect(row,col);return "The "+(d?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(d?"dark ":"")+a1+" axis]"+(eff.eq(c.d1)?"":eff.gt(c.d1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
+					description:function(){let eff=researchEffect(row,col);return "The "+(isDark?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(isDark?"dark ":"")+a1+" axis]"+(eff.eq(c.d1)?"":eff.gt(c.d1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
 					adjacent_req:adj.sort(),
 					condition:[],
 					visibility:function(){return true},
 					type:"normal",
-					basecost:N(5*Math.floor(0.25*(r+c)**2+6*(r+c)+67)),
-					icon:icon[(d?"dark":"")+a1+"Axis"]+icon.arr+icon[(d?"dark":"")+a2+"Axis"]+classes[(d?"dark":"exotic")+"matter"]("$"),
-					effect:function(power){return power.div((d?[5e3,6e3,2e3,4e3,800,5e3,80]:[12500,2e4,8e3,8e4,3e4,2e5/3,200])[r-1])},
-					value:function(){return researchEffect(row,col).mul(stat["real"+(d?"dark":"")+a1+"Axis"]).add(1)},
+					basecost:N(5*Math.floor(0.25*(i1+i2)**2+6*(i1+i2)+67)),
+					icon:icon[(isDark?"dark":"")+a1+"Axis"]+icon.arr+icon[(isDark?"dark":"")+a2+"Axis"]+classes[(isDark?"dark":"exotic")+"matter"]("$"),
+					effect:function(power){return power.div((isDark?[5e3,6e3,2e3,4e3,800,5e3,80]:[12500,2e4,8e3,8e4,3e4,2e5/3,200])[i1-1])},
+					value:function(){return researchEffect(row,col).mul(stat["real"+(isDark?"dark":"")+a1+"Axis"]).add(c.d1)},
 					a1:a1,a2:a2,
 					group:"spatialsynergism"
 				}
