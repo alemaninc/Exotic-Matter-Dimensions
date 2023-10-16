@@ -240,7 +240,7 @@ const studies = [
 			if (num===4) return [c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
 		},
 		reward_desc:function(){return [
-			"[[Stellar]]<br>Multiply the U axis effect by "+studyRewardHTML(10,1,4)+" per achievement, based on luck shards (currently: "+studies[10].reward(5).pow(totalAchievements).noLeadFormat(3)+"×)",
+			"[[Stellar]]<br>Multiply the U axis effect by "+studyRewardHTML(10,1,4)+" per achievement, based on luck shards (currently: "+studies[10].reward(1).pow(totalAchievements).noLeadFormat(3)+"× total)",
 			"[[Decisive]]<br>Knowledge gain is raised to the power of "+studyRewardHTML(10,2,4)+" (based on stars and galaxies)",
 			"[[Temporal]]<br>Tickspeed-to-energy conversion exponent is increased by "+studyRewardHTML(10,3,3)+" (based on antimatter)",
 			"[[Ontological]]<br>The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).format())+"% more effective",

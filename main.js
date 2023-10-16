@@ -1307,7 +1307,7 @@ function maxStars(row) {
 function availableStarRow(row) {
 	return (maxStars(row)>[1,2,3,4].map(x=>g.star[x+10*row]?1:0).sum());
 }
-function starCap(){return Math.max(g.galaxies,60)}
+function starCap(){return 60}
 
 function buyDarkAxis(x) {
 	if (g.darkmatter.gt(darkAxisCost(x))&&(4+g.stardustUpgrades[0]>axisCodes.indexOf(x))) {
@@ -1803,7 +1803,9 @@ const studyButtons = {
 	class:function(x) {return ["enabled","trapped","enabled","disabled","disabled"][studyButtons.state(x)]}
 }
 function generateChroma(x,amount) {
-	while (amount.gt(c.d0)) {
+	while (true) {
+		let lowestChroma = g.chroma.reduce((x,y)=>x.min(y))
+		if (amount.lt(lowestChroma.div(c.e15))) break
 		if (lightComponents(x)===null) {
 			g.chroma[x] = g.chroma[x].add(amount).fix(c.d0)
 			break
