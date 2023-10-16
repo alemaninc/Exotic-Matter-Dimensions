@@ -3070,7 +3070,7 @@ const notations = {
 	"Mixed scientific":function(x,sub="Mixed scientific",p=2){
 		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
 		let leadingEs = notationSupport.leadingEs(x)
-		if (leadingEs===0)	return notations[x.gt(constant.e33)?"Scientific":"Standard"](x,sub,p)
+		if (leadingEs===0)	return notations[x.gte(constant.e33)?"Scientific":"Standard"](x,sub,p)
 		return Array(leadingEs+1).join("e")+notations["Mixed scientific"](x.layerplus(-leadingEs),sub,3)
 	},
 	"Scientific":function(x,sub="Scientific",p=2){
@@ -3145,7 +3145,7 @@ function timeFormat(x) {
 	if (x.lt(constant.d60)) return x.noLeadFormat(2)+" seconds";
 	if (x.lt(constant.d3600)) return x.div(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
 	if (x.lt(constant.d86400)) return x.div(constant.d3600).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
-	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gt(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gte(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
 	return BEformat(x.div(constant.d31556926),2)+" years";
 }
 function rateFormat(x) {

@@ -1020,7 +1020,7 @@ function stardustBoost7IsSoftcapped(){
 	return g.truetimeThisStardustReset.gt(c.e6)
 }
 function buyStardustUpgrade(x) {
-	if (g.stardust.gt(stat["stardustUpgrade"+x+"Cost"])&&(g.stardustUpgrades[x-1]<stat["stardustUpgrade"+x+"Cap"])) {
+	if (g.stardust.gte(stat["stardustUpgrade"+x+"Cost"])&&(g.stardustUpgrades[x-1]<stat["stardustUpgrade"+x+"Cap"])) {
 		if (stat["stardustUpgrade"+x+"Cost"].lt(c.inf.recip())) addAchievement(716)
 		o.sub("stardust",stat["stardustUpgrade"+x+"Cost"]);
 		g.stardustUpgrades[x-1]++;
@@ -1043,7 +1043,7 @@ const autobuyerMeta = {
 	cap:function(id){return Math.ceil(Math.log(0.1/autobuyers[id].baseInterval)/Math.log(0.95));}
 };
 function upgradeAutobuyer(id) {
-	while ((g[autobuyers[id].resource].gt(autobuyerMeta.cost(id))) && (g[id+"AutobuyerUpgrades"]<autobuyerMeta.cap(id))) {
+	while ((g[autobuyers[id].resource].gte(autobuyerMeta.cost(id))) && (g[id+"AutobuyerUpgrades"]<autobuyerMeta.cap(id))) {
 		o.sub(autobuyers[id].resource,autobuyerMeta.cost(id));
 		g[id+"AutobuyerUpgrades"]++;
 	}
@@ -1114,7 +1114,7 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	return cost;
 }
 function buyStar() {
-	if (g.stardust.gt(starCost())) {
+	if (g.stardust.gte(starCost())) {
 		o.sub("stardust",starCost());
 		g.stars++;
 		for (let i of achievementEvents.starBuy) addAchievement(i);
@@ -1805,17 +1805,18 @@ const studyButtons = {
 function generateChroma(x,amount) {
 	for (let i=0;i<1e3;i++) { // prevent infinite loop
 		let lowestChroma = g.chroma.reduce((x,y)=>x.min(y))
-		if (amount.lt(lowestChroma.div(c.e15))) break
+		if (amount.lt(lowestChroma.max(stat.chromaPerSec).div(c.e15))) break
 		if (lightComponents(x)===null) {
 			g.chroma[x] = g.chroma[x].add(amount).fix(c.d0)
 			break
 		} else {
-			let toGenerate = lightComponents(x).map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div(chromaCostFactor(x)).min(amount)
+			let toGenerate = lightComponents(x).map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div(chromaCostFactor(x)).min(amount).max(c.d0)
 			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
 				g.activeChroma=null;return
 			} else {
-				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).fix(c.d0)
-				g.chroma[x] = g.chroma[x].add(toGenerate).fix(c.d0)
+				for (let i=0;i<9;i++) g.chroma[i] = g.chroma[i].add(amount.div(c.e15)) // prevent lag
+				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).max(c.d0).fix(c.d0)
+				g.chroma[x] = g.chroma[x].add(toGenerate).max(c.d0).fix(c.d0)
 				amount = amount.sub(toGenerate)
 				if (amount.neq(c.d0)) for (let i of lightComponents(x)) if (g.chroma[i].eq(c.d0)) {x=i;g.activeChroma=i}
 			}

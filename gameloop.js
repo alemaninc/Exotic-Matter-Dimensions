@@ -358,8 +358,8 @@ function updateHTML() {
 				}
 				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"])).sumDecimals().format())
 				d.innerHTML("span_baseDarkMatterGain",miscStats.darkmatterPerSec.modifiers[1].func(miscStats.darkmatterPerSec.modifiers[0].func()).format(2));
-				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gt(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
-				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lt(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
+				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gte(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
+				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lte(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
 				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
 				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkstarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
 				if (showFormulas) darkStarButtonText += " (Need "+darkStarReqFormula()+" total dark axis)"
@@ -416,7 +416,7 @@ function updateHTML() {
 			d.innerHTML("button_"+id+"AutobuyerToggle",g[id+"AutobuyerOn"]?"On":"Off");
 			d.innerHTML("span_"+id+"AutobuyerInterval",timeFormat(autobuyerMeta.interval(id)));
 			d.display("button_"+id+"AutobuyerUpgrade",g[id+"AutobuyerUpgrades"]>=autobuyerMeta.cap(id)?"none":"inline-block");
-			d.element("button_"+id+"AutobuyerUpgrade").style["background-color"]=autobuyerMeta.cost(id).gt(g[autobuyers[id].resource])?"#b2b2b2":"#cccccc";
+			d.element("button_"+id+"AutobuyerUpgrade").style["background-color"]=autobuyerMeta.cost(id).gte(g[autobuyers[id].resource])?"#b2b2b2":"#cccccc";
 			d.innerHTML("span_"+id+"AutobuyerCost",autobuyerMeta.cost(id).format(2));
 		}
 		d.tr("tr_darkAxisAutobuyerMaxStars",achievement.ownedInTier(5)>=2);
@@ -649,7 +649,7 @@ function tick(time) {																																		 // The game loop, which 
 
 	
 	// Dilation section
-	if (g.dilationUpgradesUnlocked<4) if (stat.tickspeed.gt(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
+	if (g.dilationUpgradesUnlocked<4) if (stat.tickspeed.gte(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
 
 
 	// Mastery section

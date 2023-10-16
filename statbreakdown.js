@@ -351,7 +351,7 @@ const statTemplates = {
 			func:function(prev){return prev.add(this.mod());},
 			text:function(){
 				let out = SSBsmall(g[type+"Axis"].format(),achievement(210).effect().recip().noLeadFormat(3),2)
-				if (this.mod().gt(c.d80)) out = SSBsmall(SSBsmall(out,80,2),0.5,3)
+				if (this.mod().gte(c.d80)) out = SSBsmall(SSBsmall(out,80,2),0.5,3)
 				return "+ "+this.mod().format(2)+" "+out;
 			},
 			show:function(){return this.mod().neq(c.d0)}
@@ -733,7 +733,7 @@ miscStats.darkmatterPerSec={
 			func:function(prev){return prev.aps(darkStarEffect1())},
 			text:function(){return "(<i>x</i> + 1) ^ "+darkStarEffect1().noLeadFormat(3)+" - 1"},
 			dependencies:["realDarkStars"],
-			show:function(){return stat.realDarkStars.neq(c.d0)&&g.stardust.gt(c.e12)}
+			show:function(){return stat.realDarkStars.neq(c.d0)}
 		},
 		{
 			label:"Dark X Axis",
@@ -1931,7 +1931,7 @@ miscStats.tickspeed={
 miscStats.pendinghr={
 	type:"breakdown",
 	label:"Hawking radiation gain",
-	visible:function(){return unlocked("Hawking Radiation")||stat.totalDarkAxis.gt(c.e3);},
+	visible:function(){return unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3);},
 	category:"Hawking radiation gain",
 	precision:2,
 	modifiers:[
@@ -2768,7 +2768,7 @@ miscStats.freeAxisSoftcapLimit={
 }
 miscStats.axisUnlocked={
 	type:"combined",
-	value:function(){return Math.min(axisCodes.map(i=>g[i+"Axis"].gt(0)?1:0).sum()+1,4+g.stardustUpgrades[0])}
+	value:function(){return Math.min(axisCodes.map(i=>g[i+"Axis"].gt(c.d0)?1:0).sum()+1,4+g.stardustUpgrades[0])}
 }
 miscStats.totalNormalAxis={
 	type:"combined",

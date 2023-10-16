@@ -334,7 +334,7 @@ const achievementList = {
 			check:function(){return g.SAxis.gt(c.d0);},
 			progress:function(){return "Not Completed!";},
 			prevReq:[209],
-			get reward(){return "For every {} of each normal axis owned, gain a free axis of the previous type"+(Decimal.div(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)),achievement(210).effect()).gt(c.d80)?" (softcaps past 80)":"")},
+			get reward(){return "For every {} of each normal axis owned, gain a free axis of the previous type"+(Decimal.div(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)),achievement(210).effect()).gte(c.d80)?" (softcaps past 80)":"")},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d64:y.eq(c.d0)?c.d80:c.d80.sub(y.pow(c.d2div3).mul(c.d16))},
 			effectFormat:x=>x.noLeadFormat(3),
 			yellowBreakpoints:[c.d16,c.d80,0],
@@ -934,7 +934,7 @@ const achievementList = {
 		526:{
 			name:"Big Crunch",
 			description:"Buy a dark X axis without buying normal axis in the current Wormhole reset",
-			check:function(){return g.ach526possible&&g.darkXAxis.gt(0)&&unlocked("Hawking Radiation");},
+			check:function(){return g.ach526possible&&g.darkXAxis.gt(c.d0)&&unlocked("Hawking Radiation");},
 			progress:function(){return g.ach526possible?"Still achievable":"Failed";},
 			prevReq:[525],
 			get reward(){return "+{} normal and dark S axis effect (based on total normal axis)";},
@@ -957,7 +957,7 @@ const achievementList = {
 			description:"Have exactly 40 stars and 40 dark stars",
 			check:function(){return g.stars===40&&g.darkstars.eq(c.d40);},
 			progress:function(){return (g.stars<=40&&g.darkstars.lte(c.d40))?achievement.percent(Decimal.add(g.stars,g.darkstars),c.d80,0):"Failed";},
-			get reward(){return "For every {} normal axis, gain 1 of the corresponding dark axis for free"+(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)).gt(12500)?" (softcaps past 100)":"")},
+			get reward(){return "For every {} normal axis, gain 1 of the corresponding dark axis for free"+(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)).gte(12500)?" (softcaps past 100)":"")},
 			flavor:"Does not include neutron stars, protostars, white dwarf stars, blue hypergiant stars nor starfish",
 			effect:function(y=this.yellowValue){return y.mul(c.d2).pow10().mul(0.008)},
 			effectFormat:x=>x.recip().noLeadFormat(3),
@@ -1741,7 +1741,7 @@ const secretAchievementList = {
 	29:{
 		name:"Dilated Pupils",
 		get description(){return "Reach "+timeFormat(c.inf.pow10())+" of dilated exotic matter"},
-		check:function(){return g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)).log10().gt(c.inf)},
+		check:function(){return g.exoticmatter.log10().pow(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)).gt(c.inf)},
 		flavor:"Is that how long it'll take for you to stop clicking the news ticker?",
 		rarity:4
 	},

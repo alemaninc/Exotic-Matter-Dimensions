@@ -854,7 +854,7 @@ const research = (function(){
 		r10_5: {
 			description:function(){return "Unlock three additional colors of Light"},
 			adjacent_req:["r9_7"],
-			condition:[{check:function(){return stat.chromaPerSec.gt(75)},text:function(){return stat.chromaPerSec.format(2)+" / 75 chroma per second"}}],
+			condition:[{check:function(){return stat.chromaPerSec.gte(c.d75)},text:function(){return stat.chromaPerSec.format(2)+" / 75 chroma per second"}}],
 			visibility:function(){return true},
 			type:"permanent",
 			basecost:N(600),
@@ -884,7 +884,7 @@ const research = (function(){
 		r10_11: {
 			description:function(){return "Unlock Mastery 104"},
 			adjacent_req:["r9_9"],
-			condition:[{check:function(){return g.masteryPower.gt("e1000")},text:function(){return g.masteryPower.format()+" / "+BEformat(c.ee3)+" mastery power"}}],
+			condition:[{check:function(){return g.masteryPower.gt(c.ee3)},text:function(){return g.masteryPower.format()+" / "+BEformat(c.ee3)+" mastery power"}}],
 			visibility:function(){return true},
 			type:"permanent",
 			basecost:N(600),
@@ -1197,7 +1197,7 @@ const research = (function(){
 				let a1 = axisCodes[r]    // the axis based on which costs are reduced
 				let a2 = axisCodes[c-1]  // the axis which has its costs reduced
 				out["r"+row+"_"+col] = {
-					description:function(){let eff=researchEffect(row,col);return "The "+(d?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(d?"dark ":"")+a1+" axis]"+(eff.eq(1)?"":eff.gt(1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
+					description:function(){let eff=researchEffect(row,col);return "The "+(d?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(d?"dark ":"")+a1+" axis]"+(eff.eq(c.d1)?"":eff.gt(c.d1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
 					adjacent_req:adj.sort(),
 					condition:[],
 					visibility:function(){return true},
@@ -1299,7 +1299,7 @@ const research = (function(){
 				adjacent_req:["r20_8"],
 				condition:[studyReq(i,2),[
 					{check:function(){return g.totalLuckRunes.trifolium.gte(777)},text:function(){return g.totalLuckRunes.trifolium.format()+" / 777 trifolium runes"}},
-					{check:function(){return Object.values(g.prismaticUpgrades).sumDecimals().gte(betaActive?288:888)},text:function(){return Object.values(g.prismaticUpgrades).sumDecimals().format()+" / "+(betaActive?2:8)+"88 total Prismatic Upgrades"}},
+					{check:function(){return Object.values(g.prismaticUpgrades).sumDecimals().gte(betaActive?288:1e288)},text:function(){return Object.values(g.prismaticUpgrades).sumDecimals().format()+" / "+BEformat((betaActive?"":"e")+"288")+" total Prismatic Upgrades"}},
 					{check:function(){return g.antimatter.gt(9.99e28)},text:function(){return g.antimatter.format()+" / "+BEformat(9.99e28)+" antimatter"}}
 				][i-7]],
 				visibility:function(){return g.studyCompletions[i]>1},
@@ -1393,7 +1393,7 @@ const research = (function(){
 			description:function(){return "Unlock a new Anti-Axis"},
 			adjacent_req:["r24_12"],
 			condition:[studyReq(9,2)],
-			visibility:function(){return g.studyCompletions[9]>1},
+			visibility:function(){return betaActive&&g.studyCompletions[9]>1},
 			type:"permanent",
 			basecost:N(99999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">U</div>"
