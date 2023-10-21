@@ -1814,11 +1814,14 @@ function generateChroma(x,amount) {
 			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
 				g.activeChroma=null;return
 			} else {
-				if (i>9) for (let j=0;j<9;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
+				if (i>9&&(!g.haltChromaIfLacking)) for (let j=0;j<9;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
 				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).max(c.d0).fix(c.d0)
 				g.chroma[x] = g.chroma[x].add(toGenerate).max(c.d0).fix(c.d0)
 				amount = amount.sub(toGenerate)
-				if (amount.sign!==0) for (let i of lightComponents(x)) if (g.chroma[i].eq(c.d0)) {x=i;g.activeChroma=i}
+				if (amount.sign!==0) {
+					if (g.haltChromaIfLacking) {g.activeChroma=null}
+					else {for (let i of lightComponents(x)) if (g.chroma[i].eq(c.d0)) {x=i;g.activeChroma=i}}
+				}
 			}
 		}
 	}

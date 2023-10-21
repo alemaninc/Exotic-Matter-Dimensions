@@ -1302,7 +1302,7 @@ const research = (function(){
 					{check:function(){return Object.values(g.prismaticUpgrades).sumDecimals().gte(betaActive?288:1e288)},text:function(){return Object.values(g.prismaticUpgrades).sumDecimals().format()+" / "+BEformat((betaActive?"":"e")+"288")+" total Prismatic Upgrades"}},
 					{check:function(){return g.antimatter.gt(9.99e28)},text:function(){return g.antimatter.format()+" / "+BEformat(9.99e28)+" antimatter"}}
 				][i-7]],
-				visibility:function(){return g.studyCompletions[i]>1},
+				visibility:function(){return (g.studyCompletions[i]>1)&&(betaActive||(i!==8))},
 				type:"permanent",
 				basecost:N(11111*i-1e4),
 				icon:"<span class=\"_prismatic\" style=\"font-size:40px\">"+["☘","▼","♅"][i-7]+"</span>"
@@ -1854,6 +1854,7 @@ function researchAdjacentTest(id) {
 	else return research[id].adjacent_req.map(x=>researchAdjacentTest(x)).includes(true)
 }
 function availableResearch(row,col) {
+	if (!research["r"+row+"_"+col].visibility()) return false;
 	let adjacents = research["r"+row+"_"+col]["adjacent_req"];
 	if (adjacents.length===0) return true;
 	let adjacent_test = false;

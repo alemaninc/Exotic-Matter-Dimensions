@@ -725,7 +725,7 @@ miscStats.darkmatterPerSec={
 		{
 			label:"Base Gain",
 			func:function(){return g.stardust.gt(c.e12)?g.stardust.div(c.e11).dilate(c.d0_5).div(c.d10):g.stardust.div(c.e12);},
-			text:function(){return g.stardust.gt(c.e12)?(unbreak("("+statFormat("S",g.stardust.format(),"_stardust")+" ÷ "+BEformat(c.e11)+")")+" "+unbreak("dilate 0.5 ÷ 10")):(g.stardust.format(2)+" ÷ "+BEformat(c.e12));},
+			text:function(){return g.stardust.gt(c.e12)?(unbreak("("+statFormat("S",g.stardust.format(),"_stardust")+" ÷ "+BEformat(c.e11)+")")+" "+unbreak("dilate 0.5 ÷ 10")):(statFormat("S",g.stardust.noLeadFormat(2),"_stardust")+" ÷ "+BEformat(c.e12));},
 			show:function(){return true}
 		},
 		{
