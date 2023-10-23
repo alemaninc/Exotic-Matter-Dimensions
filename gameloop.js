@@ -483,11 +483,15 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
 				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i===5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
-				d.element("button_"+name+"ChromaGen").style["background-color"]=(g.activeChroma===i)?"#000000":""
-				if (lightComponents(i)===null) {
-					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")
+				if (g.achievement[815]&&g.ach815RewardActive) {
+					d.display("button_"+name+"ChromaGen","none")
+					d.element("div_"+name+"Light").style.height = "175px"
 				} else {
-					d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents(i).map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")					
+					d.display("button_"+name+"ChromaGen","inline-block")
+					d.element("div_"+name+"Light").style.height = "225px"
+					d.element("button_"+name+"ChromaGen").style["background-color"]=(g.activeChroma===i)?"#000000":""
+					if (lightComponents(i)===null) {d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop generating":"Generate")+" "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")}
+					else {d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents(i).map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")}
 				}
 			}
 			d.innerHTML("span_greenLightBoost",arrowJoin(lightCache.currentEffect[1].pow(g.SAxis).format(2),lightCache.nextEffect[1].pow(g.SAxis).format(2)))
@@ -612,6 +616,7 @@ function updateHTML() {
 				function formatBoost(x){return (x.gt(c.d2)?x.sub(c.d1).mul(c.e2).noLeadFormat(4):x.sub(c.d1).mul(c.e2).toFixed(2))+"%"}
 				d.innerHTML("span_antiAxisBoost"+type,showFormulas?antiAxisDimBoostFormula(type):v1.gt(c.d3)?formatBoost(v1):arrowJoin(formatBoost(v1),formatBoost(v2)));
 			}
+			d.innerHTML("span_antiUAxisEffectAlt",stat.antiUAxisEffect.pow(stat.totalAntiAxis).noLeadFormat(4))
 			for (let name of empowerableAntiAxis) {
 				d.display("button_empoweredAnti"+name+"Axis",stat["empoweredAnti"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empoweredAnti"+name+"AxisAmount",BEformat(stat["empoweredAnti"+name+"Axis"],2));
@@ -627,10 +632,7 @@ function tick(time) {																																		 // The game loop, which 
 		g.dilatedTime += diff
 		time -= diff
 	}
-	for (let i=0;i<9;i++) {
-		if (g.chroma[i].gte(lumenReq(i))) {addLumens(i)}
-		if (lightData[i].updateEveryTick !== undefined) {if (lightData[i].updateEveryTick()) updateLightCache(i)}
-	}
+	for (let i=0;i<9;i++) {if (lightData[i].updateEveryTick !== undefined) {if (lightData[i].updateEveryTick()) updateLightCache(i)}}
 	g.timePlayed+=time;
 	g.timeThisStardustReset+=time;
 	g.timeThisWormholeReset+=time;
@@ -695,7 +697,13 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=10) incrementStardust(stat.tickspeed.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
-	if (typeof g.activeChroma === "number") generateChroma(g.activeChroma,stat.chromaPerSec.mul(time))
+	let chromaToGet = stat.chromaPerSec.mul(time)
+	if (g.achievement[815]&&g.ach815RewardActive) {
+		for (let i=0;i<9;i++) g.chroma[i] = g.chroma[i].add(chromaToGet)
+	} else if (typeof g.activeChroma === "number") {
+		generateChroma(g.activeChroma,chromaToGet)
+	}
+	for (let i=0;i<9;i++) if (g.chroma[i].gte(lumenReq(i))) {addLumens(i)}
 	if (g.studyCompletions[7]>0) o.add("luckShards",stat.luckShardsPerSec.mul(time))
 	if (g.research.r20_8) o.add("prismatic",stat.prismaticPerSec.mul(time))
 	if (g.studyCompletions[9]>0) o.add("antimatter",stat.antimatterPerSec.mul(time))

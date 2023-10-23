@@ -1299,7 +1299,7 @@ const research = (function(){
 				adjacent_req:["r20_8"],
 				condition:[studyReq(i,2),[
 					{check:function(){return g.totalLuckRunes.trifolium.gte(777)},text:function(){return g.totalLuckRunes.trifolium.format()+" / 777 trifolium runes"}},
-					{check:function(){return Object.values(g.prismaticUpgrades).sumDecimals().gte(betaActive?288:1e288)},text:function(){return Object.values(g.prismaticUpgrades).sumDecimals().format()+" / "+BEformat((betaActive?"":"e")+"288")+" total Prismatic Upgrades"}},
+					{check:function(){return Object.values(g.prismaticUpgrades).sumDecimals().gte(888)},text:function(){return Object.values(g.prismaticUpgrades).sumDecimals().format()+" / 888 total Prismatic Upgrades"}},
 					{check:function(){return g.antimatter.gt(9.99e28)},text:function(){return g.antimatter.format()+" / "+BEformat(9.99e28)+" antimatter"}}
 				][i-7]],
 				visibility:function(){return (g.studyCompletions[i]>1)&&(betaActive||(i!==8))},
@@ -1379,15 +1379,22 @@ const research = (function(){
 		},
 		r24_12:{
 			numDesc:function(){return researchEffect(24,12).noLeadFormat(3)},
-			formulaDesc:function(){return "(1 + log<sub>"+c.inf.format()+"</sub>(AM + 1))"+formulaFormat.exp(researchPower(24,12))},
-			description:function(){return "Multiply anti-Y axis effect by "+numOrFormula("r24_12")+" (based on antimatter amount)"},
+			formulaDesc:function(){
+				let am = g.antimatter.gt(this.softcap())?("log<sub>"+this.softcap().log10().pow(c.d0_1).format(3)+"</sub>(log(AM))<sup>"+this.softcap().log10().format(3)+"</sup>"):"AM"
+				return "(1 + log<sub>"+c.inf.format()+"</sub>("+am+" + 1))"+formulaFormat.exp(researchPower(24,12))
+			},
+			description:function(){return "Multiply anti-Y axis effect by "+numOrFormula("r24_12")+" (based on antimatter amount, softcaps past "+this.softcap().format()+")"},
 			adjacent_req:["r24_11"],
 			condition:[],
 			visibility:function(){return true},
 			type:"normal",
 			basecost:N(9999),
 			icon:icon.antiYAxis+icon.plus,
-			effect:function(power){return g.antimatter.add(c.d1).log10().div(c.inflog).add(c.d1).pow(power)}
+			softcap:function(){return c.d2.pow(c.d512)},
+			effect:function(power){
+				let am = g.antimatter.gt(this.softcap())?Decimal.log(g.antimatter.log10(),this.softcap().log10()).mul(c.d10).pow(this.softcap().log10()):g.antimatter
+				return am.add(c.d1).log10().div(c.inflog).add(c.d1).pow(power)
+			}
 		},
 		r24_13:{
 			description:function(){return "Unlock a new Anti-Axis"},
@@ -1405,7 +1412,7 @@ const research = (function(){
 			visibility:function(){return true},
 			type:"normal",
 			basecost:N(9999),
-			icon:icon.antiYAxis+icon.arr+icon.chroma(6)
+			icon:icon.antiUAxis+icon.arr+icon.antiWAxis
 		},
 		r25_2:{
 			numDesc:function(){return researchEffect(25,2).format(2)},
@@ -1434,7 +1441,7 @@ const research = (function(){
 			condition:[studyReq(2,4),studyReq(5,4),studyReq(8,4),studyReq(10,1)],
 			visibility:function(){return (g.studyCompletions[2]===4)&&(g.studyCompletions[5]===4)&&(g.studyCompletions[8]===4)&&(g.studyCompletions[10]>0);},
 			type:"study",
-			basecost:N(225588),
+			basecost:N(258258),
 			icon:icon.study([[15,25,5],[15,50,5],[15,75,5],[45,25,5],[45,75,5],[65,50,5],[85,25,5],[85,75,5]])
 		},
 		r25_13:{
@@ -1443,7 +1450,7 @@ const research = (function(){
 			condition:[studyReq(9,3)],
 			visibility:function(){return g.studyCompletions[9]>2},
 			type:"permanent",
-			basecost:N(79999),
+			basecost:N(199999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">T</div>"
 		},
 		r25_14:{
@@ -1476,7 +1483,7 @@ const research = (function(){
 			condition:[studyReq(7,4)],
 			visibility:function(){return g.studyCompletions[7]>3},
 			type:"permanent",
-			basecost:N(77777),
+			basecost:N(177777),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 1.667%,var(--luck) 2.5%, var(--luck) 5.833%,rgba(0,0,0,0) 6.667%,rgba(0,0,0,0) 8.333%)\"></div>"
 		},
 		r26_5: {
@@ -1485,8 +1492,8 @@ const research = (function(){
 			condition:[studyReq(1,4),studyReq(4,4),studyReq(7,4)],
 			visibility:function(){return (g.studyCompletions[1]===4)&&(g.studyCompletions[4]===4)&&(g.studyCompletions[7]===4)},
 			type:"study",
-			basecost:N(114477),
-			icon:icon.study([[50,45,5],[50,85,5],[85,50,5],[15,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
+			basecost:N(147147),
+			icon:icon.study([[50,45,5],[50,15,5],[85,50,5],[15,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
 		},
 		r26_8:{
 			description:function(){return "Unlock Row 11 Masteries"},
@@ -1503,7 +1510,7 @@ const research = (function(){
 			condition:[studyReq(3,4),studyReq(6,4),studyReq(9,4),studyReq(10,2)],
 			visibility:function(){return (g.studyCompletions[3]===4)&&(g.studyCompletions[6]===4)&&(g.studyCompletions[9]===4)&&(g.studyCompletions[10]>1);},
 			type:"study",
-			basecost:N(336699),
+			basecost:N(369369),
 			icon:icon.study([[15,20,4],[15,80,4],[35,50,4],[55,20,4],[55,50,4],[55,80,4],[75,20,4],[75,50,4],[85,35,4]])
 		},
 		r26_13:{
@@ -1531,7 +1538,7 @@ const research = (function(){
 			condition:[studyReq(10,3),totalStudyReq(42)],
 			visibility:function(){return g.studyCompletions[10]>3;},
 			type:"study",
-			basecost:N(336699),
+			basecost:N(1010101),
 			icon:icon.study([])
 		},
 	}

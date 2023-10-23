@@ -1501,8 +1501,11 @@ const achievementList = {
 			prevReq:[808],
 			check:function(){return stat.chromaPerSec.gt(c.ee3)},
 			progress:function(){return achievement.percent(stat.chromaPerSec,c.ee3,1)},
-			get reward(){let p=prismaticUpgradeName("prismaticSpeed"),l=prismaticUpgradeName("lumenThresholdReduction1");return "If you have more than 100 levels of "+l+", the softcap of "+p+" starts at your "+l+" level instead of 100"},
 			flavor:"From eternity's point of view, you are but a mere instant.",
+			reward:"Unlock an option to generate all types of chroma at once without them costing anything. However, chroma generation is reduced based on the chroma cost multiplier when this is active. (currently: ×{})",
+			effect:function(){return c.d1.sub(stat.chromaCostMultiplier).max(c.d0)},
+			effectFormat:x=>x.noLeadFormat(3),
+			formulaText:()=>"max(1 - m, 0)",
 			beta:true
 		},
 		816:{
@@ -1527,7 +1530,7 @@ const achievementList = {
 achievement.all = Object.values(achievementList).map(x => Object.keys(x)).flat()
 achievement.withMilestones = achievement.all.filter(x=>(typeof achievement(x).milestones)!=="undefined")
 const secretAchievementRarityNames = [null,"Super Easy","Common","Rare","Legendary","Mythical","Shiny","Celestial"]
-const secretAchievementRarityColors = [null,"#999999","#00cc00","#cc66ff","#ff6600","#ff3333","#ffff00","#3333ff"]
+const secretAchievementRarityColors = [null,"#999999","#00cc00","#cc66ff","#ff6600","#ff3333","#00ffff","#3333ff"]
 const secretAchievementList = {
 	1:{
 		name:"Prestigious",

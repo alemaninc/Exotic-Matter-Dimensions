@@ -211,6 +211,7 @@ const basesave = {
 	antiUAxis:c.d0,
 	antiTAxis:c.d0,
 	antiSAxis:c.d0,
+	ach815RewardActive:true,
 	study10Options:[],
 	researchAutobuyerOn:false,
 	researchAutobuyerUpgrades:0,
@@ -504,7 +505,7 @@ const axisEffectHTML = {
 	antiU:"The anti-Z axis effect is multiplied by {e} per anti-axis owned<br><span class=\"small\">(currently: {e2}×)</span>",
 	T:"Exotic matter gain is multiplied by {e} (based on total normal axis)",
 	darkT:"Dark matter gain is multiplied by {e} (based on time this stardust reset)",
-	antiT:"Knowledge gain is multiplied by {e}",
+	antiT:"Add {e} to the observation effect",
 	S:"Exotic matter gain is raised to the power of {e}",
 	darkS:"Dark matter gain is raised to the power of {e}",
 	antiS:"Antimatter gain is raised to the power of {e}"
@@ -1803,7 +1804,8 @@ const studyButtons = {
 	class:function(x) {return ["enabled","trapped","enabled","disabled","disabled"][studyButtons.state(x)]}
 }
 function generateChroma(x,amount) {
-	for (let i=0;i<1e3;i++) { // prevent infinite loop
+	let typesUnlocked = [0,3,6,8,9][lightTiersUnlocked()]
+	for (let i=0;i<100;i++) { // prevent infinite loop
 		let lowestChroma = g.chroma.reduce((x,y)=>x.min(y))
 		if (amount.lt(lowestChroma.max(stat.chromaPerSec).div(c.e15))) break
 		if (lightComponents(x)===null) {
@@ -1814,7 +1816,7 @@ function generateChroma(x,amount) {
 			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
 				g.activeChroma=null;return
 			} else {
-				if (i>9&&(!g.haltChromaIfLacking)) for (let j=0;j<9;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
+				if (i>9&&(!g.haltChromaIfLacking)) for (let j=0;j<typesUnlocked;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
 				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).max(c.d0).fix(c.d0)
 				g.chroma[x] = g.chroma[x].add(toGenerate).max(c.d0).fix(c.d0)
 				amount = amount.sub(toGenerate)
@@ -1825,6 +1827,8 @@ function generateChroma(x,amount) {
 			}
 		}
 	}
+	let remainder = amount.div(c.d9).mul(c.d1.sub(stat.chromaCostMultiplier).max(c.d0))
+	for (let i=0;i<typesUnlocked;i++) g.chroma[i] = g.chroma[i].add(remainder)
 }
 function lightTiersUnlocked() {
 	if (g.research.r19_8) return 4
@@ -2223,7 +2227,7 @@ function prismaticUpgradeUnlocked(upg) {
 
 function antiAxisUnlocked(type) {
 	if (g.studyCompletions[9]===0) return false
-	if (["U","T","S","R","Q","P","O"].includes(type)) return
+	if (["U","T","S","R","Q","P","O"].includes(type)&&(!betaActive)) return
 	if ((type==="V")&&(!g.research.r24_11)) return false
 	if ((type==="U")&&(!g.research.r24_13)) return false
 	if ((type==="T")&&(!g.research.r25_13)) return false
@@ -2241,13 +2245,16 @@ function realAntiAxisCostExponent(type) {
 function realAntiAxisScalePower(type){
 	let out=stat.antiAxisScalingPower
 	if (type==="Z") out = out.mul(c.d2)
+	if (type==="W") out = out.mul(c.d1_5)
 	if (type==="U") out = out.mul(c.d3)
 	if (type==="S") out = out.mul(c.d1_5)
 	return out
 }
 function realAntiAxisSuperscalePower(type){
 	let out=stat.antiAxisSuperscalingPower
+	if (type==="Y") out = out.mul(c.d3)
 	if (type==="Z") out = out.mul(c.d1_5)
+	if (type==="W") out = out.mul(c.d1_25)
 	if (type==="U") out = out.mul(c.d2)
 	if (type==="S") out = out.mul(c.d5)
 	return out
@@ -2262,7 +2269,7 @@ function antiAxisCost(type,axis) {
 	else if (type==="Z") cost = axis.div(c.d3).add(c.d3).pow(c.d3).pow10();
 	else if (type==="W") cost = axis.add(c.d2).pow(c.d2).mul(c.d7_5).pow10();
 	else if (type==="V") cost = axis.mul(c.d3).add(c.d25).pow10();
-	else if (type==="U") cost = c.maxvalue;
+	else if (type==="U") cost = axis.div(c.d7_5).add(c.d2).pow(c.d7_5).pow10();
 	else if (type==="T") cost = c.maxvalue;
 	else if (type==="S") cost = c.maxvalue;
 	else functionError("axisCost",type)
@@ -2280,7 +2287,7 @@ function maxAffordableAntiAxis(type,am=g.antimatter) {
 	else if (type==="Z") axis = effective_AM.lte(1e27)?c.dm1:effective_AM.log10().pow(c.d1div3).sub(c.d3).mul(c.d3);
 	else if (type==="W") axis = effective_AM.lte(c.e30)?c.dm1:effective_AM.log10().div(c.d7_5).pow(c.d0_5).sub(c.d2);
 	else if (type==="V") axis = effective_AM.lte(c.e25)?c.dm1:effective_AM.log10().sub(c.d25).div(c.d3);
-	else if (type==="U") axis = c.dm1;
+	else if (type==="U") axis = effective_AM.lte(1e256)?c.dm1:effective_AM.log10().root(c.d7_5).sub(c.d2).mul(c.d7_5);
 	else if (type==="T") axis = c.dm1;
 	else if (type==="S") axis = c.dm1;
 	else functionError("maxAffordableAxis",arguments);
@@ -2461,7 +2468,8 @@ const openConfig = (()=>{
 		"Light":function(){showConfigModal("Light",[
 			{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:toggle("g.glowOptions.noChromaGeneration")},
 			{text:"If out of a component chroma, "+(g.haltChromaIfLacking?"halt generation":"switch to generate limiting component"),onClick:"toggle('haltChromaIfLacking')",get visible(){return lightTiersUnlocked()>1}},
-			{text:"Lumen effects shown from "+(g.showLightEffectsFrom0?"zero":"previous lumen"),onClick:"toggle('showLightEffectsFrom0')"}
+			{text:"Lumen effects shown from "+(g.showLightEffectsFrom0?"zero":"previous lumen"),onClick:"toggle('showLightEffectsFrom0')"},
+			{text:achievement.label(815)+" reward "+(g.ach815RewardActive?"":"in")+"active",onClick:toggle("g.ach815RewardActive")}
 		])},
 		"Galaxy":function(){showConfigModal("Galaxy",[
 			{text:(g.glowOptions.createGalaxy?"G":"No g")+"low if a galaxy can be created",onClick:toggle("g.glowOptions.createGalaxy")}

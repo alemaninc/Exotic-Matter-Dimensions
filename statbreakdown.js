@@ -2190,14 +2190,6 @@ miscStats.knowledgePerSec={
 			show:function(){return g.achievement[719]&&g.observations.sumDecimals().gt(c.d0)}
 		},
 		{
-			label:"Anti-T Axis",
-			mod:function(){return stat.antiTAxisEffect.pow(stat.realantiTAxis)},
-			func:function(prev){return prev.mul(this.mod())},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiTAxisEffect.noLeadFormat(2),stat.realantiTAxis.noLeadFormat(3),3)},
-			dependencies:["antiTAxisEffect","realantiTAxis"],
-			show:function(){return stat.antiTAxisEffect.neq(c.d1)&&stat.realantiTAxis.neq(c.d0)}
-		},
-		{
 			label:"Mental Energy",
 			func:function(prev){return prev.pow(stat.mentalEnergyEffect)},
 			text:function(){return "^ "+stat.mentalEnergyEffect.format(4)},
@@ -2235,7 +2227,15 @@ miscStats.observationEffect={
 				show:function(){return g.observations[i].gt(c.d0)}
 			})
 			return out
-		})()
+		})(),
+		{
+			label:"Anti-T Axis",
+			mod:function(){return stat.antiTAxisEffect.pow(stat.realantiTAxis)},
+			func:function(prev){return prev.add(this.mod())},
+			text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiTAxisEffect.noLeadFormat(2),stat.realantiTAxis.noLeadFormat(3),2)},
+			dependencies:["antiTAxisEffect","realantiTAxis"],
+			show:function(){return stat.antiTAxisEffect.neq(c.d1)&&stat.realantiTAxis.neq(c.d0)}
+		},
 	]
 }
 miscStats.chromaPerSec={
@@ -2315,6 +2315,14 @@ miscStats.chromaPerSec={
 			func:function(prev){return prev.mul(prismaticUpgrades.chromaOverdrive.eff.x())},
 			text:function(){return "× "+prismaticUpgrades.chromaOverdrive.eff.x().noLeadFormat(2)},
 			show:function(){return g.prismaticUpgrades.chromaOverdrive.neq(c.d0)}
+		},
+		{
+			label:achievement.label(815),
+			mod:function(){return c.d1.sub(stat.chromaCostMultiplier).max(c.d0)},
+			func:function(prev){return (g.achievement[815]&&g.ach815RewardActive)?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(4)},
+			dependencies:["chromaCostMultiplier"],
+			show:function(){return g.achievement[815]&&g.ach815RewardActive}
 		},
 		statTemplates.tickspeed(()=>studies[6].reward(1))
 	]
@@ -2533,8 +2541,9 @@ miscStats.antiWAxisEffect={
 	modifiers:[
 		{
 			label:"Base",
-			func:function(){return Decimal.mul(g.antimatter.add(c.d10).log10().pow(c.d0_3),g.antimatter.add(c.d10).log10().log10().pow(c.d2)).pow10()},
-			text:function(){let am=statFormat("AM",g.antimatter.format(),"_antimatter");return "10 ^ (log("+am+" + 10) ^ 0.3 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
+			softcap:function(){return c.e100},
+			func:function(){return Decimal.mul(g.antimatter.add(c.d10).min(this.softcap()).log10().pow(c.d0_3),g.antimatter.add(c.d10).log10().log10().pow(c.d2)).pow10()},
+			text:function(){let am=statFormat("AM",g.antimatter.format(),"_antimatter");return "10 ^ (log(min("+am+", "+this.softcap().format()+") + 10) ^ 0.3 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
 			show:function(){return true}
 		},
 		{
@@ -2574,12 +2583,12 @@ miscStats.antiTAxisEffect={
 	category:"Axis effects",
 	precision:2,
 	modifiers:[
-		statTemplates.base(()=>c.inf.format(),c.inf,true),
+		statTemplates.base(()=>c.d80.format(),c.d80,true),
 		{
 			label:"Empowered Anti-V Axis",
 			mod:function(){return [stat.antiVAxisEffect,stat.empoweredAntiVAxis,c.d0_01].productDecimals().add(c.d1);},
-			func:function(prev){return prev.pow(this.mod());},
-			text:function(){return "^ "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+unbreak("("+stat.antiVAxisEffect.div(c.e2).noLeadFormat(2)+" × "+stat.realantiVAxis.noLeadFormat(2)+" + 1)")+"</span>";},
+			func:function(prev){return prev.mul(this.mod());},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+unbreak("("+stat.antiVAxisEffect.div(c.e2).noLeadFormat(2)+" × "+stat.realantiVAxis.noLeadFormat(2)+" + 1)")+"</span>";},
 			dependencies:["antiVAxisEffect","empoweredAntiVAxis"],
 			show:function(){return stat.antiVAxisEffect.neq(c.d0)&&stat.empoweredAntiVAxis.neq(c.d0)}
 		},
@@ -2724,7 +2733,7 @@ miscStats.antiAxisScalingPower={
 }
 miscStats.antiAxisSuperscalingStart={
 	type:"combined",
-	value:function(){return c.d256}
+	value:function(){return c.d64}
 }
 miscStats.antiAxisSuperscalingPower={
 	type:"combined",

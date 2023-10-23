@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.4.10",
+	current:"𝕍1.4.11",
 	nextUpdateHint:"Grand Tour of the Iterated Experiment",
 }
 /*
