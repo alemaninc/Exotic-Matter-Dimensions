@@ -505,6 +505,12 @@ function updateHTML() {
 				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
 				d.display("div_grayLight",lightTiersUnlocked()===4?"inline-block":"none")
 			}
+			if (unlocked("Prismatic")) {
+				d.display("span_chromaCostMultiplierDisplay","inline-block")
+				d.innerHTML("span_chromaCostMultiplier",stat.chromaCostMultiplier.noLeadFormat(3))
+			} else {
+				d.display("span_chromaCostMultiplierDisplay","none")
+			}
 		} else if (g.activeSubtabs.wormhole==="galaxies") {
 			d.innerHTML("span_galaxies",g.galaxies)
 			d.innerHTML("span_galaxyPlural",g.galaxies===1?"y":"ies")

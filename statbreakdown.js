@@ -2197,7 +2197,7 @@ miscStats.knowledgePerSec={
 			show:function(){return stat.mentalEnergyEffect.neq(c.d1)}
 		},
 		{
-			label:"Study of Studies: Decisive reward",
+			label:"Study of Studies reward 2",
 			func:function(prev){return prev.pow(studies[10].reward(2))},
 			text:function(){return "^ "+studies[10].reward(2).noLeadFormat(2)},
 			show:function(){return g.studyCompletions[10]>1}

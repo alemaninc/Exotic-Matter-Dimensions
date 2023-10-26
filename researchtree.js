@@ -1441,7 +1441,7 @@ const research = (function(){
 			condition:[studyReq(2,4),studyReq(5,4),studyReq(8,4),studyReq(10,1)],
 			visibility:function(){return (g.studyCompletions[2]===4)&&(g.studyCompletions[5]===4)&&(g.studyCompletions[8]===4)&&(g.studyCompletions[10]>0);},
 			type:"study",
-			basecost:N(258258),
+			basecost:N(338724), // 582^2
 			icon:icon.study([[15,25,5],[15,50,5],[15,75,5],[45,25,5],[45,75,5],[65,50,5],[85,25,5],[85,75,5]])
 		},
 		r25_13:{
@@ -1450,7 +1450,7 @@ const research = (function(){
 			condition:[studyReq(9,3)],
 			visibility:function(){return g.studyCompletions[9]>2},
 			type:"permanent",
-			basecost:N(199999),
+			basecost:N(299999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">T</div>"
 		},
 		r25_14:{
@@ -1487,12 +1487,12 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 1.667%,var(--luck) 2.5%, var(--luck) 5.833%,rgba(0,0,0,0) 6.667%,rgba(0,0,0,0) 8.333%)\"></div>"
 		},
 		r26_5: {
-			description:function(){return "Study of Studies: Stellar Triad"},
+			description:function(){return "Study of Studies reward 1"},
 			adjacent_req:["r24_5"],
 			condition:[studyReq(1,4),studyReq(4,4),studyReq(7,4)],
 			visibility:function(){return (g.studyCompletions[1]===4)&&(g.studyCompletions[4]===4)&&(g.studyCompletions[7]===4)},
 			type:"study",
-			basecost:N(147147),
+			basecost:N(221841), // 471^2
 			icon:icon.study([[50,45,5],[50,15,5],[85,50,5],[15,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
 		},
 		r26_8:{
@@ -1510,7 +1510,7 @@ const research = (function(){
 			condition:[studyReq(3,4),studyReq(6,4),studyReq(9,4),studyReq(10,2)],
 			visibility:function(){return (g.studyCompletions[3]===4)&&(g.studyCompletions[6]===4)&&(g.studyCompletions[9]===4)&&(g.studyCompletions[10]>1);},
 			type:"study",
-			basecost:N(369369),
+			basecost:N(927369), // 963^2
 			icon:icon.study([[15,20,4],[15,80,4],[35,50,4],[55,20,4],[55,50,4],[55,80,4],[75,20,4],[75,50,4],[85,35,4]])
 		},
 		r26_13:{
@@ -1519,7 +1519,7 @@ const research = (function(){
 			condition:[studyReq(9,4)],
 			visibility:function(){return g.studyCompletions[9]>3},
 			type:"permanent",
-			basecost:N(99999),
+			basecost:N(999999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">S</div>"
 		},
 		r26_14:{
@@ -1917,9 +1917,9 @@ function asceticMaxBuyResearch(id,recursion=false) { // buys only 1 adjacent res
 	let [r,c] = [researchRow(id),researchCol(id)]
 	if (!availableResearch(r,c)) {
 		let adj = id
-		if (recursion) do {
+		if (recursion) {while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0)) {
 			adj = research[adj].adjacent_req.sort((a,b)=>Decimal.gt(researchCost(a),researchCost(b)))[0] // cheapest
-		} while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0))
+		}}
 		asceticMaxBuyResearch(adj,true)
 	}
 	buySingleResearch(r,c)

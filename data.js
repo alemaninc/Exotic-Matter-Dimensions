@@ -171,12 +171,12 @@ const studies = [
 	},
 	{
 		name:"Masterful",
-		unlockReq:function(){return [N("3.33e333"),N("6.66e666"),c.ee100,c.ee100][studyPower(8)]},
+		unlockReq:function(){return [N("3.33e333"),N("6.66e666"),betaActive?N("e2500"):c.ee100,c.ee100][studyPower(8)]},
 		darkAxisMaxCost:function(){return g.masteryPower.pow(88)},
 		darkAxisMaxCostFormula:function(){return "(mastery power)<sup>88</sup>"},
 		description:function(){return "All effects which allow you to activate more than 1 Mastery from each row are disabled. Dark axis cannot be purchased if their cost is greater than "+this.darkAxisMaxCostFormula()},
 		research:"r18_8",
-		goal:function(comp=studyPower(8)){return [N(5888),N(7040),c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(8)){return [N(5888),N(7040),betaActive?N(14080):c.e100,c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[8]) {
 			if (num===1) return [c.d50,N(52.5),N(55),N(57.5),N(60)][comp]
 			if (num===2) return [c.d0,c.d9,c.d16,c.d21,c.d24][comp].mul(studyRewardBoost(8,2))
@@ -199,6 +199,7 @@ const studies = [
 			if (num===1) return [Infinity,0.09,0.06,0.03,0][comp]
 			if (num===2) return c.d0_5.pow(N(comp/3).mul(studyRewardBoost(9,2)))
 			if (num===3) return [c.d0,c.d1,N(1.9),N(2.6),N(3)][comp].mul(studyRewardBoost(9,3))
+			functionError("studies[9].reward",arguments)
 		},
 		reward_desc:function(){return [
 			unlocked("Antimatter")?("Antimatter gain is reduced to log<sup>["+studyRewardHTML(9,1,x=>(x===Infinity)?"Infinity":N(x).noLeadFormat(3))+"]</sup>(gain)"):"? ? ? (Complete to reveal)",
@@ -230,25 +231,27 @@ const studies = [
 		name:"Study of Studies",
 		// no unlock requirement property due to 4 separate research
 		description:function(){return "The conditions of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously."},
-		research:["r26_5","r25_8","r26_11","r27_8"],
-		goal:function(comp=studyPower(10)){return [c.e100,c.e100,c.e100,c.e100][studyPower(10)]},
+		researchList:["r26_5","r25_8","r26_11","r27_8"],
+		get research(){return studies[10].researchList[studyPower(10)]},
+		goal:function(comp=studyPower(10)){return [N(17444),c.e100,c.e100,c.e100][studyPower(10)]},
 		rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
 		reward:function(num,comp=g.studyCompletions[10]){
 			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,c.d0_001,N(0.0015)][this.rewardStep(1,comp)]).add(c.d1)
 			if (num===2) return N(10+g.stars+g.galaxies*6).log10().pow([c.d0,c.d0_03,c.d0_04][this.rewardStep(2,comp)])
 			if (num===3) return g.antimatter.add(c.e10).layerplus(-3).mul([c.d0,c.d0_8,c.d1][this.rewardStep(3,comp)])
 			if (num===4) return [c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
+			functionError("studies[10].reward",arguments)
 		},
 		reward_desc:function(){return [
-			"[[Stellar]]<br>Multiply the U axis effect by "+studyRewardHTML(10,1,4)+" per achievement, based on luck shards (currently: "+studies[10].reward(1).pow(totalAchievements).noLeadFormat(3)+"× total)",
-			"[[Decisive]]<br>Knowledge gain is raised to the power of "+studyRewardHTML(10,2,4)+" (based on stars and galaxies)",
-			"[[Temporal]]<br>Tickspeed-to-energy conversion exponent is increased by "+studyRewardHTML(10,3,3)+" (based on antimatter)",
-			"[[Ontological]]<br>The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).format())+"% more effective",
+			"Multiply the U axis effect by "+studyRewardHTML(10,1,4)+" per achievement, based on luck shards (currently: "+studies[10].reward(1).pow(totalAchievements).noLeadFormat(3)+"× total)",
+			"Knowledge gain is raised to the power of "+studyRewardHTML(10,2,4)+" (based on stars and galaxies)",
+			"Tickspeed-to-energy conversion exponent is increased by "+studyRewardHTML(10,3,3)+" (based on antimatter)",
+			"The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).format())+"% more effective",
 		]},
 		rewardFormulas:{
-			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.001","0.0015"][this.rewardStep(1,comp)]+" + 1"},
-			2:function(comp=g.studyCompletions[10]){return "(10 + ★ + G × 6)<sup>"+["0","0.03","0.04"][this.rewardStep(2,comp)]+"</sup>"},
-			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10+")"+formulaFormat.mult([c.d0,c.d0_8,c.d1][this.rewardStep(3,comp)])}
+			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.001","0.0015"][studies[10].rewardStep(1,comp)]+" + 1"},
+			2:function(comp=g.studyCompletions[10]){return "(10 + ★ + G × 6)<sup>"+["0","0.03","0.04"][studies[10].rewardStep(2,comp)]+"</sup>"},
+			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+")"+formulaFormat.mult([c.d0,c.d0_8,c.d1][studies[10].rewardStep(3,comp)])}
 		}
 	}
 ];

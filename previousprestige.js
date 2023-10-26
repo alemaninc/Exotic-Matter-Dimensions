@@ -126,7 +126,7 @@ const previousPrestige = {
 		let location
 		if (layer==="stardust") {
 			if (type==="last") {
-				location = g.previousStardustRuns.last10[index]
+				location = g.previousStardustRuns.last10[index-1]
 			} else if (type==="record") {
 				location = previousPrestige.stardustRunsStored[index].location()
 			} else {
@@ -134,7 +134,7 @@ const previousPrestige = {
 			}
 		} else if (layer==="wormhole") {
 			if (type==="last") {
-				location = g.previousWormholeRuns.last10[index]
+				location = g.previousWormholeRuns.last10[index-1]
 			} else if (type==="record") {
 				location = previousPrestige.wormholeRunsStored[index].location()
 			} else {

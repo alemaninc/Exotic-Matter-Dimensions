@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.4.11",
+	current:"𝕍1.4.12",
 	nextUpdateHint:"Grand Tour of the Iterated Experiment",
 }
 /*
@@ -335,8 +335,8 @@ formulaFormat.bracketize = function(str) {
 	return out
 }
 formulaFormat.add = function(v,p=3) {return v.gt(c.d0)?(" + "+v.noLeadFormat(p)):v.lt(c.d0)?(" - "+v.neg().noLeadFormat(p)):""}
-formulaFormat.mult = function(v,p=3) {return v.gt(c.d1)?(" × "+v.noLeadFormat(p)):v.lt(c.d1)?(" ÷ "+v.recip().noLeadFormat(p)):""}
 formulaFormat.exp = function(v,analog=false,p=3) {return v.eq(c.d1)?"":analog?(" ^ "+v.noLeadFormat(p)):("<sup>"+v.noLeadFormat(p)+"</sup>")}
+formulaFormat.mult = function(v,p=3) {return v.eq(c.d0)?"× 0":v.gt(c.d1)?(" × "+v.noLeadFormat(p)):v.lt(c.d1)?(" ÷ "+v.recip().noLeadFormat(p)):""}
 formulaFormat.linSoftcap = function(value,start,power,condition,analog) {
 	if (!condition) return value
 	return formulaFormat.bracketize("("+formulaFormat.bracketize(value)+formulaFormat.mult(power.add(c.d1).div(start))+formulaFormat.add(power.neg())+")"+formulaFormat.exp(power.add(c.d1).recip(),analog)+formulaFormat.mult(start))

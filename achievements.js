@@ -1334,7 +1334,7 @@ const achievementList = {
 			description:"Have 26 black and white lumens each",
 			check:function(){return g.lumens[6].gt(c.d25)&&g.lumens[7].gt(c.d25)},
 			progress:function(){return this.check()?"Due to the way achievements work, you need to gain 1 more lumen of any kind to get this.":achievement.percent(Decimal.add(g.lumens[6].min(c.d26),g.lumens[7].min(c.d26)),c.d52,0)},
-			reward:"Research 13-8 is 2.6% stronger",
+			get reward(){return "Research 13-8 is 2.6% stronger, and you will now generate all chromas at once with (1 ÷ "+c.e15.format()+") efficiency if chroma generation is enabled."},
 			flavor:"Game under construction: all mechanics must wear hardcaps.",
 		},
 		719:{

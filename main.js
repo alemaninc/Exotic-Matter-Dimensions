@@ -388,7 +388,7 @@ function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.
 	return arrowJoin(format(N(studies[studyNum].reward(rewardNum,completions))),format(N(studies[studyNum].reward(rewardNum,completions+1))));
 }
 function studyPower(x){
-	if (x===10) for (let i=3;i>=0;i--) if (g.research[studies[10].research[i]]) return i // allow retrying previous triads
+	if (x===10) for (let i=3;i>=0;i--) if (g.research[studies[10].researchList[i]]) return i // allow retrying previous triads
 	return Math.min(g.studyCompletions[x],3)
 }
 function studyRewardBoost(studyNum,rewardNum) {
@@ -1805,6 +1805,7 @@ const studyButtons = {
 }
 function generateChroma(x,amount) {
 	let typesUnlocked = [0,3,6,8,9][lightTiersUnlocked()]
+	if (g.achievement[718]) for (let j=0;j<typesUnlocked;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
 	for (let i=0;i<100;i++) { // prevent infinite loop
 		let lowestChroma = g.chroma.reduce((x,y)=>x.min(y))
 		if (amount.lt(lowestChroma.max(stat.chromaPerSec).div(c.e15))) break
@@ -1816,7 +1817,6 @@ function generateChroma(x,amount) {
 			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
 				g.activeChroma=null;return
 			} else {
-				if (i>9&&(!g.haltChromaIfLacking)) for (let j=0;j<typesUnlocked;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
 				for (let i of lightComponents(x)) g.chroma[i]=g.chroma[i].sub(toGenerate.mul(chromaCostFactor(x))).max(c.d0).fix(c.d0)
 				g.chroma[x] = g.chroma[x].add(toGenerate).max(c.d0).fix(c.d0)
 				amount = amount.sub(toGenerate)

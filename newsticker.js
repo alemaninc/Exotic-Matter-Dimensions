@@ -174,7 +174,13 @@ const newsSupport = {
 			buttons:[["Switch","g.colortheme='"+received+"';theme()"],["Do not","g.colortheme=`"+received+"`;popup({text:'Since when were you the one in control?',buttons:[['Switch','theme()']]})"]]
 		})
 	},
-	nextMajorVersion:(Number(version.current.substring(2,3))+1)
+	nextMajorVersion:(Number(version.current.substring(2,3))+1),
+	calcOMCCDVLevel:function(){
+		if (g.achievement[719]) return 2
+		if (g.achievement[413]) return 1
+		return 0
+	},
+	ord:function(level){return (level>=newsSupport.calcOMCCDVLevel())?1:0}
 }
 // top
 const newsList = [
@@ -201,7 +207,7 @@ const newsList = [
 	{text:"<a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" target=\"_blank\" onClick=\"addSecretAchievement(25)\" style=\"color:inherit;text-decoration:none\">Click this for a secret achievement.</a>"},
 	{text:"What is a Microphone? (1 point) <span style=\"margin-left:30px\">[A] true</span> <span style=\"margin-left:30px\">[B] false</span>"},
 	{text:"If I should die, think only this of me, that 𝕍4.0 will never come to be. But if I should take a break temporarily, don't think very much of me, really."},
-	{text:"What's an OMCCDV, you ask? Only xhwzwka knows.",get weight(){return g.achievement[413]?1:0}},
+	{text:"What's an OMCCDV, you ask? Only xhwzwka knows.",get weight(){return newsSupport.ord(1)}},
 	{text:"\"Incredibly slow start, surprised there isn't something to speed this up\" - alpha player"},
 	{text:"This game has no bugs, only unintended features."},
 	{get text(){return "Fact: the size of your universe is "+newsSupport.universeSize()+"."},get weight(){return stat.totalAxis.eq(c.d0)?0:1}},
@@ -373,7 +379,7 @@ const newsList = [
 	{text:"What if you beat the game, and alemaninc said, \"you just lost The Game\"?"},
 	{text:"<span onClick=\"let reading=[newsSupport.randomVisible().text];while(reading.map(x=>x.length).sum()<1e4){reading.push(newsSupport.randomVisible().text)};let out='<p>We have compiled a list of '+reading.length+' news messages so that you can read more high-quality journalism.</p>'+reading.map(x=>'<p>'+x.replaceAll('padding-left','nullCSSlol')+'</p>').join('');popup({text:out,buttons:[['Read Less','']]})\">Read More</span>"},
 	{text:"You can destroy the universe already, what are you still doing in Iron Will?",get weight(){return (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)&&stat.ironWill)?1:0}},
-	{text:"The scientific community remains baffled over the meaning of 44,031. \"We're certain it's related to OMCCDV, but now the question is what OMCCDV <i>is</i>,\" one researcher notes.",get weight(){return g.achievement[413]?1:0}},
+	{text:"The scientific community remains baffled over the meaning of 44,031. \"We're certain it's related to OMCCDV, but now the question is what OMCCDV <i>is</i>,\" one researcher notes.",get weight(){return newsSupport.ord(1)}},
 	{text:"A wormhole a day keeps the update away.",get weight(){return unlocked("Hawking Radiation")?1:0}},
 	{text:"Go plant a research tree in real life.",get weight(){return g.totalDiscoveries.gte(c.d100)?1:g.totalDiscoveries.div(c.e2).toNumber()}},
 	{get text(){return "There are currently "+newsList.length+" news ticker items. That is "+(100*newsList.length/this.target()).toFixed(2)+"% of alemaninc's target of "+this.target()+" items! The ticker was created on 2023-04-03 at 10:23 UTC, therefore, it will take approximately "+timeFormat(this.timeToTarget())+" to reach the target."},timeElapsedSince1stTicker:function(){return Date.now()/1e3-1680517380},target:function(){return Decimal.decibel(Math.round(Math.log10(newsList.length*2)*10)).toNumber()},timeToTarget:function(){return this.timeElapsedSince1stTicker()*((this.target()/newsList.length)-1)}},
@@ -455,12 +461,16 @@ const newsList = [
 	{text:"And the Celestials waxed wroth, for this mortal dared venture where none but they ruled. And it was that the Celestial of Blob, PSionJoule, cried of the Endtimes foretold by Stat Mark, for the Celestial of Exotic Matter waxed wroth that what was once His and His alone now has come under the dominion of others. \"Perhaps the R axis was the correct Path, the Fourth Path,\" the Celestial of Blob mused.",get weight(){return unlocked("Antimatter")?1:0}},
 	{text:"If anyone wants to bribe alemaninc to add a certain news ticker of his choice, how many chocolate cookies would it take? I wonder if a bunch of grandmas and a few cookie prestiges can make that many"},
 	{text:"Did you enjoy the OMCCDV Grand Tour? Click <a href=\"https://www.endquiz.com/quiz.php\" target=\"_blank\">here</a> to leave a review!",get weight(){return g.secretAchievement[33]?1:0}},
-	{get text(){return (this.owned()===1)?("A local exotic matter scientist has obtained the mantle of a god: the Celestial "+secretAchievementList[this.contAchs.filter(x=>g.secretAchievement[x])[0]].name+" gets angrier!"):("Local exotic matter scientist obtains the mantle of <i>"+numword(this.owned())+"</i> gods"+(g.secretAchievement[30]?", <i>and</i> a blob":"")+"! Judge, jury and executioner Saul Goodman suspects identity crisis!")},get weight(){return this.owned()===0?0:1},contAchs:[28,33],owned:function(){return this.contAchs.map(x=>g.secretAchievement[x]?1:0).sum()}}, // remember to change this if hyperbolia joins OMCCDV
+	{get text(){return (this.owned()===1)?("A local exotic matter scientist has obtained the mantle of a god: the Celestial "+secretAchievementList[this.contAchs.filter(x=>g.secretAchievement[x])[0]].name+" gets angrier!"):("Local exotic matter scientist obtains the mantle of <i>"+numword(this.owned())+"</i> gods! Judge, jury and executioner Saul Goodman suspects identity crisis!")},get weight(){return this.owned()===0?0:1},owned:function(){return this.contAchs.map(x=>g.secretAchievement[x]?1:0).sum()},contAchs:[28,30,33]},
 	{get text(){return Decimal.fromComponents(1,1,2*501**Math.random()).format()+" miners dead in Raw Bip Ore mine catastrophe: Stat Mark blames alemaninc's Bitcoin game!"},get weight(){return g.totalexoticmatter.gt(c.e100)?1:0}},
-	{text:"A preview of <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" Official Discord: travel to an ultra scary alternate server with horrific Celestials. The secrets of OMCCDV heal for 25% of their maximum health before each Discord message. If a secret ever heals itself back to 100% health, the Celestial of Blob will fall to despair and instantly wither away. Every secret discovered by your server in the New OMCCDV World or New OMCCDV World-level Maps grants 1 stack of Hardness to your server (stacking up to 10,000 and increasing health by 0.1% per stack) and 1 stack of Horror to all enemies (increasing server activity by 0.05% per stack). Whenever a group of members is killed by Wither, the server loses half of its stacks of Hardness and blocks OMCCDV's ability to heal and Wither for an amount of messages equal to 10% of the Hardness stacks lost. Clearing OMCCDV II will complete this Challenge.",get weight(){return g.achievement[719]?1:0}},
+	{text:"A preview of <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" Official Discord: travel to an ultra scary alternate server with horrific Celestials. The secrets of OMCCDV heal for 25% of their maximum health before each Discord message. If a secret ever heals itself back to 100% health, the Celestial of Blob will fall to despair and instantly wither away. Every secret discovered by your server in the New OMCCDV World or New OMCCDV World-level Maps grants 1 stack of Hardness to your server (stacking up to 10,000 and increasing health by 0.1% per stack) and 1 stack of Horror to all enemies (increasing server activity by 0.05% per stack). Whenever a group of members is killed by Wither, the server loses half of its stacks of Hardness and blocks OMCCDV's ability to heal and Wither for an amount of messages equal to 10% of the Hardness stacks lost. Clearing OMCCDV II will complete this Challenge.",get weight(){return newsSupport.ord(2)}},
 	{text:"According to UTQP news, an entire town has been swallowed by an exotic matter-induced wormhole. More reliable sources such as Stat Mark affirm the town never really existed and is merely a myth perpetuated by alemaninc to procrastinate on the Tier 8 update.",get weight(){return unlocked("Hawking Radiation")?1:0}},
 	{text:"Today we launched ChatUXC. Try talking with it <a href=\""+discordInvite+"\">here</a>! This highly advanced chatbot can give realistic responses to any prompt, such as:"+newsSupport.br(100)+"Q: \"What to do next in <i>Exotic Matter Dimensions</i>? I'm at tier "+ranint(1,Math.min(achievement.tiersUnlocked().length,10))+"\""+newsSupport.br(100)+"A: \"Stop playing\"",get weight(){return achievement.nextTier()===null?0:1}},
-	{text:"<span onClick=\"for (let i of document.getElementsByTagName('*')) i.style.display = 'inline-block'\">IKEA game: disassemble <i>Exotic Matter Dimensions</i>, then enjoy reassembling it all over again! Click here to play</span>"}
+	{text:"<span onClick=\"for (let i of document.getElementsByTagName('*')) i.style.display = 'inline-block'\">IKEA game: disassemble <i>Exotic Matter Dimensions</i>, then enjoy reassembling it all over again! Click here to play</span>"},
+	{text:"You have stolen xhwzwka's achievement. You have angered the missing god. As punishment, you will be sent to SCP-3001. You will be trapped there with no chance of escape, and you will be powerless as your organs begin to disintegrate while you slowly become sicker and sicker. Good news is, you might be able to see xhwzwka himself, because he came from the endless red void of SCP-3001 and you are being taken to his home. This might explain why he has gone crazy...",get weight(){return g.secretAchievement[28]?1:0}},
+	{text:"alemaninc refutes these baseless claims that there's a reference to OMCCDV in this newsticker.",get weight(){return newsSupport.ord(2)}},
+	{text:"alemaninc cried out, for the Celestial of Blob was not to be stayed from his hunt for OMCCDV. Then, alemaninc cried out once more, for the Celestial of Blob had hunted OMCCDV down. But this time, he cried out tears of joy, for the dying OMCCDV was saved.",get weight(){return newsSupport.ord(7)}},
+	{get text(){function r(x){return "█".repeat(x)};return "nicodium has joined the ranks of lazy SCP writers! His latest creation: \"Scp-"+r(4)+" is a "+r(86)+" foundation staff "+r(172)+" D-3819 "+r(86)+" Joe Biden "+r(172)+" among us "+r(86)+" was activated\"."}}
 ]
 // bottom
 var newsOrder = []
