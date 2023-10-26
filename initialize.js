@@ -81,7 +81,7 @@ const initSteps = [
 	{function:function(){
 		d.innerHTML("newsline",randomNewsItem())
 		openTopLevelDiv("game");
-		window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c)}
+		window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c+"<br>"+o)}
 		initComplete = true;
 	}},
 	{function:function(){

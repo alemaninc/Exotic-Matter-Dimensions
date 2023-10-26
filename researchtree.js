@@ -1914,19 +1914,16 @@ function buySingleResearch(row,col,force=false) {
 }
 function asceticMaxBuyResearch(id,recursion=false) { // buys only 1 adjacent research and only if one is not already owned
 	if (g.research[id]) return
-	let [r,c] = [researchRow(id),researchCol(id)]
-	if (!availableResearch(r,c)) {
-		let adj = id
-		if (recursion) {while ((research[adj].type!=="normal")&&(research[adj].adjacent_req.length>0)) {
-			adj = research[adj].adjacent_req.sort((a,b)=>Decimal.gt(researchCost(a),researchCost(b)))[0] // cheapest
-		}}
-		asceticMaxBuyResearch(adj,true)
+	let list = [id]
+	while (!availableResearch(researchRow(id),researchCol(id))) {
+		id = research[id].adjacent_req.sort((a,b)=>Decimal.gt(researchCost(a),researchCost(b)))[0] // cheapest
+		list.push(id)
 	}
-	buySingleResearch(r,c)
-	if (!recursion) {
-		updateResearchTree()
-		generateResearchCanvas()
-	}
+	list.reverse()
+	let regen = false
+	for (let i of list) regen = regen || buySingleResearch(researchRow(i),researchCol(i))
+	updateResearchTree()
+	if (regen) generateResearchCanvas()
 }
 function buyResearch(row,col,max=g.buyMaxResearch) {
 	let regenerateCanvas = false
