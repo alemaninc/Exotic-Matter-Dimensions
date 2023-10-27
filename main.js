@@ -1811,7 +1811,7 @@ function generateChroma(x,amount) {
 		if (amount.lt(lowestChroma.max(stat.chromaPerSec).div(c.e15))) break
 		if (lightComponents(x)===null) {
 			g.chroma[x] = g.chroma[x].add(amount).fix(c.d0)
-			break
+			return
 		} else {
 			let toGenerate = lightComponents(x).map(i=>g.chroma[i]).reduce((x,y)=>x.min(y)).div(chromaCostFactor(x)).min(amount).max(c.d0)
 			if (toGenerate.eq(c.d0)&&g.haltChromaIfLacking) {
@@ -1827,8 +1827,10 @@ function generateChroma(x,amount) {
 			}
 		}
 	}
-	let remainder = amount.div(c.d9).mul(c.d1.sub(stat.chromaCostMultiplier).max(c.d0))
-	for (let i=0;i<typesUnlocked;i++) g.chroma[i] = g.chroma[i].add(remainder)
+	if (g.achievement[718]) {
+		let remainder = amount.div(c.d9).mul(c.d1.sub(stat.chromaCostMultiplier).max(c.d0))
+		for (let i=0;i<typesUnlocked;i++) g.chroma[i] = g.chroma[i].add(remainder)
+	}
 }
 function lightTiersUnlocked() {
 	if (g.research.r19_8) return 4
