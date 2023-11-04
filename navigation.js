@@ -194,7 +194,9 @@ const hotkeys = {
 		"Overclock":{baseKey:"KeyO",down:()=>toggleOverclock(),visible:()=>true},
 		"Freeze time":{baseKey:"shift+KeyO",down:()=>toggleFreeze(),visible:()=>true},
 		"Stardust reset":{baseKey:"KeyS",down:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
-		"Wormhole reset":{baseKey:"KeyW",down:()=>attemptWormholeReset(),visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
+		"Force Stardust reset":{baseKey:"shift+KeyS",down:()=>stardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
+		"Wormhole reset":{baseKey:"KeyW",down:()=>{if((g.activeStudy===0)||Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)){attemptWormholeReset()}},visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
+		"Force Wormhole reset":{baseKey:"shift+KeyW",down:()=>wormholeReset(),visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
 		"Show/hide formulas":{baseKey:"KeyF",down:()=>showFormulas=!showFormulas,visible:()=>true}
 	},
 	toBeChanged:null,

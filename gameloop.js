@@ -465,12 +465,14 @@ function updateHTML() {
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
 		} else if (g.activeSubtabs.wormhole==="studies") {
-			for (let i of visibleStudies()) {
+			let visible = visibleStudies()
+			for (let i of visible) {
 				d.innerHTML("span_study"+i+"Description",studies[i].description())
 				d.innerHTML("button_study"+i,studyButtons.text(i))
 				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
 				d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));
 			}
+			if (visible.includes(10)) updateStudyDiv(10)
 		} else if (g.activeSubtabs.wormhole==="light") {
 			d.innerHTML("span_chromaPerSec",stat.chromaPerSec.format(2))
 			d.innerHTML("span_unspentStarsLight",g.stars)
@@ -554,9 +556,11 @@ function updateHTML() {
 						if (luckUpgradeUnlocked(type,upg)) {
 							d.display("button_"+type+upg,"inline-block")
 							let affordable = affordableLuckUpgrades(type,upg).max(c.d1)
-							d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",g.luckUpgrades[type][upg].format()+"<br>(+"+affordable.format()+")")
+							let bought = g.luckUpgrades[type][upg]
+							let eff = effLuckUpgradeLevel(type,upg)
+							d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",(Decimal.eq(bought,eff)?bought.format():arrowJoin(bought.format(),eff.noLeadFormat(3)))+"<br>(+"+affordable.format()+")")
 							d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
-							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(Decimal.add(g.luckUpgrades[type][upg],affordableLuckUpgrades(type,upg).max(c.d1))))))
+							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(effLuckUpgradeLevel(type,upg,Decimal.add(bought,affordableLuckUpgrades(type,upg).max(c.d1)))))))
 						} else {
 							d.display("button_"+type+upg,"none")
 						}
@@ -632,7 +636,10 @@ function updateHTML() {
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
-	if (time===0) return // no point causing lag
+	if (time<0) {
+		error("An error has occurred which would cause time to reverse by "+timeFormat(time)+". Please tell alemaninc about this.")
+		return
+	} else if (time===0) {return} // not an error but no point causing lag
 	if ((StudyE(3)||StudyE(9))&&(!overclockActive)) {
 		let diff = time-0.05
 		g.dilatedTime += diff
@@ -671,6 +678,10 @@ function tick(time) {																																		 // The game loop, which 
 	fpsAchievementTicks = ((deltatime===0.05)&&(!StudyE(3)))?(fpsAchievementTicks+1):0;
 	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
 	if (stat.chromaPerSec.gte(c.d1)) g.ach711Progress = Math.min(g.ach711Progress,g.stars)
+	if (g.ach825possible) {for (let i of axisCodes) {
+		if (Decimal.lt(stat["real"+i+"Axis"],g[i+"Axis"].mul(c.d2))) g.ach825possible = false
+		if (Decimal.lt(stat["realdark"+i+"Axis"],g["dark"+i+"Axis"].mul(c.d2))) g.ach825possible = false
+	}}
 	
 	
 	// Dark Matter section
@@ -681,10 +692,21 @@ function tick(time) {																																		 // The game loop, which 
 
 
 	// Study section
-	if (g.activeStudy !== 0) if ((!g.research[currentStudyResearch()]) || ((g.studyCompletions[g.activeStudy]>=studies[0].effectiveMaxCompletions[g.activeStudy])&&(g.studyCompletions[g.activeStudy]<4))) {
-		popup({text:"You have been forcefully removed from Study "+roman(g.activeStudy)+" due to the presence of a bug. Sorry!",buttons:[["Close",""]]})
-		wormholeReset()
-		g.activeStudy=0
+	if (g.activeStudy !== 0) {
+		let forceExit = false, exitText
+		if (!g.research[studies[g.activeStudy].research]) {
+			forceExit = true
+			exitText = "Relevant study research not owned ("+researchOut(studies[g.activeStudy].research)+")"
+		}
+		if (studyPower(g.activeStudy)>=studies[0].effectiveMaxCompletions[g.activeStudy]) {
+			forceExit = true
+			exitText = "Placeholder level entered (current: "+(studyPower(g.activeStudy)+1)+", max: "+studies[0].effectiveMaxCompletions[g.activeStudy]+")"
+		}
+		if (forceExit) {
+			popup({text:"You have been forcefully removed from Study "+roman(g.activeStudy)+" due to the presence of a bug. Sorry!<br>Details: "+exitText+"<br>Please tell alemaninc about this.",buttons:[["Close",""]]})
+			wormholeReset()
+			g.activeStudy=0
+		}
 	}
 
 

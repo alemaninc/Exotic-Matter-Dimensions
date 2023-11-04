@@ -68,15 +68,31 @@ const logEntries = [
 	/*
 	next major:
 	{name:"",changes:[
-
+		["CONTENT","Added 14 more Tier 8 achievements, bringing the total to 25"],
+		["CONTENT","[] rows of Research including 3 new Studies"],
+		["CONTENT","Added three more anti-axis"],
+		["FLAIR","Prismatic \"Lumen Increaser\" upgrades have been renamed to \"Illumenati\""]
 	]},
 	blank entry:
 	{name:"",changes:[
 
 	]},
 	*/
-	{name:"",changes:[
-
+	{name:"𝕍1.4.15.1 (2023-11-04)",changes:[
+		["WHAT","Fixed the footer saying 𝕍1.4.14"],
+		["WHAT","Fixed the 𝕍1.4.15 changelog being completely broken"],
+		["WHAT","Fixed the 𝕍1.4.15 changelog saying 2023-10-27 as the date"]
+	]},
+	{name:"𝕍1.4.15 (2023-11-04)",changes:[
+		["BUGFIX","Light options no longer have a toggle for the reward of an unimplemented achievement (Gensokyo Millennium)"],
+		["BUGFIX","Forced study exit text now gives an indication of the cause"],
+		["BUGFIX","Hopefully fixed the \"forced Study IX exit\" bug caused when an experientia reset takes place at the goal requirement"],
+		["BUGFIX","The notorious time-reversal bug has been \"fixed\""],
+		["INTERFACE","At resource values above "+format("ee9")+" the header will stop displaying per-second gain if it is greater than or equal to ^0.9999 of the amount owned (from ^0.99)"],
+		["INTERFACE","Changed the icons of research 5-14 and 13-11"],
+		["INTERFACE","Fully completed studies will now continue to show the goal of the fourth level"],
+		["QOL","\"Wormhole reset\" hotkey no longer exits a Study if it cannot be completed"],
+		["QOL","Added hotkeys to force stardust/wormhole reset"]
 	]},
 	{name:"𝕍1.4.14 (2023-10-27)",changes:[
 		["BUGFIX","Generating primary chroma colors will no longer generate everything else at ¹⁄₄₆ efficiency"]

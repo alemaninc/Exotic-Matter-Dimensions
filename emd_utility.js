@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.4.14",
+	current:"𝕍1.4.15.1",
 	nextUpdateHint:"Grand Tour of the Iterated Experiment",
 }
 /*
@@ -87,6 +87,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_001		: Decimal.FC_NN(1,0,1e-3),
 	d0_003		: Decimal.FC_NN(1,0,3e-3),
 	d0_005		: Decimal.FC_NN(1,0,5e-3),
+	d0_006		: Decimal.FC_NN(1,0,6e-3),
 	d0_009		: Decimal.FC_NN(1,0,9e-3),
 	d0_01			: Decimal.FC_NN(1,0,0.01),
 	d0_0175		: Decimal.FC_NN(1,0,0.0175),
@@ -134,6 +135,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_002		: Decimal.FC_NN(1,0,1.002),
 	d1_003		: Decimal.FC_NN(1,0,1.003),
 	d1_004		: Decimal.FC_NN(1,0,1.004),
+	d1_005		: Decimal.FC_NN(1,0,1.005),
 	d1_009		: Decimal.FC_NN(1,0,1.009),
 	d1_01			: Decimal.FC_NN(1,0,1.01),
 	d1_02			: Decimal.FC_NN(1,0,1.02),
@@ -144,6 +146,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_06			: Decimal.FC_NN(1,0,1.06),
 	d1_08			: Decimal.FC_NN(1,0,1.08),
 	d1_1			: Decimal.FC_NN(1,0,1.1),
+	d10div9		: Decimal.FC_NN(1,0,10/9),
 	d1_125		: Decimal.FC_NN(1,0,1.125),
 	d1_15			: Decimal.FC_NN(1,0,1.15),
 	d1_1907		: Decimal.FC_NN(1,0,1.1907),
@@ -153,6 +156,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_26			: Decimal.FC_NN(1,0,1.26),
 	d1_3			: Decimal.FC_NN(1,0,1.3),
 	d1_308		: Decimal.FC_NN(1,0,1.308),
+	d4div3		: Decimal.FC_NN(1,0,4/3),
 	d1_337		: Decimal.FC_NN(1,0,1.337),
 	d1_379654224:Decimal.FC_NN(1,0,1.379654224),
 	d1_4			: Decimal.FC_NN(1,0,1.4),
@@ -190,6 +194,7 @@ const c = deepFreeze({		 // c = "constant"
 	d27				: Decimal.FC_NN(1,0,27),
 	d30				: Decimal.FC_NN(1,0,30),
 	d32				: Decimal.FC_NN(1,0,32),
+	d32_5			: Decimal.FC_NN(1,0,32.5),
 	d35				: Decimal.FC_NN(1,0,35),
 	d36				: Decimal.FC_NN(1,0,36),
 	d40				: Decimal.FC_NN(1,0,40),

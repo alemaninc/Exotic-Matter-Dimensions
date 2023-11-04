@@ -295,10 +295,15 @@ const statTemplates = {
 	darkMatterFreeAxis:function(type){
 		return {
 			label:"Dark "+type+" Axis",
-			func:function(prev){return prev.add(stat.darkMatterFreeAxis.mul(g["dark"+type+"Axis"]));},
-			text:function(){return "+ "+stat.darkMatterFreeAxis.mul(g["dark"+type+"Axis"]).format(2)+" "+SSBsmall(g["dark"+type+"Axis"].format(),stat.darkMatterFreeAxis.format(3),2);},
-			dependencies:["darkMatterFreeAxis"],
-			show:function(){return g["dark"+type+"Axis"].neq(c.d0)&&stat.darkMatterFreeAxis.neq(c.d0)}
+			effectiveDarkAxis:function(){
+				let out = g["dark"+type+"Axis"]
+				if (g.achievement[825]) out = Decimal.mul(out.pow(c.d0_99),stat["realdark"+type+"Axis"].pow(c.d0_01)).max(out)
+				return out
+			},
+			func:function(prev){return prev.add(stat.darkMatterFreeAxis.mul(this.effectiveDarkAxis()));},
+			text:function(){return "+ "+stat.darkMatterFreeAxis.mul(this.effectiveDarkAxis()).format(2)+" "+SSBsmall(this.effectiveDarkAxis().format(),stat.darkMatterFreeAxis.format(3),2);},
+			dependencies:["realdark"+type+"Axis","darkMatterFreeAxis"],
+			show:function(){return this.effectiveDarkAxis().neq(c.d0)&&stat.darkMatterFreeAxis.neq(c.d0)}
 		};
 	},
 	darkStarEffect2:function(axis){
@@ -397,7 +402,11 @@ const statTemplates = {
 	timeResearch:function(row,col){
 		return {
 			label:"Research "+row+"-"+col,
-			mod:function(){return researchEffect(row,col).mul(g.truetimeThisWormholeReset).add(c.d1)},
+			mod:function(){
+				let out = researchEffect(row,col).mul(g.truetimeThisWormholeReset).add(c.d1)
+				if (g.research.r17_8) {out = out.pow(researchEffect(17,8))}
+				return out
+			},
 			func:function(prev){return g.research["r"+row+"_"+col]?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().format(2)},
 			show:function(){return g.research["r"+row+"_"+col]}
@@ -1226,10 +1235,10 @@ miscStats.UAxisEffect={
 			show:function(){return g.galaxies>=galaxyEffects[3].req}
 		},
 		{
-			label:"Study of Studies: Stellar reward",
+			label:"Study of Studies reward 1",
 			mod:function(){return studies[10].reward(1).pow(totalAchievements)},
 			func:function(prev){return prev.mul(this.mod())},
-			text:function(){return "× "+this.mod().noLeadFormat(3)+SSBsmall(studies[10].reward(1).noLeadFormat(4),String(totalAchievements),3)},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(studies[10].reward(1).noLeadFormat(4),String(totalAchievements),3)},
 			show:function(){return g.studyCompletions[10]>0}
 		},
 		{
@@ -1342,7 +1351,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
 		func:function(prev){return prev.add(g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
 		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
-		show:function(){return g.luckUpgrades.cinquefolium.axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+		show:function(){return effLuckUpgradeLevel("cinquefolium","axis").neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
 	})
 	// multiplicative effects
 	if (i===0) out.push({
@@ -1390,6 +1399,12 @@ for (let group of ["","dark","anti"]) {
 			show:function(){return antiAxisDimBoost(type).neq(c.d1)}
 		})
 		out.push({
+			label:"Study XI",
+			func:function(prev){return (StudyE(11)&&(studies[11].active()!==type))?c.d0:prev},
+			text:function(){return "0"},
+			show:function(){return StudyE(11)&&(studies[11].active!==type)},
+			color:"#cc0000"
+		},{
 			label:"Not unlocked",
 			func:dictionary(group,[
 				["",function(prev){return (stat.axisUnlocked>i)?prev:c.d0}],
@@ -1644,7 +1659,7 @@ miscStats.axisCostExponent={
 			label:"Trifolium "+luckUpgrades.trifolium.normalAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.normalAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.normalAxis.eff().format(3)},
-			show:function(){return g.luckUpgrades.trifolium.normalAxis.neq(c.d0)}
+			show:function(){return effLuckUpgradeLevel("trifolium","normalAxis").neq(c.d0)}
 		}
 	]
 };
@@ -1699,7 +1714,7 @@ miscStats.darkAxisCostExponent={
 			label:"Trifolium "+luckUpgrades.trifolium.darkAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.darkAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.darkAxis.eff().format(3)},
-			show:function(){return g.luckUpgrades.trifolium.darkAxis.neq(c.d0)}
+			show:function(){return effLuckUpgradeLevel("trifolium","darkAxis").neq(c.d0)}
 		},
 		{
 			label:achievement.label(806),
@@ -1746,7 +1761,7 @@ miscStats.antiAxisCostExponent={
 			label:"Trifolium "+luckUpgrades.trifolium.antiAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.antiAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.antiAxis.eff().format(3)},
-			show:function(){return g.luckUpgrades.trifolium.antiAxis.neq(c.d0)}
+			show:function(){return effLuckUpgradeLevel("trifolium","antiAxis").neq(c.d0)}
 		},
 	]
 }
@@ -2054,7 +2069,7 @@ miscStats.HRMultiplier={
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.radiation.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.radiation.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.radiation.eff().format()},
-			show:function(){return g.luckUpgrades.cinquefolium.radiation.neq(c.d0)}
+			show:function(){return effLuckUpgradeLevel("cinquefolium","radiation").neq(c.d0)}
 		}
 	]
 };
@@ -2124,7 +2139,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
 		func:function(prev){return prev.add(g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
 		text:function(){return "+ "+g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g["dark"+type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
-		show:function(){return g.luckUpgrades.cinquefolium.axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+		show:function(){return effLuckUpgradeLevel("cinquefolium","axis").neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
 	})
 	// multiplicative effects
 	// softcap
@@ -2196,12 +2211,6 @@ miscStats.knowledgePerSec={
 			dependencies:["mentalEnergyEffect"],
 			show:function(){return stat.mentalEnergyEffect.neq(c.d1)}
 		},
-		{
-			label:"Study of Studies reward 2",
-			func:function(prev){return prev.pow(studies[10].reward(2))},
-			text:function(){return "^ "+studies[10].reward(2).noLeadFormat(2)},
-			show:function(){return g.studyCompletions[10]>1}
-		},
 		statTemplates.tickspeed()
 	]
 };
@@ -2230,7 +2239,7 @@ miscStats.observationEffect={
 		})(),
 		{
 			label:"Anti-T Axis",
-			mod:function(){return stat.antiTAxisEffect.pow(stat.realantiTAxis)},
+			mod:function(){return stat.antiTAxisEffect.mul(stat.realantiTAxis)},
 			func:function(prev){return prev.add(this.mod())},
 			text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiTAxisEffect.noLeadFormat(2),stat.realantiTAxis.noLeadFormat(3),2)},
 			dependencies:["antiTAxisEffect","realantiTAxis"],
@@ -2296,7 +2305,7 @@ miscStats.chromaPerSec={
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.chroma.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.chroma.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.chroma.eff().format(2)},
-			show:function(){return g.luckUpgrades.cinquefolium.chroma.neq(c.d0)}
+			show:function(){return luckUpgrades.cinquefolium.chroma.eff().neq(c.d1)}
 		},
 		{
 			label:"Gray Light",
@@ -2387,12 +2396,18 @@ miscStats.luckShardsPerSec={
 		},
 		statTemplates.antiYAxis,
 		{
+			label:"Research 27-1",
+			mod:function(){return researchEffect(27,1).pow(effLuckUpgradeLevel("cinquefolium","luck"))},
+			func:function(prev){return g.research.r27_1?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(researchEffect(27,1).noLeadFormat(3),effLuckUpgradeLevel("cinquefolium","luck").noLeadFormat(3))},
+			show:function(){return g.research.r27_1&&effLuckUpgradeLevel("cinquefolium","luck").neq(c.d0)}
+		},
+		{
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.luck.name,
 			func:function(prev){return prev.pow(luckUpgrades.cinquefolium.luck.eff())},
-			text:function(){return "× "+luckUpgrades.cinquefolium.luck.eff().format(3)},
-			show:function(){return g.luckUpgrades.cinquefolium.luck.neq(c.d0)}
+			text:function(){return "^ "+luckUpgrades.cinquefolium.luck.eff().noLeadFormat(4)},
+			show:function(){return effLuckUpgradeLevel("cinquefolium","luck").neq(c.d0)}
 		},
-		statTemplates.timeResearch(17,8),
 		statTemplates.tickspeed()
 	]
 }
@@ -2432,7 +2447,6 @@ miscStats.prismaticPerSec={
 			return out
 		})(),
 		statTemplates.antiYAxis,
-		statTemplates.timeResearch(17,8),
 		{
 			label:"Mastery 111",
 			mod:function(){return Decimal.pow(masteryEffect(104),masteryEffect(111))},
@@ -2469,7 +2483,6 @@ miscStats.antimatterPerSec={
 			dependencies:["antiSAxisEffect","freeantiSAxis"],
 			show:function(){return stat.antiSAxisEffect.neq(c.d1)&&stat.realantiSAxis.neq(c.d0)}
 		},
-		statTemplates.timeResearch(17,8),
 		{
 			label:"Study IX reward 1",
 			func:function(prev){return (g.studyCompletions[9]===4)?prev:prev.layerf(x=>Math.max(x-studies[9].reward(1),-1))},
@@ -2492,7 +2505,7 @@ miscStats.antiXAxisEffect={
 			label:"Anti-Z Axis",
 			mod:function(){return stat.antiZAxisEffect.pow(stat.realantiZAxis)},
 			func:function(prev){return prev.mul(this.mod())},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiZAxisEffect.noLeadFormat(2),stat.realantiZAxis.noLeadFormat(3),3)},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.antiZAxisEffect.noLeadFormat(2),stat.realantiZAxis.noLeadFormat(3),3)},
 			dependencies:["antiZAxisEffect","realantiZAxis"],
 			show:function(){return stat.antiZAxisEffect.neq(c.d1)&&stat.realantiZAxis.neq(c.d0)}
 		}
@@ -2526,7 +2539,7 @@ miscStats.antiZAxisEffect={
 			label:"Anti-U Axis",
 			mod:function(){return stat.antiUAxisEffect.pow(Decimal.mul(stat.realantiUAxis,stat.totalAntiAxis));},
 			func:function(prev){return prev.mul(this.mod());},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiUAxisEffect.noLeadFormat(3),SSBsmall(stat.realantiUAxis.noLeadFormat(2),stat.totalAntiAxis.format(0),2),3);},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.antiUAxisEffect.noLeadFormat(5),SSBsmall(stat.realantiUAxis.noLeadFormat(2),stat.totalAntiAxis.format(0),2),3);},
 			dependencies:["antiUAxisEffect","realantiUAxis","totalAntiAxis"],
 			show:function(){return stat.antiUAxisEffect.neq(c.d1)&&stat.realantiUAxis.neq(c.d0)&&stat.totalAntiAxis.neq(c.d0)}
 		},
@@ -2550,7 +2563,7 @@ miscStats.antiWAxisEffect={
 			label:"Research 24-14",
 			mod:function(){return stat.antiUAxisEffect.pow([stat.realantiUAxis,stat.totalAntiAxis,researchPower(24,14)].productDecimals());},
 			func:function(prev){return g.research.r24_14?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiUAxisEffect.noLeadFormat(3),"("+[stat.realantiUAxis.noLeadFormat(2),stat.totalAntiAxis.format(0),researchPower(24,14).noLeadFormat(2)].join(" × ")+")",3);},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiUAxisEffect.noLeadFormat(5),"("+[stat.realantiUAxis.noLeadFormat(2),stat.totalAntiAxis.format(0),researchPower(24,14).noLeadFormat(2)].join(" × ")+")",3);},
 			dependencies:["antiUAxisEffect","realantiUAxis","totalAntiAxis"],
 			show:function(){return g.research.r24_14&&stat.antiUAxisEffect.neq(c.d1)&&stat.realantiUAxis.neq(c.d0)&&stat.totalAntiAxis.neq(c.d0)}
 		},
@@ -2583,7 +2596,7 @@ miscStats.antiTAxisEffect={
 	category:"Axis effects",
 	precision:2,
 	modifiers:[
-		statTemplates.base(()=>c.d80.format(),c.d80,true),
+		statTemplates.base(()=>c.d150.format(),c.d150,true),
 		{
 			label:"Empowered Anti-V Axis",
 			mod:function(){return [stat.antiVAxisEffect,stat.empoweredAntiVAxis,c.d0_01].productDecimals().add(c.d1);},
@@ -2591,6 +2604,12 @@ miscStats.antiTAxisEffect={
 			text:function(){return "× "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+unbreak("("+stat.antiVAxisEffect.div(c.e2).noLeadFormat(2)+" × "+stat.realantiVAxis.noLeadFormat(2)+" + 1)")+"</span>";},
 			dependencies:["antiVAxisEffect","empoweredAntiVAxis"],
 			show:function(){return stat.antiVAxisEffect.neq(c.d0)&&stat.empoweredAntiVAxis.neq(c.d0)}
+		},
+		{
+			label:"Study of Studies reward 2",
+			func:function(prev){return prev.mul(studies[10].reward(2))},
+			text:function(){return "× "+studies[10].reward(2).noLeadFormat(2)},
+			show:function(){return g.studyCompletions[10]>1}
 		},
 	]
 }
@@ -2614,9 +2633,15 @@ for (let i=0;i<axisCodes.length;i++) {
 		text:function(){return "+ "+prismaticUpgrades.prismCondenser.format.x()},
 		show:function(){return g.prismaticUpgrades.prismCondenser.neq(c.d0)}
 	})
+	if (i===0) out.push({
+		label:achievement.label(818),
+		func:function(prev){return g.achievement[818]?prev.add(g.antiUAxis):prev},
+		text:function(){return "+ "+g.antiUAxis.format()},
+		show:function(){return g.achievement[818]&&g.antiUAxis.neq(c.d0)}
+	})
 	// multiplicative effects
 	// softcap
-	out.push(statTemplates.axisSoftcap(type,"var(--antimatter)"))
+	out.push(statTemplates.axisSoftcap("anti"+type,"var(--antimatter)"))
 	// initialize
 	miscStats["freeanti"+type+"Axis"] = {
 		type:"breakdown",
