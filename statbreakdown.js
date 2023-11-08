@@ -395,7 +395,7 @@ const statTemplates = {
 			label:achievement.label(528),
 			mod:function(){return g.achievement[528]?Decimal.linearSoftcap(g[type+"Axis"].mul(achievement(528).effect()),c.d100,c.d2,1):c.d0;},
 			func:function(prev){return prev.add(this.mod());},
-			text:function(){return "+ "+this.mod().format(2)+" <span class=\"small\">("+(g[type+"Axis"].gte(12500)?("10 ^ "+formulaFormat.linSoftcap("log("+g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3)+")",c.d2,c.d2,this.mod().gte(c.e2),true)):(g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3))+")")+"</span>";},
+			text:function(){return "+ "+this.mod().format(2)+" <span class=\"small\">("+(this.mod().gte(c.e2)?("10 ^ "+formulaFormat.linSoftcap("log("+g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3)+")",c.d2,c.d2,this.mod().gte(c.e2),true)):(g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3))+")")+"</span>";},
 			show:function(){return this.mod().neq(c.d0)}
 		};
 	},

@@ -395,8 +395,8 @@ function updateHTML() {
 			}
 		} else if (g.activeSubtabs.stardust==="energy") {
 			for (let i=0;i<energyTypes.length;i++) {
+				let type = energyTypes[i]
 				if (energyTypesUnlocked()>i) {
-					let type = energyTypes[i]
 					d.display(type+"EnergyDiv","inline-block");
 					d.innerHTML(type+"EnergyAmount",g[type+"Energy"].format(2));
 					let perSec = stat[type+"EnergyPerSec"]
