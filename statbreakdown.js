@@ -2399,7 +2399,7 @@ miscStats.luckShardsPerSec={
 			label:"Research 27-1",
 			mod:function(){return researchEffect(27,1).pow(effLuckUpgradeLevel("cinquefolium","luck"))},
 			func:function(prev){return g.research.r27_1?prev.mul(this.mod()):prev},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(researchEffect(27,1).noLeadFormat(3),effLuckUpgradeLevel("cinquefolium","luck").noLeadFormat(3))},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(researchEffect(27,1).noLeadFormat(3),effLuckUpgradeLevel("cinquefolium","luck").noLeadFormat(3),3)},
 			show:function(){return g.research.r27_1&&effLuckUpgradeLevel("cinquefolium","luck").neq(c.d0)}
 		},
 		{
@@ -2479,7 +2479,7 @@ miscStats.antimatterPerSec={
 			label:"Anti-S Axis",
 			mod:function(){return stat.antiSAxisEffect.pow(stat.realantiSAxis);},
 			func:function(prev){return prev.pow(this.mod());},
-			text:function(){return "^ "+this.mod().format(4)+" "+SSBsmall(stat.antiSAxisEffect.noLeadFormat(4),stat.freeantiSAxis.noLeadFormat(2),3);},
+			text:function(){return "^ "+this.mod().format(4)+" "+SSBsmall(stat.antiSAxisEffect.noLeadFormat(4),stat.realantiSAxis.noLeadFormat(2),3);},
 			dependencies:["antiSAxisEffect","freeantiSAxis"],
 			show:function(){return stat.antiSAxisEffect.neq(c.d1)&&stat.realantiSAxis.neq(c.d0)}
 		},
@@ -2849,6 +2849,10 @@ miscStats.masteryRow10Unlocked={
 	type:"combined",
 	value:function(){return g.achievement[524]}
 }
+miscStats.masteryRow11Unlocked={
+	type:"combined",
+	value:function(){return g.research.r23_6||g.research.r23_10}
+}
 miscStats.baseOverclockSpeedup={
 	type:"combined",
 	value:function(){return Math.min(dilationUpgrades[1].effect(),2**g.dilationPower)},
@@ -3097,3 +3101,15 @@ function toggleActiveBreakdownTab(x){
 	if (categories.length>1) for (let i of categories) d.element("button_SSBnav2_"+i).style.filter = "brightness("+(i===x?100:75)+"%)"
 }
 var breakdownTabList = Object.entries(miscStats).sort(function(a,b){return a[1].label>b[1].label;}).map(x => x[0]);
+
+function calcStatUpTo(id,label) {
+	let data = miscStats[id]
+	if (data.type==="breakdown") {
+		let value = data.modifiers[0].func()
+		for (let i of data.modifiers) {
+			if (i.label===label) return value
+			value = i.func(value)
+		}
+	}
+	functionError("callStatUpTo")
+}

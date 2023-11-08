@@ -53,7 +53,7 @@ function updateHTML() {
 				d.innerHTML("span_exoticmatter_disabledTop",g.exoticmatter.format())
 				d.innerHTML("span_exoticmatterPerSec_disabledTop",stat.exoticmatterPerSec.noLeadFormat(2))
 			}
-			d.innerHTML("span_affordableAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableAxis(x).sub(g[x+"Axis"])).sumDecimals().format())
+			d.innerHTML("span_affordableAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableAxis(x).sub(g[x+"Axis"]).max(c.d0)).sumDecimals().format())
 			for (let i=0;i<8;i++) {
 				let type = axisCodes[i];
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
@@ -356,7 +356,7 @@ function updateHTML() {
 					d.innerHTML("span_darkmatter_disabledTop",g.darkmatter.format())
 					d.innerHTML("span_darkmatterPerSec_disabledTop",stat.darkmatterPerSec.format(2))
 				}
-				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"])).sumDecimals().format())
+				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"]).max(c.d0)).sumDecimals().format())
 				d.innerHTML("span_baseDarkMatterGain",miscStats.darkmatterPerSec.modifiers[1].func(miscStats.darkmatterPerSec.modifiers[0].func()).format(2));
 				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gte(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
 				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lte(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
@@ -396,13 +396,16 @@ function updateHTML() {
 		} else if (g.activeSubtabs.stardust==="energy") {
 			for (let i=0;i<energyTypes.length;i++) {
 				if (energyTypesUnlocked()>i) {
-					d.display(energyTypes[i]+"EnergyDiv","inline-block");
-					d.innerHTML(energyTypes[i]+"EnergyAmount",g[energyTypes[i]+"Energy"].format(2));
-					d.innerHTML(energyTypes[i]+"EnergyPerSec",energyPerSec(i).format(2));
-					d.innerHTML(energyTypes[i]+"EnergyEffect",energyEffect(i).format(4));
-					if (i<6) {d.display("span_"+energyTypes[i]+"EnergyResetLayer",g.studyCompletions[3]>0?"inline-block":"none")}
+					let type = energyTypes[i]
+					d.display(type+"EnergyDiv","inline-block");
+					d.innerHTML(type+"EnergyAmount",g[type+"Energy"].format(2));
+					let perSec = stat[type+"EnergyPerSec"]
+					let perSecPrecision = perSec.gt(1.1)?2:perSec.sub(c.d1).log10().neg().floor().add(c.d2).min(c.d12).toNumber()
+					d.innerHTML(type+"EnergyPerSec",energyPerSec(i).format(perSecPrecision));
+					d.innerHTML(type+"EnergyEffect",energyEffect(i).format(4));
+					if (i<6) {d.display("span_"+type+"EnergyResetLayer",g.studyCompletions[3]>0?"inline-block":"none")}
 				} else {
-					d.display(energyTypes[i]+"EnergyDiv","none");
+					d.display(type+"EnergyDiv","none");
 				}
 			}
 			d.display("div_energyLocked",energyTypesUnlocked()===0?"inline-block":"none")
@@ -433,6 +436,7 @@ function updateHTML() {
 		d.innerHTML("button_stardustAutomatorToggle",g.stardustAutomatorOn?"On":"Off");
 		d.class("button_wormholeAutomatorToggle",g.wormholeAutomatorOn?"automatortoggleon":"automatortoggleoff");
 		d.innerHTML("button_wormholeAutomatorToggle",g.wormholeAutomatorOn?"On":"Off");
+		d.innerHTML("button_researchAutobuyerMode",researchAutobuyerModes[g.researchAutobuyerMode]??"All free research")
 		// input storage
 		for (let i=0;i<8;i++) {
 			g.axisAutobuyerCaps[i]=d.element("axisAutobuyerMax"+axisCodes[i]).value;
@@ -604,7 +608,7 @@ function updateHTML() {
 				d.innerHTML("span_antimatter_disabledTop",g.antimatter.format())
 				d.innerHTML("span_antimatterPerSec_disabledTop",stat.antimatterPerSec.format(2))
 			}
-			d.innerHTML("span_affordableAntiAxis",axisCodes.filter(x=>antiAxisUnlocked(x)).map(x=>maxAffordableAntiAxis(x).sub(g["anti"+x+"Axis"])).sumDecimals().format())
+			d.innerHTML("span_affordableAntiAxis",axisCodes.filter(x=>antiAxisUnlocked(x)).map(x=>maxAffordableAntiAxis(x).sub(g["anti"+x+"Axis"]).max(c.d0)).sumDecimals().format())
 			for (let i=0;i<8;i++) {
 				let type = axisCodes[i];
 				let unlocked = antiAxisUnlocked(type)
@@ -627,6 +631,7 @@ function updateHTML() {
 				d.innerHTML("span_antiAxisBoost"+type,showFormulas?antiAxisDimBoostFormula(type):v1.gt(c.d3)?formatBoost(v1):arrowJoin(formatBoost(v1),formatBoost(v2)));
 			}
 			d.innerHTML("span_antiUAxisEffectAlt",stat.antiUAxisEffect.pow(stat.totalAntiAxis).noLeadFormat(4))
+			d.innerHTML("span_antiTAxisEffectAlt",calcStatUpTo("knowledgePerSec","Observations").pow(stat.antiTAxisEffect).format(2))
 			for (let name of empowerableAntiAxis) {
 				d.display("button_empoweredAnti"+name+"Axis",stat["empoweredAnti"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empoweredAnti"+name+"AxisAmount",BEformat(stat["empoweredAnti"+name+"Axis"],2));
@@ -792,15 +797,18 @@ function tick(time) {																																		 // The game loop, which 
 	if (researchAutobuyerProgress > 1) {
 		let bought = false // check if anything was bought
 		if (g.researchAutobuyerMode===0) { // free research
+			let clock = Date.now()+1000
 			while (true) {
-				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x)))
+				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9"))
+				console.log(buyable)
 				if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
-				for (let i of buyable) {buySingleResearch(researchRow(i),researchCol(i))}
+				if (Date.now()>clock) {error("Infinite Loop");break}
+				for (let i of buyable) {if (researchCost(i).eq(c.d0)) {buySingleResearch(researchRow(i),researchCol(i))}} // check again for research with changing costs
 				updateBuyableResearch()
 				bought=true
 			}
 		} else {g.researchAutobuyerMode=0} // error detection
-		if (bought) {updateResearchTree();updateResearchCanvas()}
+		if (bought) {updateResearchTree();generateResearchCanvas()}
 		researchAutobuyerProgress%=1;
 	}
 

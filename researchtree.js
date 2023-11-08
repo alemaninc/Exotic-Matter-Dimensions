@@ -21,7 +21,11 @@ const research = (function(){
 	function lumenReq(index,num) {return {check:function(){return g.lumens[index].gte(num)},text:function(){return g.lumens[index].format()+" / "+num.format()+" "+lightNames[index]+" lumens"}}}
 	function lightAugmentReq(i) {
 		return {
-			req:function(){let x = ownedResearchInGroup("lightaugment").length;return Decimal.affordGeometricSeries(Decimal.fromComponents(1,1,21+x**3/3+x**2/2+x/6),lightData[i].baseReq,lightData[i].baseScale,0)},
+			req:function(){
+				let x = ownedResearchInGroup("lightaugment").length;
+				if (x>5) {x *= 3**(x-5)}
+				return Decimal.affordGeometricSeries(Decimal.fromComponents(1,1,21+x**3/3+x**2/2+x/6),lightData[i].baseReq,lightData[i].baseScale,0).max(c.d1)
+			},
 			check:function(){return g.lumens[i].gte(this.req())},
 			text:function(){return g.lumens[i].format()+" / "+this.req().format()+" "+lightNames[i]+" lumens"}
 		}
@@ -55,7 +59,7 @@ const research = (function(){
 			numDesc:function(){return researchEffect(row,col).format(3)},
 			formulaDesc:function(){return researchPower(row,col).pow10().noLeadFormat(3)+"<sup>((L"+classes.sub(num+1)+formulaFormat.mult(lightData[num].baseScale.log10().pow(c.d1_25).div([c.d10,c.d5,c.d2,c.d1][costi]))+" + 1)<sup>1 ÷ 3</sup> - 1)</sup>"},
 			description:function(){return "Prismatic gain is "+numOrFormula(id)+"× faster (based on "+lightNames[num]+" lumens)"},
-			adjacent_req:[["r21_8"],["r21_8"],["r21_8"],["r22_7","r22_8"],["r22_7","r22_9"],["r22_8","r22_9"],["r23_8","r23_9"],["r23_7","r23_8"],["r23_7","r23_9"]][num],
+			adjacent_req:[["r21_8"],["r21_8"],["r21_8"],["r22_7","r22_8"],["r22_7","r22_9"],["r22_8","r22_9"],["r23_6","r23_8","r23_9"],["r23_7","r23_8","r23_10"],["r23_7","r23_9"]][num],
 			condition:[],
 			visibility:function(){return true},
 			type:"normal",
@@ -88,7 +92,7 @@ const research = (function(){
 			group:"luck"
 		}
 	}
-	let basicclasslist = ["exoticmatter","time","achievements","mastery","dimension","stardust","stars","darkmatter","energy","wormhole","research","galaxies","luck","prismatic","antimatter"]
+	let basicclasslist = ["exoticmatter","time","achievements","mastery","stardust","stars","darkmatter","energy","wormhole","research","galaxies","luck","prismatic","antimatter"]
 	for (let i of basicclasslist) classes[i] = function(x){return "<span class=\"_"+i+"\">"+x+"</span>"}
 	let icon = {
 		arr:"→",
@@ -1259,7 +1263,7 @@ const research = (function(){
 			formulaDesc:function(){return "log(L + 10)"+formulaFormat.exp(researchPower(17,8))},
 			description:function(){return "Gray lumens strengthen all Time Research (currently: ^"+numOrFormula("r17_8")+")"},
 			adjacent_req:["r16_6","r16_10"],
-			condition:[studyReq(10,3)],
+			condition:[studyReq(10,3),lightAugmentReq(8)],
 			visibility:function(){return g.studyCompletions[10]>2},
 			type:"normal",
 			basecost:N(1440),
@@ -1363,6 +1367,24 @@ const research = (function(){
 			basecost:N(5000),
 			icon:icon.study([[50,45,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
 		},
+		r23_6:{
+			description:function(){return "Unlock Mastery 111"},
+			adjacent_req:["r22_7"],
+			condition:[{check:function(){return g.prismaticUpgrades.lumenThresholdReduction3.gte(c.d70)},text:function(){return g.prismaticUpgrades.lumenThresholdReduction3.format()+" / 70 "+prismaticUpgradeName("lumenThresholdReduction3")}}],
+			visibility:function(){return true},
+			type:"permanent",
+			basecost:N(488888),
+			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-radial-gradient(var(--mastery),rgba(0,0,0,0) 10%,var(--mastery) 20%),conic-gradient(rgba(0,0,0,0)"+countTo(16,true).map(x=>",hsl("+(22.5*x)+" 50% 50%) "+(3.125+6.25*x)+"%,rgba(0,0,0,0) "+(6.25+6.25*x)+"%").join("")+");opacity:0.5\"></div>"
+		},
+		r23_10:{
+			description:function(){return "Unlock Mastery 112"},
+			adjacent_req:["r22_9"],
+			condition:[{check:function(){return g.lumens[4].gte(5e3)},text:function(){return g.lumens[4].format()+" / 5,000 magenta lumens"}}],
+			visibility:function(){return true},
+			type:"permanent",
+			basecost:N(488888),
+			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:radial-gradient(#ffffff,rgba(0,0,0,0) 20%,rgba(0,0,0,0)),repeating-conic-gradient(var(--mastery),rgba(0,0,0,0) 3.125%,var(--mastery) 6.25%),repeating-radial-gradient(var(--mastery),rgba(0,0,0,0) 10%,var(--mastery) 20%);opacity:0.5\"></div>"
+		},
 		r23_11: {
 			adjacent_req:["r19_11","r20_12","r21_13","r22_14","r23_15"],
 			condition:[{check:function(){return g.hawkingradiation.gt(studies[9].unlockReq())},text:function(){return g.hawkingradiation.format()+" / "+studies[9].unlockReq().format()+" Hawking radiation"}}],
@@ -1455,7 +1477,7 @@ const research = (function(){
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">U</div>"
 		},
 		r24_14:{
-			description:function(){return "Anti-U axis effect"+formulaFormat.exp(researchPower(24,14))+" boosts anti-W axis"},
+			description:function(){return "Anti-U axis effect"+formulaFormat.exp(researchPower(24,14))+" boosts anti-W axis (currently: ×"+stat.antiUAxisEffect.pow([stat.realantiUAxis,stat.totalAntiAxis,researchPower(24,14)].productDecimals()).noLeadFormat(4)+")"},
 			adjacent_req:["r24_13"],
 			condition:[],
 			visibility:function(){return true},
@@ -1466,8 +1488,8 @@ const research = (function(){
 		r25_1:{
 			description:function(){return "The third reward of Study VII is "+researchEffect(25,1)+"× stronger"},
 			adjacent_req:["r24_2","r25_2","r26_2"],
-			condition:[],
-			visibility:function(){return true},
+			condition:[studyReq(10,1)],
+			visibility:function(){return g.studyCompletions[10]>0},
 			type:"normal",
 			basecost:N(77777),
 			icon:"<span style=\"color:#cc0000\">VII</span><span class=\"xscript\"><sup>+</sup><sub style=\"color:#cc0000\">3</sub></span>",
@@ -1500,8 +1522,8 @@ const research = (function(){
 			condition:[studyReq(2,4),studyReq(5,4),studyReq(8,4),studyReq(10,1)],
 			visibility:function(){return (g.studyCompletions[2]===4)&&(g.studyCompletions[5]===4)&&(g.studyCompletions[8]===4)&&(g.studyCompletions[10]>0);},
 			type:"study",
-			basecost:N(338724), // 582^2
-			icon:icon.study([[15,25,5],[15,50,5],[15,75,5],[45,25,5],[45,75,5],[65,50,5],[85,25,5],[85,75,5]])
+			basecost:N(66564), // 258^2
+			icon:icon.study([[15,25,5],[15,50,5],[15,85,6],[45,25,5],[45,75,5],[65,50,5],[85,15,6],[85,75,5],[45,50,4],[87,50,4]])
 		},
 		r25_13:{
 			description:function(){return "Unlock a new Anti-Axis"},
@@ -1528,7 +1550,7 @@ const research = (function(){
 			description:function(){return "The first effect of "+prismaticUpgradeName("prismRune")+" is raised to the power of "+researchEffect(26,1).noLeadFormat(4)},
 			adjacent_req:["r25_1"],
 			condition:[],
-			visibility:function(){return true},
+			visibility:function(){return g.studyCompletions[10]>0},
 			type:"normal",
 			basecost:N(77777),
 			icon:icon.prismatic+classes.xscript("+",icon.luckShard),
@@ -1565,7 +1587,7 @@ const research = (function(){
 			icon:icon.study([[50,45,5],[50,15,5],[85,50,5],[15,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
 		},
 		r26_8:{
-			description:function(){return "Unlock Row 11 Masteries"},
+			description:function(){return "Unlock a new Prismatic Upgrade"},
 			adjacent_req:["r25_8"],
 			condition:[studyReq(10,2),{check:function(){return masteryEffect(104).gt(c.e24)&&MasteryE(104)},text:function(){return (MasteryE(104)?masteryEffect(104).format(2):"1")+" / "+c.e24.format()+"× multiplier from Mastery 104"}}],
 			visibility:function(){return g.studyCompletions[10]>1},
@@ -1588,7 +1610,7 @@ const research = (function(){
 			condition:[studyReq(9,4)],
 			visibility:function(){return g.studyCompletions[9]>3},
 			type:"permanent",
-			basecost:N(999999),
+			basecost:N(549999),
 			icon:"<span class=\"_antimatter\" style=\"font-size:40px\">S</div>"
 		},
 		r26_14:{
@@ -1597,15 +1619,15 @@ const research = (function(){
 			condition:[],
 			visibility:function(){return true},
 			type:"normal",
-			basecost:N(9999),
-			icon:classes.dimension("S")+icon.plus,
+			basecost:N(99999),
+			icon:"<span style=\"color:var(--wormhole_text)\">S</span>"+icon.plus,
 			effect:function(power){return c.d9.pow(power)}
 		},
 		r27_1:{
 			description:function(){return "Each level of Cinquefolium "+luckUpgrades.cinquefolium.luck.name+" gives an additional "+researchEffect(27,1).noLeadFormat(3)+"× multiplier to luck shard gain (total: "+researchEffect(27,1).pow(effLuckUpgradeLevel("cinquefolium","luck")).noLeadFormat(2)+"×)"},
 			adjacent_req:["r26_1"],
 			condition:[],
-			visibility:function(){return true},
+			visibility:function(){return g.studyCompletions[10]>0},
 			type:"normal",
 			basecost:N(77777),
 			icon:icon.luckShard+classes.sub(icon.luckShard)+icon.arr+icon.luckShard,
@@ -1624,7 +1646,7 @@ const research = (function(){
 			description:function(){return "The second reward of Study VII is "+percentOrMult(researchEffect(28,1))+" stronger"},
 			adjacent_req:["r27_1"],
 			condition:[],
-			visibility:function(){return true},
+			visibility:function(){return g.studyCompletions[10]>0},
 			type:"normal",
 			basecost:N(77777),
 			icon:"<span style=\"color:#cc0000\">VII</span><span class=\"xscript\"><sup>+</sup><sub style=\"color:#cc0000\">2</sub></span>",
@@ -1636,7 +1658,7 @@ const research = (function(){
 		r30_1:luckResearch("trifolium","darkAxis","r30_1",icon.darkmatter),
 		r30_2:luckResearch("quatrefolium","darkstar","r30_2",icon.darkstar),
 		r30_3:luckResearch("cinquefolium","chroma","r30_3",icon.chroma(6)),
-		r31_1:luckResearch("quatrefolium","synergism","r31_1","<span style=\"color:var(--wormholetext)\">SS</span>"),
+		r31_1:luckResearch("quatrefolium","synergism","r31_1","<span style=\"color:var(--wormhole_text)\">SS</span>"),
 		r31_2:luckResearch("cinquefolium","radiation","r31_2",icon.hr),
 		r31_3:luckResearch("quatrefolium","prismatic","r31_3",icon.prismatic),
 		r32_1:luckResearch("cinquefolium","axis","r32_1",gradientText("A","-webkit-linear-gradient(90deg,var(--exoticmatter),var(--darkmatter))")),
@@ -1684,8 +1706,8 @@ const researchGroupList = {
 	spatialsynergism:{label:"Spatial Synergism",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:"var(--wormhole_text)",icon:"SS",effectors:Object.fromEntries(fullAxisCodes.map(x=>[x,nonPermanentResearchList.filter(y=>research[y].group==="spatialsynergism"&&((researchCol(y)>8?"dark":"")+research[y].a2)===x)]))},
 	mastery:{label:"Mastery",get description(){return "Having more Mastery research than your Study VIII completions ("+g.studyCompletions[8]+") will weaken all Masteries by 33% per excess research"},color:"var(--mastery)",icon:"M"},
 	prismal:{label:"Prismal",get description(){return "You can buy a maximum of "+prismaticUpgrades.prismLab.eff()+" Prismal research"},color:"#00ff99",icon:"P"},
-	luck:{label:"Luck",description:"Each Luck research makes all other Luck research 7% less effective",color:"var(--luck)",icon:"L"},
-	antimatter:{label:"Antimatter",description:"Each Antimatter research makes all other Antimatter research 9% less effective",color:"var(--antimatter)",icon:"A"}
+	luck:{label:"Luck",get description(){return "Each Luck research makes all other Luck research "+(g.achievement[819]?c.d7.mul(achievement(819).effect()).noLeadFormat(3):"7")+"% less effective"},color:"var(--luck)",icon:"L"},
+	antimatter:{label:"Antimatter",get description(){return "Each Antimatter research makes all other Antimatter research "+(g.achievement[819]?c.d9.mul(achievement(819).effect()).noLeadFormat(3):"9")+"% less effective"},color:"var(--antimatter)",icon:"A"}
 }
 function resizeResearch(x){
 	let size = 15
@@ -1708,35 +1730,44 @@ function ownedResearchInGroup(x,owned=g.research) {
 function researchPower(row,col) {
 	let id = "r"+row+"_"+col
 	let out = c.d1;
-	if (row===1&&[3,8,13].includes(col)) { // prevent targeting study V research
-		if (achievement.ownedInTier(5)>=21) out = out.mul(totalAchievements/1000+1)
-		if (g.research.r8_11) out = out.mul(researchEffect(8,11).mul(research.r8_11.starCount()).div(c.e2).add(c.d1))
+	// row by row effects
+	if (row===1) { 
+		if ([3,8,13].includes(col)) { // prevent targeting study V research
+			if (achievement.ownedInTier(5)>=21) {out = out.mul(totalAchievements/1000+1)}
+			if (g.research.r8_11) {out = out.mul(researchEffect(8,11).mul(research.r8_11.starCount()).div(c.e2).add(c.d1))}
+		}
+	} else if (row===2) {
+		if (achievement.ownedInTier(5)>=24) {out = out.mul(totalAchievements/500+1)}
+	} else if (row===3) {
+		if (g.achievement[810]&&[6,10].includes(col)) {out = out.mul(achievement(810).effect())}
+	} else if (row===7) {
+		if (col===5&&g.achievement[616]) {out = out.mul(1+totalResearch.overall()/300)}
+	} else if (row===8) {
+		if (col===2) {
+			if (g.achievement[605]) {out = out.mul(c.d1_1)}
+			if (g.studyCompletions[6]>0) {out = out.mul(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))}
+		}
+	} else if (row===13) {
+		if (col===8) {
+			if (g.achievement[718]) {out = out.mul(1.026)}
+			if (g.research.r15_5) {out = out.mul(researchEffect(15,5))}
+			if (g.research.r15_11) {out = out.mul(researchEffect(15,11))}
+		}
 	}
-	if (achievement.ownedInTier(5)>=24&&row===2) out = out.mul(totalAchievements/500+1);
-	if (row===3) {
-		if (g.achievement[810]&&[6,10].includes(col)) out = out.mul(achievement(810).effect())
-	}
+	// non-row by row effects
 	if (g.research.r9_5&&["r6_5","r6_6","r7_5","r8_5"].includes(id)) out = out.mul(researchEffect(9,5).pow(totalAchievements))
-	if (row===7&&col===5&&g.achievement[616]) out = out.mul(1+totalResearch.overall()/300)
-	if (row===8&&col===2) {
-		if (g.achievement[605]) out = out.mul(c.d1_1)
-		if (g.studyCompletions[6]>0) out = out.mul(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))
-	}
-	if (row===13&&col===8) {
-		let mult = g.achievement[718]?N(1.026):c.d1
-		if (g.research.r15_5) mult = mult.mul(researchEffect(15,5))
-		if (g.research.r15_11) mult = mult.mul(researchEffect(15,11))
-		out = out.mul(mult)
-	}
-	if (research[id].group==="spatialsynergism") out = out.mul(stat.spatialSynergismPower)
-	if (research[id].group==="luck") {
-		let eff = ownedResearchInGroup("luck").length-(g.research[id]?1:0)
-		out = out.mul(0.93**eff)
-	} else if (research[id].group==="antimatter") {
-		let eff = ownedResearchInGroup("antimatter").length-(g.research[id]?1:0)
-		out = out.mul(0.91**eff)
-	}
 	if (study7ResearchList.includes(id)) out = out.mul(studies[7].reward(2).div(c.e2))
+	if (research[id].group==="spatialsynergism") {
+		out = out.mul(stat.spatialSynergismPower)
+	} else if (research[id].group==="luck") {
+		let base = 1-0.07*(g.achievement[819]?achievement(819).effect():1)
+		let eff = ownedResearchInGroup("luck").length-(g.research[id]?1:0)
+		out = out.mul(base**eff)
+	} else if (research[id].group==="antimatter") {
+		let base = 1-0.09*(g.achievement[819]?achievement(819).effect():1)
+		let eff = ownedResearchInGroup("antimatter").length-(g.research[id]?1:0)
+		out = out.mul(base**eff)
+	}
 	return out;
 }
 function researchEffect(row,col) {

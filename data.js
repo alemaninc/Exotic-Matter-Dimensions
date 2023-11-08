@@ -171,12 +171,12 @@ const studies = [
 	},
 	{
 		name:"Masterful",
-		unlockReq:function(){return [N("3.33e333"),N("6.66e666"),betaActive?N("e2500"):c.ee100,c.ee100][studyPower(8)]},
+		unlockReq:function(){return [N("3.33e333"),N("6.66e666"),betaActive?N("e2500"):c.ee100,betaActive?N("e5000"):c.ee100][studyPower(8)]},
 		darkAxisMaxCost:function(){return g.masteryPower.pow(88)},
 		darkAxisMaxCostFormula:function(){return "(mastery power)<sup>88</sup>"},
 		description:function(){return "All effects which allow you to activate more than 1 Mastery from each row are disabled. Dark axis cannot be purchased if their cost is greater than "+this.darkAxisMaxCostFormula()},
 		research:"r18_8",
-		goal:function(comp=studyPower(8)){return [N(5888),N(7040),betaActive?N(14080):c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(8)){return [N(5888),N(7040),betaActive?N(14080):c.e100,betaActive?N(16555):c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[8]) {
 			if (num===1) return [c.d50,N(52.5),N(55),N(57.5),N(60)][comp]
 			if (num===2) return [c.d0,c.d9,c.d16,c.d21,c.d24][comp].mul(studyRewardBoost(8,2))
@@ -237,7 +237,7 @@ const studies = [
 		},
 		researchList:["r26_5","r25_8","r26_11","r27_8"],
 		get research(){return studies[10].researchList[studyPower(10)]},
-		goal:function(comp=studyPower(10)){return [N(17444),c.e100,c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(10)){return [N(17444),N(8852),c.e100,c.e100][comp]},
 		rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
 		reward:function(num,comp=g.studyCompletions[10]){
 			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,c.em4,N(0.00015)][this.rewardStep(1,comp)]).add(c.d1)
@@ -254,8 +254,8 @@ const studies = [
 		]},
 		rewardFormulas:{
 			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001","0.00015"][studies[10].rewardStep(1,comp)]+" + 1"},
-			2:function(comp=g.studyCompletions[10]){return (studies[10].rewardStep(2,comp)===0)?"1":("log(1 + ★ × 0.01 + G × "+["0.06","0.1"][studies[10].rewardStep(2,comp)-1]+") × 100")},
-			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+")"+formulaFormat.mult([c.d0,c.d0_25,c.d0_3][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
+			2:function(comp=g.studyCompletions[10]){return (studies[10].rewardStep(2,comp)===0)?"0":("log(1 + ★ × 0.01 + G × "+["0.06","0.1"][studies[10].rewardStep(2,comp)-1]+") × 100")},
+			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+") "+formulaFormat.mult([c.d0,c.d0_25,c.d0_3][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
 		},
 	},
 	{

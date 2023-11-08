@@ -16,7 +16,7 @@ achievement.tierColors = {
 	2:{primary:"#aa6600",secondary:"#ff9900"},
 	3:{primary:"#660066",secondary:"#cc66ff"},
 	4:{primary:"#009999",secondary:"#00ffff"},
-	5:{primary:"#000080",secondary:"#6699ff"},
+	5:{primary:"#000080",secondary:"#00bbff"},
 	6:{primary:"#000000",secondary:"#ffffff"},
 	7:{primary:"#999900",secondary:"#ffff00"},
 	8:{primary:"#008855",secondary:"#00ff99"}
@@ -1618,11 +1618,11 @@ const achievementList = {
 			beta:true
 		},
 		813:{
-			name:"Preon Stars",
-			get description(){return "Reach 120 dark stars without any normal or dark axis in the current Wormhole"+(achievement.ownedInTier(5)>6?"":"<br>(note: you must have at least 7 Tier 5 achievements to attempt this!)")},
-			check:function(){return g.ach526possible&&(stat.totalDarkAxis.sign===0)&&(achievement.ownedInTier(5)>6)&&g.darkstars.gte(c.d120)},
+			name:"Hidden Stars in Zero Dimensions",
+			get description(){return "Have 210 total stars, dark stars and galaxies without any normal or dark axis in the current Wormhole"+(achievement.ownedInTier(5)>6?"":"<br>(note: you must have at least 7 Tier 5 achievements to attempt this!)")},
+			check:function(){return g.ach526possible&&(stat.totalDarkAxis.sign===0)&&(achievement.ownedInTier(5)>6)&&stat.realDarkStars.add(g.stars+g.galaxies).gte(210)},
 			event:"gameloop",
-			progress:function(){return (achievement.ownedInTier(5)<7)?"Reach 7 Tier 5 achievements first":(!g.ach526possible)?"Failed due to having normal axis in the current Wormhole":(stat.totalDarkAxis.sign===1)?"Failed due to having dark axis in the current Wormhole":achievement.percent(g.darkstars,c.d120,0)},
+			progress:function(){return (achievement.ownedInTier(5)<7)?"Reach 7 Tier 5 achievements first":(!g.ach526possible)?"Failed due to having normal axis in the current Wormhole":(stat.totalDarkAxis.sign===1)?"Failed due to having dark axis in the current Wormhole":achievement.percent(stat.realDarkStars.add(g.stars+g.galaxies),N(210),0)},
 			reward:"The dark star cost scaling is 5% weaker",
 			flavor:"I don't need sleep, I don't need answers. I need to determine where, in this swamp of unbalanced formulas, squatteth the toad of truth.",
 			beta:true
@@ -1689,8 +1689,9 @@ const achievementList = {
 			event:"researchBuy",
 			progress:function(){return "Not Completed!"},
 			get reward(){return "Reduce the penalty of Luck and Antimatter research by {} (based on prismatic)"},
-			effect:function(y=this.yellowValue){return },
-			effectFormat:x=>percentOrMult(x),
+			effect:function(y=this.yellowValue){return g.prismatic.add(c.d1).log10().div(c.e3).add(c.d1).pow(y.pow10().neg()).toNumber()},
+			effectFormat:x=>percentOrMult(N(x),4),
+			formulaText:function(){return "(log(P + 1) ÷ 1,000)<sup>"+this.yellowValue.pow10().noLeadFormat(4)+"</sup>÷"},
 			yellowBreakpoints:[c.d5e4,N(5e9),1],
 			flavor:"I won't look back, I won't look down, I'm going up, you better turn around",
 			beta:true
@@ -1700,14 +1701,14 @@ const achievementList = {
 			description:"Reach 1 year of game time in the current Wormhole with less than 1 hour of real time",
 			check:function(){return g.truetimeThisWormholeReset.gte(c.d31556926)&&(g.timeThisWormholeReset<3600)},
 			event:"gameloop",
-			progress:function(){return (g.timeThisWormholeReset<3600)?(achievement.percent(g.truetimeThisWormholeReset.div(c.d31556926),c.d1,0)+"; "+timeFormat(3600-g.timeThisWormholeReset)+" left"):"Failed"},
+			progress:function(){return (g.timeThisWormholeReset<3600)?(achievement.percent(g.truetimeThisWormholeReset.div(c.d31556926),c.d1,0)+"; "+timeFormat(3600-g.timeThisWormholeReset)+" left<br>At your current progress you need to reach "+c.d31556926.sub(g.truetimeThisWormholeReset).div(3600-g.timeThisWormholeReset).format(2)+"× tickspeed to get this"):"Failed"},
 			get reward(){return "Multiply the research 24-12 effect softcap start by the number of seconds in the current Wormhole (currently: ×"+g.truetimeThisWormholeReset.max(c.d1).format(2)+")"},
 			flavor:"Hold Infinity in the palm of your hand and Reality in a game",
 			beta:true
 		},
 		...(()=>{
 			let out = []
-			let names = ["Entrusting the Star Signs to Robots","Master of Astrophysics","The Nameless Ones' Prison","Triad of Triads"]
+			let names = ["Entrusting the Star Signs to Altman","Master of Astrophysics","The Nameless Ones' Prison","Triad of Triads"]
 			let triads = ["Stellar","Decisive","Temporal","Ontological"]
 			let rewards = ["TBD","TBD","Be freed from alemaninc's special development hell","TBD"]
 			let flavors = ["TBD","TBD","Freedom from torture... is torture itself.","TBD"]

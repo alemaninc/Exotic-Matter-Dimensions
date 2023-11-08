@@ -15,7 +15,7 @@
 					<td class="toptable" style="width:260px">
 						<table><tr>
 							<td><button onClick="attemptStardustReset(true)" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
-							<td><button onClick="unlocked('Hawking Radiation')?attemptWormholeReset(true):wormholeAnimation()" id="button_wormholeReset"></button></td>
+							<td><button onClick="(unlocked('Hawking Radiation')&&((g.activeStudy===0)||Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)))?attemptWormholeReset(true):wormholeAnimation()" id="button_wormholeReset"></button></td>
 						</tr></table>
 					</td>
 				</tr>
@@ -336,7 +336,7 @@
 						<h3>Research Autobuyer</h3>
 						<button class="automatortoggleon" id="button_researchAutobuyerToggle" onClick="toggle('researchAutobuyerOn')"></button><br>
 						Interval: <span id="span_researchAutobuyerInterval"></span><br>
-						<button id="button_researchAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('research')">Reduce the interval by 5%<br>Cost: <span id="span_researchAutobuyerCost"></span> knowledge</button><br>
+						<button id="button_researchAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('research')">Reduce the interval by 5%<br>Cost: <span id="span_researchAutobuyerCost"></span> mastery power</button><br>
 						<label for="researchAutobuyerMode">Setting:</label><button class="genericbutton" id="button_researchAutobuyerMode" onClick="selectOption('researchAutobuyerMode',countTo(1,true),'mode',x=>researchAutobuyerModes[x])"></button><br>
 						<input id="researchAutobuyerValue" type="text"></input>
 					</div>
