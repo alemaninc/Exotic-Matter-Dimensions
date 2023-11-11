@@ -391,7 +391,7 @@ function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.
 	return arrowJoin(format(curr),format(next));
 }
 function studyPower(x){
-	if ((x<10)&&StudyE(10)) return 3 // no exploits :D
+	if ((x<10)&&(g.activeStudy===10)) return 3 // no exploits :D
 	if (x===10) for (let i=3;i>=0;i--) if (g.research[studies[10].researchList[i]]) return i // allow retrying previous triads
 	return Math.min(g.studyCompletions[x],3)
 }
@@ -748,6 +748,7 @@ function masteryBoost(x) {
 	}
 	// single row effects
 	if (row===1) {
+		if (StudyE(11)) return c.d0
 		if (g.achievement[105]) b = b.mul(achievement(105).effect().div(c.e2).add(c.d1));
 		if (MasteryE(52)) b = b.mul(masteryEffect(52))
 		if ((x===11)&&g.research.r4_6) b = b.mul(researchEffect(4,6));
@@ -755,6 +756,9 @@ function masteryBoost(x) {
 	}
 	if (row===2) {
 		if (g.research.r5_13) b = b.mul(stat.spatialEnergyEffect.pow(researchEffect(5,13)));
+	}
+	if (row===3) {
+		if (g.achievement[825]) b = b.mul(c.d3)
 	}
 	if (row===4) {
 		if (g.achievement[201]) b = b.mul(achievement(201).effect().div(c.e2).add(c.d1));
@@ -975,12 +979,14 @@ function stardustReset() {
 }
 function stardustBoostBoost(x) {
 	let out = c.d1;
-	if (x===1) if (g.achievement[507]) out=out.mul(achievement(507).effect().div(c.e2).add(c.d1));
-	if (x===4) {
+	if (x===1) {
+		if (StudyE(11)) return c.d0
+		if (g.achievement[507]) out=out.mul(achievement(507).effect().div(c.e2).add(c.d1));
+	} else if (x===4) {
+		if (StudyE(11)) return c.d0
 		if (g.achievement[508]) out=out.mul(achievement(508).effect().div(c.e2).add(c.d1));
 		if (g.research.r10_14) out=out.mul(researchEffect(10,14))
-	}
-	if (x===7) {
+	} else if (x===7) {
 		if (g.achievement[509]) out=out.mul(achievement(509).effect().div(c.e2).add(c.d1));
 		if (g.research.r5_14) out=out.mul(Decimal.pow(stat.neuralEnergyEffect,researchEffect(5,14)))
 	}
@@ -1167,6 +1173,7 @@ function maxFullStarRows() {
 }
 const dynamicStars = [11,12,13,14,42,61,62,63,64,71,72,73,74,91,92,93,94]
 function row1StarPower(x) {
+	if (StudyE(11)) return c.d0
 	let exp = c.d3
 	if (g.star[x+20]) exp = exp.mul(c.d3);
 	if (g.star[x+80]) exp = exp.mul(starEffect(90));
@@ -1175,9 +1182,9 @@ function row1StarPower(x) {
 	return exp
 }
 function row7StarCap() {
-	let out = c.e2
+	let lim = c.e2
 	if (g.research.r11_11) lim = lim.add(researchEffect(11,11).mul(g.galaxies))
-	return out
+	return lim
 }
 function starEffect(x) {
 	if ([11,12,13,14].includes(x)) {
@@ -2164,16 +2171,20 @@ function effLuckUpgradeLevel(type,upg,out=g.luckUpgrades[type][upg]) {
 	return out
 }
 function luckShardEffect1(x=g.luckShards) {return x.add(c.d1).log10().add(c.d10).log10().pow(c.d2_3).sub(c.d1).mul(c.e2).mul(prismaticUpgrades.prismRune.eff.y())}
-function luckShardEffect2(x=g.luckShards) {return (x.gt(c.ee10)?N(5/9).pow(x.quad_slog(10)).mul(6561/1250):c.d1.sub(x.add(c.d10).log10().log10().div(c.e2)))}
+function luckShardEffect2(x=g.luckShards) {
+	x = x.pow(studies[11].reward(2)).max(x)
+	return (x.gt(c.ee10)?N(5/9).pow(x.quad_slog(10)).mul(6561/1250):c.d1.sub(x.add(c.d10).log10().log10().div(c.e2)))
+}
 function luckShardEffect1Formula() {return prismaticUpgrades.prismRune.eff.y().mul(c.e2).noLeadFormat(4)+" × (log<sup>[2]</sup>((LS + 1) × "+c.e10.format()+")<sup>2.3</sup> - 1)"}
 // the formula for effect 2 uses linear super-logarithms rather than the regular quadratic, so simply slog(LS) cannot be used
 function luckShardEffect2Formula(x=g.luckShards) {
+	let ls = "LS"+formulaFormat.exp(studies[11].reward(2))
 	if (x.gte(c.ee10)) {
 		let height = x.quad_slog(10).floor().format()
-		let out = "0.5556<sup>log<sup>["+height+"]</sup>(LS) + "+height+"</sup> × 5.2488"
+		let out = "0.5556<sup>log<sup>["+height+"]</sup>("+ls+") + "+height+"</sup> × 5.2488"
 		return luckShardEffect2().gt(c.d0_1)?("100 × (1 - "+out+")"):out
 	}
-	return "log<sup>[2]</sup>(LS + 10)"
+	return "log<sup>[2]</sup>("+ls+" + 10)"
 }
 
 function affordablePrismaticUpgrades(upg) {
@@ -2254,7 +2265,7 @@ function prismaticUpgradeUnlocked(upg) {
 
 function antiAxisUnlocked(type) {
 	if (g.studyCompletions[9]===0) return false
-	if (["U","T","S","R","Q","P","O"].includes(type)&&(!betaActive)) return
+	if (["R","Q","P","O"].includes(type)&&(!betaActive)) return
 	if ((type==="V")&&(!g.research.r24_11)) return false
 	if ((type==="U")&&(!g.research.r24_13)) return false
 	if ((type==="T")&&(!g.research.r25_13)) return false
@@ -2425,7 +2436,7 @@ const topResources = [
 		condition:function(){return StudyE(9);}
 	},
 	{
-		text:function(){return studies[11].name+": <span class=\"red\">"+String(studies[11].lunarMinutes()).padStart(2,"0")+"</span> past <span class=\"red\">"+studies[11].active()+"</span>"},
+		text:function(){return studies[11].name+": <span class=\"red\">"+String(studies[11].lunarMinutes()).padStart(2,"0")+"</span> past <span style=\"font-family:monospace\" class=\"red\">"+studies[11].active()+"</span>"},
 		condition:function(){return StudyE(11);}
 	},
 ];
@@ -2621,15 +2632,15 @@ const progressMilestones = [
 	},
 	{
 		type:2,
-		condition:function(){return unlocked("Prismatic");}
+		condition:function(){return g.achievement[810];}
 	},
 	{
 		type:1,
 		label:"current endgame",
-		percent:function(){return g.hawkingradiation.log(c.inf).toNumber()},
-		req:function(){return c.inf.format()+" Hawking radiation"},
+		percent:function(){return g.studyCompletions.sum()/40},
+		req:function(){return "40 Study completions"},
 		color:"endgame",
-		condition:function(){return g.hawkingradiation.gt(c.inf);}
+		condition:function(){return g.studyCompletions.sum()>39}
 	},
 	{
 		type:3,

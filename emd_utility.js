@@ -1,8 +1,8 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.4.17",
-	nextUpdateHint:"Grand Tour of the Iterated Experiment",
+	current:"𝕍1.5(a)",
+	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
 	e event message
@@ -29,10 +29,17 @@ function error(text) {
 }
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
-	nextSecretAchievementRarity:function(){
-		function countByRarity(x){return Object.values(secretAchievementList).filter(i=>i.rarity===x).length}
-		let diffs = countTo(5).map(x=>countByRarity(x+1)/countByRarity(x+2))
-		return diffs.indexOf(diffs.reduce((x,y)=>Math.max(x,y)))+3
+	nextSecretAchievementRarity:function(num){
+		let rarities = countTo(7).map(x=>Object.values(secretAchievementList).filter(i=>i.rarity===x).length)
+		let out = ""
+		for (let i=0;i<num;i++) {
+			let ratio = 1.5+Math.random()/2
+			let diffs = countTo(6).map(x=>rarities[x]*ratio**x)
+			let next = diffs.indexOf(diffs.reduce((x,y)=>Math.min(x,y)))+2
+			rarities[next-1]++
+			out += next
+		}
+		return out
 	},
 	addResearch:function(x){
 		g.research=x

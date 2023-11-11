@@ -239,7 +239,26 @@ const HTPtexts = [
 		name:"Luck",
 		visibility:function(){return unlocked("Luck")},
 		paragraphs:[
-			"Once you complete Study VII, you will start generating luck shards"
+			"Once you complete Study VII, you will start generating luck shards.",
+			"These luck shards can be used to buy runes - there are three types of rune.",
+			"Each type of rune can be spent on refundable luck upgrades."
 		]
-	}
+	},
+	{
+		name:"Prismatic",
+		visibility:function(){return unlocked("Prismatic")},
+		paragraphs:[
+			"Once you buy research 20-8, you will generate prismatic based on all your lumen types.",
+			"You can spend this Prismatic on Prismatic Upgrades. Most Prismatic Upgrades work like normal upgrades - however, a few have a negative effect in addition to their positive one. These can be refunded, but you will not get spent prismatic back."
+		]
+	},
+	{
+		name:"Antimatter",
+		visibility:function(){return unlocked("Antimatter")},
+		paragraphs:[
+			"Upon completing Study IX, you will passively generate antimatter over time.",
+			"Like exotic matter and dark matter, it can be used to buy a new type of axis. However, you can only access the first four anti-axis initially. The remaining ones must be unlocked by research.",
+			"In addition to their primary effect, each dark axis also increases the level of the corresponding normal and dark axis multiplicatively."
+		]
+	},
 ].sort((a,b)=>(a.name>b.name)?1:-1)

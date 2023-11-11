@@ -1595,7 +1595,6 @@ const achievementList = {
 			effect:function(){return g.lumens[0].div(c.e3).add(c.d1).log10().pow(c.d2).add(c.d1)},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
 			formulaText:()=>"log(L ÷ 1,000 + 1)<sup>2</sup> × 100",
-			beta:true
 		},
 		811:{
 			name:"Wall of a Vigintillion Photons",
@@ -1615,7 +1614,6 @@ const achievementList = {
 			progress:function(){return (g.studyCompletions[5]<3)?"Complete Study V 3 times first":(g.activeStudy!==5)?"Enter Study V first":totalResearch.temporary===0?"Still possible":"Failed"},
 			reward:"The third reward of Study V is 11.1% stronger",
 			flavor:"We have progressed from the stone age and moved on to the age of stone hearted people.",
-			beta:true
 		},
 		813:{
 			name:"Hidden Stars in Zero Dimensions",
@@ -1625,7 +1623,6 @@ const achievementList = {
 			progress:function(){return (achievement.ownedInTier(5)<7)?"Reach 7 Tier 5 achievements first":(!g.ach526possible)?"Failed due to having normal axis in the current Wormhole":(stat.totalDarkAxis.sign===1)?"Failed due to having dark axis in the current Wormhole":achievement.percent(stat.realDarkStars.add(g.stars+g.galaxies),N(210),0)},
 			reward:"The dark star cost scaling is 5% weaker",
 			flavor:"I don't need sleep, I don't need answers. I need to determine where, in this swamp of unbalanced formulas, squatteth the toad of truth.",
-			beta:true
 		},
 		814:{
 			name:"Touching the Void",
@@ -1635,7 +1632,6 @@ const achievementList = {
 			progress:function(){return (g.studyCompletions[6]<3)?"Complete Study VI 3 times first":(g.activeStudy!==6)?"Enter Study VI first":(g.timeThisWormholeReset<6)?(timeFormat(6-g.timeThisWormholeReset)+" left"):"Failed"},
 			reward:"The third reward of Study VI is 11.1% stronger",
 			flavor:"Life is wide, limitless. There is no border, no frontier.",
-			beta:true
 		},
 		815:{
 			name:"Gensokyo Millennium",
@@ -1649,7 +1645,6 @@ const achievementList = {
 			effect:function(){return c.d1.sub(stat.chromaCostMultiplier).max(c.d0)},
 			effectFormat:x=>x.noLeadFormat(3),
 			formulaText:()=>"max(1 - m, 0)",
-			beta:true
 		},
 		816:{
 			name:"Cosmic Mind",
@@ -1668,7 +1663,6 @@ const achievementList = {
 			progress:function(){return g.spentDiscoveries.eq(c.d0)?achievement.percent(N(study5ResearchList.map(x=>g.research[x]?1:0).sum()),c.d4,0):"Failed"},
 			reward:"Unlock an autobuyer for research costing 0 Discoveries",
 			flavor:"I am convinced that the art of thinking logically cannot possibly be natural to the human mind.",
-			beta:true
 		},
 		818:{
 			name:"The Eighth Wonder of the World",
@@ -1679,7 +1673,6 @@ const achievementList = {
 			progress:function(){return "Not Completed!"},
 			reward:"Each anti-U axis gives a free anti-X axis",
 			flavor:"is the wonder of the world we live in",
-			beta:true
 		},
 		819:{
 			name:"Power of a Unicorn",
@@ -1694,7 +1687,6 @@ const achievementList = {
 			formulaText:function(){return "(log(P + 1) ÷ 1,000)<sup>"+this.yellowValue.pow10().noLeadFormat(4)+"</sup>÷"},
 			yellowBreakpoints:[c.d5e4,N(5e9),1],
 			flavor:"I won't look back, I won't look down, I'm going up, you better turn around",
-			beta:true
 		},
 		820:{
 			name:"Eternity in an Hour",
@@ -1704,14 +1696,13 @@ const achievementList = {
 			progress:function(){return (g.timeThisWormholeReset<3600)?(achievement.percent(g.truetimeThisWormholeReset.div(c.d31556926),c.d1,0)+"; "+timeFormat(3600-g.timeThisWormholeReset)+" left<br>At your current progress you need to reach "+c.d31556926.sub(g.truetimeThisWormholeReset).div(3600-g.timeThisWormholeReset).format(2)+"× tickspeed to get this"):"Failed"},
 			get reward(){return "Multiply the research 24-12 effect softcap start by the number of seconds in the current Wormhole (currently: ×"+g.truetimeThisWormholeReset.max(c.d1).format(2)+")"},
 			flavor:"Hold Infinity in the palm of your hand and Reality in a game",
-			beta:true
 		},
 		...(()=>{
 			let out = []
 			let names = ["Entrusting the Star Signs to Altman","Master of Astrophysics","The Nameless Ones' Prison","Triad of Triads"]
 			let triads = ["Stellar","Decisive","Temporal","Ontological"]
-			let rewards = ["TBD","TBD","Be freed from alemaninc's special development hell","TBD"]
-			let flavors = ["TBD","TBD","Freedom from torture... is torture itself.","TBD"]
+			let rewards = ["Stardust reset autobuyer is 1% less useless","Stars move 2% faster","Be freed from alemaninc's special development hell","TBD"]
+			let flavors = ["The only function of economic forecasting is to make astrology look respectable.","The sky truly is the limit; deciding which star to ride on first is the hard part.","Freedom from torture... is torture itself.","TBD"]
 			for (let i=0;i<4;i++) out.push([821+i,{
 				name:names[i],
 				description:"Complete the "+triads[i]+" Triad of the Study of Studies",
@@ -1721,7 +1712,7 @@ const achievementList = {
 				progress:function(){return ((g.activeStudy===10)&&(studyPower(10)===i))?achievement.percent(stat.totalDarkAxis,stat.wormholeDarkAxisReq,0):("Enter Study of Studies ("+triads[i]+") first")},
 				reward:rewards[i],
 				flavor:flavors[i],
-				beta:true
+				beta:i===3
 			}])
 			return Object.fromEntries(out)
 		})(),
@@ -1731,7 +1722,7 @@ const achievementList = {
 			check:function(){return stat.totalAxis.gte(c.e6)&&g.ach825possible},
 			event:"axisBuy",
 			progress:function(){return g.ach825possible?achievement.percent(stat.totalAxis,c.e6,0):"Failed"},
-			reward:"Instead of being based on purchased dark axis, the dark-to-normal axis conversion is now based on ((effective dark axis)<sup>0.01</sup> × (purchased dark axis)<sup>0.99</sup>)",
+			reward:"Row 3 Masteries are 3× stronger",
 			flavor:"If you want to keep a secret, you must also hide it from yourself.",
 			beta:true
 		}
@@ -2033,7 +2024,15 @@ const secretAchievementList = {
 		flavor:"This could have been 7 points, but of course alemaninc is stingy and only gives 7 points to his own achievement...",
 		rarity:4
 	},
-	// skip 64 numbers for meta-achievements
+	37:{
+		name:"Last Quarter",
+		description:"Set Overclock to 265.78× or higher in Study XI",
+		check:function(){return StudyE(11)&&(overclockSpeedupFactor>=265.77531)},
+		event:"gameloop",
+		flavor:"alemaninc really is a lunar-tick, isn't he?",
+		rarity:3
+	},
+	// skip 63 numbers for meta-achievements
 	...(()=>{
 		let names = ["The Giver","Secret Keeper","General Secretary of the Workers' Party","[REDACTED]","The Nameless Ones","Secrets of the Darkest Art","alemaninc"]
 		let flavors = ["I feel sorry for anyone who is in a place where he feels strange and stupid."]

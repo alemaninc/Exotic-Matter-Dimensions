@@ -357,7 +357,7 @@ function updateHTML() {
 					d.innerHTML("span_darkmatterPerSec_disabledTop",stat.darkmatterPerSec.format(2))
 				}
 				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"]).max(c.d0)).sumDecimals().format())
-				d.innerHTML("span_baseDarkMatterGain",miscStats.darkmatterPerSec.modifiers[1].func(miscStats.darkmatterPerSec.modifiers[0].func()).format(2));
+				d.innerHTML("span_baseDarkMatterGain",calcStatUpTo("darkmatterPerSec","Dark X Axis").noLeadFormat(2)); // first non-"base" modifier
 				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gte(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
 				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lte(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
 				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
@@ -468,6 +468,7 @@ function updateHTML() {
 			}
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
+			if (visibleStudies().includes(11)) d.innerHTML("button_research_r33_3_visible",research.r33_3.icon)
 		} else if (g.activeSubtabs.wormhole==="studies") {
 			let visible = visibleStudies()
 			for (let i of visible) {
@@ -800,7 +801,6 @@ function tick(time) {																																		 // The game loop, which 
 			let clock = Date.now()+1000
 			while (true) {
 				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9"))
-				console.log(buyable)
 				if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
 				if (Date.now()>clock) {error("Infinite Loop");break}
 				for (let i of buyable) {if (researchCost(i).eq(c.d0)) {buySingleResearch(researchRow(i),researchCol(i))}} // check again for research with changing costs

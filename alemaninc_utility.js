@@ -46,17 +46,17 @@ Object.defineProperty(Array.prototype,"remove",{
   }
 })
 Object.defineProperty(Array,"random",{
-	value: function random(array) {
+	value:function random(array) {
 		return array[Math.floor(Math.random()*array.length)];
 	}
 });
 Object.defineProperty(Array,"equal",{
-	value: function equal(a,b) {
+	value:function equal(a,b) {
 		return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
 	}
 });
 Object.defineProperty(Array.prototype,"joinWithAnd",{
-	value: function joinWithAnd(delimiter=", ") {
+	value:function joinWithAnd(delimiter=", ") {
 		if (this.length<3) return this.join(" and ");
 		return this.slice(0,this.length-1).join(delimiter)+" and "+this[this.length-1]
 	}
@@ -89,7 +89,7 @@ Object.defineProperty(Array,"removeDuplicates",{value:function removeDuplicates(
 	return Array.from(new Set(x))
 }})
 Object.defineProperty(JSON,"valid",{
-	value: function isJsonString(str) {
+	value:function isJsonString(str) {
 		try {
 			JSON.parse(str);
 		} catch (e) {
@@ -228,7 +228,7 @@ const d = {		// d for "document"
 function blackOrWhiteContrast(hex) {
 	let rgb = [parseInt(hex.substring(1,3),16),parseInt(hex.substring(3,5),16),parseInt(hex.substring(5,7),16)]
 	let sum = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
-	return (sum >= 128) ? "#000000" : "#ffffff";
+	return (sum >= 128)?"#000000":"#ffffff";
 }
 const viewportHeight = window.innerHeight
 const viewportWidth = window.innerWidth

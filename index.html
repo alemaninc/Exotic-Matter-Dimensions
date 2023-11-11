@@ -15,7 +15,7 @@
 					<td class="toptable" style="width:260px">
 						<table><tr>
 							<td><button onClick="attemptStardustReset(true)" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
-							<td><button onClick="(unlocked('Hawking Radiation')&&((g.activeStudy===0)||Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)))?attemptWormholeReset(true):wormholeAnimation()" id="button_wormholeReset"></button></td>
+							<td><button onClick="(unlocked('Hawking Radiation')&&((g.activeStudy===0)||Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)))?attemptWormholeReset(true):(!unlocked('Hawking Radiation'))?wormholeAnimation():(()=>{})() // do nothing" id="button_wormholeReset"></button></td>
 						</tr></table>
 					</td>
 				</tr>
@@ -344,7 +344,7 @@
 			</div>
 			<div id="footer" style="z-index: 0">
 				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
-				<a href="changelog.html" target="_blank">Changelog</a> | <a id="span_footerDiscord" target="_blank">Discord</a> <span id="span_discordPoll" style="color:#00ffff">(poll active!)</span> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://www.reddit.com/r/incremental_games/comments/15pv5wa/exotic_matter_dimensions_%F0%9D%95%8D13/" target="_blank">Reddit</a> | Version <span id="span_currentVersion"></span>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a id="span_footerDiscord" target="_blank">Discord</a> <span id="span_discordPoll" style="color:#00ffff">(poll active!)</span> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://www.reddit.com/r/incremental_games/comments/178bccu/exotic_matter_dimensions_%F0%9D%95%8D14/" target="_blank">Reddit</a> | Version <span id="span_currentVersion"></span>
 			</div>
 		</div>
 		<div id="div_fancyPopupScreen" class="popupScreen">

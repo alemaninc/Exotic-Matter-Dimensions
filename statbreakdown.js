@@ -295,15 +295,10 @@ const statTemplates = {
 	darkMatterFreeAxis:function(type){
 		return {
 			label:"Dark "+type+" Axis",
-			effectiveDarkAxis:function(){
-				let out = g["dark"+type+"Axis"]
-				if (g.achievement[825]) out = Decimal.mul(out.pow(c.d0_99),stat["realdark"+type+"Axis"].pow(c.d0_01)).max(out)
-				return out
-			},
-			func:function(prev){return prev.add(stat.darkMatterFreeAxis.mul(this.effectiveDarkAxis()));},
-			text:function(){return "+ "+stat.darkMatterFreeAxis.mul(this.effectiveDarkAxis()).format(2)+" "+SSBsmall(this.effectiveDarkAxis().format(),stat.darkMatterFreeAxis.format(3),2);},
+			func:function(prev){return prev.add(stat.darkMatterFreeAxis.mul(g["dark"+type+"Axis"]));},
+			text:function(){return "+ "+stat.darkMatterFreeAxis.mul(g["dark"+type+"Axis"]).format(2)+" "+SSBsmall(g["dark"+type+"Axis"].format(),stat.darkMatterFreeAxis.format(3),2);},
 			dependencies:["realdark"+type+"Axis","darkMatterFreeAxis"],
-			show:function(){return this.effectiveDarkAxis().neq(c.d0)&&stat.darkMatterFreeAxis.neq(c.d0)}
+			show:function(){return g["dark"+type+"Axis"].neq(c.d0)&&stat.darkMatterFreeAxis.neq(c.d0)}
 		};
 	},
 	darkStarEffect2:function(axis){
@@ -743,6 +738,13 @@ miscStats.darkmatterPerSec={
 			text:function(){return "(<i>x</i> + 1) ^ "+darkStarEffect1().noLeadFormat(3)+" - 1"},
 			dependencies:["realDarkStars"],
 			show:function(){return stat.realDarkStars.neq(c.d0)}
+		},
+		{
+			label:"Study XI",
+			func:function(prev){return StudyE(11)?prev.min(c.d1):prev},
+			text:function(){return "min(<i>x</i>, 1)"},
+			show:function(){return StudyE(11)},
+			color:"#cc0000"
 		},
 		{
 			label:"Dark X Axis",
@@ -2450,10 +2452,10 @@ miscStats.prismaticPerSec={
 		{
 			label:"Mastery 111",
 			mod:function(){return Decimal.pow(masteryEffect(104),masteryEffect(111))},
-			func:function(prev){return MasteryE(111)?prev.mul(this.mod()):prev},
+			func:function(prev){return (MasteryE(104)&&MasteryE(111))?prev.mul(this.mod()):prev},
 			text:function(){return this.mod().format(2)+" "+SSBsmall(masteryEffect(104).format(2),masteryEffect(111).noLeadFormat(2),3)},
-			dependencies:masteryDependencies(111),
-			show:function(){return MasteryE(111)}
+			dependencies:Array.removeDuplicates([masteryDependencies(104),masteryDependencies(111)].flat()),
+			show:function(){return MasteryE(104)&&MasteryE(111)}
 		},
 		statTemplates.tickspeed()
 	]
@@ -2714,7 +2716,7 @@ miscStats.axisScalingPower={
 }
 miscStats.axisSuperscalingStart={
 	type:"combined",
-	value:function(){return c.d256}
+	value:function(){return studies[11].reward(1)}
 }
 miscStats.axisSuperscalingPower={
 	type:"combined",
@@ -2758,7 +2760,7 @@ miscStats.antiAxisScalingPower={
 }
 miscStats.antiAxisSuperscalingStart={
 	type:"combined",
-	value:function(){return c.d64}
+	value:function(){return c.d64.add(studies[11].reward(3))}
 }
 miscStats.antiAxisSuperscalingPower={
 	type:"combined",
