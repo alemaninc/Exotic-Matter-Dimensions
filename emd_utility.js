@@ -245,6 +245,7 @@ const c = deepFreeze({		 // c = "constant"
 	d512			: Decimal.FC_NN(1,0,512),
 	d550			: Decimal.FC_NN(1,0,550),
 	d600			: Decimal.FC_NN(1,0,600),
+	d640			: Decimal.FC_NN(1,0,640),
 	d700			: Decimal.FC_NN(1,0,700),
 	d750			: Decimal.FC_NN(1,0,750),
 	d800			: Decimal.FC_NN(1,0,800),
