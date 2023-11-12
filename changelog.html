@@ -61,7 +61,8 @@ const notation = (save===null)?"Mixed scientific":save.notation
 function format(x,p=0){return gformat(N(x),p,notation)}
 const contributors = {
 	"Hedrauta":"#00cc00",
-	"IRAD":"#ff9933"
+	"IRAD":"#ff9933",
+	"the Celestial of Blob":"#fac112"
 }
 // Log entry format: [type, description, contributor (if applicable)]
 const logEntries = [
@@ -71,6 +72,13 @@ const logEntries = [
 
 	]},
 	*/
+	{name:"𝕍1.5(a).1.1 (2023-11-12)",changes:[
+		["WHAT","Added the missing 𝕍1.5(a).1 entry to the changelog"],
+		["WHAT","The footer no longer says 𝕍1.5(a)"]
+	]},
+	{name:"𝕍1.5(a).1 (2023-11-12)",changes:[
+		["BUGFIX","The game no longer crashes when Study of Studies level 3 is completed","the Celestial of Blob"]
+	]},
 	{name:"𝕍1.5(a) \"Flight of the Lazy Developer ∼ Featureless Prince\" (2023-11-11)",changes:[
 		["BUGFIX","The Reddit link in the footer has been updated to 𝕍1.4"],
 		["CONTENT","Added 12 more Tier 8 achievements, bringing the total to 23"],
