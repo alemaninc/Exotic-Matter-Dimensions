@@ -54,7 +54,9 @@
 		<h4 style="color: #6666ff">Code contributors who want to change their name or color within the changelog can do so by reaching out to alemaninc or submitting a pull request</h4>
 		<a href="index.html"><button class="back">Back to game</button></a>
 		<div id="logContainer"></div>
+		<script type="text/javascript" src="alemaninc_utility.js"></script>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
+		<script type="text/javascript" src="emd_utility.js"></script>
 		<script>
 const save = localStorage.getItem("save")
 const notation = (save===null)?"Mixed scientific":save.notation
@@ -72,6 +74,14 @@ const logEntries = [
 
 	]},
 	*/
+	{name:"𝕍1.5(a).2 (2023-12-02)",changes:[
+		["BUGFIX","Saved values which become NaN will now automatically be reset to 0"],
+		["BUGFIX<sup>2</sup>","Added an option to export the save at the start of the session (before any errors have a chance to occur) and this is also shown whenever an error occurs"],
+		["CLARITY","\"Hidden Stars in Zero Dimensions\" now explicitly refers to effective dark stars"],
+		["CLARITY","Study of Studies will now mention in the tooltip if you need a higher level"],
+		["INTERFACE","RGB, CMY and WGB chroma are now all on separate lines on large displays"],
+		["QOL","Added an option for the research autobuyer to ignore grouped research (e.g. Chromatic, Photonic)"]
+	]},
 	{name:"𝕍1.5(a).1.1 (2023-11-12)",changes:[
 		["WHAT","Added the missing 𝕍1.5(a).1 entry to the changelog"],
 		["WHAT","The footer no longer says 𝕍1.5(a)"]
@@ -223,7 +233,7 @@ const logEntries = [
 		["QOL","Confirmation for forfeiting 'Iron Will' will now only show up if you have the first tier of it unlocked, and should no longer be visible to people who can't use it"]
 	]},
 	{name:"𝕍1.3.28 (2023-09-20)",changes:[
-		["BALANCE","'<img src=\"img/blob.png\" alt=\"Blob\" height=\"32\" width=\"32\">' secret achievement is now Rare (from Common)"],
+		["BALANCE","'"+img("blobwave","Blob wave",32)+"' secret achievement is now Rare (from Common)"],
 		["BALANCE","Galaxies have a new pair of effects at 6 or above"],
 		["BUGFIX","Stardust exotic matter requirement no longer displays NaN in Study IV above 54 stardust resets"],
 		["BUGFIX","Stardust Boost 11 now correctly shows the percentage rather than the multiplier as a percentage (eg. 25% showed as 1.25%)"],

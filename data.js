@@ -234,7 +234,11 @@ const studies = [
 		description:function(){
 			let showDiffDisclaimer = false
 			for (let i of [[1,4,7],[2,5,8],[3,6,9],countTo(9)][studyPower(10)]) if (g.studyCompletions[i]<3) showDiffDisclaimer = true
-			return "The conditions of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously."+((studyPower(10)===2)?(" However, Row 5 and 6 energy research have no effect, the Study VI effect base is reduced to 936× and you gain 3.69% more experientia."):"")+(showDiffDisclaimer?" (note: Study of Studies penalties are always applied at level 4)":"")
+			let out = "The conditions of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously."
+			if (studyPower(10)===2) out += " However, Row 5 and 6 energy research have no effect, the Study VI effect base is reduced to 936× and you gain 3.69% more experientia."
+			if (showDiffDisclaimer) out += " (note: Study of Studies penalties are always applied at level 4)"
+			if (studyPower(10)<Math.min(g.studyCompletions[10],studies[0].effectiveMaxCompletions[10])-1) out += " <span style=\"font-weight:700;font-style:oblique\">(note: you are repeating a Triad which is already completed. Buy research "+researchOut(this.research)+" to access the next level)</span>"
+			return out
 		},
 		researchList:["r26_5","r25_8","r26_11","r27_8"],
 		get research(){return studies[10].researchList[studyPower(10)]},

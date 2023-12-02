@@ -1617,7 +1617,7 @@ const achievementList = {
 		},
 		813:{
 			name:"Hidden Stars in Zero Dimensions",
-			get description(){return "Have 210 total stars, dark stars and galaxies without any normal or dark axis in the current Wormhole"+(achievement.ownedInTier(5)>6?"":"<br>(note: you must have at least 7 Tier 5 achievements to attempt this!)")},
+			get description(){return "Have 210 total stars, (effective) dark stars and galaxies without any normal or dark axis in the current Wormhole"+(achievement.ownedInTier(5)>6?"":"<br>(note: you must have at least 7 Tier 5 achievements to attempt this!)")},
 			check:function(){return g.ach526possible&&(stat.totalDarkAxis.sign===0)&&(achievement.ownedInTier(5)>6)&&stat.realDarkStars.add(g.stars+g.galaxies).gte(210)},
 			event:"gameloop",
 			progress:function(){return (achievement.ownedInTier(5)<7)?"Reach 7 Tier 5 achievements first":(!g.ach526possible)?"Failed due to having normal axis in the current Wormhole":(stat.totalDarkAxis.sign===1)?"Failed due to having dark axis in the current Wormhole":achievement.percent(stat.realDarkStars.add(g.stars+g.galaxies),N(210),0)},
@@ -1962,7 +1962,7 @@ const secretAchievementList = {
 		rarity:4
 	},
 	30:{
-		name:"<img src=\"img/blob.png\" alt=\"Blob\" height=\"32\" width=\"32\">",
+		name:img("blobwave","Blob wave",32),
 		description:"Prove your status as a regular Contributor",
 		check:function(){return true},
 		reward:"Your blob is in the game! Look!",
@@ -2032,7 +2032,36 @@ const secretAchievementList = {
 		flavor:"alemaninc really is a lunar-tick, isn't he?",
 		rarity:3
 	},
-	// skip 63 numbers for meta-achievements
+	38:{
+		name:"Read More",
+		description:"Click \"Read More\" twice in a row.",
+		check:function(){return newsSupport.readMoreIteration>1},
+		event:"readMore",
+		flavor:"Did you know that the developer is not in fact alemaninc, but in fact<br><b onClick=\"newsSupport.readMore()\">Read More</b>",
+		rarity:2
+	},
+	39:{
+		name:"Gaster's Blast",
+		description:"Click \"Read More\" ten times in a row.",
+		check:function(){return newsSupport.readMoreIteration>9},
+		event:"readMore",
+		flavor:"Life is too short to read a bad book.",
+		rarity:7
+	},
+	40:{
+		name:"Perfectly Balanced",
+		description:"Make the average color of all your chroma within 0.1% of gray",
+		check:function(){
+			if (g.chroma.sumDecimals().eq(c.d0)) return false
+			let channels = [[0,4,5,6],[1,3,5,6],[2,3,4,6]]
+			let colors = channels.map(x=>Decimal.div(x.map(y=>g.chroma[y]).sumDecimals().add(g.chroma[8].div(c.d2)),g.chroma.sumDecimals()))
+			return Decimal.eq_tolerance(colors[0],colors[1],0.001)&&Decimal.eq_tolerance(colors[0],colors[2],0.001)&&Decimal.eq_tolerance(colors[1],colors[2],0.001)
+		},
+		event:"gameloop",
+		flavor:"As all things should be.",
+		rarity:2
+	},
+	// skip 61 numbers for meta-achievements
 	...(()=>{
 		let names = ["The Giver","Secret Keeper","General Secretary of the Workers' Party","[REDACTED]","The Nameless Ones","Secrets of the Darkest Art","alemaninc"]
 		let flavors = ["I feel sorry for anyone who is in a place where he feels strange and stupid."]

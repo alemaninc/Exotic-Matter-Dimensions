@@ -881,7 +881,7 @@
 		}
 
 		Decimal.valid = function (x) {
-			return !Object.values(x).includes(NaN)
+			return !Object.values(new Decimal(x)).includes(NaN)
 		}
 		
 		Decimal.prototype.normalize = function () {
@@ -2883,10 +2883,6 @@ for (var i = 0; i < 10; ++i)
 		Decimal.prototype.isNaN = function () {
 			let x = Object.values(this);
 			return (x.includes(NaN)||x.includes(Infinity));
-		};
-
-		Decimal.prototype.fix = function(x) {									 // If the input is not a number, returns x. The recommendation is to input the identity of that variable, so 0 if it gets added to something else or 1 if it gets multiplied or is an exponent or tetration height.
-			return (this.isNaN())?N(x):this;
 		};
 
 		Decimal.prototype.tetr_coefficient = function(x) {			// Linear to quadratic tetration height

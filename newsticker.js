@@ -3,7 +3,7 @@ const newsSupport = {
 	randomVisible:function(){return Array.random(newsList.filter(x=>newsWeight(x)>Math.random()))},
 	redacted:"<span style=\"color:hsl(270 50% 50%);opacity:0.5;\">[REDACTED]</span>",
 	redactedFormat:function(x){return "<span style=\"color:hsl(270 50% 50%);opacity:0.5;\">"+x+"</span>"},
-	error:"This news message has appeared in error. Please tell alemaninc to investigate. No, really. This isn't a joke.",
+	error:"This news message has appeared in error. Please tell alemaninc to investigate.",
 	universeSize:function(){
 		let array = fullAxisCodes.map(x=>stat["real"+x+"Axis"]).filter(x=>x.gt(0))
 		if (array.length===0) return "1. Just 1. No dimensions. Buy an axis to get a dimension!"
@@ -123,7 +123,7 @@ const newsSupport = {
 	lightColor:function(){
 		let channels = [[0,4,5,6],[1,3,5,6],[2,3,4,6]]
 		if (g.chroma.sumDecimals().eq(c.d0)) return "#000000"
-		return "#"+channels.map(x=>Decimal.div(x.map(y=>g.chroma[y]).sumDecimals(),g.chroma.sumDecimals()).mul(255).round().toNumber().toString(16).padStart(2,"0")).join("")
+		return "#"+channels.map(x=>Decimal.div(x.map(y=>g.chroma[y]).sumDecimals().add(g.chroma[8].div(c.d2)),g.chroma.sumDecimals()).mul(255).round().toNumber().toString(16).padStart(2,"0")).join("")
 	},
 	dilationPenaltyReductions:0,
 	newsletter:{
@@ -167,6 +167,15 @@ const newsSupport = {
 		},
 		finalNotify:function(){notify("Verification is complete! Your final task: use the name of the Secret Achievement you are about to get as a promotion code.","#009999","#00ffff")}
 	},
+	readMore:function(){
+		newsSupport.readMoreIteration++
+		for (let i of secretAchievementEvents.readMore) {addSecretAchievement(i)}
+		let reading=[newsSupport.randomVisible().text]
+		while(reading.map(x=>x.length).sum()<1e4){reading.push(newsSupport.randomVisible().text)}
+		let out="<p>We have compiled a list of "+reading.length+" news messages so that you can read more high-quality journalism.</p>"+reading.map(x=>"<p>"+x.replaceAll("padding-left","nullCSSlol")+"</p>").join("")
+		popup({text:out,buttons:[["Read Less',"]]})
+	},
+	readMoreIteration:0,
 	mysteryTheme:function(){
 		let received = Array.random(availableThemes().filter(x=>g.theme!==x))
 		popup({
@@ -377,7 +386,7 @@ const newsList = [
 	{text:"<span onClick=\"d.element('game').style.filter='brightness(400%)';setTimeout(function(){d.element('game').style.filter=''},5000)\">Click here to increase the brightness.</span>"},
 	{text:"\"When you try your worst but still succeed\" - Stat Mark"},
 	{text:"What if you beat the game, and alemaninc said, \"you just lost The Game\"?"},
-	{text:"<span onClick=\"let reading=[newsSupport.randomVisible().text];while(reading.map(x=>x.length).sum()<1e4){reading.push(newsSupport.randomVisible().text)};let out='<p>We have compiled a list of '+reading.length+' news messages so that you can read more high-quality journalism.</p>'+reading.map(x=>'<p>'+x.replaceAll('padding-left','nullCSSlol')+'</p>').join('');popup({text:out,buttons:[['Read Less','']]})\">Read More</span>"},
+	{text:"<span onClick=\"newsSupport.readMore()\">Read More</span>"},
 	{text:"You can destroy the universe already, what are you still doing in Iron Will?",get weight(){return (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)&&stat.ironWill)?1:0}},
 	{text:"The scientific community remains baffled over the meaning of 44,031. \"We're certain it's related to OMCCDV, but now the question is what OMCCDV <i>is</i>,\" one researcher notes.",get weight(){return newsSupport.ord(1)}},
 	{text:"A wormhole a day keeps the update away.",get weight(){return unlocked("Hawking Radiation")?1:0}},
@@ -446,7 +455,7 @@ const newsList = [
 	{text:"I see dilation, but where are the tachyon particles?"},
 	{get text(){let highest = Object.keys(achievementList).reverse().filter(x=>achievement.ownedInTier(x)>0)[0];if(highest===undefined){return newsSupport.error};return "How has it taken you "+timeFormat(g.timePlayed)+" to get "+achievement.ownedInTier(highest)+" "+achievement.tierName(highest)+" achievement"+((achievement.ownedInTier(highest)===1)?"":"s")+"? How pathetic..."},get weight(){return g.timePlayed*totalAchievements>1e5?1:0}},
 	{text:"In a galaxy far, far away...",get weight(){return unlocked("Galaxies")?1:0}},
-	{text:"<img src=\"img/blob.png\" alt=\"\" height=\"16\" width=\"16\">"},
+	{text:img()},
 	{text:"You are a Master of the Void, not a Master of Nothing, just so you know.",get weight(){return g.achievement[708]?1:0}},
 	{get text(){return "Even the galax"+(g.galaxies===1?"y":"ies")+" are nothing more than specks of luminous stardust."},get weight(){return g.galaxies>0?1:0}},
 	{get text(){return "alemaninc is releasing <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" in just 5 hours! Click <a onClick=\"newsSupport.newsletter.init()\">this newsletter</a> to find out more."},weight:0}, // placeholder
@@ -470,7 +479,9 @@ const newsList = [
 	{text:"You have stolen xhwzwka's achievement. You have angered the missing god. As punishment, you will be sent to SCP-3001. You will be trapped there with no chance of escape, and you will be powerless as your organs begin to disintegrate while you slowly become sicker and sicker. Good news is, you might be able to see xhwzwka himself, because he came from the endless red void of SCP-3001 and you are being taken to his home. This might explain why he has gone crazy...",get weight(){return g.secretAchievement[28]?1:0}},
 	{text:"alemaninc refutes these baseless claims that there's a reference to OMCCDV in this newsticker.",get weight(){return newsSupport.ord(2)}},
 	{text:"alemaninc cried out, for the Celestial of Blob was not to be stayed from his hunt for OMCCDV. Then, alemaninc cried out once more, for the Celestial of Blob had hunted OMCCDV down. But this time, he cried out tears of joy, for the dying OMCCDV was saved.",get weight(){return newsSupport.ord(7)}},
-	{get text(){function r(x){return "█".repeat(x)};return "nicodium has joined the ranks of lazy SCP writers! His latest creation: \"Scp-"+r(4)+" is a "+r(86)+" foundation staff "+r(172)+" D-3819 "+r(86)+" Joe Biden "+r(172)+" among us "+r(86)+" was activated\"."}}
+	{get text(){function r(x){return "█".repeat(x)};return "nicodium has joined the ranks of lazy SCP writers! His latest creation: \"Scp-"+r(4)+" is a "+r(86)+" foundation staff "+r(172)+" D-3819 "+r(86)+" Joe Biden "+r(172)+" among us "+r(86)+" was activated\"."}},
+	{text:"What even is a "+img("blob","blob",16)+"? Only hyperbolia knows."},
+	{text:"Schrödinger's News: this news report is a superposition of truth and falsehood, entangled with your proposition of which one it is as the first scenario."}
 ]
 // bottom
 var newsOrder = []

@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(a).1.1",
+	current:"𝕍1.5(a).2",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -24,8 +24,9 @@ function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toSt
 }
 function error(text) {
 	halt()
-	popup({text:"Error: "+text+".<br>Please tell alemaninc about this.<br>A copy of your savefile has also been attached.<br><a href=\""+discordInvite+"\">Discord</a>",input:btoa(localStorage.getItem("save")),buttons:[]})
+	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and show the chain of errors if you can.<br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\">Discord</a>",buttons:[]})
 	error = function(){/* if multiple errors are thrown in a chain, only the first appears */}
+	showError_intentionallyUndefined()
 }
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
@@ -33,7 +34,7 @@ const debug = {
 		let rarities = countTo(7).map(x=>Object.values(secretAchievementList).filter(i=>i.rarity===x).length)
 		let out = ""
 		for (let i=0;i<num;i++) {
-			let ratio = 1.5+Math.random()/2
+			let ratio = 1+Math.random()
 			let diffs = countTo(6).map(x=>rarities[x]*ratio**x)
 			let next = diffs.indexOf(diffs.reduce((x,y)=>Math.min(x,y)))+2
 			rarities[next-1]++
@@ -47,6 +48,15 @@ const debug = {
 	}
 }
 var savecounter=0;
+
+Decimal.prototype.fix = function(x) {									 // If the input is not a number, returns x. The recommendation is to input the identity of that variable, so 0 if it gets added to something else or 1 if it gets multiplied or is an exponent or tetration height.
+	if (this.isNaN()) {
+		error("A NaN error nearly occurred, but got flagged by alemaninc's systems")
+		return N(x)
+	} else {
+		return this
+	}
+}
 
 function toggle(x) {
 	g[x]=!g[x];
@@ -67,11 +77,18 @@ function popup(data) {
 	d.innerHTML("span_fancyPopupButtons","")
 	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"hidePopup();"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
 }
-function hidePopup() {d.display('div_fancyPopupScreen','none')}
+function hidePopup() {
+	d.display('div_fancyPopupScreen','none')
+	newsSupport.readMoreIteration=0
+}
 function popupInput() {return d.element("span_fancyPopupInput").value}
 function functionError(functionName,argumentList) {error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")}
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
 function BEformat(value,precision=0) {return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");}
+d.glow = function(id,active){
+	if (active) document.getElementById(id).classList.add("glownotify");
+	else document.getElementById(id).classList.remove("glownotify");
+}
 const c = deepFreeze({		 // c = "constant"
 	...constant,
 	dm16			: Decimal.FC_NN(-1,0,16),
@@ -341,6 +358,7 @@ function percentOrMult(num,precision=2,classname) {
 	return number+sign
 }
 function numberOfDigits(num){return num.max(c.d1).log10().floor().add(c.d1)}
+function img(src,alttext,height,width=height) {return "<img src=\"img/"+src+".png\" alt=\""+alttext+"\" height=\""+height+"\" width=\""+width+"\">"}
 function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
 formulaFormat.bracketize = function(str) {
 	let out = (str.search(" ")===-1)?str:("("+str+")")

@@ -1065,7 +1065,7 @@ function upgradeAutobuyer(id) {
 }
 const stardustAutomatorModes = ["Amount of stardust","Real time in this Stardust","X times (current stardust)","(current stardust)<sup>X</sup>"]
 const wormholeAutomatorModes = ["Amount of HR","Real time in this Wormhole","X times (current HR)","(current HR)<sup>X</sup>"]
-const researchAutobuyerModes = ["All free research"]
+const researchAutobuyerModes = ["All free research","All free non-grouped research"]
 function inputStarAllocatorBuild() {
 	inputStarAllocatorBuild.order =  []
 	popup({
@@ -2243,14 +2243,14 @@ function buyPrismaticUpgrade(upg) {
 	if ((prismaticUpgrades[upg].unlockReq??(()=>true))()) {
 		let affordable = affordablePrismaticUpgrades(upg)
 		let cost = prismaticUpgradeCost(upg,affordable)
-		g.prismatic = g.prismatic.sub(cost)
-		g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].add(affordable)
+		g.prismatic = g.prismatic.sub(cost).fix(c.d0)
+		g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].add(affordable.fix(c.d0)).fix(c.d0)
 	}
 }
 function buyMaxPrismaticUpgrades() {for (let i of nonRefundablePrismaticUpgrades) buyPrismaticUpgrade(i)}
 function refundPrismaticUpgrade(upg) {
 	if (g.prismaticUpgrades[upg].eq(c.d0)) {notify("There is nothing to refund!",achievement.tierColors[8].secondary)}
-	else {g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].sub(c.d1)}
+	else {g.prismaticUpgrades[upg] = g.prismaticUpgrades[upg].sub(c.d1).fix(c.d0)}
 }
 function prismaticUpgradeEffectHTML(upg) {
 	let out = prismaticUpgrades[upg].desc
@@ -2701,8 +2701,9 @@ function getSavedGame(saved, game, base=basesave) {
       let gameValue = game[prop];
 			let baseValue = base[prop]
 			if (typeof baseValue === "undefined") continue
-      
-      if (typeof savedValue === 'object' && !Array.isArray(savedValue)) {
+      if (baseValue instanceof Decimal) {
+				if (baseValue instanceof Decimal) game[prop] = (Decimal.valid(savedValue)?N(savedValue):baseValue)
+			} else if (typeof savedValue === 'object' && !Array.isArray(savedValue)) {
         if (game.hasOwnProperty(prop) && Object.prototype.toString.call(gameValue) === '[object Object]') {
           getSavedGame(savedValue, gameValue, baseValue);
         } else if (!game.hasOwnProperty(prop)) {

@@ -168,7 +168,7 @@
 					<p>You can generate <span id="span_chromaPerSec" class="big _stars"></span> chroma per second.<br>
 					You have <span id="span_unspentStarsLight" class="big _stars"></span> stars, allowing you to generate a base of <span id="span_baseChroma" class="big _stars"></span> chroma per second.<br>
 					<span id="span_chromaCostMultiplierDisplay">The chroma cost multiplier is <span id="span_chromaCostMultiplier" class="big _stars"></span>.</p>
-					<div id="lightContainer1"></div><div id="lightContainer2"></div><div id="lightContainer3"></div>
+					<div id="lightContainer1"></div><br><div id="lightContainer2"></div><br><div id="lightContainer3"></div>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_galaxies" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Galaxy']()"></button>
@@ -221,6 +221,7 @@
 					<button class="optionsbutton" onClick="wipeSavePopup()" style="background-color:#000000;color:#ff0000;">WIPE SAVE</button>
 					<button class="optionsbutton" onClick="importSave()">Import save</button>
 					<button class="optionsbutton" onClick="exportSave()">Export save</button>
+					<button class="optionsbutton" onClick="openExport(savePreLoad)">Export save at start of session</button>
 					<button class="optionsbutton" onClick="inputPromo()">Input promotion code</button>
 <!--					<button class="optionsbutton" onClick="downloadSave()">Download save</button> -->
 					<button class="optionsbutton" onClick="changeTheme()">Theme: <span id="colortheme"></span></button>
@@ -337,7 +338,7 @@
 						<button class="automatortoggleon" id="button_researchAutobuyerToggle" onClick="toggle('researchAutobuyerOn')"></button><br>
 						Interval: <span id="span_researchAutobuyerInterval"></span><br>
 						<button id="button_researchAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('research')">Reduce the interval by 5%<br>Cost: <span id="span_researchAutobuyerCost"></span> mastery power</button><br>
-						<label for="researchAutobuyerMode">Setting:</label><button class="genericbutton" id="button_researchAutobuyerMode" onClick="selectOption('researchAutobuyerMode',countTo(1,true),'mode',x=>researchAutobuyerModes[x])"></button><br>
+						<label for="researchAutobuyerMode">Setting:</label><button class="genericbutton" id="button_researchAutobuyerMode" onClick="selectOption('researchAutobuyerMode',countTo(researchAutobuyerModes.length,true),'mode',x=>researchAutobuyerModes[x])"></button><br>
 						<input id="researchAutobuyerValue" type="text"></input>
 					</div>
 				</div>

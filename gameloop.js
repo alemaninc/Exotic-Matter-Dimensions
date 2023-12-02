@@ -643,7 +643,7 @@ function updateHTML() {
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
 	if (time<0) {
-		error("An error has occurred which would cause time to reverse by "+timeFormat(time)+". Please tell alemaninc about this.")
+		error("An error has occurred which would have caused time to reverse by "+timeFormat(time)+"")
 		return
 	} else if (time===0) {return} // not an error but no point causing lag
 	if ((StudyE(3)||StudyE(9))&&(!overclockActive)) {
@@ -797,10 +797,10 @@ function tick(time) {																																		 // The game loop, which 
 	if (autobuyers.research.unlockReq() && g.researchAutobuyerOn) researchAutobuyerProgress+=time/autobuyerMeta.interval("research");
 	if (researchAutobuyerProgress > 1) {
 		let bought = false // check if anything was bought
-		if (g.researchAutobuyerMode===0) { // free research
+		if ([0,1].includes(g.researchAutobuyerMode)) { // free research
 			let clock = Date.now()+1000
 			while (true) {
-				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9"))
+				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9")&&((research[x].group===undefined)||(g.researchAutobuyerMode===0)))
 				if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
 				if (Date.now()>clock) {error("Infinite Loop");break}
 				for (let i of buyable) {if (researchCost(i).eq(c.d0)) {buySingleResearch(researchRow(i),researchCol(i))}} // check again for research with changing costs

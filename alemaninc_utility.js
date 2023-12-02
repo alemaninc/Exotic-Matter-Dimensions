@@ -1,4 +1,5 @@
 "use strict";
+// Returns an array with the integers from 1 to x: for example, countTo(4) = [1,2,3,4]
 function countTo(x,from0=false) {
 	return Array(x).fill(0).map((x,i)=>from0?i:(i+1))
 }
@@ -45,20 +46,26 @@ Object.defineProperty(Array.prototype,"remove",{
     return out
   }
 })
-Object.defineProperty(Array,"random",{
-	value:function random(array) {
-		return array[Math.floor(Math.random()*array.length)];
-	}
-});
+Object.defineProperty(Array,"random",{value:function random(array){return array[Math.floor(Math.random()*array.length)]}})
+Object.defineProperty(Array,"weightedRandom",{value:function weightedRandom(array) {
+	let max = array.map(x=>x[1]).reduce((x,y)=>Math.max(x,y))
+	let out = []
+	for (let i of array) if (Math.random()*max<i[1]) out.push(i[0])
+	return Array.random(out)
+}})
 Object.defineProperty(Array,"equal",{
 	value:function equal(a,b) {
 		return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
 	}
 });
 Object.defineProperty(Array.prototype,"joinWithAnd",{
-	value:function joinWithAnd(delimiter=", ") {
+	value: function joinWithAnd(delimiter=", ") {
 		if (this.length<3) return this.join(" and ");
-		return this.slice(0,this.length-1).join(delimiter)+" and "+this[this.length-1]
+		let arr = structuredClone(this)
+		let out = arr.splice(0,1);
+		while (arr.length>1) out+=delimiter+arr.splice(0,1);
+		out+=" and "+arr[0];
+		return out;
 	}
 })
 Object.defineProperty(Array.prototype,"shuffle",{
@@ -76,14 +83,17 @@ Object.defineProperty(Array.prototype,"random",{
 })
 Object.defineProperty(Array.prototype,"select",{
 	value:function select(num=1){
-		return this.shuffle().slice(0,num)
+		let numbers = countTo(this.length,true)
+		let out = []
+		for (let i=0;i<Math.min(this.length,num);i++) {out.push(this[numbers.splice(Math.floor(Math.random()*numbers.length),1)])}
+		return out
 	}
 })
 Object.defineProperty(Array.prototype,"sum",{value:function sum() {
-	return this.reduce((x,y)=>x+y)
+	return this.reduce((x,y)=>x+y,0)
 }})
 Object.defineProperty(Array.prototype,"product",{value:function product() {
-	return this.reduce((x,y)=>x*y)
+	return this.reduce((x,y)=>x*y,1)
 }})
 Object.defineProperty(Array,"removeDuplicates",{value:function removeDuplicates(x) {
 	return Array.from(new Set(x))
@@ -133,8 +143,8 @@ function roman(number) { // generates a roman numeral. Monospace fonts are recom
 	return out;
 }
 function dictionary(key,array) {
-	for (let i of array) if (i[0]===key) return i[1]
-	return undefined
+	if (!(array instanceof Array)) crash("dictionary("+JSON.stringify(key)+","+JSON.stringify(array)+") has an invalid array")
+	try {return array[array.map(x => x[0]).indexOf(key)][1];} catch {functionCrash("dictionary",arguments)}
 }
 function halfFunction(x) {
 	return (typeof x === "function")?x():x;
@@ -172,7 +182,7 @@ function numword(num,precision=3) {
 			num -= amount*illionValue
 		}
 	}
-	out += illionOut[illionOut.length-1].includes(" and ")?illionOut.join(", "):illionOut.joinWithAnd()
+	out += illionOut.joinWithAnd()
 	if (num%1!==0&&precision>0) {
 		let decimals = String(num.toFixed(precision)).slice(2).split("")
 		while (decimals[decimals.length-1]==="0") decimals.splice(decimals.length-1)
@@ -180,22 +190,15 @@ function numword(num,precision=3) {
 	}
 	return out
 }
-function pluralize(num,word) {
+function pluralize(num,word,plural=word+"s") {
 	if (num===1) return "one "+word
-	return numword(num)+" "+word+"s"
+	return numword(num)+" "+plural
 }
 function lookupGetter(x,y){
 	return String(Object.getOwnPropertyDescriptor(x,y).get)
 }
-function toTitleCase(str) {
-	if (str === undefined) throw "toTitleCase() input \""+str+"\" is undefined."
-	return str.replace(
-		/\w\S*/g,
-		function(txt) {
-			return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-		}
-	);
-}
+function capitalize(str) {return str.charAt(0).toUpperCase()+str.substring(1)}
+function toTitleCase(str) {return str.split(" ").map(x=>capitalize(x)).join(" ")}
 function ordinal(num){return num+(((num%10===1)&&(num%100!==11))?"st":((num%10===2)&&(num%100!==12))?"nd":((num%10===3)&&(num%100!==13))?"rd":"th")}
 const d = {		// d for "document"
 	element(elem) {
@@ -219,10 +222,6 @@ const d = {		// d for "document"
 	tr(id,state) {
 		if (state) d.element(id).removeAttribute("hidden");				// shows and hides table rows
 		else d.element(id).setAttribute("hidden","hidden");
-	},
-	glow(id,active) {
-		if (active) document.getElementById(id).classList.add("glownotify");
-		else document.getElementById(id).classList.remove("glownotify");
 	}
 };
 function blackOrWhiteContrast(hex) {
@@ -234,3 +233,18 @@ const viewportHeight = window.innerHeight
 const viewportWidth = window.innerWidth
 const viewportDiagonalLength = Math.sqrt(viewportHeight**2+viewportWidth**2)
 function tableGenerator(array) {return "<table>"+array.map(row=>"<tr>"+row.map(col=>"<td>"+col+"</td>").join("")+"</tr>").join("")+"</table>"}
+function checkTypo(str1,str2){
+	let diff = 0
+	let f1 = checkTypo.wordFreq(str1)
+	let f2 = checkTypo.wordFreq(str2)
+	for (let i of Array.removeDuplicates([Object.keys(f1),Object.keys(f2)].flat())) diff += Math.abs((f1[i]??0)-(f2[i]??0))
+	return diff
+}
+checkTypo.wordFreq = function(str){
+	let out = {}
+	for (let i of stringSimplify(str).split("")) {
+		if (out[i]===undefined) out[i]=0
+		out[i]++
+	}
+	return out
+}

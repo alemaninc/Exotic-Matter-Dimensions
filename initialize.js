@@ -4,8 +4,10 @@ var fineGrainLoop
 var debugActive
 try{debugActive=alemanicHash(window.location.href.substring(0,23),16)==="9N6fJbOtGsMg5k65"}catch{debugActive=false}
 var betaActive=debugActive
+var savePreLoad
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
+	{function:function(){savePreLoad = btoa(localStorage.getItem("save"))}},
 	{function:function(){if(debugActive){
 		for(let id of Object.keys(research)){validateResearch(id)}
 		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type==="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
