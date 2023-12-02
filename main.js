@@ -566,9 +566,9 @@ function maxAffordableAxis(type,em=g.exoticmatter) {
 	let effective_EM = corruption.invertValue("axis",em.mul(realAxisCostDivisor(type)).root(realAxisCostExponent(type)));
 	let axis;			 // prevent "lexical declaration cannot appear in single-statement context"
 	if (type==="X") axis = effective_EM.lte(c.d5)?c.dm1:effective_EM.div(c.d5).log(c.d6);
-	else if (type==="Y") axis = effective_EM.lte(c.e2)?c.dm1:effective_EM.div(c.e2).log(c.d1_5).mul(c.d2).add(c.d0_25).sqrt().sub(c.d0_5);
+	else if (type==="Y") axis = effective_EM.lte(c.e2)?c.dm1:effective_EM.div(c.e2).log(c.d1_5).mul(c.d2).add(c.d0_25).pow(c.d0_5).sub(c.d0_5);
 	else if (type==="Z") axis = effective_EM.lte(c.e6)?c.dm1:effective_EM.log10().sub(c.d6).pow(c.d0_7248191884897692);
-	else if (type==="W") axis = effective_EM.lte(c.d5e7)?c.dm1:effective_EM.div(c.d5e7).log10().mul(c.d2).add(c.d0_25).sqrt().sub(c.d0_5);
+	else if (type==="W") axis = effective_EM.lte(c.d5e7)?c.dm1:effective_EM.div(c.d5e7).log10().mul(c.d2).add(c.d0_25).pow(c.d0_5).sub(c.d0_5);
 	else if (type==="V") axis = effective_EM.lte(c.e20)?c.dm1:effective_EM.log10().sub(c.d20);
 	else if (type==="U") axis = effective_EM.lte(c.e100)?c.dm1:effective_EM.log10().sub(c.e2).pow(c.d2div3);
 	else if (type==="T") axis = effective_EM.lte(c.e180)?c.dm1:effective_EM.log10().sub(c.d180).div(c.d10);
@@ -696,7 +696,7 @@ function masteryEffect(x) {
 	if (x===12) return g.masteryPower.add(c.d1).pow(masteryBoost(12).mul(c.d0_15));
 	if (x===21) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d1).dilate(c.d0_6).pow(masteryBoost(21).mul(c.d0_0175)),c.e50,c.d0_2);
 	if (x===22) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d1).dilate(c.d0_6).pow(masteryBoost(22).mul(c.d0_035)),c.e100,c.d0_1);
-	if ([31,32].includes(x)) return g.masteryPower.add(c.d1).log10().sqrt().mul(c.d0_75).mul(masteryBoost(x));
+	if ([31,32].includes(x)) return g.masteryPower.add(c.d1).log10().pow(c.d0_5).mul(c.d0_75).mul(masteryBoost(x));
 	if ([41,43].includes(x)) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d1).log10().div(c.d15),c.d1,c.d2).mul(masteryBoost(x)).add(c.d1);
 	if (x===42) return g.masteryPower.add(c.e4).dilate(c.d0_5).div(c.e2).pow(masteryBoost(42));
 	if (x===51) return g.masteryPower.add(c.d1).log10().pow(c.d0_6).mul(c.d2_5).mul(masteryBoost(51));
@@ -709,13 +709,13 @@ function masteryEffect(x) {
 	if (x===62) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d10).log10().pow(c.d0_04),c.d2,c.d1).pow(masteryBoost(62).neg());
 	if (x===63) return g.masteryPower.add(c.d1).log10().pow(c.d0_8).mul(masteryBoost(63));
 	if (x===71) return g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().pow(masteryBoost(71));
-	if (x===72) return Decimal.logarithmicSoftcap(g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().sqrt().sub(c.d1),c.d1,c.d5).mul(masteryBoost(72)).add(c.d1);
+	if (x===72) return Decimal.logarithmicSoftcap(g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().pow(c.d0_5).sub(c.d1),c.d1,c.d5).mul(masteryBoost(72)).add(c.d1);
 	if ([81,82,83,84].includes(x)) {
-		let output = [g.masteryPower.add(c.d1).log10().sqrt(),[c.d0_03,c.d0_1,c.d0_2,c.d0_24][x-81],masteryBoost(x)].productDecimals();
+		let output = [g.masteryPower.add(c.d1).log10().pow(c.d0_5),[c.d0_03,c.d0_1,c.d0_2,c.d0_24][x-81],masteryBoost(x)].productDecimals();
 		if (x===81) output = output.mul(g.XAxis.pow(c.d0_4));
 		if (x===82) output = output.mul(g.exoticmatter.add(c.d10).log10().log10());
 		if (x===83) output = output.mul(g.darkmatter.add(c.d10).log10().log10().pow(c.d0_75));
-		if (x===84) output = output.mul(g.stardust.add(c.d10).log10().log10().sqrt());
+		if (x===84) output = output.mul(g.stardust.add(c.d10).log10().log10().pow(c.d0_5));
 		return Decimal.logarithmicSoftcap(output,c.e2,c.d1).pow10();
 	}
 	if (x===85) return [g.masteryPower.add(c.d10).log10().log10(),masteryBoost(85),c.d0_2].productDecimals();
@@ -1434,7 +1434,7 @@ function maxAffordableDarkAxis(type,dm=g.darkmatter) {
 	else if (type==="Z") axis = effective_DM.lte(c.e10)?c.dm1:effective_DM.log10().sub(c.d10);
 	else if (type==="W") axis = effective_DM.lte(c.e15)?c.dm1:effective_DM.log10().sub(c.d15).pow(c.d2div3);
 	else if (type==="V") axis = effective_DM.lte(c.e30)?c.dm1:effective_DM.log10().sub(c.d30).pow(c.d0_8);
-	else if (type==="U") axis = effective_DM.lte(c.e45)?c.dm1:effective_DM.log10().sub(c.d45).sqrt();
+	else if (type==="U") axis = effective_DM.lte(c.e45)?c.dm1:effective_DM.log10().sub(c.d45).pow(c.d0_5);
 	else if (type==="T") axis = effective_DM.lte(c.e100)?c.dm1:effective_DM.log10().sub(c.e2).div(c.d4);
 	else if (type==="S") axis = effective_DM.lte(c.inf)?c.dm1:effective_DM.log(c.d2).div(c.d1024).log(c.d1_2);
 	else error("Cannot access maxAffordableDarkAxis("+type+")")
@@ -1512,7 +1512,7 @@ function darkStarEffect2LevelFormula(axis) {
 function maxAffordableDarkStars(x) {
 	x=(x===undefined)?stat.totalDarkAxis:N(x);
 	let effective_dark_axis = x.add(darkStarPriceMod("sub")).mul(darkStarPriceMod("div")).root(darkStarPriceMod("pow"));
-	let out = (effective_dark_axis.lt(c.d24))?c.dm1:effective_dark_axis.mul(c.d2).add(c.d49).sqrt().mul(c.d2).sub(c.d22);
+	let out = (effective_dark_axis.lt(c.d24))?c.dm1:effective_dark_axis.mul(c.d2).add(c.d49).pow(c.d0_5).mul(c.d2).sub(c.d22);
 	if (out.gt(stat.darkStarScalingStart)) {
 		let start=stat.darkStarScalingStart;
 		let power=stat.darkStarScalingPower;
@@ -1924,7 +1924,7 @@ const lightEffect = [
 	{
 		value:function(x=g.lumens[3]){
 			let out = x.gt(c.d50)?x.div(c.d25).sub(c.d1).ln().add(c.d2).div(c.d4):x.div(c.e2)
-			return out.gt(c.d1)?out.mul(c.d200).sub(c.d199).sqrt().add(c.d99).div(c.e2):out
+			return out.gt(c.d1)?out.mul(c.d200).sub(c.d199).pow(c.d0_5).add(c.d99).div(c.e2):out
 		},
 		format:function(x){return x.gte(c.d10)?x.noLeadFormat(3):x.mul(c.d100).noLeadFormat(x.gte(c.d1)?5:3)},
 		formula:function(){

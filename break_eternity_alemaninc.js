@@ -634,7 +634,7 @@
 		};
 
 		Decimal.sqrt = function (value) {
-			return D(value).sqrt();
+			return D(value).pow(c.d0_5);
 		};
 
 		Decimal.cube = function (value) {
@@ -775,7 +775,7 @@
 			var actualStart = priceStart.add(currentOwned.mul(priceAdd));
 			var b = actualStart.sub(priceAdd.div(2));
 			var b2 = b.pow(2);
-			return b.neg().add(b2.add(priceAdd.mul(resourcesAvailable).mul(2)).sqrt()).div(priceAdd).floor();
+			return b.neg().add(b2.add(priceAdd.mul(resourcesAvailable).mul(2)).pow(c.d0_5)).div(priceAdd).floor();
 		};
 
 		Decimal.sumArithmeticSeries_core = function (numItems, priceStart, priceAdd, currentOwned) {
@@ -2777,11 +2777,11 @@ for (var i = 0; i < 10; ++i)
 		};
 
 		Decimal.prototype.asinh = function () {
-			return Decimal.ln(this.add(this.sqr().add(1).sqrt()));
+			return Decimal.ln(this.add(this.sqr().add(1).pow(c.d0_5)));
 		};
 
 		Decimal.prototype.acosh = function () {
-			return Decimal.ln(this.add(this.sqr().sub(1).sqrt()));
+			return Decimal.ln(this.add(this.sqr().sub(1).pow(c.d0_5)));
 		};
 
 		Decimal.prototype.atanh = function () {
@@ -2889,7 +2889,7 @@ for (var i = 0; i < 10; ++i)
 			x=N(x);
 			if (x.eq(constant.e)) return this;
 			let coefficient = x.ln().mul(2).div(x.ln().add(1));
-			return this.floor().add(coefficient.sub(coefficient.pow(2).sub(coefficient.mul(this.mod(1)).mul(4)).add(this.mod(1).mul(4)).sqrt()).div(coefficient.sub(1).mul(2)));
+			return this.floor().add(coefficient.sub(coefficient.pow(2).sub(coefficient.mul(this.mod(1)).mul(4)).add(this.mod(1).mul(4)).pow(c.d0_5)).div(coefficient.sub(1).mul(2)));
 		};
 
 		Decimal.prototype.slog_coefficient = function(x) {			// Linear to quadratic superlogarithm

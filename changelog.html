@@ -74,6 +74,10 @@ const logEntries = [
 
 	]},
 	*/
+	{name:"𝕍1.5(a).3 (2023-12-02)",changes:[
+		["BUGFIX","Values less than "+format("2^-53")+" will no longer break the game (especially in Study of Studies: Temporal)"],
+		["BUGFIX<sup>2</sup>","The error popup now includes a stack trace so alemaninc will not need save exports as often"]
+	]},
 	{name:"𝕍1.5(a).2 (2023-12-02)",changes:[
 		["BUGFIX","Saved values which become NaN will now automatically be reset to 0"],
 		["BUGFIX<sup>2</sup>","Added an option to export the save at the start of the session (before any errors have a chance to occur) and this is also shown whenever an error occurs"],

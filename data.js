@@ -336,7 +336,7 @@ const luckUpgrades = {
 		darkstar:{
 			name:"Dark Stars",
 			desc:"Dark star costs are divided by {}",
-			eff:(x=effLuckUpgradeLevel("quatrefolium","darkstar"))=>x.gt(c.d20)?x.add(c.d5).sqrt().sub(c.d5).div(c.d4).exp().mul(c.d2):x.div(c.d20).add(c.d1),
+			eff:(x=effLuckUpgradeLevel("quatrefolium","darkstar"))=>x.gt(c.d20)?x.add(c.d5).pow(c.d0_5).sub(c.d5).div(c.d4).exp().mul(c.d2):x.div(c.d20).add(c.d1),
 			format:(x=this.eff())=>x.noLeadFormat(3),
 			formula:()=>effLuckUpgradeLevel("quatrefolium","darkstar").gte(c.d20)?"e<sup>(λ + 5)<sup>0.5</sup> - 5) ÷ 4</sup> × 2":"1 + λ ÷ 20"
 		},

@@ -345,7 +345,7 @@ const statTemplates = {
 			mod:function(){
 				if (!g.achievement[210]) return c.d0
 				let out = g[type+"Axis"].div(achievement(210).effect())
-				if (out.gt(c.d80)) out=out.mul(c.d80).sqrt()
+				if (out.gt(c.d80)) out=out.mul(c.d80).pow(c.d0_5)
 				return out
 			},
 			func:function(prev){return prev.add(this.mod());},
@@ -2880,7 +2880,7 @@ miscStats.stardustBoost1={
 	type:"combined",
 	value:function(){
 		if (!unlocked("Stardust")) return c.d1
-		return Decimal.mul(g.stardust.div(c.d10).add(c.d1).sqrt(),g.stardust.add(c.d1).dilate(c.d1_5).pow(c.d0_1)).pow(stardustBoostBoost(1))
+		return Decimal.mul(g.stardust.div(c.d10).add(c.d1).pow(c.d0_5),g.stardust.add(c.d1).dilate(c.d1_5).pow(c.d0_1)).pow(stardustBoostBoost(1))
 	}
 }
 miscStats.stardustBoost2={

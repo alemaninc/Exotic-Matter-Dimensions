@@ -119,7 +119,7 @@ const achievementList = {
 			progress:function(){return achievement.percent(g.masteryPower,c.e11,0);},
 			get reward(){return "Extremely small boost to first row Masteries based on time played (currently: {}%)";},
 			flavor:"10,000 hours to master your craft.",
-			effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(c.e5).add(c.d10).log10().log10(),c.d0_75,c.d1).sqrt();},
+			effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(c.e5).add(c.d10).log10().log10(),c.d0_75,c.d1).pow(c.d0_5);},
 			effectFormat:x=>x.format(2),
 			formulaText:()=>formulaFormat.convSoftcap("log<sup>[2]</sup>(t ÷ 100,000 + 10)",c.d0_75,c.d1,g.truetimePlayed.gt(42014859476))+"<sup>0.5</sup>"
 		},
@@ -534,7 +534,7 @@ const achievementList = {
 			get reward(){return "Multiply exotic matter gain by mastery power<sup>{}</sup> (based on dark matter)";},
 			flavor:"Only one who devotes himself to a cause with his whole strength and soul can be a true grandmaster. For this reason grandmastery demands all of a person.",
 			effect:function(y=this.yellowValue){
-				let out = g.darkmatter.add(c.d1).log10().sqrt().div(c.e2)
+				let out = g.darkmatter.add(c.d1).log10().pow(c.d0_5).div(c.e2)
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d0_5,c.d1):Decimal.logarithmicSoftcap(out,c.d1,c.d1)).fix(c.d0)
 			},
 			effectFormat:x=>x.format(3),
@@ -1190,7 +1190,7 @@ const achievementList = {
 			progress:function(){return achievement.percent(g.totalDiscoveries,N(999),0)},
 			reward:"+{}% Hawking radiation (based on percentage of unspent Discoveries)",
 			flavor:"999 Emergencies, what is your emergency?\"<br>\"MY FITBIT SAYS I’M ABOUT TO DIE!",
-			effect:function(){return unspentDiscoveries().div(g.totalDiscoveries.gte(999)?g.totalDiscoveries:g.totalDiscoveries.mul(999).sqrt().max(c.d1)).add(c.d1)},
+			effect:function(){return unspentDiscoveries().div(g.totalDiscoveries.gte(999)?g.totalDiscoveries:g.totalDiscoveries.mul(999).pow(c.d0_5).max(c.d1)).add(c.d1)},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).format(2),
 			formulaText:()=>"100 × υD ÷ ΣD"
 		},
@@ -1246,7 +1246,7 @@ const achievementList = {
 			check:function(){return g.masteryPower.gte(this.req)},
 			event:"gameloop",
 			progress:function(){return achievement.percent(g.masteryPower,this.req,1)},
-			get reward(){return "Mastery 101 works with square-rooted effect even when inactive (currently: ^"+masteryEffect(101).sqrt().format(3)+")"},
+			get reward(){return "Mastery 101 works with square-rooted effect even when inactive (currently: ^"+masteryEffect(101).pow(c.d0_5).format(3)+")"},
 			get flavor(){return "But Twosday was like "+Math.round((Date.now()-1645488000000)/86400000).toLocaleString("en-US")+" days ago!"}
 		},
 		616:{

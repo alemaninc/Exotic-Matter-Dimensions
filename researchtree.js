@@ -1080,7 +1080,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(1440),
 			icon:icon.lumen(4)+icon.arr+icon.darkYAxis,
-			effect:function(power){return g.lumens[4].add(c.d1).log10().sqrt().div(c.d2).mul(power).pow10()},
+			effect:function(power){return g.lumens[4].add(c.d1).log10().pow(c.d0_5).div(c.d2).mul(power).pow10()},
 			group:"lightaugment"
 		},
 		...(()=>{
@@ -1113,7 +1113,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(1440),
 			icon:icon.lumen(3)+icon.arr+icon.energy,
-			effect:function(power){return g.lumens[3].add(c.d1).log10().sqrt().mul(c.d2div3).mul(power).pow10()},
+			effect:function(power){return g.lumens[3].add(c.d1).log10().pow(c.d0_5).mul(c.d2div3).mul(power).pow10()},
 			group:"lightaugment"
 		},
 		r15_9:{

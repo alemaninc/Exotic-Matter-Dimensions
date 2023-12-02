@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(a).2",
+	current:"𝕍1.5(a).3",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -24,9 +24,8 @@ function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toSt
 }
 function error(text) {
 	halt()
-	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and show the chain of errors if you can.<br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\">Discord</a>",buttons:[]})
+	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and give him this output:<textarea style=\"width:calc(100% - 32px)\">"+(new Error().stack)+"</textarea><br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\">Discord</a>",buttons:[]})
 	error = function(){/* if multiple errors are thrown in a chain, only the first appears */}
-	showError_intentionallyUndefined()
 }
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
