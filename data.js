@@ -1,10 +1,12 @@
 "use strict";
+var debugActive
+try{debugActive=alemanicHash(window.location.href.substring(0,23),16)==="9N6fJbOtGsMg5k65"}catch{debugActive=false}
+var betaActive=debugActive
 /*
 Everything that is represented in "g" as an object generated from a list of keys is stored here and executed directly before main.js.
 */
 const axisCodes = "XYZWVUTS".split("");
 const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x,"anti"+x]).flat()
-
 const starList = countTo(10).map(x=>countTo(4).map(y=>x*10+y)).flat()
 
 const studies = [
@@ -52,7 +54,7 @@ const studies = [
 		reward_desc:function() {return [
 			"The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
 			"Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,2),
-			"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as half of this value. Does not work in Study II."
+			"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as "+((g.highestGalaxies>galaxyEffects[5].req)?(galaxyEffects[5].boost.value().mul(c.e2).format()+"%"):"half")+" of this value. Does not work in Study II."
 		]}
 	},
 	{
@@ -285,6 +287,24 @@ const studies = [
 			"Normal axis cost superscaling starts at "+studyRewardHTML(11,1,0),
 			"The effective amount of luck shards for their second effect is raised to the power of "+studyRewardHTML(11,2,4),
 			"Anti-axis cost superscaling starts "+studyRewardHTML(11,3,1)+" later (normally at 64)"
+		]}
+	},
+	{
+		name:"Titanium Will",
+		unlockReq:function(){return [c.ee100,c.ee100,c.ee100,c.ee100][studyPower(12)]},
+		description:function(){return "Non-permanent research have no effect, stardust resets are disabled, dark matter gain is limited to 1 per second, all dark axis cost divisors are disabled and stardust upgrade costs are increased to <i>10 ↑↑ slog(cost)<sup>1.2</sup></i>"},
+		research:"r33_13",
+		goal:function(comp=studyPower(12)){return [c.e100,c.e100,c.e100,c.e100][comp]},
+		reward:function(num,comp=g.studyCompletions[12]){
+			if (num===1) return comp/400
+			if (num===2) return [c.d12,N(comp),studyRewardBoost(12,2)].productDecimals()
+			if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mui(studyRewardBoost(12,3))
+			functionError("studies[12].reward",arguments)
+		},
+		reward_desc:function(){return [
+			"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s"),
+			"Up to "+studyRewardHTML(12,2,0)+" free dark stars from "+achievement.label(527)+" yellow lumen boost",
+			achievement.label(526)+" reward affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
 		]}
 	}
 ];

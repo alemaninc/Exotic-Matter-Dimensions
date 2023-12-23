@@ -1,9 +1,6 @@
 "use strict";
 var gameloop
 var fineGrainLoop
-var debugActive
-try{debugActive=alemanicHash(window.location.href.substring(0,23),16)==="9N6fJbOtGsMg5k65"}catch{debugActive=false}
-var betaActive=debugActive
 var savePreLoad
 /* This is necessary for the loading animation to update.*/
 const initSteps = [

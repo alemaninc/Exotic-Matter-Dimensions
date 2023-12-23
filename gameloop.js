@@ -233,7 +233,7 @@ function updateHTML() {
 						d.element("SSBtable_row"+i).style.color=next.color??""
 						d.innerHTML("SSBtable_label"+i,next.label)
 						d.innerHTML("SSBtable_text"+i,next.text(oldvalue))
-						d.innerHTML("SSBtable_total"+i,value.format(data.precision))
+						d.innerHTML("SSBtable_total"+i,value.noLeadFormat(data.precision))
 					}
 				}
 			}
@@ -533,8 +533,8 @@ function updateHTML() {
 			for (let i=1;i<galaxyEffects.length;i++) {
 				if (g.highestGalaxies+1>=galaxyEffects[i].req) {
 					d.tr("tr_galaxyEffects"+i,true)
-					d.innerHTML("span_galaxyBoost"+i,galaxyEffects[i].boost.text().replace("{}",showFormulas?textFormat(galaxyEffects[i].boost.formula(),"_galaxies"):arrowJoin(formatGalaxyEffect(i,"boost"),formatGalaxyEffect(i,"boost",g.galaxies+1))))
-					d.innerHTML("span_galaxyPenalty"+i,galaxyEffects[i].penalty.text().replace("{}",showFormulas?textFormat(galaxyEffects[i].penalty.formula(),"_galaxies"):arrowJoin(formatGalaxyEffect(i,"penalty"),formatGalaxyEffect(i,"penalty",g.galaxies+1))))
+					d.innerHTML("span_galaxyBoost"+i,galaxyEffects[i].boost.text().replace("{}",showFormulas?textFormat(galaxyEffects[i].boost.formula(),"_galaxies"):Decimal.eq(galaxyEffects[i].boost.value(g.galaxies),galaxyEffects[i].boost.value(g.galaxies+1))?formatGalaxyEffect(i,"boost"):arrowJoin(formatGalaxyEffect(i,"boost"),formatGalaxyEffect(i,"boost",g.galaxies+1))))
+					d.innerHTML("span_galaxyPenalty"+i,galaxyEffects[i].penalty.text().replace("{}",showFormulas?textFormat(galaxyEffects[i].penalty.formula(),"_galaxies"):Decimal.eq(galaxyEffects[i].penalty.value(g.galaxies),galaxyEffects[i].penalty.value(g.galaxies+1))?formatGalaxyEffect(i,"penalty"):arrowJoin(formatGalaxyEffect(i,"penalty"),formatGalaxyEffect(i,"penalty",g.galaxies+1))))
 				} else {
 					d.tr("tr_galaxyEffects"+i,false)
 				}
@@ -688,6 +688,12 @@ function tick(time) {																																		 // The game loop, which 
 		if (Decimal.lt(stat["real"+i+"Axis"],g[i+"Axis"].mul(c.d2))) g.ach825possible = false
 		if (Decimal.lt(stat["realdark"+i+"Axis"],g["dark"+i+"Axis"].mul(c.d2))) g.ach825possible = false
 	}}
+	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
+		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
+			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onClick=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
+			newsSupport.newsletter.spamStart=Date.now()+3000
+		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
+	}
 	
 	
 	// Dark Matter section

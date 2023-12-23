@@ -47,9 +47,13 @@ achievement.percent = function(value,needed,log){
 	let precision = (percent%1===0)?0:(percent%0.1===0)?1:(percent%0.1===0)?2:3
 	return "Progress: "+value.noLeadFormat(3)+" / "+needed.noLeadFormat(3)+" ("+percent.toFixed(precision)+"%)";
 }
-achievement.label = function(id,plural){
-	if (plural===undefined) plural=false;
-	return "\""+achievement(id).name+"\" achievement"+(plural?"s":"");
+achievement.label = function(id,num=1){
+	let name = achievement(id).name
+	if (num>1) {
+		for (let i=5;i>0;i--) name = name.replace(" "+roman(i),"") // avoid cases like "Parity II" being the plural name
+		loop: for (let i=1;i<num;i++) {if (name!==achievement(id+i-1).name.substring(0,name.length)) {name = undefined; break loop}}
+	}
+	return "Achievement"+((num===1)?"":"s")+" "+id+((num===1)?"":("-"+(id+num-1)))+((name===undefined)?"":(" \""+name+"\""))
 }
 achievement.tiersUnlocked = function(){return Object.keys(achievementList).filter(x=>(Number(x)!==NaN)&&(achievement.ownedInTier(x)>0))}
 achievement.nextTier = function(){
@@ -769,7 +773,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.e50)&&stat.ironWill;},
 			event:"gameloop",
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e50,1):"Failed";},
-			reward:"Normal axis cost scaling is 5% weaker",
+			get reward(){return "Normal axis cost scaling is "+N(studies[12].reward(1)*100+5).noLeadFormat(2)+"% weaker"},
 			flavor:"What does not kill you makes you stronger"
 		},
 		503:{
@@ -779,7 +783,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return stat.ironWill?achievement.percent(g.exoticmatter,c.e130,1):"Failed";},
 			prevReq:[502],
-			reward:"Dark axis cost scaling is 5% weaker",
+			get reward(){return "Dark axis cost scaling is "+N(studies[12].reward(1)*100+5).noLeadFormat(2)+"% weaker"},
 			flavor:"You're only given a little spark of madness. You mustn't lose it"
 		},
 		504:{
@@ -789,7 +793,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
 			prevReq:[503],
-			reward:"Gain 5% more Discoveries from all sources",
+			get reward(){return "Gain "+N(studies[12].reward(1)*100+5).noLeadFormat(2)+"% more Discoveries from all sources"},
 			flavor:"This is fine"
 		},
 		505:{
@@ -799,7 +803,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
 			prevReq:[504],
-			effect:function(){return N(1.01+this.milestones()/1e3).fix(c.d0);},
+			effect:function(){return N(1.01+this.milestones()/1e3+studies[12].reward(1)).fix(c.d0);},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(1),
 			formulaText:()=>"1 + μ ÷ 10",
 			effectBreakpoints:[c.d2,c.d3,c.d4,c.d5,c.d6,c.d7,c.d8,c.d9,c.d10,c.d12,c.d15,c.d20,c.d25,c.d30,c.d40,c.d50,c.d60,c.d70,c.d80,c.d90,c.e2,c.d120,c.d140,c.d160,c.d180,c.d200,c.d225,c.d250,c.d275,c.d300,c.d325,c.d350,c.d400,c.d450,c.d500,c.d550,c.d600,c.d700,c.d800,c.d900],
@@ -1041,8 +1045,11 @@ const achievementList = {
 			check:function(){return stat.totalDarkAxis.gte(160)&&this.active()&&(achievement.ownedInTier(5)>=7||g.darkstars.eq(c.d0));},
 			event:"axisBuy",
 			progress:function(){return ((g.darkstars.eq(c.d0)||achievement.ownedInTier(5)>=7)&&this.active())?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
-			reward:"Dark star cost scaling starts 4 dark stars later",
+			get reward(){return "Dark star cost scaling starts {} dark stars later"+((Decimal.gte(g.lumens[5],this.yellowBreakpoints[0])&&(g.studyCompletions[12]===0))?" (requires Study XII completion to have an effect)":"")},
 			flavor:"Einstein would agree",
+			effect:function(y=this.yellowValue){return studies[12].reward(2).mul(y).add(c.d4)},
+			effectFormat:x=>x.noLeadFormat(3),
+			get yellowBreakpoints(){return betaActive?[c.d12.pow(c.d4),c.d12.pow(c.d7),1]:[c.maxvalue,c.maxvalue,0]},
 			active:function(){return axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()<=3;}
 		},
 		528:{
@@ -1401,7 +1408,7 @@ const achievementList = {
 			event:"researchBuy",
 			progress:function(){return achievement.percent(N(this.active()),c.d6,0)},
 			active:function(){return [7,8,9].map(x=>g.research["r10_"+x]?2:g.research["r9_"+x]?1:0).sum()},
-			get reward(){return "Reduce the cost multiplier per Chromatic research to {}×"+(g.lumens[5].gte(c.d360)?"":" (must have 360 yellow lumens for this to take effect)")},
+			get reward(){return "Reduce the cost multiplier per Chromatic research to {}×"+(g.lumens[5].gte(c.d500)?"":" (must have 500 yellow lumens for this to take effect)")},
 			effect:function(y=this.yellowValue){return c.d4.pow(c.d1.sub(y))},
 			effectFormat:x=>x.noLeadFormat(3),
 			yellowBreakpoints:[N(500),N(50000),1],
@@ -1992,7 +1999,7 @@ const secretAchievementList = {
 	33:{
 		name:"Stat Mark",
 		description:"Prove your status as a Distinguished Contributor that's not in our server",
-		check:function(){return newsSupport.newsletter.answered===8},
+		check:function(){return newsSupport.newsletter.remaining.length===0},
 		flavor:"Hardly marked",
 		rarity:6
 	},
@@ -2061,7 +2068,21 @@ const secretAchievementList = {
 		flavor:"As all things should be.",
 		rarity:2
 	},
-	// skip 61 numbers for meta-achievements
+	41:{
+		name:"Internet Explorer",
+		description:"Read the entire <i>Exotic Matter Dimensions</i> source code",
+		check:function(){return true}, // checked locally
+		flavor:"Good software, like wine, takes time.",
+		rarity:6
+	},
+	42:{
+		name:"Always a Bigger Phish",
+		description:"Escape nicodium's scam",
+		check:function(){return true}, // checked locally
+		flavor:"My colleagues thought I was an embarrassment because I was talking about mind, body, spirit. So I was called a quack. I was called a fraud, which I initially resented, but then I got used to it.",
+		rarity:2
+	},
+	// skip 58 numbers for meta-achievements
 	...(()=>{
 		let names = ["The Giver","Secret Keeper","General Secretary of the Workers' Party","[REDACTED]","The Nameless Ones","Secrets of the Darkest Art","alemaninc"]
 		let flavors = ["I feel sorry for anyone who is in a place where he feels strange and stupid."]

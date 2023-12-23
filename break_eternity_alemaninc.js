@@ -3011,10 +3011,10 @@ const o = {			// o = "operations"
 	}
 };
 Object.defineProperty(Array.prototype,"sumDecimals",{value:function sumDecimals() {
-	return this.reduce((x,y) => x.add(y))
+	return this.reduce((x,y) => x.add(y),c.d0);
 }})
 Object.defineProperty(Array.prototype,"productDecimals",{value:function productDecimals(){
-	return this.reduce((x,y) => x.mul(y));
+	return this.reduce((x,y) => x.mul(y),c.d1);
 }})
 Object.defineProperty(Array.prototype,"decimalPowerTower",{value:function decimalPowerTower() {
 	return this.reduceRight((x,y) => y.pow(x));

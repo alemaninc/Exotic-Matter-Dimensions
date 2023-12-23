@@ -248,3 +248,20 @@ checkTypo.wordFreq = function(str){
 	}
 	return out
 }
+function primeFactors(num) {
+	num = BigInt(num)
+	let primes=[]
+	let divisor=2n	// Divisor starts at 2, otherwise the program would divide by 1 repeatedly
+	while ((num > 1n) && (divisor * divisor <= num)) {
+		if (num % divisor === 0n) {
+			num /= divisor
+			primes.push(divisor)
+		} else {
+			divisor++
+		}
+	}
+	if (num>1n) {  // This is so that 1 isn't listed as a factor
+		primes.push(num)
+	}
+	return primes
+}

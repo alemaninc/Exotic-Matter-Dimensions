@@ -127,42 +127,160 @@ const newsSupport = {
 	},
 	dilationPenaltyReductions:0,
 	newsletter:{
-		init:function(){
-			notify("You just got scammed by Nicodium! Poor you.","#000000")
-			var newsletterLoop = setInterval(function(){
-				if (Math.random()<0.05) {
-					if (newsSupport.newsletter.answered===8) newsSupport.newsletter.finalNotify()
-					else notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onClick=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
-				}
-				else notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")
-			},333)
+		terms:(()=>{
+			/*
+			0 term number
+			1 term text
+			2 term type (2 = single (accept/close), 1 = composite (continue))
+			*/
+			function fancy(txt){return "<span style=\"font-family:'Times New Roman', Times, serif;font-size:16px;color:#bbeeff\">"+txt+"</span>"}
+			let terms = [
+				["1(a)","Under any circumstances, this newsletter and all its subsidiaries are not affiliated with anything we provide you with.",2],
+				["1(b)","By accepting this, you agree that:",1],
+				["1(b)(i)","all its subsidiaries are not for us to deal with",2],
+				["1(b)(ii)","if you sue us in court, we will tell you that you waived your right to sue us in Term and Condition №4(a)(i).",2],
+				["2","Below is filler text specially designed to cause you to stop reading and give up on seeing everything we will force you to do.",1],
+				["2(a)","Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",2],
+				["2(b)","Consectetur purus ut faucibus pulvinar.",2],
+				["2(c)","Egestas integer eget aliquet nibh.",2],
+				["2(d)","Habitant morbi tristique senectus et.",2],
+				["2(e)","Pellentesque eu tincidunt tortor aliquam nulla facilisi.",2],
+				["2(f)","Ut lectus arcu bibendum at varius.",2],
+				["2(g)","Vitae proin sagittis nisl rhoncus mattis.",2],
+				["2(h)","Cras adipiscing enim eu turpis egestas.",2],
+				["2(i)","Vel eros donec ac odio tempor.",2],
+				["2(ii)","Ullamcorper velit sed ullamcorper morbi tincidunt ornare.",2],
+				["2(iii)","Sit amet purus gravida quis.",2],
+				["2(iiii)","Risus in hendrerit gravida rutrum quisque non tellus orci ac.",2],
+				["2(iiiii)","Integer malesuada nunc vel risus.",2],
+				["2(iiiiii)","Egestas purus viverra accumsan in nisl nisi.",2],
+				["2(iiiiiii)","Pellentesque habitant morbi tristique senectus.",2],
+				["2(iiiiiiii)","",2],
+				["2(iiiiiiiii)","Faucibus ornare suspendisse sed nisi. Ante metus dictum at tempor. Varius vel pharetra vel turpis nunc eget lorem dolor sed. Turpis nunc eget lorem dolor sed. Justo eget magna fermentum iaculis eu non. Phasellus egestas tellus rutrum tellus pellentesque. Porttitor rhoncus dolor purus non enim praesent. Viverra adipiscing at in tellus integer feugiat scelerisque varius. Magna fringilla urna porttitor rhoncus dolor purus non enim. Feugiat vivamus at augue eget arcu dictum varius. You also agree to sell all your organs to Epstein Island research facility for research purposes when you are dead. Eget mi proin sed libero enim sed faucibus turpis. Aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc sed. At consectetur lorem donec massa sapien faucibus et molestie. Sagittis aliquam malesuada bibendum arcu vitae. Nulla facilisi morbi tempus iaculis.",2],
+				["2(j)","Quam elementum pulvinar etiam non quam.",2],
+				["3","You have prestiged your filler text! You have unlocked a beautiful new font.",1],
+				["3(a)",fancy("Dui sapien eget mi proin sed libero enim sed faucibus"),2],
+				["3(b)",fancy("Tristique et egestas quis ipsum suspendisse ultrices gravida dictum"),2],
+				["3(c)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(d)",fancy("Consequat interdum varius sit amet mattis vulputate enim nulla"),2],
+				["3(e)",fancy("Eget nullam non nisi est sit amet facilisis magna etiam"),2],
+				["3(f)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(g)",fancy("Et tortor consequat id porta"),2],
+				["3(h)",fancy("Vulputate dignissim suspendisse in est ante in nibh"),2],
+				["3(i)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(j)",fancy("Risus ultricies tristique nulla aliquet enim tortor at"),2],
+				["3(k)",fancy("Enim lobortis scelerisque fermentum dui"),2],
+				["3(l)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(m)",fancy("Velit euismod in pellentesque massa placerat duis ultricies"),2],
+				["3(n)",fancy("Est pellentesque elit ullamcorper dignissim cras tincidunt lobortis feugiat vivamus"),2],
+				["3(o)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(p)",fancy("Eleifend mi in nulla posuere sollicitudin aliquam ultrices"),2],
+				["3(q)",fancy("Laoreet id donec ultrices tincidunt arcu non sodales neque"),2],
+				["3(r)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(s)",fancy("Cras adipiscing enim eu turpis egestas pretium aenean pharetra"),2],
+				["3(t)",fancy("Senectus et netus et malesuada fames ac turpis egestas"),2],
+				["3(u)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(v)",fancy("We will hold your family hostage and give their pinkies to our Mogadorian overlords for pinky inspection to clone them for the asteroid mines in Alpha Centauri"),2],
+				["3(w)",fancy("Amet purus gravida quis blandit turpis cursus in hac"),2],
+				["3(x)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(y)",fancy("Adipiscing diam donec adipiscing tristique"),2],
+				["3(z)",fancy("Quam pellentesque nec nam aliquam sem et tortor consequat id"),2],
+				["3({)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(|)",fancy("Vitae semper quis lectus nulla at volutpat diam"),2],
+				["3(})",fancy("Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus"),2],
+				["3(~)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(¡)",fancy("Ultricies lacus sed turpis tincidunt id"),2],
+				["3(¢)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(£)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["3(¤)",fancy("Asperiores, aliquid! Officia amet adipisci p orro repellat deserunt vero quos ad id sint dolore iure odio reprehenderit dolores sed, molestias vitae dicta!"),2],
+				["4","You have prestiged your filler text!",1],
+				["4(a)","You have now unlocked the actual Terms and Conditions, which are:",1],
+				["4(a)(i)","to not take us to court",2],
+				["4(a)(ii)","to not claim any insurance",2],
+				["4(a)(iii)(ϟ)","to allow us to take you to court at anytime",2],
+				["4(a)(iii)(Ϙ)","in the event that this happens, to plead guilty without question",2],
+				["4(a)(iv)","to give us 50% of your wage and 90% of the wage of every person you are socially connected to within six degrees of separation",2],
+				["4(a)(v)","to allow us to send you promotion e-mails at a rate of 259,200 per day until one of the following events takes place:",1],
+				["4(a)(v)(ϟ)","you and every person you are socially connected to within six degrees of separation dies",2],
+				["4(a)(v)(Ϙ)","both of the below are true simultaneously:",1],
+				["4(a)(v)(Ϙ)(α)","the alemaninc Inc. company is dissolved",2],
+				["4(a)(v)(Ϙ)(β)","universe evolves to a state of no thermodynamic free energy, and will therefore be unable to sustain processes that increase entropy (hence referred to as \"heat death\")",2],
+				["4(b)","If these Terms and Conditions are violated you also agree to allow our bomb squad to firebomb your house.",2],
+				["5","You also agree to prostrate yourself before His Imperial Grand Lord of All the World 〜 Master of Creation, nicodium \"cubane/cubane\" \"al-maniac\".<br><br>This includes clicking the below link, where the Terms and Conditions are continued:<br><a target=\"_blank\" href=\"https://youtu.be/dQw4w9WgXcQ\" style=\"color:inherit\"><i>Exotic Matter Dimensions 𝕍2 Newsletter, Terms and Conditions, Section B</a>",2],
+				["6","You also agree to pay our taxes, which are as follows:",1],
+				["6(a)","Tax against existence: <i>$249.99</i>",2],
+				["6(b)","Tax for medical insurance for our employees: <i>$140.99</i>",2],
+				["6(c)","Digital shipping tax: <i>$42.99</i>",2],
+				["6(d)","Tips: <i>$5.99</i>",2],
+				["6(e)","Tax for completely unnecessary fees: <i>$150.99</i>",2],
+				["6(f)","Unconditional tax to pay our sponsors, which are:",1],
+				["6(f)(i)","alemaninc",1],
+				["6(f)(ii)","the Nigerian princes",1],
+				["6(f)(iii)","the Mogadorians:",1],
+				["6(f) continued","<i>$67.99</i>",2],
+				["6(g)","Tax to fund our pyramid schemes: <i>$25.99</i>",2],
+				["6(h)","Digital carbon footprint tax: <i>$57.99</i>",2],
+				["6(i)","Tax to pay our accountant to add 99 cents to each amount paid by you, the Client: <i>$50.99</i>",2],
+				["6 continued","Subtotal: <i>$797.91</i>",1],
+				["6 continued continued","Total: <i>$799.99 (-20% off)</i>",2],
+				["7","Please sign:",2],
+				// this one must be an object so 1 can use a getter
+				{0:"8",get "1"(){return "This Term and Condition is about the actual news.<br><br>While any people think alemaninc will release <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" soon, alemaninc has not given any indication that he will do so.<br><br>But all is not lost! We have something even better. Accept this Term and Condition to begin the <a target=\"_blank\" href=\"https://docs.google.com/spreadsheets/d/1RltRzb1onb6kEfb8sQoz1mY_kup6T_nrggA1HlH3qU4/edit#gid=0\" style=\"font-style:oblique;color:inherit\">OMCCDV Grand Tour</a>:"},2:1}
+			]
+			return terms.map((x,i)=>function(){popup({
+				text:"<b>Term and Condition №"+x[0]+"</b><br><br>"+x[1],
+				buttons:(x[2]===2)?[["Accept","newsSupport.newsletter.terms["+(i+1)+"]()"],["Close","addSecretAchievement(42)"]]:[["Continue",((i+1)===terms.length)?"newsSupport.newsletter.endTerms()":("newsSupport.newsletter.terms["+(i+1)+"]()")]]
+			})})
+		})(),
+		init:function(num){popup({
+			text:"Please agree to our Terms and Conditions before we show you our newsletter:",
+			buttons:[["Continue","newsSupport.newsletter.terms[0]()"]]
+		})},
+		endTerms:function(){
+			let texts = [
+				"Two sites bound by the blue hand,",
+				"one afield, one on home land.",
+				"Lay worthy hands upon the sheet",
+				"and your achievement shall not fleet.",
+				"The bond that takes a click to make",
+				"will not before a lifetime break.",
+				"Seven codes to turn the tide:",
+				"on the eighth, his Legacy rides."
+			]
+			for (let i=0;i<8;i++) setTimeout(function(){notify("<i>"+texts[i]+"</i>",["#4a86e8","#fac112","#ff0000","#0000ff"][Math.floor(i/2)])},2000*i)
+			for (let i=5;i>0;i--) setTimeout(function(){notify("<b>"+i+"</b>","#00ffff")},20000-1000*i)
+			newsSupport.newsletter.spamStart = Date.now()+20000
 		},
+		spamStart:Infinity,
 		questions:[
-			{text:"In the seventh we <span style=\"color: #bfbfdf;text-shadow: 0px 0px 5px white, 0px 0px 6px #1f00ff;font-weight: bold;background:linear-gradient(#00002f, #0f002f), linear-gradient(45deg, black, transparent 25%, transparent), linear-gradient(-45deg, black, transparent 25%, transparent)\">unite</span> as one.<br>What does the eighth say?",answers:["6dzayww9io7lmiey","gQpgpxQEs4GX52bU","1bxsmGUpprLN8oDW"]},
-			{text:"When two to the right becomes two to the left, you can never learn the <span style=\"color:#00ff00;text-shadow: 0px 0px 5px rgba(0,255,0,0.5)\">fate</span> of ten.<br>How many sheets does this make two to the right?",answers:["7Bs6DGrA2NwsNzeg","UySyA646cikaO8t3"]},
-			{text:"At the start you skip the ground floor, skip three, <span style=\"background:-webkit-linear-gradient(270deg,#9900ff,transparent);-webkit-background-clip:text;-webkit-text-fill-color: transparent;\">rise</span> to nine. How many cells do you rise in total by the end?",answers:["RDEkAMtQy93/r8Ax","0lvDTH/+RfSr+TU1"]},
-			{text:"I am <span style=\"color:#ff9900\">number</span> four.<br>But what <span style=\"color:#ff9900\">number</span> is Stat Mark?",answers:["IHFcr774TrlXKLE+","RleLmdX7X6EJAaU2"]},
-			{text:"<i>Z Points</i> by xhwzwka has five types of bugs - but the bug list has <span style=\"background:-webkit-linear-gradient(90deg,#996600,transparent);-webkit-background-clip:text;-webkit-text-fill-color: transparent;\">fallen</span> from five.<br>Cyan remains unused forevermore. Which other color?",answers:["LHPKW0ehoPLIBMxi","XpLskgngHuG+6byZ"]},
-			{text:"Two, now six. Is the rest of them out there?<br>Which name has the <span style=\"color:#ffffff;text-shadow:"+[5,10,20,30,45,60,80,120,200].map(x=>"0px 0px "+x+"px #ffffff").join(",")+"\">power</span> of six?",answers:["a/mh/392y7WjrCKK"]},
-			{text:"Eight riddles, but just six rifts... Seven takes <span style=\"color:#0000ff\">revenge</span> in Dimension Nine.<br>How long is the longest path through the Ninth Dimension which doesn't visit any cell more than once?",answers:["nPmilp5t/nwBwuND","FBPIZp1QiFuzsXK3","db5qlGN/VwiZpqck"]},
-			{text:"Oh, I appear to have run out of <span style=\"color:#00ffff\">lore</span>...<br>Now you must go complete your <span style=\"color:#4e54c0\">Task</span>.",answers:[]}
+			{text:"In the seventh we <span style=\"color: #bfbfdf;text-shadow: 0px 0px 5px white, 0px 0px 6px #1f00ff;font-weight: bold;background:linear-gradient(#00002f, #0f002f), linear-gradient(45deg, black, transparent 25%, transparent), linear-gradient(-45deg, black, transparent 25%, transparent)\">unite</span> as one.<br>What does the eighth say?",answers:["67rOSle4/nXgr0rD"]},
+			{text:"When two to the right becomes two to the left, you can never learn the <span style=\"color:var(--luck);text-shadow: 0px 0px 5px rgba(51,153,102,0.5)\">fate</span> of ten.<br>How many sheets does this make two to the right?",answers:["7Bs6DGrA2NwsNzeg","u4o6rPi7S2EIWQvm"]},
+			{text:"At the start you skip the ground floor, skip three, <span style=\"background:-webkit-linear-gradient(270deg,#9900ff,transparent);-webkit-background-clip:text;-webkit-text-fill-color: transparent;\">rise</span> to nine. How many cells do you rise in total by the end?",answers:["RDEkAMtQy93/r8Ax","Dp6h7lkUsZrUiEbc"]},
+			{text:"I am <span style=\"color:#ff9900\">number</span> four.<br>But what <span style=\"color:#ff9900\">number</span> is Stat Mark?",answers:["IHFcr774TrlXKLE+","Iqnj/nn2a/7XXni2"]},
+			{text:"<i>Z Points</i> by xhwzwka has five types of bugs - but the bug list has <span style=\"background:-webkit-linear-gradient(90deg,#996600,transparent);-webkit-background-clip:text;-webkit-text-fill-color: transparent;\">fallen</span> from five.<br>Cyan remains unused forevermore. Which other color?",answers:["sPFpR2MjXoSF6tno","IXrpkx155kScnH92"]},
+			{text:"Two, now six. Is the rest of them out there?<br>Which name has the <span style=\"color:#ffffff;text-shadow:"+[5,10,20,30,45,60,80,120,200].map(x=>"0px 0px "+x+"px #ffffff").join(",")+"\">power</span> of six?",answers:["O8uuaffK4fSDjqO5"]},
+			{text:"Eight riddles, but just six rifts... Seven takes <span style=\"color:#0000ff\">revenge</span> in Dimension Nine.<br>How long is the longest path through the Ninth Dimension which doesn't visit any cell more than once?",answers:["nPmilp5t/nwBwuND","3rxIV2IL7JwRYGHS","xORpOpwjHka3awJ2"]},
+			{text:"Oh, I appear to have run out of <span style=\"color:#00ffff\">lore</span>...<br>Now you must go complete your <span style=\"color:#4e54c0\">Task</span>.",answers:["3MnMDKlT2hjwOJIu"]}
 		],
-		answered:0,
+		remaining:[0,1,2,3,4,5,6,7],
 		ask:function(){
-			if (newsSupport.newsletter.answered===8) newsSupport.newsletter.finalNotify()
+			if (newsSupport.newsletter.remaining.length===0) newsSupport.newsletter.finalNotify()
 			else popup({
-				text:this.questions[newsSupport.newsletter.answered].text,
+				text:this.questions[newsSupport.newsletter.remaining[0]].text,
 				input:"",
 				buttons:[["Submit","newsSupport.newsletter.verify()"],["Close",""]]
 			})
 		},
 		verify:function(id){
-			if (newsSupport.newsletter.questions[newsSupport.newsletter.answered].answers.includes(alemanicHash(popupInput().toUpperCase(),16))) {
+			if (newsSupport.newsletter.questions[newsSupport.newsletter.remaining[0]].answers.includes(alemanicHash(stringSimplify(popupInput()),16))) {
 				notify("Correct","#009900","#00ff00")
-				newsSupport.newsletter.answered++
-				if (newsSupport.newsletter.answered===8) newsSupport.newsletter.finalNotify()
+				newsSupport.newsletter.remaining.splice(0,1)
+				if (newsSupport.newsletter.remaining.length===0) newsSupport.newsletter.finalNotify()
 			} else {
 				notify("Wrong!","#990000","#ff0000")
+				newsSupport.newsletter.remaining.push(newsSupport.newsletter.remaining.splice(0,1)[0]) // move on to the next riddle but don't skip
+				if (newsSupport.newsletter.remaining.includes(2)) {newsSupport.newsletter.remaining.remove(6);newsSupport.newsletter.remaining.push(6)} // riddle 7 always comes after 3
+				if (newsSupport.newsletter.remaining.includes(7)) {newsSupport.newsletter.remaining.remove(7);newsSupport.newsletter.remaining.push(7)} // riddle 8 always comes last
 			}
 		},
 		finalNotify:function(){notify("Verification is complete! Your final task: use the name of the Secret Achievement you are about to get as a promotion code.","#009999","#00ffff")}
@@ -183,7 +301,7 @@ const newsSupport = {
 			buttons:[["Switch","g.colortheme='"+received+"';theme()"],["Do not","g.colortheme=`"+received+"`;popup({text:'Since when were you the one in control?',buttons:[['Switch','theme()']]})"]]
 		})
 	},
-	nextMajorVersion:(Number(version.current.substring(2,3))+1),
+	nextMajorVersion:"𝕍"+(Number(version.current.substring(2,3))+1),
 	calcOMCCDVLevel:function(){
 		if (g.achievement[719]) return 2
 		if (g.achievement[413]) return 1
@@ -455,10 +573,10 @@ const newsList = [
 	{text:"I see dilation, but where are the tachyon particles?"},
 	{get text(){let highest = Object.keys(achievementList).reverse().filter(x=>achievement.ownedInTier(x)>0)[0];if(highest===undefined){return newsSupport.error};return "How has it taken you "+timeFormat(g.timePlayed)+" to get "+achievement.ownedInTier(highest)+" "+achievement.tierName(highest)+" achievement"+((achievement.ownedInTier(highest)===1)?"":"s")+"? How pathetic..."},get weight(){return g.timePlayed*totalAchievements>1e5?1:0}},
 	{text:"In a galaxy far, far away...",get weight(){return unlocked("Galaxies")?1:0}},
-	{text:img()},
+	{text:img("blobwave","Blob wave!",16)},
 	{text:"You are a Master of the Void, not a Master of Nothing, just so you know.",get weight(){return g.achievement[708]?1:0}},
 	{get text(){return "Even the galax"+(g.galaxies===1?"y":"ies")+" are nothing more than specks of luminous stardust."},get weight(){return g.galaxies>0?1:0}},
-	{get text(){return "alemaninc is releasing <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" in just 5 hours! Click <a onClick=\"newsSupport.newsletter.init()\">this newsletter</a> to find out more."},weight:0}, // placeholder
+	{get text(){return "alemaninc is releasing <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" in just 5 hours! Click <a onClick=\"newsSupport.newsletter.init(0)\" style=\"text-decoration:underline\">this newsletter</a> to find out more."},get weight(){return (newsSupport.calcOMCCDVLevel()>1)?((g.secretAchievement[33]&&g.secretAchievement[42])?0.1:1):0}}, // placeholder
 	{text:"Now in your local alemaninc Inc.: The <span style=\"color:#ffff00;\"><b>light bulb</b></span>! You can bring this <span style=\"color:#ffff00;\"><b>light bulb</b></span>  anyware as long as you dont touch the <span style=\"color:#ff0000;\"><u>red</u></span> and <span style=\"color:#0000ff;\"><u>blue</u></span> <span style=\"color:#ff9900;text-decoration:line-through\">wires</span>. If you buy it, you also get 50% off the <span style=\"color:#00ffff;\">idl</span><span style=\"color:#ff0000;\">eat</span><span style=\"color:#0000ff;\">or</span>! The <span style=\"color:#00ffff;\">idl</span><span style=\"color:#ff0000;\">eat</span><span style=\"color:#0000ff;\">or</span> makes you <span style=\"color:#4a86e8;\">freeze</span> by whoever <span style=\"color:#00ff00;\">opens</span> this <span style=\"color:#980000;\">complex</span> object but you will stop idleing when someone says&nbsp;&nbsp;\"You are not in idle\"."},
 	{text:"Stat Mark's PPPT SONG 1: PPPT, I have a \"The opposition\" and a \"&lt;unknown&gt;\", BOOM, The &lt;unknown&gt;, I have a \"Con\" and a \"Luigin\", BOOM, Luonigin, I have a \"THE &lt;unknown&gt;\", And \"Luonigin\", BOOM, The &lt;Luonigin&gt;."},
 	{text:"This is far from comprehensive! In order for this game to get alemaninc's Certificate of Comprehensivity, your game must be coded at a similiar level to the following: Tier 1. Zip Points (xhwzwka's version); Tier 2. Cookie Clicker; Tier 3. Zip Points (alemaninc's version); Tier 4. Synergism; Tier 5. Antimatter Dimensions. This gets a Tier 3 with Fractional Tier 4 at best! That's not good enough! All incremental game professionals can recreate Antimatter Dimensions!"},
@@ -481,7 +599,8 @@ const newsList = [
 	{text:"alemaninc cried out, for the Celestial of Blob was not to be stayed from his hunt for OMCCDV. Then, alemaninc cried out once more, for the Celestial of Blob had hunted OMCCDV down. But this time, he cried out tears of joy, for the dying OMCCDV was saved.",get weight(){return newsSupport.ord(7)}},
 	{get text(){function r(x){return "█".repeat(x)};return "nicodium has joined the ranks of lazy SCP writers! His latest creation: \"Scp-"+r(4)+" is a "+r(86)+" foundation staff "+r(172)+" D-3819 "+r(86)+" Joe Biden "+r(172)+" among us "+r(86)+" was activated\"."}},
 	{text:"What even is a "+img("blob","blob",16)+"? Only hyperbolia knows."},
-	{text:"Schrödinger's News: this news report is a superposition of truth and falsehood, entangled with your proposition of which one it is as the first scenario."}
+	{text:"Schrödinger's News: this news report is a superposition of truth and falsehood, entangled with your proposition of which one it is as the first scenario."},
+	{get text(){let out = "<html>"+document.getElementsByTagName("html")[0].innerHTML+"</html>";let outLen = out.length; out = out.replaceAll("<","&lt;").replaceAll(">","&gt;");return "Breaking news! alemaninc has just released the <i>Exotic Matter Dimensions</i> source code! Here it is in all its glory. At your current news ticker scroll speed, it will take approximately "+timeFormat(outLen*15/g.newsTickerSpeed)+" to finish scrolling. Anyways, without further ado: "+out+newsSupport.br(500)+"<span onClick=\"addSecretAchievement(41)\">...wait, you actually read all that? You deserve an achievement! Click this to obtain one</span>"},weight:0.01} // very long and very laggy, so very rare
 ]
 // bottom
 var newsOrder = []
@@ -495,6 +614,7 @@ function randomNewsItem() {
 		index = newsOrder.splice(0,1)
 		if (newsWeight(newsList[index])>Math.random()) break
 	}
+	if (newsList[index].text === undefined) error("News item #"+index+" is undefined.")
 	return newsList[index].text
 }
 var currentNewsOffset = 0

@@ -573,6 +573,7 @@ tab {
 	font-size:12px;
 	font-family:"Courier New";
 	padding:10px;
+	margin:3px;
 	border-radius:40px;
 	width:200px;
 	height:350px;
@@ -648,7 +649,7 @@ tab {
 	margin:15px;
 }
 .wormholeResetButton{
-	background-image:repeating-radial-gradient(circle,#190033,#330066 10%,#190033 20%);
+	background-image:repeating-radial-gradient(circle,#090019,#190033 10%,#090019 20%);
 	background-size:cover;
 	color:#ffffff;
 	font-size:15px;
@@ -993,12 +994,12 @@ tab {
 #div_blueLight {
 	background-color:rgba(0,0,51,0.9);
 	border-color:rgba(0,0,153,0.9);
-	color:#0000ff;
+	color:#3333ff;
 }
 #button_blueChromaGen {
 	background-color: rgba(0,0,102,0.9);
 	border-color: #000099;
-	color:#0000ff;
+	color:#3333ff;
 }
 .blue {color:#0000ff}
 #div_cyanLight {

@@ -14,6 +14,7 @@ basecost						 the base cost
 icon								 the text inside the research box
 group								the group of the research
 */
+const antimatterResearchList = {}
 const research = (function(){
 	function studyReq(i,num) {return {check:function(){return g.studyCompletions[i]>=num},text:function(){return g.studyCompletions[i]+" / "+num+" Study "+((i===10)?"of Studies":roman(i))+" completions"}}}
 	function totalStudyReq(num) {return {check:function(){return g.studyCompletions.sum()>=num},text:function(){return g.studyCompletions.sum()+" / "+num+" total Study completions"}}}
@@ -90,6 +91,45 @@ const research = (function(){
 			icon:classes.luck("L")+classes.xscript(classes.luck(runeNum)+icon.plus,resIcon),
 			effect:function(power){return power.mul(baseEff)},
 			group:"luck"
+		}
+	}
+	function antimatterRes1(type,pos) {
+		antimatterResearchList[type+"1"] = pos
+		let row = researchRow(pos)
+		let col = researchCol(pos)
+		let adjacent_req = []
+		if (pos==="r29_15") {adjacent_req = ["r29_15"]}
+		else {
+			if (row!==29) adjacent_req.push("r"+(row-1)+"_"+col)
+			if (col!==15) adjacent_req.push("r"+row+"_"+(col+1)) 
+		}
+		return {
+			description:function(){return "Anti-"+type+" dimension boost is "+percentOrMult(researchEffect(row,col))+" stronger"},
+			adjacent_req:adjacent_req,
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(99999),
+			icon:"<span style=\"color:var(--wormhole_text)\">"+type+"</span>"+icon.plus,
+			effect:function(power){return c.d1_005.pow(power)},
+			group:"antimatter"
+		}
+	}
+	function antimatterRes2(type,pos) {
+		antimatterResearchList[type+"2"] = pos
+		let row = researchRow(pos)
+		return {
+			numDesc:function(){return researchEffect(row,14).noLeadFormat(2)},
+			formulaDesc:function(){return "(("+type+" ÷ 90 + 1)<sup>0.9</sup> - 1)"+formulaFormat.mult(researchPower(row,14))},
+			description:function(){return "Gain "+numOrFormula("r"+row+"_14")+" free anti-"+type+" axis (based on purchased amount)"},
+			adjacent_req:["r"+row+"_15"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(99999),
+			icon:icon["anti"+type+"Axis"]+icon.plus,
+			effect:function(){return g["anti"+type+"Axis"].div(c.d90).add(c.d1).pow(c.d0_9).sub(c.d1).mul(power)},
+			group:"antimatter"
 		}
 	}
 	let basicclasslist = ["exoticmatter","time","achievements","mastery","stardust","stars","darkmatter","energy","wormhole","research","galaxies","luck","prismatic","antimatter"]
@@ -1570,6 +1610,19 @@ const research = (function(){
 			icon:icon.antiXAxis+icon.arr+icon.antiVAxis+classes.sup("<span style=\"color:var(--axis_empowerment)\">Ω</span>"),
 			effect:function(){return [stat.antiXAxisEffect.max(c.d10).log10().log10(),c.d5,researchPower(25,14)].productDecimals()}
 		},
+		r25_15:{
+			numDesc:function(){return researchEffect(25,15).format(2)},
+			formulaDesc:function(){return researchPower(25,15).pow10().noLeadFormat(3)+"<sup>"+formulaFormat.logSoftcap("(t ÷ 86,400)<sup>0.5</sup>",research.r25_15.scExp(),c.d5,Decimal.gt(researchEffect(25,15).log10(),research.r25_15.scExp())).replace(formulaFormat.mult(research.r25_15.scExp().recip())," ÷ log(AM + 1) × 20")+"</sup>"},
+			description:function(){return "Antimatter gain is multiplied by "+numOrFormula("r25_15")+" (based on time in current Wormhole)"},
+			adjacent_req:["r24_14","r25_14","r26_14"],
+			condition:[studyReq(10,3)],
+			visibility:function(){return betaActive&&(g.studyCompletions[10]>2)},
+			type:"normal",
+			basecost:N(399999),
+			icon:icon.time+icon.arr+icon.antimatter,
+			scExp:function(){return g.antimatter.add(c.d1).log10().div(c.d20)},
+			effect:function(power){return Decimal.logarithmicSoftcap(g.truetimeThisWormholeReset.div(c.d86400).pow(c.d0_5),research.r25_15.scExp(),c.d5).mul(power).pow10()}
+		},
 		r26_1:{
 			description:function(){return "The first effect of "+prismaticUpgradeName("prismRune")+" is raised to the power of "+researchEffect(26,1).noLeadFormat(4)},
 			adjacent_req:["r25_1"],
@@ -1638,6 +1691,16 @@ const research = (function(){
 			icon:"<span style=\"color:var(--wormhole_text)\">S</span>"+icon.plus,
 			effect:function(power){return c.d9.pow(power)}
 		},
+		r26_15:{
+			description:function(){return "Gain "+researchEffect(26,15).noLeadFormat(2)+" free anti-X axis per anti-S axis, per anti-S axis (total: "+researchEffect(26,15).mul(g.antiSAxis.pow(c.d2)).noLeadFormat(2)+")"},
+			adjacent_req:["r25_15"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(399999),
+			icon:icon.antiSAxis+icon.arr+icon.antiXAxis+icon.arrl+icon.antiSAxis,
+			effect:function(power){return power}
+		},
 		r27_1:{
 			description:function(){return "Each level of Cinquefolium "+luckUpgrades.cinquefolium.luck.name+" gives an additional "+researchEffect(27,1).noLeadFormat(3)+"× multiplier to luck shard gain (total: "+researchEffect(27,1).pow(effLuckUpgradeLevel("cinquefolium","luck")).noLeadFormat(2)+"×)"},
 			adjacent_req:["r26_1"],
@@ -1657,6 +1720,16 @@ const research = (function(){
 			basecost:N(1010101),
 			icon:icon.study([])
 		},
+		r27_15:{
+			description:function(){return "Multiplier per anti-Z axis is multiplied by "+researchEffect(27,15).noLeadFormat(4)},
+			adjacent_req:["r26_15"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(399999),
+			icon:icon.antiZAxis+icon.plus,
+			effect:function(power){return c.d1_01.pow(power)}
+		},
 		r28_1:{
 			description:function(){return "The second reward of Study VII is "+percentOrMult(researchEffect(28,1))+" stronger"},
 			adjacent_req:["r27_1"],
@@ -1667,21 +1740,43 @@ const research = (function(){
 			icon:"<span style=\"color:#cc0000\">VII</span><span class=\"xscript\"><sup>+</sup><sub style=\"color:#cc0000\">2</sub></span>",
 			effect:function(power){return c.d1_1.pow(power)}
 		},
+		r28_15:{
+			description:function(){return "Anti-T axis multiply antimatter gain by the same amount they multiply the observation effect"+(researchEffect(28,15).eq(c.d1)?"":(", to the power of "+researchEffect(28,15).noLeadFormat(3)))+" (total: "+stat.antiTAxisEffect.pow(Decimal.mul(stat.realantiTAxis,researchEffect(28,15)))+")"},
+			adjacent_req:["r27_15"],
+			condition:[],
+			visibility:function(){return true},
+			type:"normal",
+			basecost:N(399999),
+			icon:icon.antiZAxis+icon.plus,
+			effect:function(power){return power}
+		},
 		r29_1:luckResearch("trifolium","normalAxis","r29_1",icon.exoticmatter),
 		r29_2:luckResearch("quatrefolium","star","r29_2",icon.star()),
 		r29_3:luckResearch("cinquefolium","observation","r29_3",icon.research),
+		r29_13:antimatterRes1("V","r29_13"),
+		r29_14:antimatterRes2("Y","r29_14"),
+		r29_15:antimatterRes1("X","r29_15"),
 		r30_1:luckResearch("trifolium","darkAxis","r30_1",icon.darkmatter),
 		r30_2:luckResearch("quatrefolium","darkstar","r30_2",icon.darkstar),
 		r30_3:luckResearch("cinquefolium","chroma","r30_3",icon.chroma(6)),
+		r30_13:antimatterRes1("U","r30_13"),
+		r30_14:antimatterRes2("W","r30_14"),
+		r30_15:antimatterRes1("Y","r30_15"),
 		r31_1:luckResearch("quatrefolium","synergism","r31_1","<span style=\"color:var(--wormhole_text)\">SS</span>"),
 		r31_2:luckResearch("cinquefolium","radiation","r31_2",icon.hr),
 		r31_3:luckResearch("quatrefolium","prismatic","r31_3",icon.prismatic),
+		r31_13:antimatterRes1("T","r31_13"),
+		r31_14:antimatterRes2("V","r31_14"),
+		r31_15:antimatterRes1("Z","r31_15"),
 		r32_1:luckResearch("cinquefolium","axis","r32_1",gradientText("A","-webkit-linear-gradient(90deg,var(--exoticmatter),var(--darkmatter))")),
 		r32_2:luckResearch("trifolium","antiAxis","r32_2",icon.antimatter),
 		r32_3:luckResearch("cinquefolium","luck","r32_3",icon.luckShard),
+		r32_13:antimatterRes1("S","r32_13"),
+		r32_14:antimatterRes2("T","r32_14"),
+		r32_15:antimatterRes1("W","r32_15"),
 		r33_3:{
 			adjacent_req:["r32_3"],
-			condition:[{check:function(){return stat.totalAxis.gt(studies[11].unlockReq())},text:function(){return stat.totalAxis.format()+" / "+studies[11].unlockReq().format()+" total axis"}}],
+			condition:[{check:function(){return stat.totalAxis.gte(studies[11].unlockReq())},text:function(){return stat.totalAxis.format()+" / "+studies[11].unlockReq().format()+" total axis"}}],
 			visibility:function(){return true;},
 			type:"study",
 			basecost:N(33113),
@@ -1700,6 +1795,14 @@ const research = (function(){
 				return icon.study(out)
 			}
 		},
+		r33_13:{
+			adjacent_req:["r32_13"],
+			condition:[{check:function(){return g.antimatter.gt(studies[12].unlockReq())},text:function(){return g.antimatter.format()+" / "+studies[12].unlockReq().format()+" antimatter"}}],
+			visibility:function(){return true;},
+			type:"study",
+			basecost:N(331133),
+			icon:icon.study([[15,10,4],[85,10,4],[25,20,4],[75,20,4],[40,35,4],[60,35,4]])
+		}
 	}
 })();
 const researchList = Object.keys(research).filter(x=>x!=="r6_9")
@@ -1756,6 +1859,7 @@ function ownedResearchInGroup(x,owned=g.research) {
 	return researchGroupList[x].contents.filter(x=>owned[x])
 }
 function researchPower(row,col) {
+	if (StudyE(12)) return c.d0;
 	let id = "r"+row+"_"+col
 	let out = c.d1;
 	// disablings

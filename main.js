@@ -87,6 +87,7 @@ const basesave = {
 	hotkeys:savefileHotkeyProperties(),
 	achievement:Object.fromEntries(achievement.all.map(x=>[x,false])),
 	secretAchievement:Object.fromEntries(Object.keys(secretAchievementList).map(x=>[x,false])),
+	achievementIDShown:true,
 	completedAchievementTiersShown:true,
 	clickedInStudy1:false,
 	StardustResets:0,
@@ -306,7 +307,7 @@ function unlockDilationUpgrade() {
 	})
 }
 function overclockToSoftcap() {
-	g.dilationPower=Math.log2(stat.overclockSoftcap)
+	g.dilationPower=Math.floor(Math.log2(stat.overclockSoftcap)*1000)/1000
 	updateOverclockScrollbar()
 }
 function toggleOverclock() {
@@ -372,6 +373,7 @@ const baseStardustUpgradeCosts = [
 function stardustUpgradeCost(x,y=g.stardustUpgrades[x-1]) {
 	if (y>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
 	let cost = baseStardustUpgradeCosts[x-1][y];
+	if (StudyE(12)) cost = cost.layerf(x=>x*1.2)
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	if (g.achievement[602]&&x===3) cost = cost.pow(c.d0_9)
 	if (g.achievement[520]&&y===0) cost = cost.root(achievement(520).effect());
@@ -931,7 +933,9 @@ function incrementStardust(x) {
 	for (let i of stardustVariables) o.add(i,x)
 }
 function attemptStardustReset(showPopups=false) {
-	if (stat.pendingstardust.gt(g.stardust)) {
+	if (StudyE(12)) {
+		notify("Stardust reset is disabled in Study XII","#990000","#ffffff")
+	} else if (stat.pendingstardust.gt(g.stardust)) {
 		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
 			popup({
 				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?",
@@ -945,6 +949,7 @@ function attemptStardustReset(showPopups=false) {
 	}
 }
 function stardustReset() {
+	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
 	if (g.timeThisStardustReset===0) return
 	let stardustGained = stat.pendingstardust.gt(g.stardust)
 	if (stardustGained) g.StardustResets++;
@@ -1111,6 +1116,8 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	let scaling_start = g.achievement[703]?achievement(703).effect():c.d25
 	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(effx,scaling_start,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(effx.gte(c.d10)?c.d1_5:c.d1);
 	cost = cost.mul(galaxyEffects[3].penalty.value(gal).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
+	// metahyper cost reductions
+	if (StudyE(12)) cost = cost.layerf(x=>x*1.2)
 	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	// hyper-3 cost reductions
@@ -1390,6 +1397,7 @@ function realDarkAxisSuperscalePower(type){
 	return out
 }
 function realDarkAxisCostDivisor(type) {
+	if (StudyE(12)) return c.d1
 	let output = stat.darkAxisCostDivisor;
 	return output;
 }
@@ -1480,8 +1488,7 @@ function darkStarReqFormula() {
 }
 function realDarkStars(x) {
 	x=(x===undefined)?g.darkstars:N(x);
-	if (StudyE(2)) {x=x.add(unspentStars())}
-	else {x=x.add(studies[2].reward(3).mul(g.stars+unspentStars()).div(c.d2))}
+	if (StudyE(2)) {x=x.add(unspentStars())} else {x=x.add(studies[2].reward(3).mul(unspentStars()+(g.stars-unspentStars())*galaxyEffects[5].boost.value()).div(c.d2))}
 	if (g.research.r10_15) {x = x.add(researchEffect(10,15))}
 	return x;
 }
@@ -1988,7 +1995,7 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	shownAchievements = shownAchievements.sort((a,b)=>(g.achievement[b]?1:0)-(g.achievement[a]?1:0))
 	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+(g.achievement[x]?"":";filter:opacity(33%)")+"\">"+(achievement.visible(x)?("<table><tr><td style=\"width:300px;height:40px;\">"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode===1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode===1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table>"):("<table><tr><td style=\"height:40px\">[This achievement has not yet been revealed]</td></tr></table>"))+"</div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+(g.achievement[x]?"":";filter:opacity(33%)")+"\">"+(achievement.visible(x)?("<table><tr><td style=\"width:300px;height:40px;\">"+x+"<br>"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode===1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode===1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table>"):("<table><tr><td style=\"height:40px\">[This achievement has not yet been revealed]</td></tr></table>"))+"</div>")
 	}
 	popup({
 		text:out.join(""),
@@ -2084,6 +2091,21 @@ const galaxyEffects = [
 			text:function(){return "The star cost superscaling is {}% stronger per star above 40"},
 			format:function(e){return e.mul(c.e2).noLeadFormat(2)},
 			formula:function(){return "(log("+effectiveGalaxyFormulaText(4,0,{max:0.1})+") + 1)<sup>1.5</sup>"}
+		}
+	},
+	{
+		req:10,
+		boost:{
+			value:function(n=g.galaxies){return Decimal.FC_NN(1,0,0.5+0.02*effectiveGalaxies(5,1,n))},
+			text:function(){return "Assigned stars act on the third reward of Study II with {}% efficiency"},
+			format:function(e){return e.mul(c.e2).format()},
+			formula:function(){effectiveGalaxyFormulaText(5,1,{add:25})+" × 2"}
+		},
+		penalty:{
+			value:function(n=g.galaxies){let e = effectiveGalaxies(5,0,n);return Decimal.decibel(e.add(c.d5).mul(e).div(c.d2))},
+			text:function(){return "The game runs {}× slower per unassigned star below 20"},
+			format:function(e){return e.format()},
+			formula:function(){return "round(10<sup>"+effectiveGalaxyFormulaText(5,0)+" × "+effectiveGalaxyFormulaText(5,0,{add:5})+" ÷ 20</sup>)"}
 		}
 	}
 ]
@@ -2357,6 +2379,8 @@ function buyMaxAntiAxis(caps) {
 function antiAxisDimBoostPower(type){
 	let out = c.d1
 	if ((type==="S")&&g.research.r26_14) out = out.mul(researchEffect(26,14))
+	let res = antimatterResearchList[type+"1"]
+	if (g.research[res]) {out = out.mul(researchEffect(researchRow(res),researchCol(res)))}
 	return out
 }
 function antiAxisDimBoost(type,next=false) {
@@ -2476,6 +2500,7 @@ const openConfig = (()=>{
 			{text:(g.glowOptions.overclock?"G":"No g")+"low during Overclock",onClick:toggle("g.glowOptions.overclock")}
 		])},
 		"Achievement":function(){updateAchievementsTab();showConfigModal("Achievement",[
+			{text:"Achievement ID "+(g.achievementIDShown?"":"not ")+" shown",onClick:"toggle('achievementIDShown');for (let i of achievement.all){d.display('span_ach'+i+'ID',g.achievementIDShown?'inline-block':'none')}"},
 			{text:(g.completedAchievementTiersShown?"Show":"Hid")+"ing completed achievement tiers",onClick:"toggle('completedAchievementTiersShown')"}
 		])
 		},
@@ -2796,16 +2821,16 @@ const promoCodeList = {    // key = code, value = function
 		action:()=>addSecretAchievement(8),
 		condition:()=>!g.secretAchievement[8]
 	},
-	"qtawJJNTB5rZteR3":{
+	"GEtJEyjWuFB1oNSA":{
 		action:()=>addSecretAchievement(30),
 		condition:()=>!g.secretAchievement[30]
 	},
-	"Mo0K4rg2yret5Fyw":{
+	"YVAn4tknrVD5NcBB":{
 		action:()=>{
-			clearInterval(newsletterLoop)
+			newsSupport.newsletter.spamStart=Infinity
 			addSecretAchievement(33)
 		},
-		condition:()=>(!g.secretAchievement[33])&&(newsSupport.newsletter.answered===8)
+		condition:()=>(!g.secretAchievement[33])&&(newsSupport.newsletter.remaining.length===0)
 	}
 }
 function inputPromo() {
@@ -2813,13 +2838,13 @@ function inputPromo() {
 		text:"Input your code here:",
 		input:"",
 		buttons:[
-			["Confirm","processPromo(popupInput())"],
+			["Confirm","processPromo(stringSimplify(popupInput()))"],
 			["Close",""]
 		]
 	})
 }
-function processPromo() {
-	let hash = alemanicHash(popupInput().toLowerCase(),16)
+function processPromo(str) {
+	let hash = alemanicHash(str,16)
 	if (promoCodeList[hash] !== undefined) if (promoCodeList[hash].condition()) {
 		promoCodeList[hash].action()
 		return
