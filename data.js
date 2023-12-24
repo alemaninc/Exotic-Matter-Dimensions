@@ -292,7 +292,7 @@ const studies = [
 	{
 		name:"Titanium Will",
 		unlockReq:function(){return [c.ee100,c.ee100,c.ee100,c.ee100][studyPower(12)]},
-		description:function(){return "Non-permanent research have no effect, stardust resets are disabled, dark matter gain is limited to 1 per second, all dark axis cost divisors are disabled and stardust upgrade costs are increased to <i>10 ↑↑ slog(cost)<sup>1.2</sup></i>"},
+		description:function(){return "Non-permanent research have no effect, stardust resets are disabled, dark matter gain is limited to 1 per second, all dark axis cost divisors are disabled and stardust upgrade and star costs are increased to <i>10 ↑↑ slog(cost)<sup>1.2</sup></i>"},
 		research:"r33_13",
 		goal:function(comp=studyPower(12)){return [c.e100,c.e100,c.e100,c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[12]){

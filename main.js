@@ -373,7 +373,7 @@ const baseStardustUpgradeCosts = [
 function stardustUpgradeCost(x,y=g.stardustUpgrades[x-1]) {
 	if (y>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
 	let cost = baseStardustUpgradeCosts[x-1][y];
-	if (StudyE(12)) cost = cost.layerf(x=>x*1.2)
+	if (StudyE(12)) cost = cost.layerf(x=>x**1.2)
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	if (g.achievement[602]&&x===3) cost = cost.pow(c.d0_9)
 	if (g.achievement[520]&&y===0) cost = cost.root(achievement(520).effect());
@@ -1117,7 +1117,7 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(effx,scaling_start,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(effx.gte(c.d10)?c.d1_5:c.d1);
 	cost = cost.mul(galaxyEffects[3].penalty.value(gal).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
 	// metahyper cost reductions
-	if (StudyE(12)) cost = cost.layerf(x=>x*1.2)
+	if (StudyE(12)) cost = cost.layerf(x=>x**1.2)
 	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	// hyper-3 cost reductions

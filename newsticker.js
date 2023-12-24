@@ -271,7 +271,7 @@ const newsSupport = {
 				buttons:[["Submit","newsSupport.newsletter.verify()"],["Close",""]]
 			})
 		},
-		verify:function(id){
+		verify:function(){
 			if (newsSupport.newsletter.questions[newsSupport.newsletter.remaining[0]].answers.includes(alemanicHash(stringSimplify(popupInput()),16))) {
 				notify("Correct","#009900","#00ff00")
 				newsSupport.newsletter.remaining.splice(0,1)

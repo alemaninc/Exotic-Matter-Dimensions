@@ -1738,7 +1738,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(77777),
 			icon:"<span style=\"color:#cc0000\">VII</span><span class=\"xscript\"><sup>+</sup><sub style=\"color:#cc0000\">2</sub></span>",
-			effect:function(power){return c.d1_1.pow(power)}
+			effect:function(power){return c.d1_1.pow(power)},
 		},
 		r28_15:{
 			description:function(){return "Anti-T axis multiply antimatter gain by the same amount they multiply the observation effect"+(researchEffect(28,15).eq(c.d1)?"":(", to the power of "+researchEffect(28,15).noLeadFormat(3)))+" (total: "+stat.antiTAxisEffect.pow(Decimal.mul(stat.realantiTAxis,researchEffect(28,15)))+")"},
@@ -1802,7 +1802,10 @@ const research = (function(){
 			type:"study",
 			basecost:N(331133),
 			icon:icon.study([[15,10,4],[85,10,4],[25,20,4],[75,20,4],[40,35,4],[60,35,4]])
-		}
+		},
+		/*r34_3:{
+			description:function(){return }
+		} */
 	}
 })();
 const researchList = Object.keys(research).filter(x=>x!=="r6_9")
@@ -1838,7 +1841,12 @@ const researchGroupList = {
 	mastery:{label:"Mastery",get description(){return "Having more Mastery research than your Study VIII completions ("+g.studyCompletions[8]+") will weaken all Masteries by 33% per excess research"},color:"var(--mastery)",icon:"M"},
 	prismal:{label:"Prismal",get description(){return "You can buy a maximum of "+prismaticUpgrades.prismLab.eff()+" Prismal research"},color:"#00ff99",icon:"P"},
 	luck:{label:"Luck",get description(){return "Each Luck research makes all other Luck research "+(g.achievement[819]?c.d7.mul(achievement(819).effect()).noLeadFormat(3):"7")+"% less effective"},color:"var(--luck)",icon:"L"},
-	antimatter:{label:"Antimatter",get description(){return "Each Antimatter research makes all other Antimatter research "+(g.achievement[819]?c.d9.mul(achievement(819).effect()).noLeadFormat(3):"9")+"% less effective"},color:"var(--antimatter)",icon:"A"}
+	antimatter:{label:"Antimatter",get description(){return "Each Antimatter research makes all other Antimatter research "+(g.achievement[819]?c.d9.mul(achievement(819).effect()).noLeadFormat(3):"9")+"% less effective"},color:"var(--antimatter)",icon:"A"},
+	...(()=>{
+		let out = {}
+		for (let i=1;i<13;i++) out["finality"+i] = {label:"Finality-"+roman(i),description:"Each Finality-"+roman(i)+" research multiplies the cost of all other Finality-"+roman(i)+" research by "+(0.05*i**2+0.15*i+1).toFixed(1),color:"rgb("+Math.round(51*(34-i)/11)+",0,"+Math.round(85*(34-i)/11)+")",icon:"F<sub>"+i+"</sub>"}
+		return out
+	})()
 }
 function resizeResearch(x){
 	let size = 15

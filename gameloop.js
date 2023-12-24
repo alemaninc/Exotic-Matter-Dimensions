@@ -806,7 +806,7 @@ function tick(time) {																																		 // The game loop, which 
 		if ([0,1].includes(g.researchAutobuyerMode)) { // free research
 			let clock = Date.now()+1000
 			while (true) {
-				let buyable = buyableResearch.filter(x=>researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9")&&((research[x].group===undefined)||(g.researchAutobuyerMode===0)))
+				let buyable = buyableResearch.filter(x=>(research[x].type==="normal")&&researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9")&&((research[x].group===undefined)||(g.researchAutobuyerMode===0)))
 				if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
 				if (Date.now()>clock) {error("Infinite Loop");break}
 				for (let i of buyable) {if (researchCost(i).eq(c.d0)) {buySingleResearch(researchRow(i),researchCol(i))}} // check again for research with changing costs
