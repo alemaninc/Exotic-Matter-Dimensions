@@ -1658,7 +1658,7 @@ miscStats.axisCostExponent={
 		},
 		{
 			label:achievement.label(801),
-			func:function(prev){return MasteryE(62)?prev.pow(masteryEffect(62).pow(c.d0_1)):prev},
+			func:function(prev){return MasteryE(62)?prev.mul(masteryEffect(62).pow(c.d0_1)):prev},
 			text:function(){return "× "+masteryEffect(62).pow(c.d0_1).format(4)+" "+SSBsmall(masteryEffect(62).format(4),"0.1",3)},
 			dependencies:masteryDependencies(62),
 			show:function(){return g.achievement[801]&&MasteryE(62)}
