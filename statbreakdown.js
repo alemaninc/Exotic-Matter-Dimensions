@@ -2713,7 +2713,7 @@ miscStats.antiSAxisEffect={
 		{
 			label:"Study XII reward 3",
 			mod:function(){return Decimal.mul(achievement(526).effect(),studies[12].reward(3))},
-			func:function(prev){return prev.mul(this.mod())},
+			func:function(prev){return prev.add(this.mod())},
 			text:function(){return "+ "+this.mod().noLeadFormat(3)},
 			dependencies:["redLightEffect"],
 			show:function(){return this.mod().neq(c.d0)}
