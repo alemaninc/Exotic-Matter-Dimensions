@@ -1920,7 +1920,7 @@ function addLumens(x){
 	if (added.neq(c.d0)) {
 		g.chroma[x] = g.chroma[x].sub(costOfAffordableLumens(x)).fix(c.d0)
 		g.lumens[x] = g.lumens[x].add(added).fix(c.d0)
-		if (i===5) updateYellowLightCache()
+		if (x===5) updateYellowLightCache()
 	}
 }
 const lightEffect = [
