@@ -1064,7 +1064,7 @@ const achievementList = {
 			progress:function(){return (g.stars<=40&&g.darkstars.lte(c.d40))?achievement.percent(Decimal.add(g.stars,g.darkstars),c.d80,0):"Failed";},
 			get reward(){return "For every {} normal axis, gain 1 of the corresponding dark axis for free"+(axisCodes.map(i=>g[i+"Axis"]).reduce((x,y)=>x.max(y)).mul(this.effect()).gte(c.e2)?" (softcaps past 100)":"")},
 			flavor:"Does not include neutron stars, protostars, white dwarf stars, blue hypergiant stars nor starfish",
-			effect:function(y=this.yellowValue){return y.mul(c.d2).pow10().mul(c.d0_008)},
+			effect:function(y=this.yellowValue){return y.mul(c.d2).pow10().mul(c.d8em3)},
 			effectFormat:x=>x.recip().noLeadFormat(3),
 			yellowBreakpoints:[c.e4,c.e8,1]
 		},
@@ -1317,9 +1317,9 @@ const achievementList = {
 		705:{
 			name:"Nameless here for evermore",
 			description:"Make the dark energy effect go below 0.003",
-			check:function(){return stat.darkEnergyEffect.lt(c.d0_003)},
+			check:function(){return stat.darkEnergyEffect.lt(c.d3em3)},
 			event:"gameloop",
-			progress:function(){return achievement.percent(stat.darkEnergyEffect,c.d0_003,1)},
+			progress:function(){return achievement.percent(stat.darkEnergyEffect,c.d3em3,1)},
 			reward:"The third reward of Study III is 11.1% stronger",
 			flavor:"Give me two years and your dinner will be free"
 		},

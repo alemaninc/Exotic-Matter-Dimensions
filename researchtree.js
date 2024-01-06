@@ -249,7 +249,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(555555),
 			icon:icon.discovery+icon.arr+icon.normalaxis+icon.arrl+icon.darkaxis,
-			effect:function(power){return [g.totalDiscoveries.add(c.d1).log10(),researchPower(2,6),c.d0_005].productDecimals().add(c.d1)}
+			effect:function(power){return [g.totalDiscoveries.add(c.d1).log10(),researchPower(2,6),c.d5em3].productDecimals().add(c.d1)}
 		},
 		r2_7:{
 			description:function(){return "Increase the X Axis effect by "+researchEffect(2,7).noLeadFormat(2)+"% per OoM of spatial energy (current total: "+researchEffect(2,7).mul(g.spatialEnergy.log10()).format(1)+"%)";},
@@ -1856,7 +1856,7 @@ const research = (function(){
 			effect:function(power){return c.d1_12.pow(power)}
 		},
 		r36_1:{
-			description:function(){return "Gain "+researchEffect(36,1).noLeadFormat(2)+" free dark Y axis per anti-W axis, per anti-W axis  (total: "+researchEffect(36,1).mul(g.antiWAxis.pow(c.d2)).noLeadFormat(2)+")"},
+			description:function(){return "Gain "+researchEffect(36,1).noLeadFormat(2)+" free dark Y axis per anti-W axis, per anti-W axis (total: "+researchEffect(36,1).mul(g.antiWAxis.pow(c.d2)).noLeadFormat(2)+")"},
 			adjacent_req:["r34_3"],
 			condition:[studyReq(11,1)],
 			visibility:function(){return true},

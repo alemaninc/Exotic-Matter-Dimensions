@@ -963,7 +963,7 @@ miscStats.baseMasteryPowerExponent={
 		},
 		{
 			label:achievement.label(106),
-			func:function(prev){return g.achievement[106]?prev.add(c.d0_001):prev},
+			func:function(prev){return g.achievement[106]?prev.add(c.em3):prev},
 			text:function(){return "+ 0.001";},
 			show:function(){return g.achievement[106]}
 		},
@@ -1525,7 +1525,7 @@ miscStats.darkZAxisEffect={
 	modifiers:[
 		{
 			label:"Base",
-			func:function(){return g.exoticmatter.pow(c.d0_005).div(c.d10).add(c.d1).dilate(c.d0_2).pow(c.d0_2);},
+			func:function(){return g.exoticmatter.pow(c.d5em3).div(c.d10).add(c.d1).dilate(c.d0_2).pow(c.d0_2);},
 			text:function(){return "10 ^ "+unbreak("(log("+statFormat("EM",g.exoticmatter.format(0),"_exoticmatter")+" ^ 0.005 ÷ 10 + 1) ^ 0.2)")+" ^ 0.2";},
 			show:function(){return true}
 		},

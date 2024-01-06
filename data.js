@@ -159,7 +159,7 @@ const studies = [
 		reward:function(num,comp=g.studyCompletions[7]){
 			if (num===1) return [c.d0,N(50),N(75),N(90),N(100)][comp]
 			if (num===2) return [c.d0,c.d75,c.d90,N(98),c.d100][comp].mul(studyRewardBoost(7,2))
-			if (num===3) return [g.hawkingradiation.add(c.e10).log10().log10().pow(comp).sub(c.d1),c.d0_001,studyRewardBoost(7,3)].productDecimals().pow10().sub(c.d1)
+			if (num===3) return [g.hawkingradiation.add(c.e10).log10().log10().pow(comp).sub(c.d1),c.em3,studyRewardBoost(7,3)].productDecimals().pow10().sub(c.d1)
 			functionError("studies[7].reward",arguments)
 		},
 		reward_desc:function(){return [
@@ -535,7 +535,7 @@ const prismaticUpgrades = {
 		},
 		eff:{
 			x:(x=g.prismaticUpgrades.prismRune)=>x.div(c.d7).add(c.d1).pow(prismaticUpgrades.prismRune.eff1Exp()),
-			y:(x=g.prismaticUpgrades.prismRune)=>x.gt(142)?x.mul(c.d0_66744718112597245).sub(c.d46_34959730371034).log(c.d7):x.mul(c.d0_007).add(c.d1)
+			y:(x=g.prismaticUpgrades.prismRune)=>x.gt(142)?x.mul(c.d0_66744718112597245).sub(c.d46_34959730371034).log(c.d7):x.mul(c.d7em3).add(c.d1)
 		},
 		format:{
 			x:(x=prismaticUpgrades.prismRune.eff.x())=>x.noLeadFormat(2),
