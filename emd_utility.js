@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).2.3",
+	current:"𝕍1.5(b).2.4",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -146,6 +146,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_3			: Decimal.FC_NN(1,0,0.3),
 	sqrt0_1		: Decimal.FC_NN(1,0,0.31622776601683794),
 	d0_33			: Decimal.FC_NN(1,0,0.33),
+	d0_35			: Decimal.FC_NN(1,0,0.35),
 	d1div3		: Decimal.FC_NN(1,0,1/3), // 0.333
 	d0_4			: Decimal.FC_NN(1,0,0.4),
 	d0_42			: Decimal.FC_NN(1,0,0.42),
