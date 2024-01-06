@@ -63,16 +63,41 @@ function format(x,p=0){return gformat(N(x),p,notation)}
 const contributors = {
 	"Hedrauta":"#00cc00",
 	"IRAD":"#ff9933",
+	"st0ck53y":"#336699",
 	"the Celestial of Blob":"#fac112"
 }
 // Log entry format: [type, description, contributor (if applicable)]
 const logEntries = [
 	/*
+	next major:{name:"",changes:[
+		["BALANCE","Study of Studies now affects Achievement 604 \"Graduation\""],
+		["BALANCE","Achievement 712 \"Rewind\" now requires 3600 yellow lumens to be boosted (from 3500), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."]
+		["CONTENT","107 new research going up to row 47"]
+	]}
 	blank entry:
 	{name:"",changes:[
 
 	]},
 	*/
+	{name:"𝕍1.5(b).2 \"Trivial Tier 8\" (2024-01-06)",changes:[
+		["BALANCE","Refundable prismatic upgrades now refund their cost in prismatic when a level is lost"],
+		["BUGFIX?","Importing invalid research will now show a push notification instead of an error popup"],
+		["BUGFIX","Achievement 801 \"The Explorer\" reward which previously actually reduced production has been removed and replaced by a (much weaker) reward","st0ck53y"],
+		["FLAIR","Added an option to speed the news ticker up when Overclock is active"],
+		["INTERFACE","Achievement notifications now show the ID of the achievement given: this replaces the \"You have unlocked Tier <i>x</i> achievements!\" text"],
+		["INTERFACE","Secret achievements are now sorted alphabetically within their rarities"],
+		["INTERFACE","Mastery 101 now shows the ID of \"Wormhole to Somewhere\" (501)"],
+		["INTERFACE","Row 4 star icons are now correctly superscripted"],
+		["INTERFACE","Research 17-8 icon is less ugly"],
+		["INTERFACE","When a research or achievement with dynamic effect is selected, the displayed value will continually update until another is selected"],
+		["INTERFACE","Notification text colors now properly select between black and white"],
+		["INTERFACE","Achievement information is now displayed on tooltips rather than panels"],
+		["INTERFACE","The Tier 3 and Tier 5 achievement text colors are now darker"],
+		["MISCELLANEOUS","Large number visualisation now shows antimatter"],
+		["QOL","Added the option to lose all levels of a repeatable prismatic upgrade"],
+		["QOL","The previous prestige tracker no longer shows builds for 'last 10' resets, only shows builds which"],
+		["TEXTFIX","Formula for Galaxy Boost 5 showing \"undefined\""]
+	]},
 	{name:"𝕍1.5(b).1  \"Christmas for Some\" (2023-12-24)",changes:[
 		["QOL","Research autobuyer no longer buys Study research in the two modes currently available"],
 		["TEXTFIX","Removed the input box in the research autobuyer (which had no effect)"]

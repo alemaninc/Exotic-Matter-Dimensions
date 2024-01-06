@@ -228,6 +228,7 @@
 					<button class="optionsbutton" onClick="selectOption('footerDisplay',['All tabs','Only Axis tab','None'],'mode')" id="button_footerDisplay"></button>
 					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
 					<button class="optionsbutton" onClick="selectOption('newsTickerSpeed',[40,60,80,120,160,200,300,400,500,750,999],'speed')">News ticker speed: <span id="span_newsTickerSpeed"></span> px·s<sup>-1</sup></button>
+					<button class="optionsbutton" onClick="selectOption('newsTickerDilation',[0,0.0625,0.125,0.1875,0.25],'mode',x=>dictionary(x,[[0,'None'],[0.0625,'Weak'],[0.125,'Moderate'],[0.1875,'Strong'],[0.25,'Extreme']]))">News ticker acceleration on Overclock: <span id="span_newsTickerDilation"></span></button>
 				</div>
 				<div class="subtab options" id="subtab_options_hotkeys" style="display:none"></div>
 				<div class="subtab options" id="subtab_options_story" style="display:none">
@@ -251,6 +252,7 @@
 					<table id="SSBtable"></table>
 				</div>
 				<div class="subtab statistics" id="subtab_statistics_previousPrestiges" style="display:none">
+					<button class="featureConfig statistics" onClick="openConfig['Previous Prestiges']()"></button>
 					<div class="tier3navigation globalnavigation">
 						<button class="tabtier3 previousPrestigeTabButton" onClick="previousPrestige.showTab('div_previousStardustRuns')">Stardust</button>
 						<button class="tabtier3 previousPrestigeTabButton" onClick="previousPrestige.showTab('div_previousWormholeRuns')" style="display:none;filter:brightness(60%)" id="button_previousPrestige_wormholeTab">Wormhole</button>
@@ -274,12 +276,13 @@
 				<div class="subtab achievements" id="subtab_achievements_mainAchievements">
 					<button class="featureConfig achievements" onClick="openConfig['Achievement']()"></button>
 					<span id="span_noAchievements" style="display:none">You have not earned any Achievements yet.</span>
-					<div id="achievementContainer" style="padding-bottom:240px"></div>
-					<div id="achievementPanel" class="panel achievementPanel"></div>
+					<div id="achievementContainer"></div>
+					<div id="achievementInfo" class="achievementInfo" style="visibility:hidden"></div>
 				</div>
 				<div class="subtab achievements" id="subtab_achievements_secretAchievements" style="display:none">
-					<div id="secretAchievementContainer" style="padding-bottom:240px"></div>
-					<div id="secretAchievementPanel" class="panel achievementPanel"></div>
+					<p>You have <span id="span_secretAchievementPoints" class="big _achievements"></span> secret achievement points. Each secret achievement point gives a super-secret boost!</p>
+					<div id="secretAchievementContainer"></div>
+					<div id="secretAchievementInfo" class="achievementInfo" style="visibility:hidden"></div>
 				</div>
 				<div class="subtab achievements" id="subtab_achievements_wormholeMilestones" style="display:none">
 					<p>Gain increasing quality of life boosts as you complete more Tier 5 achievements. You currently have <span class="big _wormhole" id="span_wormholeMilestoneT5Achievements"></span> Tier 5 achievements.</p>

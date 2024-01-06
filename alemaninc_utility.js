@@ -182,7 +182,7 @@ function numword(num,precision=3) {
 			num -= amount*illionValue
 		}
 	}
-	out += illionOut.joinWithAnd()
+	out += (illionOut[illionOut.length-1].includes("and"))?illionOut.join(", "):illionOut.joinWithAnd()
 	if (num%1!==0&&precision>0) {
 		let decimals = String(num.toFixed(precision)).slice(2).split("")
 		while (decimals[decimals.length-1]==="0") decimals.splice(decimals.length-1)
@@ -224,9 +224,10 @@ const d = {		// d for "document"
 		else d.element(id).setAttribute("hidden","hidden");
 	}
 };
-function blackOrWhiteContrast(hex) {
-	let rgb = [parseInt(hex.substring(1,3),16),parseInt(hex.substring(3,5),16),parseInt(hex.substring(5,7),16)]
-	let sum = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
+function hexToRGB(color) {return "rgb("+[parseInt(color.substring(1,3),16),parseInt(color.substring(3,5),16),parseInt(color.substring(5,7),16)].join(",")+")"}
+function blackOrWhiteContrast(color) {
+	let rgb = color.replaceAll(/[^0-9|,]/g,"").split(",").map(x=>Number(x))
+	let sum = Math.round((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114));
 	return (sum >= 128)?"#000000":"#ffffff";
 }
 const viewportHeight = window.innerHeight
@@ -265,3 +266,9 @@ function primeFactors(num) {
 	}
 	return primes
 }
+var body = document.body
+var html = document.documentElement
+function pageHeight() {return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight)}
+function pageWidth() {return Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth)}
+function scrollX() {return Math.max(body.scrollLeft,html.scrollLeft)}
+function scrollY() {return Math.max(body.scrollTop,html.scrollTop)}

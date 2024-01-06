@@ -158,6 +158,7 @@ function updateHTML() {
 			d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
 			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
 			d.innerHTML("span_newsTickerSpeed",g.newsTickerSpeed)
+			d.innerHTML("span_newsTickerDilation",dictionary(g.newsTickerDilation,[[0,"None"],[0.0625,"Weak"],[0.125,"Moderate"],[0.1875,"Strong"],[0.25,"Extreme"]]))
 		} else if (g.activeSubtabs.options==="hotkeys") {
 			for (let name in hotkeys.hotkeyList) {
 				let hotkey = hotkeys.hotkeyList[name]
@@ -245,12 +246,18 @@ function updateHTML() {
 				if (stardustExists) {
 					d.innerHTML("span_last10StardustRuns_time"+i,timeFormat(g.previousStardustRuns.last10[i-1].time))
 					d.innerHTML("span_last10StardustRuns_gain"+i,BEformat(g.previousStardustRuns.last10[i-1].gain))
+					d.innerHTML("span_last10StardustRuns_notes"+i,[
+						// no notes yet
+					].filter(x=>x[1]).map(x=>x[0]).join("; "))
 				}
 				let wormholeExists = i<=g.previousWormholeRuns.last10.length
 				d.tr("last10WormholeRuns_row"+i,wormholeExists)
 				if (wormholeExists) {
 					d.innerHTML("span_last10WormholeRuns_time"+i,timeFormat(g.previousWormholeRuns.last10[i-1].time))
 					d.innerHTML("span_last10WormholeRuns_gain"+i,BEformat(g.previousWormholeRuns.last10[i-1].gain))
+					d.innerHTML("span_last10WormholeRuns_notes"+i,[
+						["Study "+roman(Math.max(g.previousWormholeRuns.last10[i-1].study,1)),g.previousWormholeRuns.last10[i-1].study!==0]
+					].filter(x=>x[1]).map(x=>x[0]).join("; "))
 				}
 				if (i===1) {
 					d.tr("last10StardustRuns_row0",!stardustExists)
@@ -291,6 +298,19 @@ function updateHTML() {
 				d.element("div_achievement"+i).style["background-color"] = "rgba(0,"+(fullCompletion?"255,0":"204,204")+",0.5)"
 				d.element("div_achievement"+i).style["border-color"] = "#00"+(fullCompletion?"ff00":"cccc")
 			}
+			if (achievement.selected!==undefined) {
+				d.element("achievementInfo").style.visibility = "visible"
+				showAchievementInfo(achievement.selected)
+			} else {
+				d.element("achievementInfo").style.visibility = "hidden"
+			}
+		} else if (g.activeSubtabs.achievements==="secretAchievements") {
+			if (achievement.secretSelected!==undefined) {
+				d.element("secretAchievementInfo").style.visibility = "visible"
+				showSecretAchievementInfo(achievement.secretSelected)
+			} else {
+				d.element("secretAchievementInfo").style.visibility = "hidden"
+			}
 		} else if (g.activeSubtabs.achievements==="wormholeMilestones") {
 			d.innerHTML("span_wormholeMilestoneT5Achievements",achievement.ownedInTier(5))
 			let tier5achs = achievement.ownedInTier(5)
@@ -301,9 +321,9 @@ function updateHTML() {
 				d.display("div_wormholeMilestone"+i,allUnlocked?"inline-block":(Number(nextMilestoneNum)>=Number(i))?"inline-block":"none")
 				d.element("div_wormholeMilestone"+i).style.filter = allUnlocked?"":(nextMilestoneNum===i)?"brightness(50%)":""
 			}
-			d.innerHTML("span_wormholeMilestone9Effect",stat.wormholeMilestone9Effect.format(4))
-			d.innerHTML("span_wormholeMilestone18Effect",timeFormat(wormholeMilestone18Effect()))
-			d.innerHTML("span_wormholeMilestone27Effect",wormholeMilestone27Effect().format(2))
+			d.innerHTML("span_wormholeMilestone9Effect",showFormulas?formulaFormat(wormholeMilestone9Formula()):stat.wormholeMilestone9Effect.format(4))
+			d.innerHTML("span_wormholeMilestone18Effect",showFormulas?formulaFormat(wormholeMilestone18Formula()):timeFormat(wormholeMilestone18Effect()))
+			d.innerHTML("span_wormholeMilestone27Effect",showFormulas?formulaFormat(wormholeMilestone27Formula()):wormholeMilestone27Effect().format(2))
 		}
 	}
 	if (g.activeTab==="stardust") {
@@ -456,6 +476,7 @@ function updateHTML() {
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10) × 10",stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
 			d.innerHTML("span_knowledgePerSec",stat.knowledgePerSec.format(2));
 			d.element("researchContainer").style["padding-bottom"] = d.element("discoveryPanel").clientHeight+"px"
+			if (researchSelected !== "") {(researchSelected==="u")?unknownResearchInfo():showResearchInfo(researchRow(researchSelected),researchCol(researchSelected))}
 			d.display("button_projectedResearchCost",unlocked("Light")?"inline-block":"none")
 			for (let i=0;i<4;i++) {
 				d.element("button_observation"+i).style["background-color"] = g[observationResources[i]].gte(observationCost(i))?"rgba(179,204,255,0.75)":"rgba(128,153,204,0.75)"
@@ -463,9 +484,7 @@ function updateHTML() {
 			}
 			d.element("button_researchRespec").style["background-color"] = g.researchRespec?"rgba(128,255,204,0.75)":"rgba(179,204,255,0.75)";
 			d.element("button_buyMaxResearch").style["background-color"] = g.buyMaxResearch?"rgba(255,204,128,0.75)":"rgba(179,204,255,0.75)";
-			if (showingResearchLoadouts) {
-				for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),"researchLoadout"+(researchLoadoutSelected===(i+1)?" selected":""))
-			}
+			if (showingResearchLoadouts) {for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),"researchLoadout"+(researchLoadoutSelected===(i+1)?" selected":""))}
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
 			if (visibleStudies().includes(11)) d.innerHTML("button_research_r33_3_visible",research.r33_3.icon)
@@ -489,7 +508,7 @@ function updateHTML() {
 				d.innerHTML("span_"+name+"Chroma",g.chroma[i].format())
 				d.innerHTML("span_"+name+"Lumens",g.lumens[i].format())
 				d.innerHTML("span_"+name+"LumenReq",lumenReq(i).format())
-				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i===5?lightCache.currentEffect[5].length:g.showLightEffectsFrom0?lightEffect[i].format(lightCache.currentEffect[i]):arrowJoin(lightEffect[i].format(lightCache.currentEffect[i]),lightEffect[i].format(lightCache.nextEffect[i])))
+				d.innerHTML("span_"+lightNames[i]+"LightEffect",showFormulas?formulaFormat(lightEffect[i].formula()):i===5?yellowLight.currentAffected.length:g.showLightEffectsFrom0?lightEffect[i].format(stat[lightNames[i]+"LightEffect"]):arrowJoin(lightEffect[i].format(stat[lightNames[i]+"LightEffect"]),lightEffect[i].format(stat[lightNames[i]+"LightEffectNext"])))
 				if (g.achievement[815]&&g.ach815RewardActive) {
 					d.display("button_"+name+"ChromaGen","none")
 					d.element("div_"+name+"Light").style.height = "175px"
@@ -501,12 +520,12 @@ function updateHTML() {
 					else {d.innerHTML("button_"+name+"ChromaGen",((g.activeChroma===i)?"Stop converting":"Convert")+" "+stat.chromaPerSec.mul(chromaCostFactor(i)).format(2)+" "+lightComponents(i).map(x=>lightNames[x]).joinWithAnd()+" chroma to "+stat.chromaPerSec.format(2)+" "+lightNames[i]+" chroma per second")}
 				}
 			}
-			d.innerHTML("span_greenLightBoost",arrowJoin(lightCache.currentEffect[1].pow(g.SAxis).format(2),lightCache.nextEffect[1].pow(g.SAxis).format(2)))
+			d.innerHTML("span_greenLightBoost",g.showLightEffectsFrom0?stat.greenLightEffect.pow(g.SAxis).format(2):arrowJoin(stat.greenLightEffect.pow(g.SAxis).format(2),stat.greenLightEffectNext.pow(g.SAxis).format(2)))
 			if (lightTiersUnlocked()>1) {
-				d.innerHTML("span_cyanLightBoost",arrowJoin(researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.currentEffect[3].mul(stat.observationEffect)).format(2),researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.nextEffect[3].mul(stat.observationEffect)).format(2)))
-				d.innerHTML("span_magentaLightBoost",arrowJoin(stat.masteryTimer.pow(lightCache.currentEffect[4]).format(2),stat.masteryTimer.pow(lightCache.nextEffect[4]).format(2)))
-				d.innerHTML("button_reviewYellowLight0",g.lumens[5].gte(c.d200)?"See currently affected":"See next effect")
-				d.innerHTML("span_cyanLightSign",lightCache.currentEffect[3].gte(c.d10)?"×":"%")
+				d.innerHTML("span_cyanLightBoost",g.showLightEffectsFrom0?researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(stat.cyanLightEffect.mul(stat.observationEffect)).format(2):arrowJoin(researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(stat.cyanLightEffect.mul(stat.observationEffect)).format(2),researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(stat.cyanLightEffectNext.mul(stat.observationEffect)).format(2)))
+				d.innerHTML("span_magentaLightBoost",g.showLightEffectsFrom0?stat.masteryTimer.pow(stat.magentaLightEffect).format(2):arrowJoin(stat.masteryTimer.pow(stat.magentaLightEffect).format(2),stat.masteryTimer.pow(stat.magentaLightEffectNext).format(2)))
+				d.innerHTML("button_reviewYellowLight0",g.showLightEffectsFrom0?"See currently affected":"See next effect")
+				d.innerHTML("span_cyanLightSign",stat.cyanLightEffect.gte(c.d10)?"×":"%")
 			}
 			if (lightTiersUnlocked()>2) {
 				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
@@ -651,7 +670,6 @@ function tick(time) {																																		 // The game loop, which 
 		g.dilatedTime += diff
 		time -= diff
 	}
-	for (let i=0;i<9;i++) {if (lightData[i].updateEveryTick !== undefined) {if (lightData[i].updateEveryTick()) updateLightCache(i)}}
 	g.timePlayed+=time;
 	g.timeThisStardustReset+=time;
 	g.timeThisWormholeReset+=time;
@@ -685,8 +703,8 @@ function tick(time) {																																		 // The game loop, which 
 	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
 	if (stat.chromaPerSec.gte(c.d1)) g.ach711Progress = Math.min(g.ach711Progress,g.stars)
 	if (g.ach825possible) {for (let i of axisCodes) {
-		if (Decimal.lt(stat["real"+i+"Axis"],g[i+"Axis"].mul(c.d2))) g.ach825possible = false
-		if (Decimal.lt(stat["realdark"+i+"Axis"],g["dark"+i+"Axis"].mul(c.d2))) g.ach825possible = false
+		if (Decimal.lt(stat["free"+i+"Axis"],g[i+"Axis"].mul(c.d2))) g.ach825possible = false
+		if (Decimal.lt(stat["freedark"+i+"Axis"],g["dark"+i+"Axis"].mul(c.d2))) g.ach825possible = false
 	}}
 	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
 		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
@@ -694,6 +712,7 @@ function tick(time) {																																		 // The game loop, which 
 			newsSupport.newsletter.spamStart=Date.now()+3000
 		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
 	}
+	o.add("ach901Int",g.exoticmatter.add(c.d1).log10().pow(c.d10))
 	
 	
 	// Dark Matter section
@@ -821,7 +840,8 @@ function tick(time) {																																		 // The game loop, which 
 	if (g.autosaveIsOn && savecounter > 0) save();
 }
 function auto_tick() {
-	deltatime=Math.max(0,(Date.now()-olddelta)/1000);
+	deltatime=(Date.now()-olddelta)/1000;
+	if (deltatime<0) {addSecretAchievement(43);deltatime=0}
 	olddelta+=deltatime*1000
 	getRealOverclockSpeedup()
 	tick(deltatime*overclockSpeedupFactor);
@@ -840,11 +860,9 @@ function fineGrainTick() {
 		d.element("newsline").style["color"] = (Date.now()<newsSupport.interestingTickerActiveUntil)?("hsl("+((Date.now()*0.06+180)%360)+" 100% 50%)"):""
 		let transitionProgress = currentNewsOffset/(window.innerWidth+d.element("newsline").offsetWidth)
 		if ((transitionProgress > 1)||(transitionProgress < 0)) {
-			d.innerHTML("newsline",randomNewsItem())
-			currentNewsOffset = transitionProgress>1?0:(window.innerWidth+d.element("newsline").offsetWidth)
-			d.element("newsline").style.left = "calc(100vw - "+currentNewsOffset+"px)"
+			nextNewsItem(transitionProgress<0)
 		} else {
-			currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001*((Date.now()<newsSupport.interestingTickerActiveUntil)?Math.max((3*Math.sin(Date.now()/500)-1)*Math.tan(Date.now()/3000),-2):1)
+			currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001*((Date.now()<newsSupport.interestingTickerActiveUntil)?Math.max((3*Math.sin(Date.now()/500)-1)*Math.tan(Date.now()/3000),-2):1)*(overclockSpeedupFactor**g.newsTickerDilation)
 			d.element("newsline").style.left = (currentNewsOffset<0)?"100vw":("calc(100vw - "+currentNewsOffset+"px)")
 		}
 	} else {

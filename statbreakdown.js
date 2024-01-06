@@ -154,7 +154,8 @@ const largeNumberVisualizationVariables = [
 	{label:"dark matter",class:"_darkmatter",value:function(){return g.darkmatter}},
 	{label:"dark energy",class:"_energy",value:function(){return g.darkEnergy}},
 	{label:"Hawking radiation",class:"_wormhole",value:function(){return g.hawkingradiation}},
-	{label:"knowledge",class:"_research",value:function(){return g.knowledge}}
+	{label:"knowledge",class:"_research",value:function(){return g.knowledge}},
+	{label:"antimatter",class:"_antimatter",value:function(){return g.antimatter}}
 ]
 const largeNumberVisualizationNumbers = [
 	{value:c.e10,name:"Dialogue"},
@@ -169,24 +170,24 @@ const largeNumberVisualizationNumbers = [
 	{value:N(8.4506e184),name:"volume of observable universe / l<span class=\"xscript\"><sup>3</sup><sub>P</sub></span>"},
 	{value:c.inf,name:"Double floating-point Infinity"},
 	{value:c.ee3,name:"\"When will it be enough?\" achievement requirement",visible:function(){return g.achievement[311]}},
-	{value:N(10).pow(3003),name:"Millillion"},
-	{value:N(2).pow(16384),name:"Quadruple floating-point Infinity"},
-	{value:N(2).pow(65536),name:"2↑↑5"},
+	{value:N(3003).pow10(),name:"Millillion"},
+	{value:c.d2.pow(16384),name:"Quadruple floating-point Infinity"},
+	{value:c.d2.pow(65536),name:"2↑↑5"},
 	{value:c.e44031,name:"\"OMCCDV\" achievement requirement",visible:function(){return g.achievement[413]}},
-	{value:N(2).pow(276709),name:"the Hitchhiker's number"},
+	{value:c.d2.pow(276709),name:"the Hitchhiker's number"},
 	{value:c.ee6,name:"\"Millionaire\" achievement requirement",visible:function(){return g.achievement[529]}},
-	{value:N(10).pow(3000003),name:"Micrillion"},
+	{value:N(3000003).pow10(),name:"Micrillion"},
 	{value:[c.e,c.pi,c.e,c.pi].decimalPowerTower().mul(794843294078147843293.7+1/30),name:"Ballium's number"},
-	{value:N(2).pow(82589933),name:"largest known prime number as of February 2023"},
-	{value:N(10).pow(3e9+3),name:"Nanillion"},
-	{value:N(10).pow(1e10),name:"Trialogue"},
-	{value:N(10).pow(3e12+3),name:"Picillion"},
-	{value:N(10).pow(3e15+3),name:"Femtillion"},
-	{value:N(10).pow(3e18),name:"Attillion"},
-	{value:N(10).pow(3e21),name:"Zeptillion"},
-	{value:N(10).pow(3e24),name:"Yoctillion"},
-	{value:N(10).pow(3e27),name:"Rontillion"},
-	{value:N(10).pow(3e30),name:"Quectillion"},
+	{value:c.d2.pow(82589933),name:"largest known prime number as of February 2023"},
+	{value:N(3e9+3).pow10(),name:"Nanillion"},
+	{value:c.ee10,name:"Trialogue"},
+	{value:N(3e12+3),name:"Picillion"},
+	{value:N(3e15+3),name:"Femtillion"},
+	{value:N(3e18).pow10(),name:"Attillion"},
+	{value:N(3e21).pow10(),name:"Zeptillion"},
+	{value:N(3e24).pow10(),name:"Yoctillion"},
+	{value:N(3e27).pow10(),name:"Rontillion"},
+	{value:N(3e30).pow10(),name:"Quectillion"},
 ]
 function largeNumberVisualizationShown(num) {
 	let out
@@ -282,8 +283,8 @@ const statTemplates = {
 	prestigeExponent:function(array){return [statTemplates.base("10",c.d10,false),...array,statTemplates.funcOnly(x=>x.log10())]},
 	row2Star:function(id){return {
 		label:"Star "+id,
-		func:function(prev){return g.star[id]?prev.add(c.d3):prev;},
-		text:function(){return "+ 3"},
+		func:function(prev){return g.star[id]?prev.add(starEffect(20)):prev;},
+		text:function(){return "+ "+starEffect(20).noLeadFormat(2)},
 		show:function(){return g.star[id]}
 	}},
 	row6Star:function(id){return {
@@ -394,6 +395,10 @@ const statTemplates = {
 			show:function(){return this.mod().neq(c.d0)}
 		};
 	},
+	ach905Reward:{
+		label:achievement.label(905),
+		func:function(prev){return }
+	},
 	timeResearch:function(row,col){
 		return {
 			label:"Research "+row+"-"+col,
@@ -416,7 +421,7 @@ const statTemplates = {
 	},
 	study9:{
 		label:"Study IX",
-		func:function(prev){return StudyE(9)&&prev.gt(c.d10)?prev.dilate(studies[9].experientiaEffect()):prev},
+		func:function(prev){return (StudyE(9)&&prev.gt(c.d10))?prev.dilate(studies[9].experientiaEffect()):prev},
 		text:function(){return "dilate "+studies[9].experientiaEffect().noLeadFormat(4)},
 		show:function(){return StudyE(9)},
 		color:"#cc0000"
@@ -428,6 +433,20 @@ const statTemplates = {
 		text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiYAxisEffect.noLeadFormat(3),stat.realantiYAxis.noLeadFormat(3),3)},
 		dependencies:["antiYAxisEffect","realantiYAxis"],
 		show:function(){return stat.antiYAxisEffect.neq(c.d1)&&stat.realantiYAxis.neq(c.d0)}
+	},
+	finalityResearch:function(type,op){
+		return {
+			label:"Finality Research",
+			mod:function(){
+				let out = c.d1
+				let res = finalityResearchList[type].slice(1,13)
+				for (let i of res) {if (g.research[res]) {out = out.mul(researchRow(i),researchCol(i))}}
+				return out
+			},
+			func:function(prev){return (op===3)?prev.pow(this.mod()):(op===2)?prev.mul(this.mod()):functionError("statTemplates.finalityResearch",arguments)},
+			text:function(){return "^ "+this.mod().noLeadFormat(4)},
+			show:function(){return g.research[finalityResearchList[type][1]]}
+		}
 	}
 }
 function statFormat(formulaShown,formulaHidden,className) {
@@ -567,6 +586,7 @@ miscStats.exoticmatterPerSec={
 			text:function(){return "^ 1.05";},
 			show:function(){return g.achievement[401]}
 		},
+		statTemplates.finalityResearch("EM",3),
 		statTemplates.study7,
 		statTemplates.study9,
 		statTemplates.tickspeed()
@@ -716,6 +736,7 @@ miscStats.stardustExponent={
 			text:function(){return "× "+galaxyEffects[2].penalty.value().pow(40-g.stars).noLeadFormat(3)+" "+SSBsmall(galaxyEffects[2].penalty.value().noLeadFormat(3),"(40 - "+g.stars+")",3)},
 			show:function(){return galaxyEffects[2].penalty.value().neq(c.d1)&&(g.stars<40)}
 		},
+		statTemplates.finalityResearch("S",2),
 		statTemplates.study7
 	]
 };
@@ -736,7 +757,7 @@ miscStats.darkmatterPerSec={
 			label:"Dark Stars",
 			func:function(prev){return prev.aps(darkStarEffect1())},
 			text:function(){return "(<i>x</i> + 1) ^ "+darkStarEffect1().noLeadFormat(3)+" - 1"},
-			dependencies:["realDarkStars"],
+			dependencies:["realDarkStars","redLightEffect"],
 			show:function(){return stat.realDarkStars.neq(c.d0)}
 		},
 		{
@@ -824,6 +845,7 @@ miscStats.darkmatterPerSec={
 			dependencies:["gravitationalEnergyEffect"],
 			show:function(){return stat.gravitationalEnergyEffect.neq(c.d1)}
 		},
+		statTemplates.finalityResearch("DM",3),
 		statTemplates.study7,
 		statTemplates.study9,
 		{
@@ -842,7 +864,7 @@ miscStats.darkMatterFreeAxis={
 	category:"Dark Matter",
 	precision:4,
 	modifiers:[
-		statTemplates.base("0.33",N(0.33),true),
+		statTemplates.base("0.33",c.d0_33,true),
 		{
 			label:"Tier 3 achievements",
 			func:function(prev){return prev.mul(achievement.perAchievementReward[3].currentVal)},
@@ -948,9 +970,10 @@ miscStats.baseMasteryPowerExponent={
 		statTemplates.masteryAdd(85),
 		{
 			label:"Magenta Light",
-			func:function(prev){return prev.add(lightCache.currentEffect[4])},
-			text:function(){return "+ "+lightEffect[4].format(lightCache.currentEffect[4])},
-			show:function(){return lightCache.currentEffect[4].neq(c.d0)}
+			func:function(prev){return prev.add(stat.magentaLightEffect)},
+			text:function(){return "+ "+lightEffect[4].format(stat.magentaLightEffect)},
+			dependencies:["magentaLightEffect"],
+			show:function(){return stat.magentaLightEffect.neq(c.d0)}
 		},
 		{
 			label:achievement.label(707),
@@ -993,7 +1016,7 @@ miscStats.masteryTimer={
 			func:function(prev){return studies[8].reward(3).mul(deltaBaseMasteryPowerGain()).add(prev)},
 			text:function(){return "+ "+studies[8].reward(3).mul(deltaBaseMasteryPowerGain()).format(2)+" "+SSBsmall(studies[8].reward(3).noLeadFormat(2),deltaBaseMasteryPowerGain().noLeadFormat(2),2)},
 			show:function(){return studies[8].reward(3).neq(c.d0)},
-			dependencies:["tickspeed"]
+			dependencies:["redLightEffect","tickspeed"]
 		}
 	]
 }
@@ -1282,9 +1305,10 @@ miscStats.TAxisEffect={
 		statTemplates.res1_8,
 		{
 			label:"Green Light",
-			func:function(prev){return prev.mul(lightCache.currentEffect[1].pow(g.SAxis))},
-			text:function(){return "× "+lightCache.currentEffect[1].pow(g.SAxis).format(2)+" "+SSBsmall(lightCache.currentEffect[1].noLeadFormat(2),g.SAxis.format(),3)},
-			show:function(){return lightCache.currentEffect[1].neq(c.d1)&&g.SAxis.neq(c.d0)}
+			func:function(prev){return prev.mul(stat.greenLightEffect.pow(g.SAxis))},
+			text:function(){return "× "+stat.greenLightEffect.pow(g.SAxis).format(2)+" "+SSBsmall(stat.greenLightEffect.noLeadFormat(2),g.SAxis.format(),3)},
+			dependencies:["greenLightEffect"],
+			show:function(){return stat.greenLightEffect.neq(c.d1)&&g.SAxis.neq(c.d0)}
 		},
 		{
 			label:"Research 5-1",
@@ -1657,13 +1681,6 @@ miscStats.axisCostExponent={
 			show:function(){return stat.dimensionalEnergyEffect.neq(c.d1)}
 		},
 		{
-			label:achievement.label(801),
-			func:function(prev){return MasteryE(62)?prev.pow(masteryEffect(62).pow(c.d0_1)):prev},
-			text:function(){return "× "+masteryEffect(62).pow(c.d0_1).format(4)+" "+SSBsmall(masteryEffect(62).format(4),"0.1",3)},
-			dependencies:masteryDependencies(62),
-			show:function(){return g.achievement[801]&&MasteryE(62)}
-		},
-		{
 			label:"Trifolium "+luckUpgrades.trifolium.normalAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.normalAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.normalAxis.eff().format(3)},
@@ -1691,6 +1708,7 @@ miscStats.darkAxisCostDivisor={
 			label:achievement.label(709),
 			func:function(prev){return g.achievement[709]?prev.mul(achievement(501).realEffect()):prev},
 			text:function(){return "× "+achievement(501).realEffect().format(2)},
+			dependencies:masteryDependencies(101),
 			show:function(){return g.achievement[709]}
 		},
 		statTemplates.study9,
@@ -1828,7 +1846,7 @@ miscStats.energyGainSpeed={
 		statTemplates.tickspeed(()=>[
 			g.achievement[408]?achievement(408).effect():c.d1,
 			studies[10].reward(3)
-		].sumDecimals())
+		].sumDecimals(),"Tickspeed",["redLightEffect"])
 	]
 };
 miscStats.energyEffectBoost={
@@ -1910,9 +1928,9 @@ miscStats.tickspeed={
 		},
 		{
 			label:"Wormhole Milestone 13",
-			mod:function(){return totalAchievements/400+1;},
+			mod:function(){return Decimal.FC_NN(1,0,totalAchievements/400+1);},
 			func:function(prev){return (achievement.ownedInTier(5)>12)?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().toFixed(4);},
+			text:function(){return "× "+this.mod().noLeadFormat(4);},
 			show:function(){return achievement.ownedInTier(5)>12}
 		},
 		{
@@ -1941,6 +1959,13 @@ miscStats.tickspeed={
 			text:function(){return "× "+stat.temporalEnergyEffect.format(4)},
 			dependencies:["temporalEnergyEffect"],
 			show:function(){return stat.temporalEnergyEffect.neq(c.d1)}
+		},
+		{
+			label:"Research 37-1",
+			func:function(prev){return g.research.r37_1?prev.mul(researchEffect(37,1)):prev},
+			text:function(){return "× "+researchEffect(37,1).noLeadFormat(3)},
+			dependencies:["TAxisEffect","realTAxis","darkTAxisEffect","realdarkTAxis","antiTAxisEffect","realantiTAxis"],
+			show:function(){return g.research.r37_1}
 		},
 		{
 			label:"Galaxy Penalty 5",
@@ -2021,9 +2046,10 @@ miscStats.HRBaseExponent={
 		statTemplates.base("1",c.d1,false),
 		{
 			label:"Blue Light",
-			func:function(prev){return prev.mul(lightCache.currentEffect[2])},
-			text:function(){return "× "+lightEffect[2].format(lightCache.currentEffect[2])},
-			show:function(){return lightCache.currentEffect[2].neq(c.d1)}
+			func:function(prev){return prev.mul(stat.blueLightEffect)},
+			text:function(){return "× "+lightEffect[2].format(stat.blueLightEffect)},
+			dependencies:["blueLightEffect"],
+			show:function(){return stat.blueLightEffect.neq(c.d1)}
 		}
 	]
 }
@@ -2056,7 +2082,7 @@ miscStats.HRMultiplier={
 			mod:function(){return stat.tickspeed.pow(researchEffect(8,2));},
 			func:function(prev){return g.research.r8_2?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.tickspeed.format(2),researchEffect(8,2).noLeadFormat(4),3);},
-			dependencies:["tickspeed"],
+			dependencies:["redLightEffect","tickspeed"],
 			show:function(){return g.research.r8_2&&stat.tickspeed.neq(c.d1)&&researchEffect(8,2).neq(c.d0)}
 		},
 		{
@@ -2069,6 +2095,7 @@ miscStats.HRMultiplier={
 			label:"Study I reward 3",
 			func:function(prev){return prev.mul(studies[1].reward(3));},
 			text:function(){return "× "+studies[1].reward(3).noLeadFormat(2);},
+			dependencies:["redLightEffect"],
 			show:function(){return g.studyCompletions[1]>0}
 		},
 		...[601,610].map(x=>statTemplates.achievementMul(x)),
@@ -2079,6 +2106,12 @@ miscStats.HRMultiplier={
 			show:function(){return g.research.r15_9}
 		},
 		statTemplates.timeResearch(16,7),
+		{
+			label:achievement.label(801),
+			func:function(prev){return g.achievement[801]?Decimal.FC_NN(1,0,achievement.ownedInTier(8)).mul(prev):prev},
+			text:function(){return "× "+achievement.ownedInTier(8)},
+			show:function(){return g.achievement[801]&&(achievement.ownedInTier(8)>1)}
+		},
 		{
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.radiation.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.radiation.eff())},
@@ -2107,7 +2140,8 @@ miscStats.HRExponent={
 			text:function(){return "× "+stat.vacuumEnergyEffect.format(4)},
 			dependencies:["vacuumEnergyEffect"],
 			show:function(){return stat.vacuumEnergyEffect.neq(c.d1)}
-		}
+		},
+		statTemplates.finalityResearch("HR",2),
 	]
 };
 for (let i=0;i<axisCodes.length;i++) {
@@ -2149,11 +2183,26 @@ for (let i=0;i<axisCodes.length;i++) {
 		text:function(){return "+ "+luckShardEffect1().format(2)},
 		show:function(){return unlocked("Luck")}
 	})
-	if (i<7) out.push({
-		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
-		func:function(prev){return prev.add(g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
-		text:function(){return "+ "+g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g["dark"+type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
-		show:function(){return effLuckUpgradeLevel("cinquefolium","axis").neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+	if (i<7) out.push(
+		{
+			label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
+			func:function(prev){return prev.add(g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
+			text:function(){return "+ "+g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g["dark"+type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
+			show:function(){return effLuckUpgradeLevel("cinquefolium","axis").neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+		},
+		{
+			label:"Research 34-4",
+			func:function(prev){return g.research.r34_4?prev.add(researchEffect(34,4)):prev},
+			text:function(){return "+ "+researchEffect(34,4).format(2)},
+			show:function(){return g.research.r34_4}
+		}
+	)
+	if (i===1) out.push({
+		label:"Research 36-1",
+		mod:function(){return g.antiWAxis.pow(c.d2).mul(researchEffect(36,1))},
+		func:function(prev){return g.research.r36_1?prev.add(this.mod()):prev},
+		text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(SSBsmall(g.antiWAxis.format(),"2",3),researchEffect(36,1).noLeadFormat(2),2)},
+		show:function(){return g.research.r36_1&&g.antiWAxis.neq(c.d0)}
 	})
 	// multiplicative effects
 	// softcap
@@ -2190,10 +2239,11 @@ miscStats.knowledgePerSec={
 		},
 		{
 			label:"Research 7-5 (Cyan Light)",
-			mod:function(){return researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(lightCache.currentEffect[3]);},
+			mod:function(){return researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(stat.cyanLightEffect);},
 			func:function(prev){return g.research.r7_5?prev.mul(this.mod()):prev},
-			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(researchEffect(7,5).mul(totalAchievements).add(c.d1).format(3),lightCache.currentEffect[3].noLeadFormat(3),3);},
-			show:function(){return g.research.r7_5&&researchEffect(7,5).neq(c.d0)&&totalAchievements>0&&lightCache.currentEffect[3].neq(c.d0)}
+			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(researchEffect(7,5).mul(totalAchievements).add(c.d1).format(3),stat.cyanLightEffect.noLeadFormat(3),3);},
+			dependencies:["cyanLightEffect"],
+			show:function(){return g.research.r7_5&&researchEffect(7,5).neq(c.d0)&&(totalAchievements>0)&&stat.cyanLightEffect.neq(c.d0)}
 		},
 		statTemplates.tickspeed(()=>studies[6].reward(2),"Study VI reward 2"),
 		{
@@ -2225,6 +2275,7 @@ miscStats.knowledgePerSec={
 			dependencies:["mentalEnergyEffect"],
 			show:function(){return stat.mentalEnergyEffect.neq(c.d1)}
 		},
+		statTemplates.finalityResearch("K",3),
 		statTemplates.tickspeed()
 	]
 };
@@ -2323,8 +2374,9 @@ miscStats.chromaPerSec={
 		},
 		{
 			label:"Gray Light",
-			func:function(prev){return prev.mul(lightCache.currentEffect[8])},
-			text:function(){return "× "+lightCache.currentEffect[8].format()},
+			func:function(prev){return prev.mul(stat.grayLightEffect)},
+			text:function(){return "× "+stat.grayLightEffect.format()},
+			dependencies:["grayLightEffect"],
 			show:function(){return g.lumens[8].neq(c.d0)}
 		},
 		{
@@ -2360,8 +2412,9 @@ miscStats.chromaCostMultiplier={
 		statTemplates.base("1",c.d1,false),
 		{
 			label:"Black Light",
-			func:function(prev){return prev.mul(lightCache.currentEffect[7])},
-			text:function(){return "÷ "+lightCache.currentEffect[7].recip().noLeadFormat(3)},
+			func:function(prev){return prev.mul(stat.blackLightEffect)},
+			text:function(){return "÷ "+stat.blackLightEffect.recip().noLeadFormat(3)},
+			dependencies:["blackLightEffect"],
 			show:function(){return g.lumens[7].neq(c.d0)}
 		},
 		{
@@ -2389,6 +2442,7 @@ miscStats.luckShardsPerSec={
 			label:"Base (Study VII reward 3)",
 			func:function(){return studies[7].reward(3)},
 			text:function(){return studies[7].reward(3).format(3)},
+			dependencies:["redLightEffect"],
 			show:function(){return true}
 		},
 		statTemplates.achievementMul(807),
@@ -2499,7 +2553,7 @@ miscStats.antimatterPerSec={
 			label:"Research 28-15",
 			mod:function(){return stat.antiTAxisEffect.pow(Decimal.mul(stat.realantiTAxis,researchEffect(28,15)))},
 			func:function(prev){return g.research.r28_15?prev.mul(this.mod()):prev},
-			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.antiTAxisEffect.format(2),researchEffect(28,15).eq(c.d1)?SSBsmall(stat.realantiTAxis.noLeadFormat(3),researchEffect(28,15).noLeadFormat(3),2):stat.realantiTAxis.noLeadFormat(3))},
+			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.antiTAxisEffect.format(2),researchEffect(28,15).eq(c.d1)?stat.realantiTAxis.noLeadFormat(3):SSBsmall(stat.realantiTAxis.noLeadFormat(3),researchEffect(28,15).noLeadFormat(3),2),3)},
 			dependencies:["antiTAxisEffect","realantiTAxis"],
 			show:function(){return g.research.r28_15}
 		},
@@ -2511,6 +2565,7 @@ miscStats.antimatterPerSec={
 			dependencies:["antiSAxisEffect","freeantiSAxis"],
 			show:function(){return stat.antiSAxisEffect.neq(c.d1)&&stat.realantiSAxis.neq(c.d0)}
 		},
+		statTemplates.finalityResearch("AM",3),
 		{
 			label:"Study IX reward 1",
 			func:function(prev){return (g.studyCompletions[9]===4)?prev:prev.layerf(x=>Math.max(x-studies[9].reward(1),-1))},
@@ -2654,7 +2709,15 @@ miscStats.antiSAxisEffect={
 	category:"Axis effects",
 	precision:2,
 	modifiers:[
-		statTemplates.base("1.015",N(1.015),true)
+		statTemplates.base("1.015",N(1.015),true),
+		{
+			label:"Study XII reward 3",
+			mod:function(){return Decimal.mul(achievement(526).effect(),studies[12].reward(3))},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "+ "+this.mod().noLeadFormat(3)},
+			dependencies:["redLightEffect"],
+			show:function(){return this.mod().neq(c.d0)}
+		}
 	]
 }
 for (let i=0;i<axisCodes.length;i++) {
@@ -2663,9 +2726,10 @@ for (let i=0;i<axisCodes.length;i++) {
 	// additive effects
 	if (i<7) out.push({
 		label:prismaticUpgradeName("prismCondenser"),
-		func:function(prev){return (i<prismaticUpgrades.prismCondenser.eff.y())?prev.add(prismaticUpgrades.prismCondenser.eff.x()):prev},
-		text:function(){return "+ "+prismaticUpgrades.prismCondenser.format.x()},
-		show:function(){return g.prismaticUpgrades.prismCondenser.neq(c.d0)}
+		mod:function(){return Decimal.mul(prismaticUpgrades.prismCondenser.eff.x(),Math.max(0,Math.min(1,stat.condenserPower-i)))},
+		func:function(prev){return prev.add(this.mod())},
+		text:function(){return "+ "+this.mod().noLeadFormat(4)},
+		show:function(){return this.mod().neq(c.d0)}
 	})
 	if (i===0) out.push(
 		{
@@ -2810,7 +2874,8 @@ miscStats.antiAxisScalingPower={
 }
 miscStats.antiAxisSuperscalingStart={
 	type:"combined",
-	value:function(){return c.d64.add(studies[11].reward(3))}
+	value:function(){return c.d64.add(studies[11].reward(3))},
+	dependencies:["redLightEffect"]
 }
 miscStats.antiAxisSuperscalingPower={
 	type:"combined",
@@ -3026,7 +3091,7 @@ miscStats.stardustUpgrade2AxisRetentionFactor={
 	}
 }
 miscStats.unspentStars={type:"combined",value:function(){return g.stars-totalStars}}
-miscStats.realDarkStars={type:"combined",value:function(){return realDarkStars()}}
+miscStats.realDarkStars={type:"combined",value:function(){return realDarkStars()},dependencies:["redLightEffect"]}
 miscStats.darkStarEffect3={type:"combined",value:function(){return darkStarEffect3()},dependencies:["realDarkStars"]}
 miscStats.darkStarScalingStart={
 	type:"combined",
@@ -3067,12 +3132,28 @@ miscStats.extraDiscoveries_mul={type:"combined",value:function(){
 	return out
 }}
 miscStats.chromaGainBase={type:"combined",value:function(){return g.achievement[607]?achievement(607).effect():c.d3}}
+for (let i=0;i<9;i++) {
+	if (i===5) continue; // yellow handled separately
+	let name = lightNames[i]
+	let dependencies = []
+	miscStats[name+"LightEffect"]={type:"combined",value:function(){return lightEffect[i].value()},dependencies:dependencies}
+	miscStats[name+"LightEffectNext"]={type:"combined",value:function(){return lightEffect[i].value(g.lumens[i].add(c.d1))},dependencies:dependencies}
+}
 miscStats.spatialSynergismPower={
 	type:"combined",
 	value:function(){return [
 		luckUpgrades.quatrefolium.synergism.eff(),
 		studies[9].reward(3).div(c.e2).add(c.d1)
-	].productDecimals()}
+	].productDecimals()},
+	dependencies:["redLightEffect"]
+}
+miscStats.condenserPower={
+	type:"combined",
+	value:function(){
+		let out = 3
+		if (g.achievement[825]) out += 0.1
+		return out
+	}
 }
 
 const statGenerations = {}

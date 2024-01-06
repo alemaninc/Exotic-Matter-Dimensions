@@ -348,6 +348,10 @@ tab {
 	border-color:rgba(0,255,0,0.7);
 	color:rgba(0,255,0,0.7);
 }
+.featureConfig.statistics {
+	background-color:rgba(0,153,0,0.9);
+	border-color:rgba(0,102,0,0.9);
+}
 .featureConfig.achievements {
 	background-color:rgba(170,102,0,0.9);
 	border-color:rgba(102,51,0,0.9);
@@ -869,10 +873,15 @@ tab {
 	border-width:2px;
 	margin:4px;
 }
-.achievementPanel {
-	height:240px;
-	font-size:16px;
-	background:linear-gradient(180deg,rgba(102,102,0,0.95),rgba(102,102,0,1));
+.achievementInfo {
+	position:fixed;
+	max-width:min(500px,calc(500vw - 70px));
+	font-size:14px;
+	text-align:center;
+	border-style:solid;
+	border-width:3px;
+	border-radius:12px;
+	padding:8px;
 }
 .dilationDiv {
 	width:450px;

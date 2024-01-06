@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).1",
+	current:"𝕍1.5(b).2",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -19,8 +19,13 @@ function halt() { // Terminates the game loop, used for debugging
 	clearInterval(fineGrainLoop);
 	gameHalted = true
 }
-function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toString(16).padStart(6,"0"),textColor=blackOrWhiteContrast(backgroundColor)) {
-	document.getElementById("notifyDiv").innerHTML = "<button style=\"background-color:"+backgroundColor+";color:"+textColor+";left:700px;cursor:pointer\" class=\"notification\" data-in=\""+Date.now()+"\" data-out=\""+(Date.now()+6000)+"\" onClick=\"this.dataset.out=Math.min(Date.now(),this.dataset.out)\">"+text+"</button><br>"+document.getElementById("notifyDiv").innerHTML
+function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toString(16).padStart(6,"0"),textColor) {
+	do {
+		var id = ranint(0,Number.MAX_SAFE_INTEGER) // widest range to minimise collisions
+	} while (d.element("button_notification"+id)!==null) // avoid collision
+	document.getElementById("notifyDiv").innerHTML = "<button id=\"button_notification"+id+"\" style=\"background-color:"+backgroundColor+";left:700px;cursor:pointer\" class=\"notification\" data-in=\""+Date.now()+"\" data-out=\""+(Date.now()+6000)+"\" onClick=\"this.dataset.out=Math.min(Date.now(),this.dataset.out)\">"+text+"</button><br>"+document.getElementById("notifyDiv").innerHTML
+	if (textColor===undefined) {textColor = blackOrWhiteContrast(getComputedStyle(d.element("button_notification"+id))["background-color"])}
+	d.element("button_notification"+id).style.color = textColor
 }
 function error(text) {
 	halt()
@@ -103,6 +108,7 @@ const c = deepFreeze({		 // c = "constant"
 	em16			: Decimal.FC_NN(1,1,-16),
 	em8				: Decimal.FC_NN(1,0,1e-8),
 	em4				: Decimal.FC_NN(1,0,1e-4),
+	d1_5em4		: Decimal.FC_NN(1,0,1.5e-4),
 	d0_0004		: Decimal.FC_NN(1,0,4e-4),
 	d7em4 		: Decimal.FC_NN(1,0,7e-4),
 	d0_0009		: Decimal.FC_NN(1,0,9e-4),
@@ -111,6 +117,8 @@ const c = deepFreeze({		 // c = "constant"
 	d0_003		: Decimal.FC_NN(1,0,3e-3),
 	d0_005		: Decimal.FC_NN(1,0,5e-3),
 	d0_006		: Decimal.FC_NN(1,0,6e-3),
+	d7em3			: Decimal.FC_NN(1,0,7e-3),
+	d0_008		: Decimal.FC_NN(1,0,8e-3),
 	d0_009		: Decimal.FC_NN(1,0,9e-3),
 	d0_01			: Decimal.FC_NN(1,0,0.01),
 	d0_0175		: Decimal.FC_NN(1,0,0.0175),
@@ -124,9 +132,11 @@ const c = deepFreeze({		 // c = "constant"
 	d0_059		: Decimal.FC_NN(1,0,0.059),
 	d0_07			: Decimal.FC_NN(1,0,0.07),
 	d0_075		: Decimal.FC_NN(1,0,0.075),
+	d0_08			: Decimal.FC_NN(1,0,0.08),
 	d0_0816		: Decimal.FC_NN(1,0,0.0816),
 	d0_085		: Decimal.FC_NN(1,0,0.085),
 	d0_1			: Decimal.FC_NN(1,0,0.1),
+	d1div9		: Decimal.FC_NN(1,0,1/9), // 0.111
 	d0_12			: Decimal.FC_NN(1,0,0.12),
 	d0_15			: Decimal.FC_NN(1,0,0.15),
 	d0_16			: Decimal.FC_NN(1,0,0.16),
@@ -137,20 +147,22 @@ const c = deepFreeze({		 // c = "constant"
 	d0_3			: Decimal.FC_NN(1,0,0.3),
 	sqrt0_1		: Decimal.FC_NN(1,0,0.31622776601683794),
 	d0_33			: Decimal.FC_NN(1,0,0.33),
-	d1div3		: Decimal.FC_NN(1,0,1/3),
+	d1div3		: Decimal.FC_NN(1,0,1/3), // 0.333
 	d0_4			: Decimal.FC_NN(1,0,0.4),
 	d0_42			: Decimal.FC_NN(1,0,0.42),
 	d0_45			: Decimal.FC_NN(1,0,0.45),
 	d0_5			: Decimal.FC_NN(1,0,0.5),
 	d0_6			: Decimal.FC_NN(1,0,0.6),
-	d2div3		: Decimal.FC_NN(1,0,2/3),
+	d2div3		: Decimal.FC_NN(1,0,2/3), // 0.667
+	d0_66744718112597245:Decimal.FC_NN(1,0,0.66744718112597245),
 	d0_7			: Decimal.FC_NN(1,0,0.7),
 	d0_7248191884897692:Decimal.FC_NN(1,0,0.7248191884897692),
 	d0_75			: Decimal.FC_NN(1,0,0.75),
 	d0_8			: Decimal.FC_NN(1,0,0.8),
-	d5div6		: Decimal.FC_NN(1,0,5/6),
+	d5div6		: Decimal.FC_NN(1,0,5/6), // 0.833
 	d0_9			: Decimal.FC_NN(1,0,0.9),
 	d0_95			: Decimal.FC_NN(1,0,0.95),
+	d0_97			: Decimal.FC_NN(1,0,0.97),
 	d0_99			: Decimal.FC_NN(1,0,0.99),
 	d0_995		: Decimal.FC_NN(1,0,0.995),
 	d0_999		: Decimal.FC_NN(1,0,0.999),
@@ -163,13 +175,16 @@ const c = deepFreeze({		 // c = "constant"
 	d1_01			: Decimal.FC_NN(1,0,1.01),
 	d1_02			: Decimal.FC_NN(1,0,1.02),
 	d1_025		: Decimal.FC_NN(1,0,1.025),
+	d1_026		: Decimal.FC_NN(1,0,1.026),
 	d1_03			: Decimal.FC_NN(1,0,1.03),
+	d1_0369		: Decimal.FC_NN(1,0,1.0369),
 	d1_04			: Decimal.FC_NN(1,0,1.04),
 	d1_05			: Decimal.FC_NN(1,0,1.05),
 	d1_06			: Decimal.FC_NN(1,0,1.06),
 	d1_08			: Decimal.FC_NN(1,0,1.08),
 	d1_1			: Decimal.FC_NN(1,0,1.1),
-	d10div9		: Decimal.FC_NN(1,0,10/9),
+	d10div9		: Decimal.FC_NN(1,0,10/9), // 1.111
+	d1_12			: Decimal.FC_NN(1,0,1.12),
 	d1_125		: Decimal.FC_NN(1,0,1.125),
 	d1_15			: Decimal.FC_NN(1,0,1.15),
 	d1_1907		: Decimal.FC_NN(1,0,1.1907),
@@ -179,7 +194,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_26			: Decimal.FC_NN(1,0,1.26),
 	d1_3			: Decimal.FC_NN(1,0,1.3),
 	d1_308		: Decimal.FC_NN(1,0,1.308),
-	d4div3		: Decimal.FC_NN(1,0,4/3),
+	d4div3		: Decimal.FC_NN(1,0,4/3), // 1.333
 	d1_337		: Decimal.FC_NN(1,0,1.337),
 	d1_379654224:Decimal.FC_NN(1,0,1.379654224),
 	d1_4			: Decimal.FC_NN(1,0,1.4),
@@ -191,7 +206,7 @@ const c = deepFreeze({		 // c = "constant"
 	d2_8			: Decimal.FC_NN(1,0,2.8),
 	pi				: Decimal.FC_NN(1,0,3.1415926535897932),
 	d3_3			: Decimal.FC_NN(1,0,3.3),
-	d10div3		: Decimal.FC_NN(1,0,10/3),
+	d10div3		: Decimal.FC_NN(1,0,10/3), // 3.333
 	d4				: Decimal.FC_NN(1,0,4),
 	d5				: Decimal.FC_NN(1,0,5),
 	d5_5			: Decimal.FC_NN(1,0,5.5),
@@ -202,6 +217,7 @@ const c = deepFreeze({		 // c = "constant"
 	d8_5			: Decimal.FC_NN(1,0,8.5),
 	d9				: Decimal.FC_NN(1,0,9),
 	d11				: Decimal.FC_NN(1,0,11),
+	d100div9	: Decimal.FC_NN(1,0,100/9), // 11.111
 	d12				: Decimal.FC_NN(1,0,12),
 	d13				: Decimal.FC_NN(1,0,13),
 	d14				: Decimal.FC_NN(1,0,14),
@@ -222,10 +238,12 @@ const c = deepFreeze({		 // c = "constant"
 	d36				: Decimal.FC_NN(1,0,36),
 	d40				: Decimal.FC_NN(1,0,40),
 	d45				: Decimal.FC_NN(1,0,45),
+	d46_34959730371034:Decimal.FC_NN(1,0,46.34959730371034),
 	d48				: Decimal.FC_NN(1,0,48),
 	d49				: Decimal.FC_NN(1,0,49),
 	d50				: Decimal.FC_NN(1,0,50),
 	d52				: Decimal.FC_NN(1,0,52),
+	d56				: Decimal.FC_NN(1,0,56),
 	d64				: Decimal.FC_NN(1,0,64),
 	d70				: Decimal.FC_NN(1,0,70),
 	d75				: Decimal.FC_NN(1,0,75),
@@ -246,6 +264,7 @@ const c = deepFreeze({		 // c = "constant"
 	d200			: Decimal.FC_NN(1,0,200),
 	d225			: Decimal.FC_NN(1,0,225),
 	d250			: Decimal.FC_NN(1,0,250),
+	d255			: Decimal.FC_NN(1,0,255),
 	d256			: Decimal.FC_NN(1,0,256),
 	d275			: Decimal.FC_NN(1,0,275),
 	d300			: Decimal.FC_NN(1,0,300),
@@ -267,7 +286,9 @@ const c = deepFreeze({		 // c = "constant"
 	d800			: Decimal.FC_NN(1,0,800),
 	d900			: Decimal.FC_NN(1,0,900),
 	d950			: Decimal.FC_NN(1,0,950),
+	d999			: Decimal.FC_NN(1,0,999),
 	d1100			: Decimal.FC_NN(1,0,1100),
+	d1404			: Decimal.FC_NN(1,0,1404),
 	d1500			: Decimal.FC_NN(1,0,1500),
 	d1609_344	: Decimal.FC_NN(1,0,1609.344),
 	d1800			: Decimal.FC_NN(1,0,1800),
@@ -276,6 +297,7 @@ const c = deepFreeze({		 // c = "constant"
 	d4800			: Decimal.FC_NN(1,0,4800),
 	d7e3			: Decimal.FC_NN(1,0,7e3),
 	d8e3			: Decimal.FC_NN(1,0,8e3),
+	d102400div9:Decimal.FC_NN(1,0,102400/9), // 11337.778
 	d18000		: Decimal.FC_NN(1,0,18000),
 	d44444		: Decimal.FC_NN(1,0,44444),
 	d5e4			: Decimal.FC_NN(1,0,5e4),
@@ -288,6 +310,7 @@ const c = deepFreeze({		 // c = "constant"
 	e8				: Decimal.FC_NN(1,0,1e8),
 	d2e8			: Decimal.FC_NN(1,0,2e8),
 	d2pow31		: Decimal.FC_NN(1,0,2147483648),
+	d2_5e9		: Decimal.FC_NN(1,0,2.5e9),
 	d3155692599:Decimal.FC_NN(1,0,3155692599),
 	d3_3333e9	: Decimal.FC_NN(1,0,3.3333e9),
 	d4_5e10		: Decimal.FC_NN(1,0,4.5e10),
@@ -356,7 +379,7 @@ function percentOrMult(num,precision=2,classname) {
 	if (typeof classname === "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
 }
-function numberOfDigits(num){return num.max(c.d1).log10().floor().add(c.d1)}
+function numberOfDigits(num){return num.abs().max(c.d1).log10().floor().add(c.d1)}
 function img(src,alttext,height,width=height) {return "<img src=\"img/"+src+".png\" alt=\""+alttext+"\" height=\""+height+"\" width=\""+width+"\">"}
 function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
 formulaFormat.bracketize = function(str) {

@@ -67,7 +67,7 @@ const studies = [
 		goal:function(comp=studyPower(3)){return [c.d2e3,N(2200),N(2400),N(2700)][comp];},
 		reward:function(num,comp=g.studyCompletions[3]){
 			if (num===1) return comp
-			if (num===2) return [c.d0,N(0.2),N(0.35),N(0.45),N(0.5)][comp].mul(studyRewardBoost(3,2))
+			if (num===2) return [c.d0,c.d0_2,c.d0_35,c.d0_45,c.d0_5][comp].mul(studyRewardBoost(3,2))
 			if (num===3) {
 				let out = c.d1
 				for (let i=0;i<comp;i++) out = out.add(g.truetimeThisWormholeReset.div(c.d10.pow(i)).pow(i===0?0.5:i))
@@ -116,7 +116,7 @@ const studies = [
 		reward:function(num,comp=g.studyCompletions[5]){
 			if (num===1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
 			if (num===2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(5,2)))
-			if (num===3) return [c.d0,N(2.5),N(10),N(30),N(60)][comp].mul(studyRewardBoost(5,3))
+			if (num===3) return [c.d0,c.d2_5,c.d10,c.d30,c.d60][comp].mul(studyRewardBoost(5,3))
 			functionError("studies[5].reward",arguments)
 		},
 		reward_desc:function(){return [
@@ -134,8 +134,8 @@ const studies = [
 		goal:function(comp=studyPower(6)){return [N(4500),N(4800),N(9999),N(22222)][comp]},
 		reward:function(num,comp=g.studyCompletions[6]){
 			if (num===1) return [c.d1,c.d1_25,c.d1_5,c.d2,c.d4][comp]
-			if (num===2) return N(comp/20).mul(studyRewardBoost(6,2))
-			if (num===3) return N(0.0075*comp).mul(studyRewardBoost(6,3))
+			if (num===2) return studyRewardBoost(6,2).mul(comp/20)
+			if (num===3) return studyRewardBoost(6,3).mul(0.0075*comp)
 			functionError("studies[6].reward",arguments)
 		},
 		reward_desc:function(){return [
@@ -200,7 +200,7 @@ const studies = [
 		reward:function(num,comp=g.studyCompletions[9]){
 			if (num===1) return [Infinity,0.09,0.06,0.03,0][comp]
 			if (num===2) return c.d0_5.pow(N(comp/3).mul(studyRewardBoost(9,2)))
-			if (num===3) return [c.d0,c.d1,N(1.9),N(2.6),N(3)][comp].mul(studyRewardBoost(9,3))
+			if (num===3) return [c.d0,c.d1,N(1.9),N(2.6),c.d3][comp].mul(studyRewardBoost(9,3))
 			functionError("studies[9].reward",arguments)
 		},
 		reward_desc:function(){return [
@@ -215,7 +215,7 @@ const studies = [
 		},
 		timeLeft:function(){return 9-g.timeThisWormholeReset},
 		deltaXP:function(x=g.darkstars,comp=studyPower(9)){
-			if (g.activeStudy===10) x = x.mul(1.0369)
+			if (g.activeStudy===10) x = x.mul(c.d1_0369)
 			let out = x.sub(g.study9.xp.div(c.d10).add([111,111,125,140][comp]+g.study9.resets))
 			if (out.sign===-1) out = out.mul(c.d10)
 			return out.floor()
@@ -248,7 +248,7 @@ const studies = [
 		rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
 		reward:function(num,comp=g.studyCompletions[10]){
 			let step = this.rewardStep(num,comp)
-			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,c.em4,N(0.00015)][step]).add(c.d1)
+			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,c.em4,c.d1_5em4][step]).add(c.d1)
 			if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([c.d1,c.d1_5][step-1]).div([c.d80,c.d640][step-1]).max(c.d1)
 			if (num===3) return [g.antimatter.add(c.e10).layerplus(-3),[c.d0,c.d0_25,c.d0_3][step],studyRewardBoost(10,3)].productDecimals()
 			if (num===4) return [c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
@@ -279,7 +279,7 @@ const studies = [
 		goal:function(comp=studyPower(11)){return [N(11611),c.e100,c.e100,c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[11]){
 			if (num===1) return [c.d256,N(270),N(282),N(292),c.d300][comp]
-			if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),N(8)][comp].pow(studyRewardBoost(11,2))
+			if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),c.d8][comp].pow(studyRewardBoost(11,2))
 			if (num===3) return [c.d0,c.d2,N(3.2),c.d4,N(4.8)][comp].mul(studyRewardBoost(11,3))
 			functionError("studies[11].reward",arguments)
 		},
@@ -298,7 +298,7 @@ const studies = [
 		reward:function(num,comp=g.studyCompletions[12]){
 			if (num===1) return comp/400
 			if (num===2) return [c.d12,N(comp),studyRewardBoost(12,2)].productDecimals()
-			if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mui(studyRewardBoost(12,3))
+			if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mul(studyRewardBoost(12,3))
 			functionError("studies[12].reward",arguments)
 		},
 		reward_desc:function(){return [
@@ -306,9 +306,15 @@ const studies = [
 			"Up to "+studyRewardHTML(12,2,0)+" free dark stars from "+achievement.label(527)+" yellow lumen boost",
 			achievement.label(526)+" reward affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
 		]}
+	},
+	{
+		get name(){return "Placeholder"},
+		unlockReq:342,
+		description:"",
+		research:"r44_8"
 	}
 ];
-const fullStudyNames = [null,...countTo(studies.length-1).map(x=>(x===10)?studies[x].name:("Study "+roman(x)+": "+studies[x].name))]
+const fullStudyNames = [null,...countTo(12).map(x=>(x===10)?studies[x].name:("Study "+roman(x)+": "+studies[x].name))]
 
 const lightNames = ["red","green","blue","cyan","magenta","yellow","white","black","gray"]
 
@@ -485,7 +491,7 @@ const prismaticUpgrades = {
 	lumenThresholdReduction1:{
 		name:"Illumenati I",
 		desc:"The gray lumen threshold increase is reduced to {x}×",
-		eff:(x=g.prismaticUpgrades.lumenThresholdReduction1)=>x.eq(c.e5)?c.d10:x.eq(c.d0)?c.e10:x.gt(c.d10)?c.d40.sub(x.log10().add(c.d1).pow(c.d2)).div(c.d4).pow10():x.gt(c.d2)?c.e10.div(x):c.e10.sub(x.mul(2.5e9)),
+		eff:(x=g.prismaticUpgrades.lumenThresholdReduction1)=>x.eq(c.e5)?c.d10:x.eq(c.d0)?c.e10:x.gt(c.d10)?c.d40.sub(x.log10().add(c.d1).pow(c.d2)).div(c.d4).pow10():x.gt(c.d2)?c.e10.div(x):c.e10.sub(x.mul(c.d2_5e9)),
 		format:{x:(x=prismaticUpgrades.lumenThresholdReduction1.eff())=>x.noLeadFormat(3)},
 		formula:{x:()=>g.prismaticUpgrades.lumenThresholdReduction1.gte(c.d10)?"10<sup>(40 - (log(λ) + 1)<sup>2</sup>) ÷ 4</sup>":(BEformat(3e10)+" ÷ max(3 × λ, 3 + λ)")},
 		variables:"x",
@@ -529,7 +535,7 @@ const prismaticUpgrades = {
 		},
 		eff:{
 			x:(x=g.prismaticUpgrades.prismRune)=>x.div(c.d7).add(c.d1).pow(prismaticUpgrades.prismRune.eff1Exp()),
-			y:(x=g.prismaticUpgrades.prismRune)=>x.gt(142)?x.mul(0.66744718112597245).sub(46.34959730371034).log(7):x.mul(0.007).add(c.d1)
+			y:(x=g.prismaticUpgrades.prismRune)=>x.gt(142)?x.mul(c.d0_66744718112597245).sub(c.d46_34959730371034).log(c.d7):x.mul(c.d0_007).add(c.d1)
 		},
 		format:{
 			x:(x=prismaticUpgrades.prismRune.eff.x())=>x.noLeadFormat(2),
@@ -558,17 +564,20 @@ const prismaticUpgrades = {
 	},
 	prismCondenser:{
 		name:"Prism Condenser",
-		desc:"Gain {x} free anti-axis of the first {y} types",
+		desc:"Gain {x} free anti-axis of the first {y} types {f}<br><span class=\"small\">(Condenser power: {p}%)",
 		eff:{
 			x:(x=g.prismaticUpgrades.prismCondenser)=>Decimal.linearSoftcap(x,c.d99,c.d8,true),
-			y:()=>3
+			y:()=>Math.floor(stat.condenserPower),
+			p:()=>stat.condenserPower*100
 		},
 		format:{
 			x:(x=prismaticUpgrades.prismCondenser.eff.x())=>x.noLeadFormat(4),
-			y:(x=prismaticUpgrades.prismCondenser.eff.y())=>numword(x)
+			y:(x=prismaticUpgrades.prismCondenser.eff.y())=>numword(x),
+			f:()=>(stat.condenserPower%1===0)?"":("and "+N((stat.condenserPower%1)*100).noLeadFormat(4)+"% of this amount as anti-"+axisCodes[Math.floor(stat.condenserPower)]+" axis"),
+			p:(x=prismaticUpgrades.prismCondenser.eff.p())=>N(x).noLeadFormat(4)
 		},
 		formula:{x:()=>g.prismaticUpgrades.prismCondenser.gte(c.d99)?"(λ ÷ 11 - 8)<sup>1 ÷ 9</sup> × 99":"λ"},
-		variables:"xy",
+		variables:"xyfp",
 		cost:function(x=g.prismaticUpgrades.prismCondenser){return [N(9.99e25),N(999).pow(x),[c.d9,x,x.max(c.e2).log10()].decimalPowerTower()].productDecimals()},
 		costFormula:()=>BEformat(9.99e25)+" × 999<sup>λ</sup> × 9<sup>λ<sup>"+(g.prismaticUpgrades.prismCondenser.gte(c.e2)?"log(λ)":"2")+"</sup></sup>",
 		max:N(999),
@@ -578,6 +587,7 @@ const prismaticUpgrades = {
 const prismaticUpgradeList = Object.keys(prismaticUpgrades)
 const nonRefundablePrismaticUpgrades = prismaticUpgradeList.filter(upg=>!prismaticUpgrades[upg].refundable)
 const refundablePrismaticUpgrades = prismaticUpgradeList.filter(upg=>prismaticUpgrades[upg].refundable)
+function prismaticUpgradeName(upg) {return "Prismatic Upgrade "+((prismaticUpgrades[upg].refundable)?("R"+(refundablePrismaticUpgrades.indexOf(upg)+1)):(nonRefundablePrismaticUpgrades.indexOf(upg)+1))+" \""+prismaticUpgrades[upg].name+"\""}
 for (let upg of prismaticUpgradeList) prismaticUpgrades[upg].variables = prismaticUpgrades[upg].variables.split("")
 const corruption = {
 	list:{

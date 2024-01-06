@@ -12,7 +12,7 @@ const initSteps = [
 	{function:function(){for (let i of Object.keys(researchGroupList)) researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group===i).map(x=>x[0])}},
 	{function:function(){load(JSON.parse(localStorage.getItem("save")));}},
 	{function:function(){
-		for (let i=1;i<studies.length;i++) {
+		for (let i=1;i<13;i++) {
 			let max = 0
 			for (let j=3;j>=0;j--) if (studies[i].goal(j).neq(c.e100)) {max = j+1;break}
 			studies[0].effectiveMaxCompletions[i] = max
@@ -23,7 +23,7 @@ const initSteps = [
 		d.innerHTML("span_currentVersion",version.current)
 		document.title="Exotic Matter Dimensions "+version.current+" by alemaninc"
 	}},
-	{function:function(){for (let i of countTo(9,true)) {updateLightCache(i)}},onImport:true},
+	{function:function(){updateYellowLightCache();},onImport:true},
 	{function:function(){for (let tier of Object.keys(achievementList)) {achievement.perAchievementReward[tier].currentVal = achievement.perAchievementReward[tier].calc(achievement.ownedInTier(tier))}},onImport:true},
 	{function:function(){if (debugActive) {for (let stat of Object.keys(miscStats).filter(x=>x.type==="breakdown")) {for (let i=0;i<miscStats[stat].modifiers.length;i++) {if (miscStats[stat].modifiers[i]) error("stat."+stat+" modifier "+i+" has no <samp>show</samp> property")}}}}},
 	{function:function(){for (let i of Object.keys(miscStats)) statGeneration(i)}},
@@ -60,7 +60,7 @@ const initSteps = [
 		if (subtabProperties[i][j].visible===undefined) subtabProperties[i][j].visible = ()=>true
 		if (subtabProperties[i][j].glow===undefined) subtabProperties[i][j].glow = ()=>false
 	}}}},
-	{function:function(){for (let i=0;i<newsList.length;i++) if (typeof newsList[i].text!=="string") error("News item #"+i+" is undefined")}},
+	{function:function(){for (let i=0;i<newsList.length;i++) {try {if (typeof newsList[i].text!=="string") error("News item #"+i+" is undefined")} catch {error("News item #"+i+" is undefined")}}}},
 	{function:function(){d.display("foo","none")}},
 	{function:function(){
 		openTab(g.activeTab)
@@ -78,7 +78,7 @@ const initSteps = [
 		d.display("span_discordPoll",Date.now()<1694293080000?"inline-block":"none")
 	}},
 	{function:function(){
-		d.innerHTML("newsline",randomNewsItem())
+		nextNewsItem()
 		openTopLevelDiv("game");
 		window.onerror = (e,s,l,c,o)=>{error(e+" at "+s.substring(debugActive?149:53)+" "+l+":"+c+"<br>"+o)}
 		initComplete = true;
