@@ -511,7 +511,7 @@ const achievementList = {
 			progress:function(){return achievement.percent(stat.VAxisEffect,c.d44444,1);},
 			prevReq:[207],
 			reward:"1 free V axis",
-			flavor:"Original replicas!"
+			flavor:"My vault is much more secure. In all my time as a banker, I've never lost a single Geo!"
 		},
 		307:{
 			name:"Neutron Star",

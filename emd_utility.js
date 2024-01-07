@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).2.4",
+	current:"𝕍1.5(b).2.5",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*

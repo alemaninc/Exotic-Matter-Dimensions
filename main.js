@@ -1922,6 +1922,7 @@ function addLumens(x){
 		g.lumens[x] = g.lumens[x].add(added).fix(c.d0)
 		if (x===5) updateYellowLightCache()
 	}
+	for (let i of achievementEvents.lumenGain) addAchievement(i)
 }
 const lightEffect = [
 	{
