@@ -2111,6 +2111,10 @@
 			{
 				return Decimal.iteratedlog(payload, this, -height);
 			}
+
+			// alemaninc code start
+			if ((this.layer > Number.MAX_SAFE_INTEGER) || (height > Number.MAX_SAFE_INTEGER)) {return FC_NN(this.sign, this.layer + height, 1e10);}
+			// alemaninc code end
 			
 			payload = D(payload);
 			var oldheight = height;

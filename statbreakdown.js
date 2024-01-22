@@ -395,10 +395,6 @@ const statTemplates = {
 			show:function(){return this.mod().neq(c.d0)}
 		};
 	},
-	ach905Reward:{
-		label:achievement.label(905),
-		func:function(prev){return }
-	},
 	timeResearch:function(row,col){
 		return {
 			label:"Research "+row+"-"+col,
@@ -439,13 +435,13 @@ const statTemplates = {
 			label:"Finality Research",
 			mod:function(){
 				let out = c.d1
-				let res = finalityResearchList[type].slice(1,13)
+				let res = researchList.finality[type].slice(1,13)
 				for (let i of res) {if (g.research[res]) {out = out.mul(researchRow(i),researchCol(i))}}
 				return out
 			},
 			func:function(prev){return (op===3)?prev.pow(this.mod()):(op===2)?prev.mul(this.mod()):functionError("statTemplates.finalityResearch",arguments)},
 			text:function(){return "^ "+this.mod().noLeadFormat(4)},
-			show:function(){return g.research[finalityResearchList[type][1]]}
+			show:function(){return g.research[researchList.finality[type][1]]}
 		}
 	}
 }
@@ -2117,7 +2113,9 @@ miscStats.HRMultiplier={
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.radiation.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.radiation.eff().format()},
 			show:function(){return effLuckUpgradeLevel("cinquefolium","radiation").neq(c.d0)}
-		}
+		},
+		statTemplates.achievementMul(903),
+		statTemplates.achievementMul(917)
 	]
 };
 miscStats.HRExponent={
@@ -2399,6 +2397,7 @@ miscStats.chromaPerSec={
 			dependencies:["chromaCostMultiplier"],
 			show:function(){return g.achievement[815]&&g.ach815RewardActive}
 		},
+		statTemplates.achievementMul(905),
 		statTemplates.tickspeed(()=>studies[6].reward(1))
 	]
 }
@@ -2448,7 +2447,7 @@ miscStats.luckShardsPerSec={
 		statTemplates.achievementMul(807),
 		...(()=>{
 			let out = []
-			for (let res of study7ResearchList) out.push({
+			for (let res of researchList.study7) out.push({
 				label:"Research "+researchOut(res),
 				func:function(prev){return g.research[res]?prev.mul(researchEffect(researchRow(res),researchCol(res))):prev},
 				text:function(){return "× "+researchEffect(researchRow(res),researchCol(res)).format(2)},
@@ -2476,6 +2475,7 @@ miscStats.luckShardsPerSec={
 			text:function(){return "^ "+luckUpgrades.cinquefolium.luck.eff().noLeadFormat(4)},
 			show:function(){return effLuckUpgradeLevel("cinquefolium","luck").neq(c.d0)}
 		},
+		statTemplates.achievementMul(905),
 		statTemplates.tickspeed()
 	]
 }
@@ -2523,6 +2523,7 @@ miscStats.prismaticPerSec={
 			dependencies:Array.removeDuplicates([masteryDependencies(104),masteryDependencies(111)].flat()),
 			show:function(){return MasteryE(104)&&MasteryE(111)}
 		},
+		statTemplates.achievementMul(905),
 		statTemplates.tickspeed()
 	]
 }
@@ -2557,6 +2558,7 @@ miscStats.antimatterPerSec={
 			dependencies:["antiTAxisEffect","realantiTAxis"],
 			show:function(){return g.research.r28_15}
 		},
+		statTemplates.achievementMul(905),
 		{
 			label:"Anti-S Axis",
 			mod:function(){return stat.antiSAxisEffect.pow(stat.realantiSAxis);},
@@ -2747,7 +2749,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		}
 	)
 	if ([1,3,4,6].includes(i)) {
-		let res = antimatterResearchList[axisCodes[i]+2]
+		let res = researchList.antimatter[axisCodes[i]+"2"]
 		out.push({
 			label:"Research "+researchOut(res),
 			func:function(prev){return g.research[res]?prev.add(researchEffect(researchRow(res),researchCol(res))):prev},

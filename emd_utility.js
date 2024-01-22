@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).2.5",
+	current:"𝕍1.5(b).3",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -29,21 +29,14 @@ function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toSt
 }
 function error(text) {
 	halt()
-	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and give him this output:<textarea style=\"width:calc(100% - 32px)\">"+(new Error().stack)+"</textarea><br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\">Discord</a>",buttons:[]})
+	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and give him this output:<textarea style=\"width:calc(100% - 32px)\">"+(new Error().stack)+"</textarea><br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\" target=\"_blank\">Discord</a>",buttons:[]})
 	error = function(){/* if multiple errors are thrown in a chain, only the first appears */}
 }
 const debug = {
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
-	nextSecretAchievementRarity:function(num){
-		let rarities = countTo(7).map(x=>Object.values(secretAchievementList).filter(i=>i.rarity===x).length)
-		let out = ""
-		for (let i=0;i<num;i++) {
-			let ratio = 1+Math.random()
-			let diffs = countTo(6).map(x=>rarities[x]*ratio**x)
-			let next = diffs.indexOf(diffs.reduce((x,y)=>Math.min(x,y)))+2
-			rarities[next-1]++
-			out += next
-		}
+	secretAchievementDistribution: function(){
+		let out = Array(7).fill(0)
+		for (let i of Object.values(secretAchievementList).map(x=>x.rarity)) out[i-1]++
 		return out
 	},
 	addResearch:function(x){
@@ -137,6 +130,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_1			: Decimal.FC_NN(1,0,0.1),
 	d1div9		: Decimal.FC_NN(1,0,1/9), // 0.111
 	d0_12			: Decimal.FC_NN(1,0,0.12),
+	d0_125		: Decimal.FC_NN(1,0,0.125),
 	d0_15			: Decimal.FC_NN(1,0,0.15),
 	d0_16			: Decimal.FC_NN(1,0,0.16),
 	d0_18			: Decimal.FC_NN(1,0,0.18),
@@ -295,6 +289,7 @@ const c = deepFreeze({		 // c = "constant"
 	d2e3			: Decimal.FC_NN(1,0,2e3),
 	d2350			: Decimal.FC_NN(1,0,2350),
 	d4800			: Decimal.FC_NN(1,0,4800),
+	d5e3			: Decimal.FC_NN(1,0,5000),
 	d7e3			: Decimal.FC_NN(1,0,7e3),
 	d8e3			: Decimal.FC_NN(1,0,8e3),
 	d102400div9:Decimal.FC_NN(1,0,102400/9), // 11337.778

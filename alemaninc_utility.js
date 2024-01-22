@@ -226,7 +226,7 @@ const d = {		// d for "document"
 };
 function hexToRGB(color) {return "rgb("+[parseInt(color.substring(1,3),16),parseInt(color.substring(3,5),16),parseInt(color.substring(5,7),16)].join(",")+")"}
 function blackOrWhiteContrast(color) {
-	let rgb = color.replaceAll(/[^0-9|,]/g,"").split(",").map(x=>Number(x))
+	let rgb = color.replaceAll(/[^0-9|,|.]/g,"").split(",").map(x=>Number(x))
 	let sum = Math.round((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114));
 	return (sum >= 128)?"#000000":"#ffffff";
 }

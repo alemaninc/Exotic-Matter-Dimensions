@@ -268,7 +268,7 @@ const studies = [
 	},
 	{
 		name:"Lunar Clock",
-		unlockReq:function(){return [N(98765),c.e100,c.e100,c.e100][studyPower(11)]},
+		unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,c.e100,c.e100][studyPower(11)]},
 		active:function(){
 			let num = Math.floor(g.timeThisWormholeReset/0.75)%12
 			return (num<8)?axisCodes[num]:["R","Q","P","O"][num-8]
@@ -276,7 +276,7 @@ const studies = [
 		lunarMinutes:function(){return Math.floor((g.timeThisWormholeReset*80)%60)},
 		description:function(){return "Only X axis of all types are initially active, and the active type will change every 750 milliseconds. Additionally, row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter is capped at 1."},
 		research:"r33_3",
-		goal:function(comp=studyPower(11)){return [N(11611),c.e100,c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12500):c.e100,c.e100,c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[11]){
 			if (num===1) return [c.d256,N(270),N(282),N(292),c.d300][comp]
 			if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),c.d8][comp].pow(studyRewardBoost(11,2))
@@ -286,12 +286,12 @@ const studies = [
 		reward_desc:function(){return [
 			"Normal axis cost superscaling starts at "+studyRewardHTML(11,1,0),
 			"The effective amount of luck shards for their second effect is raised to the power of "+studyRewardHTML(11,2,4),
-			"Anti-axis cost superscaling starts "+studyRewardHTML(11,3,1)+" later (normally at 64)"
+			"Anti-axis cost superscaling starts "+studyRewardHTML(11,3,3)+" later (normally at 64)"
 		]}
 	},
 	{
 		name:"Titanium Will",
-		unlockReq:function(){return [c.ee100,c.ee100,c.ee100,c.ee100][studyPower(12)]},
+		unlockReq:function(){return [145,1e100,1e100,1e100][studyPower(12)]},
 		description:function(){return "Non-permanent research have no effect, stardust resets are disabled, dark matter gain is limited to 1 per second, all dark axis cost divisors are disabled and stardust upgrade and star costs are increased to <i>10 ↑↑ slog(cost)<sup>1.2</sup></i>"},
 		research:"r33_13",
 		goal:function(comp=studyPower(12)){return [c.e100,c.e100,c.e100,c.e100][comp]},

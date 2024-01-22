@@ -487,7 +487,8 @@ function updateHTML() {
 			if (showingResearchLoadouts) {for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),"researchLoadout"+(researchLoadoutSelected===(i+1)?" selected":""))}
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
-			if (visibleStudies().includes(11)) d.innerHTML("button_research_r33_3_visible",research.r33_3.icon)
+			if (visible.includes("r33_3")) d.innerHTML("button_research_r33_3_visible",research.r33_3.icon)
+			if (visible.includes("r33_13")) d.innerHTML("button_research_r33_13_visible",research.r33_13.icon)
 		} else if (g.activeSubtabs.wormhole==="studies") {
 			let visible = visibleStudies()
 			for (let i of visible) {
@@ -706,13 +707,14 @@ function tick(time) {																																		 // The game loop, which 
 		if (Decimal.lt(stat["free"+i+"Axis"],g[i+"Axis"].mul(c.d2))) g.ach825possible = false
 		if (Decimal.lt(stat["freedark"+i+"Axis"],g["dark"+i+"Axis"].mul(c.d2))) g.ach825possible = false
 	}}
+	o.add("ach901Int",[g.exoticmatter.add(c.d1).log10().pow(c.d10),stat.tickspeed,time].productDecimals())
+
 	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
 		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
 			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onClick=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
 			newsSupport.newsletter.spamStart=Date.now()+3000
 		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
 	}
-	o.add("ach901Int",g.exoticmatter.add(c.d1).log10().pow(c.d10))
 	
 	
 	// Dark Matter section

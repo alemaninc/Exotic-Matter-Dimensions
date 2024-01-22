@@ -64,7 +64,7 @@ const HTPtexts = [
 				["a ^^ b","Tetration"],
 				["slog","Superlogarithm"],
 				["Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Summation: for example, Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>2</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>2</sup>").join(" + ")+" = 30"],
-				["Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Product: for example, Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>n</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>"+x+"</sup>").join(" × ")+" = 27648"],
+				["Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Product: for example, Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>n</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>("+x+")</sup>").join(" × ")+" = 27648"],
 				["Ξ<sup>[x]</sup>n","Iterated exponentiation: for example, Ξ<sup>[2]</sup>3 = 10<sup>10<sup>3</sup></sup>"]
 			])
 		],

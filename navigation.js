@@ -230,11 +230,11 @@ function hotkeyHandler(isUp){
 			if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key==="9") addSecretAchievement(10)
 			return
 		}
+		let key = (e.shiftKey?"shift+":"")+e.code
 		if (StudyE(1)) {	
-			notify("Hotkeys are disabled in Study I","#990000","#ffffff")
+			if (Object.values(g.hotkeys).includes(key)) notify("Hotkeys are disabled in Study I","#990000","#ffffff")
 			return
 		}
-		let key = (e.shiftKey?"shift+":"")+e.code
 		if (hotkeys.isChanging) {
 			if (["ShiftLeft","ShiftRight"].includes(e.code)) return
 			d.display("div_fancyPopupScreen","none")
