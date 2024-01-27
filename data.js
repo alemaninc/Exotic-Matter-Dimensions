@@ -291,19 +291,19 @@ const studies = [
 	},
 	{
 		name:"Titanium Will",
-		unlockReq:function(){return [145,1e100,1e100,1e100][studyPower(12)]},
-		description:function(){return "Non-permanent research have no effect, stardust resets are disabled, dark matter gain is limited to 1 per second, all dark axis cost divisors are disabled and stardust upgrade and star costs are increased to <i>10 ↑↑ slog(cost)<sup>1.2</sup></i>"},
+		unlockReq:function(){return [147,1e100,1e100,1e100][studyPower(12)]},
+		description:function(){return "Non-permanent research have no effect; stardust resets are disabled; dark matter gain is capped at 1; all dark axis cost divisors are disabled. Unlock Titanium Empowerments in the Dark Matter tab."},
 		research:"r33_13",
-		goal:function(comp=studyPower(12)){return [c.e100,c.e100,c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.d60,c.d70][comp]},
 		reward:function(num,comp=g.studyCompletions[12]){
 			if (num===1) return comp/400
-			if (num===2) return [c.d12,N(comp),studyRewardBoost(12,2)].productDecimals()
+			if (num===2) return [c.d16,N(comp),studyRewardBoost(12,2)].productDecimals()
 			if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mul(studyRewardBoost(12,3))
 			functionError("studies[12].reward",arguments)
 		},
 		reward_desc:function(){return [
 			"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s"),
-			"Up to "+studyRewardHTML(12,2,0)+" free dark stars from "+achievement.label(527)+" yellow lumen boost",
+			"Up to "+studyRewardHTML(12,2,0)+" extra free dark stars from "+achievement.label(527)+" (based on yellow lumens)",
 			achievement.label(526)+" reward affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
 		]}
 	},

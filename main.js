@@ -221,7 +221,8 @@ const basesave = {
 	researchAutobuyerOn:false,
 	researchAutobuyerUpgrades:0,
 	researchAutobuyerMode:0,
-	ach825possible:true
+	ach825possible:true,
+	titaniumEmpowerments:c.d0,
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = ["Y"]
@@ -377,7 +378,6 @@ const baseStardustUpgradeCosts = [
 function stardustUpgradeCost(x,y=g.stardustUpgrades[x-1]) {
 	if (y>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
 	let cost = baseStardustUpgradeCosts[x-1][y];
-	if (StudyE(12)) cost = cost.layerf(x=>x**1.2)
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	if (g.achievement[602]&&x===3) cost = cost.pow(c.d0_9)
 	if (g.achievement[520]&&y===0) cost = cost.root(achievement(520).effect());
@@ -1128,7 +1128,6 @@ function starCost(x=g.stars,gal=g.galaxies) {
 	let cost = Decimal.pow(c.d2,Decimal.exponentialScaling(Decimal.superexpScaling(effx,scaling_start,scaling_power),c.d10,c.d0_5).pow(formula_exponent).add(c.d10)).pow(effx.gte(c.d10)?c.d1_5:c.d1);
 	cost = cost.mul(galaxyEffects[3].penalty.value(gal).pow(x)).pow(galaxyEffects[1].penalty.value(gal))
 	// metahyper cost reductions
-	if (StudyE(12)) {cost = cost.layerf(x=>x**1.2)}
 	// hyper-4 cost reductions
 	if (achievement.ownedInTier(5) >= 9) cost = cost.dilate(stat.wormholeMilestone9Effect);
 	// hyper-3 cost reductions
@@ -1214,8 +1213,8 @@ function starEffect(x) {
 		return exp.mul(mult).pow10();
 	}
 	if (x===20) {
-		let out = c.d3
-		if (g.research.r34_3) out = out.mul(researchEffect(34,3))
+		let out = (g.research.r34_3&&betaActive)?researchEffect(34,3):c.d3
+		if (g.research.r34_3&&(!betaActive)) out = out.mul(researchEffect(34,3))
 		return out
 	}
 	if (x===60) return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(g.exoticmatter.pow(c.d0_02).add(c.d10).log10().pow(c.d0_7),c.e3,c.d0_5),c.d7e3,c.d8e3);
@@ -1406,17 +1405,17 @@ function darkStarEffectHTML() {
 }
 function realDarkAxisScalePower(type){
 	let out=stat.darkAxisScalingPower
-	if (type==="S") out=out.mul(c.d2)
+	if (type==="S") {out=out.mul(c.d2)}
 	return out
 }
 function realDarkAxisSuperscalePower(type){
 	let out=stat.darkAxisSuperscalingPower
-	if (type==="W") out=out.mul(c.d3)
-	if (type==="S") out=out.mul(c.d5)
+	if (type==="W") {out=out.mul(c.d3)}
+	else if (type==="S") {out=out.mul(c.d5)}
 	return out
 }
 function realDarkAxisCostDivisor(type) {
-	if (StudyE(12)) return c.d1
+	if (StudyE(12)) {return c.d1}
 	let output = stat.darkAxisCostDivisor;
 	return output;
 }
@@ -2195,7 +2194,7 @@ function buyLuckUpgrade(type,upg) {
 		let amount = affordableLuckUpgrades(type,upg)
 		g.spentLuckRunes[type] = g.spentLuckRunes[type].add(luckUpgradeCost(type,upg,amount))
 		g.luckUpgrades[type][upg] = g.luckUpgrades[type][upg].add(amount)
-		if (amount.neq(c.d0)) addAchievement(807)
+		for (let i of achievementEvents.addLuckUpgrade) {addAchievement(i)}
 	}
 }
 function respecLuckUpgrades() {
@@ -2216,7 +2215,10 @@ function luckUpgradeUnlocked(type,upg) {
 }
 function effLuckUpgradeLevel(type,upg,out=g.luckUpgrades[type][upg]) {
 	let res = luckUpgrades[type][upg].luckResearch
-	if (g.research[res]) out = out.add(researchEffect(researchRow(res),researchCol(res)))
+	if (g.research[res]) {out = out.add(researchEffect(researchRow(res),researchCol(res)))}
+	if ((upg==="antiAxis")&&(type==="trifolium")&&g.achievement[927]) {out = out.add(c.d1)}
+	else if ((upg==="prismatic")&&(type==="quatrefolium")&&g.achievement[928]) {out = out.add(c.d1)}
+	else if ((upg==="luck")&&(type==="cinquefolium")&&g.achievement[929]) {out = out.add(c.d1)}
 	return out
 }
 function luckShardEffect1(x=g.luckShards) {return x.add(c.d1).log10().add(c.d10).log10().pow(c.d2_3).sub(c.d1).mul(c.e2).mul(prismaticUpgrades.prismRune.eff.y())}

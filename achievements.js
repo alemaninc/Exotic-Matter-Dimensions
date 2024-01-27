@@ -809,7 +809,7 @@ const achievementList = {
 			progress:function(){return stat.ironWill?"Still possible":"Failed";},
 			prevReq:[504],
 			effect:function(){return N(1.01+this.milestones()/1e3+studies[12].reward(1)).fix(c.d0);},
-			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(1),
+			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(2),
 			formulaText:()=>N(1+studies[12].reward(1)*100).noLeadFormat(2)+" + μ ÷ 10",
 			effectBreakpoints:[c.d2,c.d3,c.d4,c.d5,c.d6,c.d7,c.d8,c.d9,c.d10,c.d12,c.d15,c.d20,c.d25,c.d30,c.d40,c.d50,c.d60,c.d70,c.d80,c.d90,c.e2,c.d120,c.d140,c.d160,c.d180,c.d200,c.d225,c.d250,c.d275,c.d300,c.d325,c.d350,c.d400,c.d450,c.d500,c.d550,c.d600,c.d700,c.d800,c.d900],
 			milestones:function(){for(let i=39;i>=0;i--){if(g.ach505Progress.gte(this.effectBreakpoints[i])){return i+1}};return 0},
@@ -1565,6 +1565,7 @@ const achievementList = {
 			description:"Buy a Luck Upgrade",
 			prevReq:[807],
 			check:function(){return true}, // checked locally
+			event:"buyLuckUpgrade",
 			progress:function(){return "Not Completed!"},
 			reward:"Luck shard gain is multiplied by {} (based on total runes)",
 			effect:function(){return Object.values(g.totalLuckRunes).map(x=>x.div(c.e2).add(c.d10).log10()).productDecimals().pow10().sub(c.d9)},
@@ -1693,7 +1694,7 @@ const achievementList = {
 			check:function(){return g.research.r24_8},
 			event:"researchBuy",
 			progress:function(){return "Not Completed!"},
-			get reward(){return "Reduce the penalty of Luck and Antimatter research by {} (based on prismatic)"},
+			get reward(){return "Reduce the penalty of Luck and Antimatter research by {} (based on prismatic), and Quatrefolium "+luckUpgrades.quatrefolium.prismatic.name+" is 2× stronger"},
 			effect:function(y=this.yellowValue){return g.prismatic.add(c.d1).log10().div(c.e3).add(c.d1).pow(y.pow10().neg()).toNumber()},
 			effectFormat:x=>percentOrMult(N(x),4),
 			formulaText:function(){return "(log(P + 1) ÷ 1,000 + 1)<sup>"+this.yellowValue.pow10().noLeadFormat(4)+"</sup>÷"},
@@ -1875,6 +1876,21 @@ const achievementList = {
 			flavor:"Never moon a werewolf.",
 			beta:true
 		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {out[927+i] = {
+				name:"Iarmhéid"+[""," II"," III"][i],
+				description:"Have "+(136+i*7)+" total Luck Upgrades",
+				prevReq:(i===0)?[]:[926+i],
+				check:function(){return Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals().gte(136+i*7)},
+				event:"buyLuckUpgrade",
+				progress:function(){return achievement.percent(Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals(),N(136+i*7),0)},
+				get reward(){return "Add 1 free level to "+(x=>toTitleCase(x[0])+" "+luckUpgrades[x[0]][x[1]].name)([["trifolium","antiAxis"],["quatrefolium","prismatic"],["cinquefolium","luck"]][i])},
+				flavor:["The key is not to prioritize what's on your schedule...","...but to schedule your priorities.","Would alemaninc's players be satisfied with how low his game is on the schedule?","TBD","TBD"][i],
+				beta:true
+			}}
+			return out
+		})(),
 		931:{
 			name:"The Shining Law of Conservation of Information",
 			description:"Activate all research",
@@ -1887,6 +1903,16 @@ const achievementList = {
 			effectFormat:x=>x.format(3),
 			formulaText:()=>"log<sup>[2]</sup>(D + 10)<sup>3</sup>",
 			flavor:"The world is one big data problem.",
+			beta:true
+		},
+		932:{
+			name:"Uberkatzchen",
+			description:"Complete the fourth level of Study XII with no more than 7 Stardust Upgrades",
+			check:function(){return (g.activeStudy===12)&&(g.studyCompletions[12]>2)&&(effectiveStardustUpgrades()<=7)},
+			event:"wormholeResetBefore",
+			progress:function(){return (g.studyCompletions[12]<3)?"Complete Study XII 3 times first":(g.activeStudy!==12)?"Enter Study XII first":(effectiveStardustUpgrades()>7)?"Failed":((7-effectiveStardustUpgrades())+" upgrades left")},
+			reward:"The third reward of Study XII is 11.1% stronger",
+			flavor:"You are now a chieftain of a zebra tribe.<br>(how is this even possible?)",
 			beta:true
 		}
 	}

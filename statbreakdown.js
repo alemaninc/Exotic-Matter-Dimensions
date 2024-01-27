@@ -846,9 +846,10 @@ miscStats.darkmatterPerSec={
 		statTemplates.study9,
 		{
 			label:"Study XII",
-			func:function(prev){return (StudyE(12)&&prev.gt(c.d1))?c.d1:prev},
-			text:function(){return "min(<i>x</i>, 1)"},
-			show:function(){return StudyE(12)}
+			func:function(prev){return StudyE(12)?(prev.gt(c.em10)?prev.add(c.d1).log10():prev.div(Math.log(10))):prev},
+			text:function(){return "log(<i>x</i> + 1)"},
+			show:function(){return StudyE(12)},
+			color:"#cc0000"
 		},
 		statTemplates.tickspeed(),
 	]
@@ -2716,7 +2717,7 @@ miscStats.antiSAxisEffect={
 			label:"Study XII reward 3",
 			mod:function(){return Decimal.mul(achievement(526).effect(),studies[12].reward(3))},
 			func:function(prev){return prev.add(this.mod())},
-			text:function(){return "+ "+this.mod().noLeadFormat(3)},
+			text:function(){return "+ "+this.mod().noLeadFormat(3)+" "+SSBsmall(achievement(526).effect().noLeadFormat(3),studies[12].reward(3).noLeadFormat(2),2)},
 			dependencies:["redLightEffect"],
 			show:function(){return this.mod().neq(c.d0)}
 		}

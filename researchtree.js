@@ -333,7 +333,7 @@ const research = (function(){
 			type:"normal",
 			basecost:c.d3,
 			icon:classes.exoticmatter("S$")+icon.minus,
-			effect:function(power){return power.div(c.d2);}
+			effect:function(power){return c.d0_5.pow(power);}
 		},
 		r3_6:{
 			description:function(){return "Gain "+researchEffect(3,6).noLeadFormat(2)+" free dark X Axis per dark S Axis owned (current total: "+researchEffect(3,6).mul(g.darkSAxis).noLeadFormat(2)+")";},
@@ -363,7 +363,7 @@ const research = (function(){
 			type:"normal",
 			basecost:c.d3,
 			icon:classes.darkmatter("S$")+icon.minus,
-			effect:function(power){return power.div(c.d2);}
+			effect:function(power){return c.d0_5.pow(power);}
 		},
 		r3_14:{
 			description:function(){return "Gain "+researchEffect(3,14).noLeadFormat(2)+" free dark S Axis";},
@@ -1295,12 +1295,12 @@ const research = (function(){
 				let a1 = axisCodes[i1]    // the axis based on which costs are reduced
 				let a2 = axisCodes[i2-1]  // the axis which has its costs reduced
 				out["r"+row+"_"+col] = {
-					description:function(){let eff=researchEffect(row,col);return "The "+(isDark?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(isDark?"dark ":"")+a1+" axis]"+(eff.eq(c.d1)?"":eff.gt(c.d1)?(" × "+eff.noLeadFormat(3)):(" ÷ "+eff.recip().noLeadFormat(3)))+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
+					description:function(){let eff=researchEffect(row,col);return "The "+(isDark?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(isDark?"dark ":"")+a1+" axis]"+formulaFormat.mult(eff)+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
 					adjacent_req:adj.sort(),
 					condition:[],
 					visibility:function(){return true},
 					type:"normal",
-					basecost:N(5*Math.floor(0.25*(i1+i2)**2+6*(i1+i2)+67)),
+					basecost:Decimal.FC_NN(1,0,5*Math.floor(0.25*(i1+i2)**2+6*(i1+i2)+67)),
 					icon:icon[(isDark?"dark":"")+a1+"Axis"]+icon.arr+icon[(isDark?"dark":"")+a2+"Axis"]+classes[(isDark?"dark":"exotic")+"matter"]("$"),
 					effect:function(power){return power.div((isDark?[5e3,6e3,2e3,4e3,800,5e3,80]:[12500,2e4,8e3,8e4,3e4,2e5/3,200])[i1-1])},
 					value:function(){return researchEffect(row,col).mul(stat["real"+(isDark?"dark":"")+a1+"Axis"]).add(c.d1)},
@@ -1793,13 +1793,22 @@ const research = (function(){
 			type:"study",
 			basecost:N(33113),
 			get icon(){
+				/*
+				not in XI			regular clock face
+				XI-1+					clock face spins
+				XI-2+					clock pulses every 750ms
+				XI-3+					wrong time
+				XI-4					faster animation                            
+				*/
 				let date = new Date()
-				if (StudyE(11)) { // lunar clock animation
+				let mode = (StudyE(11)?studyPower(11):-1)
+				if (mode>1) { // XI-3+
 					let phase = Math.floor(g.timeThisWormholeReset/0.75)+1
-					let mult = Math.sin(phase)*10**Math.cos(phase**1.5)*3600
+					let mult = Math.sin(phase)*10**Math.cos(phase**1.5)*3600*((mode===3)?3:1)
 					date = new Date((Date.now()%86250)*mult)
 				}
-				let f = StudyE(11)?((Date.now()%99750)*Math.sin(Math.floor(g.timeThisWormholeReset/0.75)*2)*0.001*10**((Math.floor(g.timeThisWormholeReset/0.75)**1.1*1000)%1)):0
+				// XI-1+, XI-2+
+				let f = (mode===-1)?0:(mode===0)?(g.timeThisWormholeReset*Math.PI/4.5):((Date.now()%99750)*Math.sin(Math.floor(g.timeThisWormholeReset/0.75)*2)*0.001*10**((Math.floor(g.timeThisWormholeReset/0.75)**1.1*1000)%1)*((mode===3)?3:1))
 				let h = Math.PI*(((date.getHours())%12)/6+(date.getMinutes())/360+(date.getSeconds())/21600)
 				let m = Math.PI*((date.getMinutes())/30+(date.getSeconds())/1800)
 				let out = [[50,50,5]]
@@ -1814,24 +1823,24 @@ const research = (function(){
 			condition:[{check:function(){return totalAchievements>=studies[12].unlockReq()},text:function(){return totalAchievements+" / "+studies[12].unlockReq()+" achievements"}}],
 			visibility:function(){return true;},
 			type:"study",
-			basecost:N(331133),
+			basecost:N(33113),
 			get icon() {
 				let basevals = [[15,65,4],[15,35,4],[43,20,4],[57,20,4],[85,35,4],[85,65,4],[35,65,4],[65,65,4],[41,85,4],[59,85,4],[35,45,6],[65,45,6]]
-				let t = (Date.now()/(StudyE(12)?250:3.6e6)+0.3)%1
+				let t = (Date.now()/(StudyE(12)?[500,400,300,200][studyPower(12)]:3.6e6)+0.3)%1
 				let mul = (t>0.5)?(1.75-t):(0.75+t)
 				basevals = basevals.map(x=>[50+(x[0]-50)*mul,50+(x[1]-50)*mul,x[2]*mul])
 				return icon.study(basevals)
 			}
 		},
 		r34_3:{
-			description:function(){return "Row 2 stars are "+researchEffect(34,3).noLeadFormat(3)+"× stronger"},
+			description:function(){return betaActive?("Row 2 stars now give "+researchEffect(34,3).noLeadFormat(3)+" free axis instead of 3"):("Row 2 stars are "+researchEffect(34,3).noLeadFormat(3)+"× stronger")},
 			adjacent_req:["r33_3"],
 			condition:[studyReq(11,1)],
 			visibility:function(){return g.studyCompletions[11]>0},
 			type:"normal",
 			basecost:N(111111),
 			icon:icon.star("")+classes.xscript("+",classes.stars("2x")),
-			effect:function(power){return c.d11.pow(power)}
+			effect:function(power){return betaActive?N(37).pow(power).mul(c.d3):c.d11.pow(power)}
 		},
 		r34_4:{
 			numDesc:function(){return researchEffect(34,4).format(2)},
