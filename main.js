@@ -312,7 +312,7 @@ function unlockDilationUpgrade() {
 	})
 }
 function overclockToSoftcap() {
-	g.dilationPower=Math.floor(Math.log2(stat.overclockSoftcap)*1000)/1000
+	g.dilationPower=Math.log2(stat.overclockSoftcap)
 	updateOverclockScrollbar()
 }
 function toggleOverclock() {
@@ -2194,7 +2194,7 @@ function buyLuckUpgrade(type,upg) {
 		let amount = affordableLuckUpgrades(type,upg)
 		g.spentLuckRunes[type] = g.spentLuckRunes[type].add(luckUpgradeCost(type,upg,amount))
 		g.luckUpgrades[type][upg] = g.luckUpgrades[type][upg].add(amount)
-		for (let i of achievementEvents.addLuckUpgrade) {addAchievement(i)}
+		for (let i of achievementEvents.buyLuckUpgrade) {addAchievement(i)}
 	}
 }
 function respecLuckUpgrades() {

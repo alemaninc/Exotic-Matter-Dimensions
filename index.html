@@ -57,7 +57,7 @@
 					<p>You have <span id="span_dilatedTime" class="big _time"></span> of dilated time.<br>You earn 1 second of dilated time per second spent offline or while time is frozen.</p>
 					<div class="dilationDiv">
 						<h1>Overclock</h1>
-						<input type="range" id="dilationSpeedupFactor" min="1" max="4" step="0.001" style="width:350px">						
+						<input type="range" id="dilationSpeedupFactor" min="1" max="4" step="0.001" oninput="g.dilationPower=Number(d.element('dilationSpeedupFactor').value)" style="width:350px">						
 						<p>When enabled, Overclock provides a <span id="span_overclockSpeedupFactor" class="big _time"></span>× time boost at the cost of <span id="span_overclockCost"></span> seconds of dilated time per real-life second.</p>
 						<p id="span_overclockCostScaling" class="big _time2"></p>
 						<div id="overclockFooter">

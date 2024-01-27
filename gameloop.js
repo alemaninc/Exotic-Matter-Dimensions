@@ -103,12 +103,11 @@ function updateHTML() {
 				g.masteryContainerStyle = "Legacy"
 			}
 		} else if (g.activeSubtabs.main==="offlineTime") {
-			g.dilationPower = Number(d.element('dilationSpeedupFactor').value)
 			d.innerHTML("span_dilatedTime",timeFormat(g.dilatedTime))
 			d.innerHTML("span_overclockSpeedupFactor",N(stat.baseOverclockSpeedup).noLeadFormat(3))
 			d.innerHTML("span_overclockCost",N(stat.overclockCost).noLeadFormat(3))
-			d.class("span_overclockCost",stat.baseOverclockSpeedup>stat.overclockSoftcap?"big _time2":"big _time")
-			d.innerHTML("span_overclockCostScaling",(stat.baseOverclockSpeedup>stat.overclockSoftcap)?("Overclock costs are much higher above "+N(stat.overclockSoftcap).noLeadFormat(3)+"×"):"")
+			d.class("span_overclockCost",stat.baseOverclockSpeedup>(stat.overclockSoftcap+1e-10)?"big _time2":"big _time")
+			d.innerHTML("span_overclockCostScaling",(stat.baseOverclockSpeedup>(stat.overclockSoftcap+1e-10))?("Overclock costs are much higher above "+N(stat.overclockSoftcap).noLeadFormat(3)+"×"):"")
 			d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")
 			d.element("button_overclockActive").style["background-color"] = overclockActive?"#000000":""
 			d.display("button_overclockToSoftcap",dilationUpgrades[1].effect()>stat.overclockSoftcap?"inline-block":"none")

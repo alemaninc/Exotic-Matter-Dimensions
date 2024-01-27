@@ -295,6 +295,11 @@ const studies = [
 		description:function(){return "Non-permanent research have no effect; stardust resets are disabled; dark matter gain is capped at 1; all dark axis cost divisors are disabled. Unlock Titanium Empowerments in the Dark Matter tab."},
 		research:"r33_13",
 		goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.d60,c.d70][comp]},
+		scp:function(x=g.titaniumEmpowerments){return x.div(c.d10)},
+		sc:function(p=studies[12].scp()){
+			let amt = calcStatUpTo("darkmatterPerSec","Study XII")
+			return p.eq(c.d0)?amt.min(c.d1):Decimal.logarithmicSoftcap(amt,c.d1,p.recip())
+		},
 		reward:function(num,comp=g.studyCompletions[12]){
 			if (num===1) return comp/400
 			if (num===2) return [c.d16,N(comp),studyRewardBoost(12,2)].productDecimals()

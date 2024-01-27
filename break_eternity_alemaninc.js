@@ -811,6 +811,7 @@
 			if (Decimal.lt(value,start)) return N(value);
 			value=value.layerplus(-layer);
 			start=start.layerplus(-layer);
+			if (value.div(start).ln().mul(power).lt(c.em10)) {return value.layerplus(layer)}
 			return value.div(start).ln().mul(power).add(1).root(power).mul(start).layerplus(layer);
 		};
 
