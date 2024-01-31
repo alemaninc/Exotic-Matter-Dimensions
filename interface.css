@@ -21,6 +21,7 @@
 	--prismatic:conic-gradient(#fcc,#ffc,#cfc,#cff,#ccf,#fcf,#fcc);
 	--exp:#ffcc00;
 	--antimatter:#990000;
+	--titanium:#556677;
 }
 .big {
 	font-size:120%;
@@ -29,21 +30,11 @@
 	font-size:150%;
 	font-weight:700;
 }
-._exoticmatter {
-	color:var(--exoticmatter);
-}
-._time {
-	color:var(--time)
-}
-._time2 {
-	color:var(--time2)
-}
-._mastery {
-	color:var(--mastery);
-}
-._achievements {
-	color:var(--achievements);
-}
+._exoticmatter {color:var(--exoticmatter);}
+._time {color:var(--time)}
+._time2 {color:var(--time2)}
+._mastery {color:var(--mastery);}
+._achievements {color:var(--achievements);}
 ._stardust {
 	background:var(--stardust);
 	background-clip:text;
@@ -59,13 +50,8 @@
 ._stars {color:var(--stars);}
 ._darkmatter {color:var(--darkmatter);}
 ._energy {color:var(--energy);}
-._wormhole {
-	color:var(--wormhole_text);
-	text-shadow:var(--wormhole_glow);
-}
-._wormhole_noGlow {
-	color:var(--wormhole_text);
-}
+._wormhole {color:var(--wormhole_text);text-shadow:var(--wormhole_glow);}
+._wormhole_noGlow {color:var(--wormhole_text);}
 ._research {color:var(--research);}
 ._galaxies {color:var(--galaxies);}
 ._galaxyboosts {color:var(--galaxyboosts);}
@@ -79,6 +65,7 @@
 }
 ._exp {color:var(--exp);}
 ._antimatter {color:var(--antimatter);}
+._titanium {color:var(--titanium);}
 html, body {
 	max-width:100%;
 	min-width:1200px;
@@ -1164,6 +1151,19 @@ tab {
 .axisbutton.anti {
 	background-color:var(--antimatter);
 	color:#ffffff;
+}
+#button_titaniumEmpowerment {
+	color:#000000;
+	padding:4px;
+	border-radius:10px;
+	height:60px;
+	width:400px;
+}
+#button_titaniumEmpowerment.unlocked {
+	background-color:var(--titanium);
+}
+#button_titaniumEmpowerment.locked {
+	background-color:#999999;
 }
 .corruptionContainer {
 	height:150px;

@@ -2,10 +2,10 @@
 function updateHTML() {
 	if (wormholeAnimationActive) {
 		if (Date.now()-wormholeAnimationStart>16000) {
-			wormholeReset();
 			d.display("wormholeAnimation","none");
 			wormholeAnimationActive=false;
 		} else if (Date.now()-wormholeAnimationStart>8000) {
+			if (!unlocked("Hawking Radiation")) {wormholeReset();} // make sure to only reset once
 			unlockFeature("Hawking Radiation");
 			d.display("wormholeAnimation","inline-block");
 			d.element("wormholeAnimation").style.opacity = 2-(Date.now()-wormholeAnimationStart)/8000;
@@ -156,7 +156,7 @@ function updateHTML() {
 			d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off");
 			d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,[["All tabs","Showing footer in all tabs"],["Only Axis tab","Only showing footer in Axis tab"],["None","Hiding footer"]]))
 			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
-			d.innerHTML("span_newsTickerSpeed",g.newsTickerSpeed)
+			d.innerHTML("span_newsTickerSpeed",N(g.newsTickerSpeed).noLeadFormat(2))
 			d.innerHTML("span_newsTickerDilation",dictionary(g.newsTickerDilation,[[0,"None"],[0.0625,"Weak"],[0.125,"Moderate"],[0.1875,"Strong"],[0.25,"Extreme"]]))
 		} else if (g.activeSubtabs.options==="hotkeys") {
 			for (let name in hotkeys.hotkeyList) {
@@ -303,6 +303,7 @@ function updateHTML() {
 			} else {
 				d.element("achievementInfo").style.visibility = "hidden"
 			}
+			d.innerHTML("button_achievementToProgressBar",(g.achOnProgressBar==="N")?"Show achievement on progress bar":"Hide achievement from progress bar")
 		} else if (g.activeSubtabs.achievements==="secretAchievements") {
 			if (achievement.secretSelected!==undefined) {
 				d.element("secretAchievementInfo").style.visibility = "visible"
@@ -410,6 +411,20 @@ function updateHTML() {
 				for (let name of empowerableDarkAxis) {
 					d.display("button_empoweredDark"+name+"Axis",stat["empoweredDark"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 					d.innerHTML("span_empoweredDark"+name+"AxisAmount",BEformat(stat["empoweredDark"+name+"Axis"],2));
+				}
+				if (StudyE(12)) {
+					d.display("div_titaniumEmpowerments","inline-block")
+					d.innerHTML("span_titaniumEmpowerments",g.study12.empowerments.format())
+					d.innerHTML("span_fortitude",g.study12.fortitude.noLeadFormat(3))
+					d.innerHTML("span_fortitudeEffect",studies[12].sc().noLeadFormat(2))
+					let next = Decimal.max(studies[12].empowerment.affordable(),g.study12.empowerments.add(c.d1))
+					d.innerHTML("span_maxFortitude",arrowJoin(textFormat(studies[12].fortitude.max().noLeadFormat(3),"_titanium"),textFormat(studies[12].fortitude.max(next).noLeadFormat(3),"_titanium")))
+					d.innerHTML("span_maxFortitudeGain",arrowJoin(textFormat(studies[12].fortitude.gain().noLeadFormat(3),"_titanium"),textFormat(studies[12].fortitude.gain(next).noLeadFormat(3),"_titanium")))
+					d.class("button_titaniumEmpowerment",Decimal.gte(g.exoticmatter,studies[12].empowerment.req())?"unlocked":"locked")
+					let affordable = studies[12].empowerment.affordable().sub(g.study12.empowerments)
+					d.innerHTML("button_titaniumEmpowerment","Gain "+(affordable.gt(c.d0)?affordable.format():"a")+" Titanium Empowerment"+(affordable.gt(c.d1)?"s":"")+"<br>(Need "+studies[12].empowerment.req(studies[12].empowerment.affordable()).format()+" exotic matter"+(affordable.eq(c.d0)?"":" for next")+")")
+				} else {
+					d.display("div_titaniumEmpowerments","none")
 				}
 			}
 		} else if (g.activeSubtabs.stardust==="energy") {
@@ -717,6 +732,7 @@ function tick(time) {																																		 // The game loop, which 
 	
 	
 	// Dark Matter section
+	if (StudyE(12)) {g.study12.fortitude = studies[12].fortitude.lim(studies[12].fortitude.invlim(g.study12.fortitude,studies[12].fortitude.max()).add(studies[12].fortitude.gain().mul(time)),studies[12].fortitude.max())}
 
 
 	// Research section

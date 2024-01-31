@@ -27,6 +27,7 @@ const basesave = {
 	speedrunMilestones:[],
 	colortheme:"Default",
 	footerDisplay:"All tabs",
+	achOnProgressBar:"N", // "N" = none, can't use undefined or null due to issues
 	activeTab:"main",
 	activeSubtabs:Object.fromEntries(Object.keys(subtabList).map(x=>[x,subtabList[x][0]])),
 	timeThisStardustReset:0,
@@ -222,7 +223,10 @@ const basesave = {
 	researchAutobuyerUpgrades:0,
 	researchAutobuyerMode:0,
 	ach825possible:true,
-	titaniumEmpowerments:c.d0,
+	study12:{
+		empowerments:c.d0,
+		fortitude:c.d0
+	}
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = ["Y"]
@@ -242,10 +246,6 @@ var secretAchievementPoints = 0;
 var savecounter = 0; // will prevent save before load
 var olddelta = Date.now()
 var axisAutobuyerProgress = 0;
-var energyTypes = ["dark","stelliferous","gravitational","spatial","neural","meta","vacuum","mental","dimensional","temporal"];
-var energyResources = ["Exotic matter gain","Stardust gain","Dark matter gain","Free X axis","Mastery power gain","Energy gain","Hawking radiation gain","Knowledge gain","All axis costs","Tickspeed"];
-var energyDeterminers = ["exotic matter","stardust","dark matter","X axis","mastery power","all energies","Hawking radiation","knowledge","all axis","tickspeed"];
-var energyHyper = [3,3,3,2,3,3,3,3,3,2];
 var wormholeAnimationActive = false;
 var wormholeAnimationStart = 0;
 var darkAxisAutobuyerProgress = 0;
@@ -518,7 +518,7 @@ const axisEffectHTML = {
 	V:"All normal axis are {e}× cheaper",
 	darkV:"Normal V axis is {e}% stronger",
 	antiV:"Dark Y axis is {e}% stronger",
-	antiVEmpowered:"Empowered anti-V axis boost the anti-T axis by the same amount they boost the dark V axis",
+	antiVEmpowered:"Empowered anti-V axis boost the anti-T axis by the same amount they boost the dark Y axis",
 	U:"Stardust gain is multiplied by {e} (based on unspent stardust)",
 	darkU:"Dark matter gain is multiplied by {e} per dark axis owned<br><span class=\"small\">(currently: {e2}×)</span>",
 	antiU:"The anti-Z axis effect is multiplied by {e} per anti-axis owned<br><span class=\"small\">(currently: {e2}×)</span>",
@@ -669,7 +669,7 @@ function MasteryE(x) {
 	let row = Math.floor(x/10);
 	if (g.activeMasteries[row]===0) return false;
 	if (StudyE(8)) return g.activeMasteries[row]===(x%10) // ignore all "multi-activate" effects
-	if (g.achievement[708]&&row===10&&[101,103].includes(x)&&[1,3].includes(g.activeMasteries[10])) return true
+	if (g.achievement[708]&&(row===10)&&[101,103].includes(x)&&[1,3].includes(g.activeMasteries[10])) return true
 	return (g.activeMasteries[row]===(x%10))||masteredRow(row);
 }
 function masteredRow(x) {
@@ -1713,8 +1713,12 @@ function wormholeReset() {
 	g.ach524possible=achievement(524).active();
 	g.ach525possible=true;
 	g.ach526possible=true;
+	g.study9.xp = c.d0
+	g.study9.resets = 0
 	g.ach825possible=true;
 	g.ach901Int=c.d0;
+	g.study12.empowerments = c.d0
+	g.study12.fortitude = c.d0
 	g.ach908possible=true;
 	d.display("wormholeAnimation","none");
 	if (g.researchRespec) {
@@ -1836,10 +1840,6 @@ function enterStudy(x) {
 				buySingleResearch(researchRow(studyRes),researchCol(studyRes),true)
 			}
 			updateResearchTree()
-		}
-		if (StudyE(9)) {
-			g.study9.xp = c.d0
-			g.study9.resets = 0
 		}
 	}
 }
@@ -2020,7 +2020,7 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	shownAchievements = shownAchievements.sort((a,b)=>achPriority(b)-achPriority(a))
 	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:40px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+((achPriority(x)===0)?";filter:opacity(33%)":"")+"\">"+(achievement.visible(x)?("<table><tr><td style=\"width:300px;height:40px;\">"+x+"<br>"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:40px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode===1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode===1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table>"):("<table><tr><td style=\"height:40px\">[This achievement has not yet been revealed]</td></tr></table>"))+"</div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:60px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+((achPriority(x)===0)?";filter:opacity(33%)":"")+"\">"+(achievement.visible(x)?("<table><tr><td style=\"width:300px;height:60px;\">"+x+"<br>"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:60px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode===1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode===1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table>"):("<table><tr><td style=\"height:60px\">[This achievement has not yet been revealed]</td></tr></table>"))+"</div>")
 	}
 	popup({
 		text:out.join(""),
@@ -2130,7 +2130,7 @@ const galaxyEffects = [
 			value:function(n=g.galaxies){let e = effectiveGalaxies(5,0,n);return Decimal.decibel(e.add(c.d5).mul(e).div(c.d2))},
 			text:function(){return "The game runs {}× slower per unassigned star below 20"},
 			format:function(e){return e.format()},
-			formula:function(){return "round(10<sup>"+effectiveGalaxyFormulaText(5,0)+" × "+effectiveGalaxyFormulaText(5,0,{add:5})+" ÷ 20</sup>)"}
+			formula:function(){return "≈10<sup>"+effectiveGalaxyFormulaText(5,0)+" × "+effectiveGalaxyFormulaText(5,0,{add:5})+" ÷ 20</sup>"}
 		}
 	}
 ]
@@ -2511,7 +2511,7 @@ function updateTopResourceModal() {
 }
 function showConfigModal(label,buttons){
 	popup({
-		text:"<span style=\"text-decoration:underline\">Here is a list of "+label+" options:</span><br>"+buttons.filter(x=>(typeof x.visible==="function")?x.visible():true).map(x=>"<button class=\"starbuybutton\" onClick=\""+x.onClick+";openConfig['"+label+"']()\">"+x.text+"</button>").join("")+"<br>",
+		text:"<span style=\"text-decoration:underline\">Here is a list of "+label+" options:</span><br>"+buttons.filter(x=>x.visible??true).map(x=>"<button class=\"starbuybutton\" onClick=\""+x.onClick+";openConfig['"+label+"']()\">"+x.text+"</button>").join("")+"<br>",
 		buttons:[["Close",""]]
 	})
 }
@@ -2536,13 +2536,12 @@ const openConfig = (()=>{
 		])},
 		"Achievement":function(){updateAchievementsTab();showConfigModal("Achievement",[
 			{text:"Achievement ID "+(g.achievementIDShown?"":"not ")+" shown",onClick:"toggle('achievementIDShown');for (let i of achievement.all){d.display('span_ach'+i+'ID',g.achievementIDShown?'inline-block':'none')}"},
-			{text:(g.completedAchievementTiersShown?"Show":"Hid")+"ing completed achievement tiers",onClick:"toggle('completedAchievementTiersShown')"}
-		])
-		},
+			{text:(g.completedAchievementTiersShown?"Show":"Hid")+"ing completed achievement tiers",onClick:"toggle('completedAchievementTiersShown')"},
+		])},
 		"Stardust Boost":function(){showConfigModal("Stardust Boost",[
 			{text:"Stardust amount shown "+(g.topResourcesShown.stardust?"on top of screen":"in Stardust tab"),onClick:toggle("g.topResourcesShown.stardust")},
 			{text:"Stardust reset confirmation "+(g.confirmations.stardustReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.stardustReset")},
-			{text:"Stardust reset confirmation "+(g.confirmations.ironWillStardustReset?"en":"dis")+"abled in Iron Will",onClick:toggle("g.confirmations.ironWillStardustReset"),visible:function(){return g.achievement[502]}},
+			{text:"Stardust reset confirmation "+(g.confirmations.ironWillStardustReset?"en":"dis")+"abled in Iron Will",onClick:toggle("g.confirmations.ironWillStardustReset"),visible:g.achievement[502]},
 			{text:(g.glowOptions.buyStardustUpgrade?"G":"No g")+"low if Stardust Upgrade can be purchased",onClick:toggle("g.glowOptions.buyStardustUpgrade")},
 			{text:(g.showingCappedStardustUpgrades?"Show":"Hid")+"ing capped Stardust Upgrades",onClick:"toggle('showingCappedStardustUpgrades')"}
 		])},
@@ -2570,9 +2569,9 @@ const openConfig = (()=>{
 		])},
 		"Light":function(){showConfigModal("Light",[
 			{text:(g.glowOptions.noChromaGeneration?"G":"No g")+"low if no chroma is being generated",onClick:toggle("g.glowOptions.noChromaGeneration")},
-			{text:"If out of a component chroma, "+(g.haltChromaIfLacking?"halt generation":"switch to generate limiting component"),onClick:"toggle('haltChromaIfLacking')",get visible(){return lightTiersUnlocked()>1}},
+			{text:"If out of a component chroma, "+(g.haltChromaIfLacking?"halt generation":"switch to generate limiting component"),onClick:"toggle('haltChromaIfLacking')",visible:lightTiersUnlocked()>1},
 			{text:"Lumen effects shown from "+(g.showLightEffectsFrom0?"zero":"previous lumen"),onClick:"toggle('showLightEffectsFrom0')"},
-			{text:achievement.label(815)+" reward "+(g.ach815RewardActive?"":"in")+"active",onClick:toggle("g.ach815RewardActive"),visible:function(){return g.achievement[815]}}
+			{text:achievement.label(815)+" reward "+(g.ach815RewardActive?"":"in")+"active",onClick:toggle("g.ach815RewardActive"),visible:g.achievement[815]}
 		])},
 		"Galaxy":function(){showConfigModal("Galaxy",[
 			{text:(g.glowOptions.createGalaxy?"G":"No g")+"low if a galaxy can be created",onClick:toggle("g.glowOptions.createGalaxy")}
@@ -2597,9 +2596,17 @@ function endgameColor() {
 const progressMilestones = [
 	{
 		type:1,
+		get label(){return achievement.label(g.achOnProgressBar)},
+		percent:function(){let p = achievement(g.achOnProgressBar).progress();return Array.isArray(p)?(p[0]/100):((typeof p)==="object")?((((typeof p.percent)==="number")?p.percent:p.percent[0])/100):undefined},
+		req:function(){let p = achievement(g.achOnProgressBar).progress();return ((typeof p)==="string")?p:Array.isArray(p)?(p[1].noLeadFormat(3)+" / "+p[2].noLeadFormat(3)):((typeof p)==="object")?p.text:""},
+		color:"var(--achievements)",
+		condition:function(){return g.achOnProgressBar==="N"}
+	},
+	{
+		type:1,
 		label:"Masteries",
 		percent:function(){return Decimal.div(g.exoticmatter,axisCost("X",0));},
-		req:function(){return "1 X Axis";},
+		req:function(){return "Need 1 X Axis";},
 		color:"var(--mastery)",
 		condition:function(){return unlocked("Masteries");}
 	},
@@ -2607,7 +2614,7 @@ const progressMilestones = [
 		type:1,
 		label:"the next row of Masteries",
 		percent:function(){return Decimal.div(g.exoticmatter,axisCost("Z",0));},
-		req:function(){return "1 Z Axis";},
+		req:function(){return "Need 1 Z Axis";},
 		color:"var(--mastery)",
 		condition:function(){return stat.masteryRow2Unlocked}
 	},
@@ -2615,7 +2622,7 @@ const progressMilestones = [
 		type:1,
 		label:"the next row of Masteries",
 		percent:function(){return stat.totalNormalAxis.div(c.d40);},
-		req:function(){return "40 total axis";},
+		req:function(){return "Need 40 total axis";},
 		color:"var(--mastery)",
 		condition:function(){return stat.masteryRow3Unlocked}
 	},
@@ -2623,7 +2630,7 @@ const progressMilestones = [
 		type:1,
 		label:"the next row of Masteries",
 		percent:function(){return stat.totalNormalAxis.div(c.d50);},
-		req:function(){return "50 total axis";},
+		req:function(){return "Need 50 total axis";},
 		color:"var(--mastery)",
 		condition:function(){return stat.masteryRow4Unlocked}
 	},
@@ -2631,7 +2638,7 @@ const progressMilestones = [
 		type:1,
 		label:"Stardust and another Row 4 Mastery",
 		percent:function(){return g.exoticmatter.div(stat.stardustExoticMatterReq);},
-		req:function(){return stat.stardustExoticMatterReq+" total exotic matter produced";},
+		req:function(){return "Need "+stat.stardustExoticMatterReq+" total exotic matter produced";},
 		color:"linear-gradient(0deg,rgba(0,0,0,0),rgba(0,0,0,0) 50%,var(--mastery) 50%,var(--mastery)),linear-gradient(90deg,#ff0,#f60)",
 		condition:function(){return masteryData[42].req()}
 	},
@@ -2643,7 +2650,7 @@ const progressMilestones = [
 		type:1,
 		label:"Wormhole",
 		percent:function(){return stat.totalDarkAxis.div(stat.wormholeDarkAxisReq);},
-		req:function(){return stat.wormholeDarkAxisReq.format(0)+" dark axis";},
+		req:function(){return "Need "+stat.wormholeDarkAxisReq.format(0)+" dark axis";},
 		color:"linear-gradient(90deg,#0000ff,#9900ff)",
 		condition:function(){return unlocked("Hawking Radiation");}
 	},
@@ -2651,7 +2658,7 @@ const progressMilestones = [
 		type:1,
 		label:"Study completion",
 		percent:function(){return stat.totalDarkAxis.div(stat.wormholeDarkAxisReq);},
-		req:function(){return stat.wormholeDarkAxisReq.format(0)+" dark axis";},
+		req:function(){return "Need "+stat.wormholeDarkAxisReq.format(0)+" dark axis";},
 		color:"#000066",
 		condition:function(){return g.activeStudy===0;}
 	},
@@ -2659,7 +2666,7 @@ const progressMilestones = [
 		type:1,
 		label:"unlock the first Dilation upgrade",
 		percent:function(){return stat.tickspeed.log(dilationUpgrades[1].tickspeedNeeded)},
-		req:function(){return dilationUpgrades[1].tickspeedNeeded.format()+"× tickspeed"},
+		req:function(){return "Need "+dilationUpgrades[1].tickspeedNeeded.format()+"× tickspeed"},
 		color:"var(--time)",
 		condition:function(){return g.dilationUpgradesUnlocked>0}
 	},
@@ -2667,7 +2674,7 @@ const progressMilestones = [
 		type:1,
 		label:"unlock the second Dilation upgrade",
 		percent:function(){return stat.tickspeed.log(dilationUpgrades[2].tickspeedNeeded)},
-		req:function(){return dilationUpgrades[2].tickspeedNeeded.format()+"× tickspeed"},
+		req:function(){return "Need "+dilationUpgrades[2].tickspeedNeeded.format()+"× tickspeed"},
 		color:"var(--time)",
 		condition:function(){return g.dilationUpgradesUnlocked>1}
 	},
@@ -2679,7 +2686,7 @@ const progressMilestones = [
 		type:1,
 		label:"Luck Shards",
 		percent:function(){return 0},
-		req:function(){return "Study VII completion"},
+		req:function(){return "Need Study VII completion"},
 		color:"var(--luck)",
 		condition:function(){return g.studyCompletions[7]>0}
 	},
@@ -2687,7 +2694,7 @@ const progressMilestones = [
 		type:1,
 		label:"Antimatter",
 		percent:function(){return 0},
-		req:function(){return "Study IX completion"},
+		req:function(){return "Need Study IX completion"},
 		color:"var(--antimatter)",
 		condition:function(){return g.studyCompletions[9]>0}
 	},
@@ -2699,7 +2706,7 @@ const progressMilestones = [
 		type:1,
 		label:"current endgame",
 		percent:function(){return g.studyCompletions.sum()/40},
-		req:function(){return "40 Study completions"},
+		req:function(){return "Need 40 Study completions"},
 		color:"endgame",
 		condition:function(){return g.studyCompletions.sum()>39}
 	},
@@ -2717,8 +2724,10 @@ function ProgressBar() {
 		}
 	}
 	if (data.type===1) {
-		label = "Progress to "+data.label+": "+N(data.percent()).max(c.d0).min(c.d1).mul(c.e2).toNumber().toFixed(2)+"% (Need "+data.req()+")";
-		filled = N(data.percent()).max(c.d0).min(c.d1).mul(c.e2).toNumber();
+		let progressText = data.req()
+		if (data.percent()!==undefined) {progressText = N(data.percent()).max(c.d0).min(c.d1).mul(c.e2).toNumber().toFixed(2)+"%"+((progressText!==undefined)?(" ("+progressText+")"):"")}
+		label = "Progress to "+data.label+": "+progressText;
+		filled = (data.percent===undefined)?0:N(data.percent()).max(c.d0).min(c.d1).mul(c.e2).toNumber();
 		color = data.color==="endgame"?endgameColor():data.color;
 	} else if (data.type===2) {
 		label = "No new aspects detected. <span style=\"font-weight:700\">Perhaps you need something else.</span>";
@@ -2848,27 +2857,24 @@ function processImport(string) {
 		} catch {error("Invalid import")}
 	}
 }
-const promoCodeList = {    // key = code, value = function
-	"XNu35M0qc7KzBcgW":{
-		action:()=>addSecretAchievement(7),
-		condition:()=>!g.secretAchievement[7]
-	},
-	"RsNU8rznMqhPdFjg":{
-		action:()=>addSecretAchievement(8),
-		condition:()=>!g.secretAchievement[8]
-	},
-	"GEtJEyjWuFB1oNSA":{
-		action:()=>addSecretAchievement(30),
-		condition:()=>!g.secretAchievement[30]
-	},
-	"YVAn4tknrVD5NcBB":{
-		action:()=>{
-			newsSupport.newsletter.spamStart=Infinity
-			addSecretAchievement(33)
+const promoCodeList = (()=>{
+	function sach(x) {return {
+		action:()=>addSecretAchievement(x),
+		condition:()=>!g.secretAchievement[x]
+	}}
+	return {    // key = code, value = function
+		"XNu35M0qc7KzBcgW":sach(7),
+		"RsNU8rznMqhPdFjg":sach(8),
+		"GEtJEyjWuFB1oNSA":sach(30),
+		"YVAn4tknrVD5NcBB":{
+			action:()=>{
+				newsSupport.newsletter.spamStart=Infinity
+				addSecretAchievement(33)
+			},
+			condition:()=>(!g.secretAchievement[33])&&(newsSupport.newsletter.remaining.length===0)
 		},
-		condition:()=>(!g.secretAchievement[33])&&(newsSupport.newsletter.remaining.length===0)
 	}
-}
+})()
 function inputPromo() {
 	popup({
 		text:"Input your code here:",

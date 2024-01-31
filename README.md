@@ -7,7 +7,6 @@ Exotic Matter Dimensions is an incremental game *loosely* based on Antimatter Di
 	* Go from galaxy 0 to X without assigning stars
   * "Axistential Dread"
 ##### High priority
-* Unheadered tables (previous prestige & statistics)
 ##### Upper medium priority
 ##### Lower medium priority
 * Time in Wormhole reset shown in resources

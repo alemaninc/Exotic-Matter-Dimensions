@@ -15,7 +15,7 @@
 					<td class="toptable" style="width:260px">
 						<table><tr>
 							<td><button onClick="attemptStardustReset(true)" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
-							<td><button onClick="(unlocked('Hawking Radiation')&&((g.activeStudy===0)||Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)))?attemptWormholeReset(true):(()=>{})() // do nothing" id="button_wormholeReset"></button></td>
+							<td><button onClick="attemptWormholeReset(true)" id="button_wormholeReset"></button></td>
 						</tr></table>
 					</td>
 				</tr>
@@ -108,12 +108,27 @@
 					<div id="div_darkMatterUnlocked">
 						<p><span id="div_darkmatter_disabledTop">You have <span class="big _darkmatter" id="span_darkmatter_disabledTop"></span> dark matter<br>You are gaining <span class="big _darkmatter" id="span_darkmatterPerSec_disabledTop"></span> dark matter per second</span><br id="br_darkmatter_disabledTop">Dark matter gain is multiplied by <span class="big _darkmatter" id="span_baseDarkMatterGain"></span> (based on stardust)<br>For every <span class="big _darkmatter" id="span_darkMatterFreeAxis1"></span> dark axis owned, gain <span class="big _darkmatter" id="span_darkMatterFreeAxis2"></span> of the corresponding normal axis for free</p>
 						<button id="button_maxDarkAxis" onClick="buyMaxDarkAxis(Array(12).fill('u'))">Buy Max Dark Axis (<span id="span_affordableDarkAxis"></span>)</button><br>
-						<div id="div_darkAxisContainer" style="width:900px"></div>
-						<div>You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
-						<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')">
-							<div id="span_realDarkStars" style="position:absolute;font-size:8px;top:6px;right:6px;text-align:right;color:rgba(0,0,0,0.4);"></div>
-							<div id="span_darkStarMainText"></div>
-						</button></div>
+						<table><tr>
+							<td style="vertical-align:top;"><div id="div_darkAxisContainer" style="width:900px"></div></td>
+							<td style="vertical-align:top;max-width:450px;">
+								<div id="div_darkstars">
+									You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
+									<button class="darkstarbutton" id="button_darkstar" onClick="gainDarkStar('u')">
+										<div id="span_realDarkStars" style="position:absolute;font-size:8px;top:6px;right:6px;text-align:right;color:rgba(0,0,0,0.4);"></div>
+										<div id="span_darkStarMainText"></div>
+									</button>
+								</div>
+								<div id="div_titaniumEmpowerments">
+									You have <span class="big _titanium" id="span_titaniumEmpowerments"></span> Titanium Empowerments<br>
+									You have <span class="big _titanium" id="span_fortitude"></span> fortitude, translated to <span class="big _titanium" id="span_fortitudeEffect"></span> dark matter per second<br>
+									Your maximum fortitude is <span id="span_maxFortitude"></span> and you can gain up to <span id="span_maxFortitudeGain"></span> per second<br>
+									<button id="button_titaniumEmpowerment" onClick="studies[12].empowerment.gain()">
+										<div id="span_realDarkStars" style="position:absolute;font-size:8px;top:6px;right:6px;text-align:right;color:rgba(0,0,0,0.4);"></div>
+										<div id="span_darkStarMainText"></div>
+									</button>
+								</div>
+							</td>
+						</tr></table>
 					</div>
 					<div id="div_darkMatterLocked">You must buy the relevant Stardust Upgrade in order to generate dark matter</div>
 				</div>
@@ -277,6 +292,7 @@
 					<button class="featureConfig achievements" onClick="openConfig['Achievement']()"></button>
 					<span id="span_noAchievements" style="display:none">You have not earned any Achievements yet.</span>
 					<div id="achievementContainer"></div>
+					<button class="genericbutton" id="button_achievementToProgressBar" onClick="achievement.selectForProgressBar()"></button>
 					<div id="achievementInfo" class="achievementInfo" style="visibility:hidden"></div>
 				</div>
 				<div class="subtab achievements" id="subtab_achievements_secretAchievements" style="display:none">
@@ -359,11 +375,6 @@
 		</div>
 		<div id="loadScreen" class="topleveldiv">		<!-- This gets hidden when the game finishes loading -->
 			<h1>Loading game...</h1><div class="progress" id="loadprogress"><span id="span_loadPercentage"></span>%</div>
-		</div>
-		<div id="export" class="topleveldiv" style="display:none">
-			This is your export string:<br>
-			<textarea id="span_export" style="height:50vh;width:50vw"></textarea><br>
-			<button class="genericbuntton" onClick="openTopLevelDiv('game')">Back to game</button>
 		</div>
 		<div id="wormholeAnimation" class="topleveldiv" style="display:none;opacity:0"></div>
 		<div id="notifyDiv"></div>

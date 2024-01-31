@@ -436,7 +436,7 @@ const statTemplates = {
 			mod:function(){
 				let out = c.d1
 				let res = researchList.finality[type].slice(1,13)
-				for (let i of res) {if (g.research[res]) {out = out.mul(researchRow(i),researchCol(i))}}
+				for (let i of res) {if (g.research[i]) {out = out.mul(researchEffect(researchRow(i),researchCol(i)))}}
 				return out
 			},
 			func:function(prev){return (op===3)?prev.pow(this.mod()):(op===2)?prev.mul(this.mod()):functionError("statTemplates.finalityResearch",arguments)},
@@ -598,7 +598,7 @@ miscStats.pendingstardust={
 		{
 			label:"Base Gain",
 			func:function(){return g.exoticmatter.lt(stat.stardustExoticMatterReq)?c.d0:g.exoticmatter.div(stat.stardustExoticMatterReq.div(c.d10)).dilate(studies[4].reward(1));},
-			text:function(){return "10 ^ log("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ÷ "+stat.stardustExoticMatterReq.div(c.d10).format()+") ^ "+studies[4].reward(1).toFixed(3);},
+			text:function(){return "10 ^ log("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ÷ "+stat.stardustExoticMatterReq.div(c.d10).format()+") ^ "+studies[4].reward(1).noLeadFormat(3);},
 			dependencies:["stardustExoticMatterReq"],
 			show:function(){return true}
 		},
@@ -630,7 +630,7 @@ miscStats.stardustMultiplier={
 		...(()=>{
 			let out = []
 			for (let i=0;i<4;i++){
-				let constant = N(1.004-i/1e3)
+				let constant = Decimal.FC_NN(1,0,1.004-i/1e3)
 				out.push({
 					label:achievement.label(202+i),
 					func:function(prev){return g.achievement[202+i]?prev.mul(constant.pow(g[axisCodes[3-i]+"Axis"])):prev},
@@ -846,8 +846,8 @@ miscStats.darkmatterPerSec={
 		statTemplates.study9,
 		{
 			label:"Study XII",
-			func:function(prev){return StudyE(12)?(prev.gt(c.em10)?prev.add(c.d1).log10():prev.div(Math.log(10))):prev},
-			text:function(){return "log(<i>x</i> + 1)"},
+			func:function(prev){return StudyE(12)?studies[12].sc(prev):prev},
+			text:function(){return g.study12.fortitude.eq(c.d0)?"min(<i>x</i>, 1)":formulaFormat.logSoftcap("<i>x</i>",c.d1,g.study12.fortitude.recip(),true)},
 			show:function(){return StudyE(12)},
 			color:"#cc0000"
 		},
@@ -1798,10 +1798,10 @@ miscStats.energyGainSpeed={
 		statTemplates.base("1",c.d1,false),
 		statTemplates.masteryMul(71),
 		{
-			label:"Tier 4 achievements 2-7",
+			label:achievement.label(402,6),
 			mod:function(){
 				let out = c.d1
-				for (let i=402;i<408;i++){if(g.achievement[i]){out=out.mul(i/100-2.99)}}
+				for (let i=402;i<408;i++){if(g.achievement[i]){out=out.mul(Decimal.FC_NN(1,0,i/100-2.99))}}
 				return out
 			},
 			func:function(prev){return prev.mul(this.mod())},
@@ -3100,7 +3100,7 @@ miscStats.darkStarScalingStart={
 	type:"combined",
 	value:function(){
 		let out = c.d48
-		if (g.achievement[527]) out = out.add(c.d4)
+		if (g.achievement[527]) out = out.add(achievement(527).effect())
 		return out
 	}
 }

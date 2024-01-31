@@ -1,16 +1,8 @@
 "use strict";
-function achievement(id) {
-	return achievementList[String(id).substring(0,String(id).length-2)][id];
-}
-achievement.tierOf = function(id){
-	return String(id).substring(0,String(id).length-2);
-},
-achievement.tierName = function(id) {
-	return "Tier "+id;
-}
-achievement.ownedInTier = function(tier){
-	return Object.keys(achievementList[tier]).map(x=>g.achievement[x]?1:0).sum();
-}
+function achievement(id) {return achievementList[String(id).substring(0,String(id).length-2)][id];}
+achievement.tierOf = function(id){return String(id).substring(0,String(id).length-2);}
+achievement.tierName = function(id) {return "Tier "+id;}
+achievement.ownedInTier = function(tier){return Object.keys(achievementList[tier]).map(x=>g.achievement[x]?1:0).sum();}
 achievement.tierColors = {
 	1:{primary:"#009900",secondary:"#00ff00"},
 	2:{primary:"#804c00",secondary:"#ff9900"},
@@ -35,29 +27,28 @@ achievement.perAchievementReward = {
 }
 achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:717,9:betaActive?823:905}
 achievement.visible = function(id) {
-	if (g.achievement[id]) return true
-	if (achievement(id).beta===true) if (!betaActive) return false
+	if (g.achievement[id]) {return true}
+	if ((achievement(id).beta===true)&&(!betaActive)) {return false}
 	let tier = achievement.tierOf(id)
-	if (!g.achievement[achievement.initial[tier]]) return false
-	if (achievement(id).prevReq!==undefined) for (let i of achievement(id).prevReq) if (!g.achievement[i]) return false
+	if (!g.achievement[achievement.initial[tier]]) {return false}
+	if (achievement(id).prevReq!==undefined) {for (let i of achievement(id).prevReq) {if (!g.achievement[i]) {return false}}}
 	return true
 }
 achievement.percent = function(value,needed,log){
 	let valuefactor=value.layerplus(-log)
 	let neededfactor=needed.layerplus(-log)
 	let percent = valuefactor.div(neededfactor).max(c.d0).min(c.d1)
-	percent = percent.isNaN()?0:(percent.toNumber()*100)
-	let precision = (percent%1===0)?0:(percent%0.1===0)?1:(percent%0.1===0)?2:3
-	return "Progress: "+value.noLeadFormat(3)+" / "+needed.noLeadFormat(3)+" ("+percent.toFixed(precision)+"%)";
+	return [percent.isNaN()?0:(percent.toNumber()*100),value,needed]
 }
 achievement.label = function(id,num=1){
 	let name = achievement(id).name
 	if (num>1) {
-		for (let i=5;i>0;i--) name = name.replace(" "+roman(i),"") // avoid cases like "Parity II" being the plural name
+		for (let i=5;i>0;i--) {name = name.replace(" "+roman(i),"")} // avoid cases like "Parity II" being the plural name
 		loop: for (let i=1;i<num;i++) {if (name!==achievement(id+i-1).name.substring(0,name.length)) {name = undefined; break loop}}
 	}
 	return "Achievement"+((num===1)?"":"s")+" "+id+((num===1)?"":("-"+(id+num-1)))+((name===undefined)?"":(" \""+name+"\""))
 }
+achievement.roman = function(num){return (num===1)?"":(" "+roman(num))}
 achievement.tiersUnlocked = function(){return Object.keys(achievementList).filter(x=>(Number(x)!==NaN)&&(achievement.ownedInTier(x)>0))}
 achievement.nextTier = function(){
 	let u = achievement.tiersUnlocked()
@@ -66,6 +57,19 @@ achievement.nextTier = function(){
 }
 achievement.selected = undefined
 achievement.secretSelected = undefined
+achievement.selectForProgressBar = function(){
+	if (g.achOnProgressBar==="N") {
+		let available = achievement.all.filter(x=>achievement.visible(x)&&(!g.achievement[x]))
+		if (available.length>0) {popup({
+			text:"Which achievement do you want to show?",
+			buttons:available.map(x=>[x,"g.achOnProgressBar='"+x+"'"])
+		})} else {popup({
+			text:"There are no achievements to show.",
+			buttons:[["Close",""]]
+		})}
+	} else {g.achOnProgressBar = "N"}
+}
+achievement.wormholeProgress = function(){return achievement.percent(stat.totalDarkAxis,stat.wormholeDarkAxisReq,0)}
 /*
 	name									the name of the achievement
 	description						the listed condition of the achievement
@@ -86,7 +90,7 @@ const achievementList = {
 			description:"Buy an X Axis",
 			check:function(){return g.XAxis.gt(c.d0);},
 			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
+			progress:function(){return "Not Completed!"},
 			reward:"+1% exotic matter",
 			flavor:"A Straight Line to the touch is worth a Circle to the sight"
 		},
@@ -95,7 +99,7 @@ const achievementList = {
 			description:"Buy a Y Axis",
 			check:function(){return g.YAxis.gt(c.d0);},
 			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
+			progress:function(){return "Not Completed!"},
 			prevReq:[101],
 			reward:"+2% exotic matter",
 			flavor:"Upward, not Northward"
@@ -105,7 +109,7 @@ const achievementList = {
 			description:"Buy a Z Axis",
 			check:function(){return g.ZAxis.gt(c.d0);},
 			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
+			progress:function(){return "Not Completed!"},
 			prevReq:[102],
 			reward:"+3% exotic matter",
 			flavor:"It is Knowledge; it is Three Dimensions: open your eye once again and try to look steadily."
@@ -115,7 +119,7 @@ const achievementList = {
 			description:"Buy a W Axis",
 			check:function(){return g.WAxis.gt(c.d0);},
 			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
+			progress:function(){return "Not Completed!"},
 			prevReq:[103],
 			reward:"+4% mastery power",
 			flavor:"Time is clearly not our natural dimension. Thus it is that we are never really at home in time."
@@ -125,7 +129,7 @@ const achievementList = {
 			get description(){return "Accumulate "+BEformat(c.e11)+" mastery power";},
 			check:function(){return g.masteryPower.gt(c.e11);},
 			event:"gameloop",
-			progress:function(){return achievement.percent(g.masteryPower,c.e11,0);},
+			progress:function(){return achievement.percent(g.masteryPower,c.e11,0)},
 			get reward(){return "Extremely small boost to first row Masteries based on time played (currently: {}%)";},
 			flavor:"10,000 hours to master your craft.",
 			effect:function(){return Decimal.convergentSoftcap(g.truetimePlayed.div(c.e5).add(c.d10).log10().log10(),c.d0_75,c.d1).pow(c.d0_5);},
@@ -137,7 +141,7 @@ const achievementList = {
 			description:"Play for a total of 10 hours",
 			check:function(){return g.truetimePlayed>36000;},
 			event:"gameloop",
-			progress:function(){return achievement.percent(g.truetimePlayed.div(c.d3600),c.d10,0);},
+			progress:function(){return achievement.percent(g.truetimePlayed.div(c.d3600),c.d10,0)},
 			reward:"Mastery power gain uses a slightly better formula (+0.001 formula exponent)",
 			flavor:"Every 10.000 hours in Africa, 600 minutes pass"
 		},
@@ -146,7 +150,7 @@ const achievementList = {
 			description:"Make the X Axis effect go above 4×",
 			check:function(){return stat.XAxisEffect.gt(c.d4);},
 			event:"gameloop",
-			progress:function(){return achievement.percent(stat.XAxisEffect,c.d4,1);},
+			progress:function(){return achievement.percent(stat.XAxisEffect,c.d4,1)},
 			prevReq:[101],
 			reward:"1 free Y axis",
 			flavor:"Space is relative"
@@ -156,7 +160,7 @@ const achievementList = {
 			description:"Make the Z Axis effect go above 4×",
 			check:function(){return stat.ZAxisEffect.gt(c.d4)&&stat.axisUnlocked>2;},
 			event:"gameloop",
-			progress:function(){return achievement.percent(stat.ZAxisEffect,c.d4,1);},
+			progress:function(){return achievement.percent(stat.ZAxisEffect,c.d4,1)},
 			prevReq:[103],
 			get reward(){return "Gain a free X Axis per {} purchased Z Axis (currently: "+g.ZAxis.mul(this.effect()).noLeadFormat(2)+")"},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d0_05:y.eq(c.d0)?c.d0_04:c.d0_2.div(c.d5.sub(y))},
@@ -169,7 +173,7 @@ const achievementList = {
 			description:"Make the W Axis effect go above 4×",
 			check:function(){return stat.WAxisEffect.gt(4)&&stat.axisUnlocked>3;},
 			event:"gameloop",
-			progress:function(){return achievement.percent(stat.WAxisEffect,c.d4,1);},
+			progress:function(){return achievement.percent(stat.WAxisEffect,c.d4,1)},
 			prevReq:[104],
 			get reward(){return "Add 30 seconds to the W Axis timer per W Axis"+(g.lumens[5].lt(c.d360)?"":"<sup>{}</sup>")+(Decimal.eq(g.WAxis,stat.realWAxis)?"":" (including free)")},
 			effect:function(y=this.yellowValue){return y.add(c.d1)},
@@ -177,41 +181,28 @@ const achievementList = {
 			yellowBreakpoints:[c.d360,N(360000),1],
 			flavor:"Why has the pleasure of slowness disappeared? Ah, where have they gone, the amblers of yesteryear?"
 		},
-		110:{
-			name:"Halted",
-			description:"Store 24 hours worth of exotic matter production (hint: is there a way to decrease your production?)",
-			check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(c.d86400)&&timeSinceGameOpened>5;},
-			event:"gameloop",
-			progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(c.d86400),0);},
-			reward:"If your exotic matter is less than 15 seconds worth of production, it will instantly increase to that amount",
-			flavor:"Be not afraid of going slowly, be afraid only of standing still."
-		},
-		111:{
-			name:"Halted II",
-			get description(){return "Store "+timeFormat(c.e6)+" (1,000,000 seconds) worth of exotic matter production"},
-			check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(c.e6)&&timeSinceGameOpened>5;},
-			event:"gameloop",
-			progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(c.e6),0);},
-			prevReq:[110],
-			reward:"If your exotic matter is less than 30 seconds worth of production, it will instantly increase to that amount",
-			flavor:"To feel the life, don’t stand still; to feel the universe, don’t move!"
-		},
-		112:{
-			name:"Halted III",
-			get description(){return "Store "+timeFormat(c.e9)+" ("+BEformat(c.e9)+" seconds) worth of exotic matter production"},
-			check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(c.e9)&&timeSinceGameOpened>5;},
-			event:"gameloop",
-			progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(c.e9),0);},
-			prevReq:[111],
-			reward:"If your exotic matter is less than 60 seconds worth of production, it will instantly increase to that amount",
-			flavor:"Integrity involves the ability to stand straight when you tell your truth, and still stand straight when the other person comes to talk!"
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {
+				let req = [c.d86400,c.e6,c.e9][i]
+				out[110+i] = {
+					name:"Halted"+achievement.roman(i+1),
+					get description(){return "Store "+["24 hours",timeFormat(c.e6)+" (1,000,000 seconds)",timeFormat(c.e9)+" ("+c.e9.format()+" seconds)"][i]+" worth of exotic matter production"+((i===0)?" (hint: is there a way to decrease production?":"")},
+					check:function(){return g.exoticmatter.div(stat.exoticmatterPerSec).gt(req)&&(timeSinceGameOpened>5)}, // weird things happen where "Halted" is awarded randomly where opening
+					event:"gameloop",
+					progress:function(){return achievement.percent(g.exoticmatter,stat.exoticmatterPerSec.mul(req),0)},
+					reward:"If your exotic matter is less than "+["15","30","60"][i]+" seconds worth of production, it will instantly increase to that amount",
+					flavor:["Be not afraid of going slowly, be afraid only of standing still.","To feel the life, don't stand still; to feel the universe, don't move!","Integrity involves the ability to stand straight when you tell your truth, and still stand straight when the other person comes to talk!"][i]
+				}
+			}
+			return out
+		})(),
 		113:{
 			name:"Quadratic",
 			get description(){return "Have 9 purchased X Axis"},
 			check:function(){return g.XAxis.gte(c.d9);},
 			event:"axisBuy",
-			progress:function(){return achievement.percent(g.XAxis,c.d9,0);},
+			progress:function(){return achievement.percent(g.XAxis,c.d9,0)},
 			prevReq:[101],
 			reward:"+0.0004× Y Axis effect per Y Axis",
 			flavor:"6<sup>X<sup>2</sup></sup>"
@@ -242,7 +233,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return "Not Completed!";},
 			reward:"+1 exotic matter",
-			flavor:"It’s morally wrong to allow a sucker to keep his money.",
+			flavor:"It's morally wrong to allow a sucker to keep his money.",
 		}
 	},
 	2:{
@@ -265,46 +256,23 @@ const achievementList = {
 			},
 			yellowBreakpoints:[c.d99,c.e2,0]
 		},
-		202:{
-			name:"Timeless",
-			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without W Axis";},
-			check:function(){return g.exoticmatter.gt(c.e25)&&g.WAxis.eq(c.d0);},
-			event:"gameloop",
-			progress:function(){return g.WAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			prevReq:[104],
-			get reward(){return "+0.4% stardust per W Axis (total: "+percentOrMult(c.d1_004.pow(g.WAxis))+")"},
-			flavor:"Like all great art, it defies the tyrant Time."
-		},
-		203:{
-			name:"Spaceless",
-			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without Z Axis";},
-			check:function(){return g.exoticmatter.gt(c.e25)&&g.ZAxis.eq(c.d0);},
-			event:"gameloop",
-			progress:function(){return g.ZAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			prevReq:[202],
-			get reward(){return "+0.3% stardust per Z Axis (total: "+percentOrMult(c.d1_003.pow(g.ZAxis))+")"},
-			flavor:"Four axis good, two axis better"
-		},
-		204:{
-			name:"String Theory",
-			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without Y Axis";},
-			check:function(){return g.exoticmatter.gt(c.e25)&&g.YAxis.eq(c.d0);},
-			event:"gameloop",
-			progress:function(){return g.YAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			prevReq:[203],
-			get reward(){return "+0.2% stardust per Y Axis (total: "+percentOrMult(c.d1_002.pow(g.YAxis))+")"},
-			flavor:"It seemed that this poor ignorant Monarch — as he called himself — was persuaded that the Straight Line which he called his Kingdom, and in which he passed his existence, constituted the whole of the world"
-		},
-		205:{
-			name:"0∞",
-			get description(){return "Reach "+BEformat(c.e25)+" exotic matter without X Axis";},
-			check:function(){return g.exoticmatter.gt(c.e25)&&g.XAxis.eq(c.d0);},
-			event:"gameloop",
-			progress:function(){return g.XAxis.eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed";},
-			prevReq:[204],
-			get reward(){return "+0.1% stardust per X Axis (total: "+percentOrMult(c.d1_001.pow(g.XAxis))+")"},
-			flavor:"That Point is a Being like ourselves, but confined to the non-dimensional Gulf. He is himself his own World, his own Universe; of any other than himself he can form no conception; he knows not Length, nor Breadth, nor Height, for he has had no experience of them; he has no cognizance even of the number Two; nor has he a thought of Plurality; for he is himself his One and All, being really Nothing."
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<4;i++) {
+				let type = axisCodes[3-i]
+				out[202+i] = {
+					name:["Timeless","Spaceless","String Theory","0∞"][i],
+					get description(){return "Reach "+c.e25.format()+" exotic matter without "+(unlocked("Dark Matter")?"normal ":"")+type+" Axis"},
+					check:function(){return g.exoticmatter.gt(c.e25)&&g[type+"Axis"].eq(c.d0)},
+					event:"gameloop",
+					progress:function(){return g[type+"Axis"].eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed"},
+					prevReq:[[104,202,203,204][i]],
+					get reward(){return "+0."+(4-i)+"% stardust per "+type+" Axis (total: "+percentOrMult(Decimal.pow(Decimal.FC_NN(1,0,1.004-i/1e3),g[type+"Axis"]))+")"},
+					flavor:["Like all great art, it defies the tyrant Time.","Four axis good, two axis better","It seemed that this poor ignorant Monarch — as he called himself — was persuaded that the Straight Line which he called his Kingdom, and in which he passed his existence, constituted the whole of the world","That Point is a Being like ourselves, but confined to the non-dimensional Gulf. He is himself his own World, his own Universe; of any other than himself he can form no conception; he knows not Length, nor Breadth, nor Height, for he has had no experience of them; he has no cognizance even of the number Two; nor has he a thought of Plurality; for he is himself his One and All, being really Nothing."][i]
+				}
+			}
+			return out
+		})(),
 		206:{
 			name:"The Missing Link",
 			description:"Make the Y Axis effect go above 0.4×",
@@ -313,7 +281,7 @@ const achievementList = {
 			progress:function(){return achievement.percent(stat.YAxisEffect,c.d0_4,0);},
 			prevReq:[102],
 			get reward(){return "{} free Y axis (based on mastery power)";},
-			flavor:"It’s almost impossible to prevent Y axis from breeding, but when a Y axis reproduces evolution is halted and devolution commences. Y axis truly are the missing link of society",
+			flavor:"It's almost impossible to prevent Y axis from breeding, but when a Y axis reproduces evolution is halted and devolution commences. Y axis truly are the missing link of society",
 			effect:function(y=this.yellowValue){
 				let out = g.masteryPower.add(c.d1).dilate(c.d0_3).pow(c.d0_3)
 				return Decimal.convergentSoftcap(out,c.d8,y.eq(c.d1)?c.d512:c.d12).fix(c.d0)
@@ -383,47 +351,22 @@ const achievementList = {
 			reward:"Z axis effect uses a better formula (+0.01 formula exponent)",
 			flavor:"Not very pretty but we sure know how to run things"
 		},
-		212:{
-			name:"Four Second Mile",
-			description:"Reach 1609.344 exotic matter within 4 seconds of stardust-resetting",
-			req:N(1609.344),
-			check:function(){return g.exoticmatter.gt(this.req)&&g.timeThisStardustReset<4;},
-			event:"gameloop",
-			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,this.req,0):"Failed";},
-			reward:"The game runs 0.4% faster",
-			flavor:"You think a five-minute mile is fast?"
-		},
-		213:{
-			name:"Four Second Mile II",
-			req:N(1199169832),
-			get description(){return "Reach "+BEformat(this.req)+" exotic matter within 4 seconds of stardust-resetting";},
-			check:function(){return g.exoticmatter.gt(this.req)&&g.timeThisStardustReset<4;},
-			event:"gameloop",
-			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e9,0):"Failed";},
-			prevReq:[212],
-			reward:"The game runs 0.4% faster",
-			flavor:"Δt²+v²=c²"
-		},
-		214:{
-			name:"Four Second Mile III",
-			get description(){return "Reach "+BEformat(c.e15)+" exotic matter within 4 seconds of stardust-resetting";},
-			check:function(){return g.exoticmatter.gt(c.e15)&&g.timeThisStardustReset<4;},
-			event:"gameloop",
-			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e15,0):"Failed";},
-			prevReq:[213],
-			reward:"The game runs 0.4% faster",
-			flavor:"You're made for the mile, not the 400, and the sooner you realize that, the better off you're gonna be."
-		},
-		215:{
-			name:"Four Second Mile IV",
-			get description(){return "Reach "+BEformat(c.e25)+" exotic matter within 4 seconds of stardust-resetting";},
-			check:function(){return g.exoticmatter.gt(c.e25)&&g.timeThisStardustReset<4;},
-			event:"gameloop",
-			progress:function(){return g.timeThisStardustReset<4?achievement.percent(g.exoticmatter,c.e25,0):"Failed";},
-			prevReq:[214],
-			reward:"The game runs 0.4% faster",
-			flavor:"In skating over thin ice our safety is in our speed."
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<4;i++) {
+				let req = Decimal.FC_NN([1,1,1,1][i],[0,0,0,1][i],[1609.344,1199169832,1e15,25][i])
+				out[i+212] = {
+					name:"Four Second Mile"+achievement.roman(i+1),
+					get description(){return "Reach "+req.format(6)+" exotic matter within 4 seconds of stardust-resetting"},
+					check:function(){return g.exoticmatter.gt(req)&&(g.timeThisStardustReset<4)},
+					event:"gameloop",
+					progress:function(){return (g.timeThisStardustReset<4)?{percent:achievement.percent(g.exoticmatter,req,(i>1)?1:0),text:(4-g.timeThisStardustReset)+" seconds left"}:"Failed"},
+					reward:"The game runs 0.4% faster",
+					flavor:["You think a five-minute mile is fast?","(Δt')²+(Δt)²=c²","You're made for the mile, not the 400, and the sooner you realize that, the better off you're gonna be.","In skating over thin ice our safety is in our speed."][i]
+				}
+			}
+			return out
+		})(),
 		216:{
 			name:"Zero Player Game",
 			description:"Unlock the axis autobuyer",
@@ -438,7 +381,7 @@ const achievementList = {
 			description:"Have exactly 1 X axis, 3 Y axis, 3 Z axis and 7 W axis. Does not include free axes.",
 			check:function(){return g.XAxis.eq(c.d1)&&g.YAxis.eq(c.d3)&&g.ZAxis.eq(c.d3)&&g.WAxis.eq(c.d7);},
 			event:"axisBuy",
-			progress:function(){return (g.XAxis.gt(c.d1)||g.YAxis.gt(c.d3)||g.ZAxis.gt(c.d3)||g.WAxis.gt(c.d7))?"Failed":achievement.percent(axisCodes.slice(0,4).map(x=>g[x+"Axis"]).sumDecimals(),N(14),0);},
+			progress:function(){return (g.XAxis.gt(c.d1)||g.YAxis.gt(c.d3)||g.ZAxis.gt(c.d3)||g.WAxis.gt(c.d7))?"Failed":achievement.percent(axisCodes.slice(0,4).map(x=>g[x+"Axis"]).sumDecimals(),c.d14,0);},
 			prevReq:[104],
 			reward:"+33.7% stardust",
 			flavor:"x 4x15 Y 4X15 2 4X15 W 4x15"
@@ -472,38 +415,25 @@ const achievementList = {
 			progress:function(){return this.valence()?achievement.percent(g.exoticmatter,c.inf,1):"Failed";},
 			get reward(){return "+30.8% dark matter per unassigned star (total: "+percentOrMult(N(1.308).pow(unspentStars()))+")"},
 			flavor:"I made a noble gas joke, sadly nobody reacted",
-			valence:function(){return [1,2,3,4,5,6,7,8,9,10].map(x => [1,2,3,4].map(y => g.star[10*x+y]?1:0).sum()%4).sum()===0;}
+			valence:function(){return countTo(10).map(x => [1,2,3,4].map(y => g.star[10*x+y]?1:0).sum()%4).sum()===0;}
 		},
-		303:{
-			name:"Parity",
-			description:"Have exactly 1 of each normal axis purchased",
-			check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(c.d1)).includes(false);},
-			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
-			prevReq:[210],
-			reward:"1 free dark X axis",
-			flavor:"It's odd, but even when you do nothing the numbers keep growing"
-		},
-		304:{
-			name:"Parity II",
-			description:"Have exactly 3 of each normal axis purchased",
-			check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(c.d3)).includes(false);},
-			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
-			prevReq:[303],
-			reward:"1 free dark X and Y axis",
-			flavor:"Even when the odds are against you"
-		},
-		305:{
-			name:"Parity III",
-			description:"Have exactly 5 of each normal axis purchased",
-			check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(c.d5)).includes(false);},
-			event:"axisBuy",
-			progress:function(){return "Not Completed!";},
-			prevReq:[304],
-			reward:"1 free dark X, Y and Z axis",
-			flavor:"May the odds be even in your favor"
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {
+				let req = [c.d1,c.d3,c.d5][i]
+				out[303+i] = {
+					name:"Parity"+achievement.roman(i+1),
+					get description(){return "Have exactly "+(1+i*2)+" of each"+(unlocked("Hindrance")?" of the first eight":"")+" normal axis purchased"},
+					check:function(){return !axisCodes.slice(0,8).map(x => g[x+"Axis"].eq(req)).includes(false);},
+					event:"axisBuy",
+					progress:function(){let amts = axisCodes.slice(0,8).map(x=>g[x+"Axis"]); return amts.reduce((x,y)=>x.max(y)).gt(req)?"Failed":achievement.percent(amts.sumDecimals(),req.mul(c.d8),0)},
+					prevReq:[[210,303,304][i]],
+					reward:"1 free dark "+"XYZ".split("").slice(0,i+1).joinWithAnd()+" axis",
+					flavor:["It's odd, but even when you do nothing the numbers keep growing","Even when the odds are against you","May the odds be even in your favor"][i]
+				}
+			}
+			return out
+		})(),
 		306:{
 			name:"Merchant",
 			description:"Make the V axis effect go above 44,444×",
@@ -603,65 +533,20 @@ const achievementList = {
 			reward:"^1.05 exotic matter",
 			flavor:"Without exploding stars, perhaps there could be a heaven, but there is certainly no Earth."
 		},
-		402:{
-			name:"Dark Circle",
-			description:"Unlock the first type of Energy",
-			check:function(){return energyTypesUnlocked()>=1;},
-			event:"stardustUpgrade",
-			progress:function(){return "Not Completed!";},
-			reward:"+3% all energy gain",
-			flavor:"We’re all going to be tested. The dark energy is going to knock on all of our doors"
-		},
-		403:{
-			name:"Genesis",
-			description:"Unlock the second type of Energy",
-			check:function(){return energyTypesUnlocked()>=2;},
-			event:"stardustUpgrade",
-			progress:function(){return "Not Completed!";},
-			prevReq:[402],
-			reward:"+4% all energy gain",
-			flavor:"There was nowhere to go but everywhere, so just keep on going under the stars."
-		},
-		404:{
-			name:"Grave Matter",
-			description:"Unlock the third type of Energy",
-			check:function(){return energyTypesUnlocked()>=3;},
-			event:"stardustUpgrade",
-			progress:function(){return "Not Completed!";},
-			prevReq:[403],
-			reward:"+5% all energy gain",
-			flavor:"You may hate gravity, but gravity doesn't care"
-		},
-		405:{
-			name:"Brownian Motion",
-			description:"Unlock the fourth type of Energy",
-			check:function(){return energyTypesUnlocked()>=4;},
-			event:"stardustUpgrade",
-			progress:function(){return "Not Completed!";},
-			prevReq:[404],
-			reward:"+6% all energy gain",
-			flavor:"This is what it's like when a species prepares to depart from hyperspace"
-		},
-		406:{
-			name:"Food for Thought",
-			description:"Unlock the fifth type of Energy",
-			check:function(){return energyTypesUnlocked()>=5;},
-			event:"stardustUpgrade",
-			progress:function(){return "Not Completed!";},
-			prevReq:[405],
-			reward:"+7% all energy gain",
-			flavor:"The energy of the mind is the essence of life"
-		},
-		407:{
-			name:"Energized",
-			description:"Unlock the sixth type of Energy",
-			check:function(){return energyTypesUnlocked()>=6;},
-			event:"stardustUpgrade",
-			progress:function(){return "Not Completed!";},
-			prevReq:[406],
-			reward:"+8% all energy gain",
-			flavor:"Everything is energy"
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<6;i++) {out[402+i] = {
+				name:["Dark Circle","Genesis","Grave Matter","Brownian Motion","Food for Thought","Energized"][i],
+				description:"Unlock the "+["first","second","third","fourth","fifth","sixth"][i],
+				prevReq:(i===0)?[]:[401+i],
+				check:function(){return energyTypesUnlocked()>i},
+				event:"stardustUpgrade",
+				progress:function(){return "Not Completed!";},
+				reward:"+"+(i+3)+"% all energy gain",
+				flavor:["We're all going to be tested. The dark energy is going to knock on all of our doors","There was nowhere to go but everywhere, so just keep on going under the stars.","You may hate gravity, but gravity doesn't care","This is what it's like when a species prepares to depart from hyperspace","The energy of the mind is the essence of life","Everything is energy"][i]
+			}}
+			return out
+		})(),
 		408:{
 			name:"Eternal Inflation",
 			description:"Make the dark energy effect exceed 1 within the first 4 minutes of a Stardust reset",
@@ -674,47 +559,27 @@ const achievementList = {
 			effectFormat:x=>x.noLeadFormat(4),
 			yellowBreakpoints:[c.d100,c.e3,1]
 		},
-		409:{
-			name:"Time is relative",
-			description:"Reach 2× tickspeed",
-			check:function(){return stat.tickspeed.gte(2);},
-			event:"gameloop",
-			progress:function(){return achievement.percent(stat.tickspeed,c.d2,1);},
-			get reward(){return "Extremely small tickspeed boost based on exotic matter (currently: {}%)";},
-			flavor:"All the sounds of the night seemed to pass through a hollow tunnel of indefinite length.",
-			effect:function(y=this.yellowValue){return g.exoticmatter.add(c.e10).layerplus(-3).mul(c.d0_8).mul(y.add(c.d1)).fix(c.d0);},
-			effectFormat:x=>x.format(2),
-			formulaText:function(){return "log<sup>[3]</sup>(EM + "+c.e10.format()+")"+formulaFormat.mult(c.d0_8.mul(this.yellowValue.add(c.d1)))},
-			yellowBreakpoints:[c.d30,c.d60,0],
-		},
-		410:{
-			name:"Time is relative II",
-			description:"Reach 4× tickspeed",
-			check:function(){return stat.tickspeed.gte(4);},
-			event:"gameloop",
-			progress:function(){return achievement.percent(stat.tickspeed,c.d4,1);},
-			prevReq:[409],
-			get reward(){return "Extremely small tickspeed boost based on mastery power (currently: {}%)";},
-			flavor:"If I get up early the day feels longer than if I get up late, even if I spend the same amount of time awake.",
-			effect:function(y=this.yellowValue){return g.masteryPower.add(c.e10).layerplus(-3).mul(c.d1_2).mul(y.add(c.d1)).fix(c.d0);},
-			effectFormat:x=>x.format(2),
-			formulaText:function(){return "log<sup>[3]</sup>(MP + "+c.e10.format()+")"+formulaFormat.mult(c.d1_2.mul(this.yellowValue.add(c.d1)))},
-			yellowBreakpoints:[c.d40,c.d70,0],
-		},
-		411:{
-			name:"Time is relative III",
-			description:"Reach 8× tickspeed",
-			check:function(){return stat.tickspeed.gte(8);},
-			event:"gameloop",
-			progress:function(){return achievement.percent(stat.tickspeed,c.d8,1);},
-			prevReq:[410],
-			get reward(){return "Extremely small tickspeed boost based on stardust (currently: {}%)";},
-			flavor:"A mathematician makes plans to travel backwards in time through a wormhole to a parallel universe when he can't even make it to Mars with the fastest rocket on hand today.",
-			effect:function(y=this.yellowValue){return g.stardust.add(c.e10).layerplus(-3).mul(y.add(c.d1)).fix(c.d0);},
-			effectFormat:x=>x.format(2),
-			formulaText:function(){return "log<sup>[3]</sup>(S + "+c.e10.format()+")"+formulaFormat.mult(this.yellowValue.add(c.d1))},
-			yellowBreakpoints:[c.d50,c.d80,0],
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {
+				let req = [c.d2,c.d4,c.d8][i]
+				out[409+i] = {
+					name:"Time is relative"+achievement.roman(i+1),
+					description:"Reach "+req.toString()+"× tickspeed",
+					prevReq:(i===0)?[]:[408+i],
+					check:function(){return stat.tickspeed.gte(req)},
+					event:"gameloop",
+					progress:function(){return achievement.percent(stat.tickspeed,req,1)},
+					reward:"Extremely small tickspeed boost based on "+["exotic matter","mastery power","stardust"][i]+" (currently: {}%)",
+					flavor:["All the sounds of the night seemed to pass through a hollow tunnel of indefinite length.","If I get up early the day feels longer than if I get up late, even if I spend the same amount of time awake.","A mathematician makes plans to travel backwards in time through a wormhole to a parallel universe when he can't even make it to Mars with the fastest rocket on hand today."],
+					effect:function(y=this.yellowValue){let res = [g.exoticmatter,g.masteryPower,g.stardust][i], mult = [c.d0_8,c.d1_2,c.d1][i].mul(y.add(c.d1));return res.add(c.e10).layerplus(-3).mul(mult).fix(c.d0);},
+					effectFormat:x=>x.format(2),
+					formulaText:function(){return "log<sup>[3]</sup>("+["EM","MP","S"][i]+" + "+c.e10.format()+")"+formulaFormat.mult([c.d0_8,c.d1_2,c.d1][i].mul(this.yellowValue.add(c.d1)))},
+					yellowBreakpoints:[[c.d30,c.d40,c.d50][i],[c.d60,c.d70,c.d80][i],0]
+				}
+			}
+			return out
+		})(),
 		412:{
 			name:"Full House",
 			description:"Buy a star from the final row",
@@ -827,62 +692,38 @@ const achievementList = {
 			reward:"Hawking radiation gain ^1.1",
 			flavor:"A child ardent for some desperate glory"
 		},
-		507:{
-			name:"Hyperspeed",
-			description:"Destroy the universe within 5 hours of starting it",
-			check:function(){return g.timeThisWormholeReset<18000;},
-			event:"wormholeResetBefore",
-			progress:function(){return g.timeThisWormholeReset<18000?(timeFormat(18000-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			reward:"Stardust Boost 1 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)",
-			flavor:"Nothing travels faster than the speed of light".split(" ").map(x=>x.split("").join("&nbsp;")).join("   "),
-			effect:function(){return c.d18000.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d2_5).fix(c.d0);},
-			effectFormat:x=>x.noLeadFormat(3),
-			formulaText:()=>"max(log(18,000 ÷ max(t, 18)), 0) × (max(log(18,000 ÷ max(t, 18)), 0) + 1) × 1.25"
-		},
-		508:{
-			name:"Hyperspeed II",
-			description:"Destroy the universe within 30 minutes of starting it",
-			check:function(){return g.timeThisWormholeReset<1800;},
-			event:"wormholeResetBefore",
-			progress:function(){return g.timeThisWormholeReset<1800?(timeFormat(1800-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			prevReq:[507],
-			get reward(){return "Stardust Boost 4 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
-			flavor:"with the possible exception".split(" ").map(x=>x.split("").join("&nbsp;".repeat(2))).join(" ".repeat(5)),
-			effect:function(){return c.d1800.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d10div3).fix(c.d0);},
-			effectFormat:x=>x.noLeadFormat(3),
-			formulaText:()=>"max(log(1,800 ÷ max(t, 18)), 0) × (max(log(1,800 ÷ max(t, 18)), 0) + 1) × 1.667"
-		},
-		509:{
-			name:"Hyperspeed III",
-			description:"Destroy the universe within 3 minutes of starting it",
-			check:function(){return g.timeThisWormholeReset<180;},
-			event:"wormholeResetBefore",
-			progress:function(){return g.timeThisWormholeReset<180?(timeFormat(180-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			prevReq:[508],
-			get reward(){return "Stardust Boost 7 is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)";},
-			flavor:"of bad news".split(" ").map(x=>x.split("").join("&nbsp;".repeat(3))).join(" ".repeat(7)),
-			effect:function(){return c.d180.div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d5).fix(c.d0);},
-			effectFormat:x=>x.noLeadFormat(3),
-			formulaText:()=>"max(log(180 ÷ max(t, 18)), 0) × (max(log(180 ÷ max(t, 18)), 0) + 1) × 2.5"
-		},
-		510:{
-			name:"Hyperspeed IV",
-			description:"Destroy the universe within 18 seconds of starting it",
-			check:function(){return g.timeThisWormholeReset<18;},
-			event:"wormholeResetBefore",
-			progress:function(){return g.timeThisWormholeReset<18?(timeFormat(18-g.timeThisWormholeReset)+" left"):("Fastest time is "+timeFormat(g.fastestWormholeReset));},
-			prevReq:[509],
-			reward:"The game runs {}% faster (based on total Discoveries)",
-			effect:function(){
-				let d = g.totalDiscoveries
-				if (!g.achievement[805]) return d.div(c.e3).add(c.d1).min(c.d1_25)
-				let s = achievement(805).effect()
-				return (d.div(c.d10).gt(s))?[s,Decimal.div(d.log10().sub(c.d1),s.log10()),c.d0_01].decimalPowerTower().div(c.e2).add(c.d1):d.div(c.e3).add(c.d1)
-			},
-			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
-			formulaText:function(){let b = g.totalDiscoveries.div(c.d10),s = achievement(805).effect();return g.achievement[805]?(b.gte(s)?(s.noLeadFormat(3)+"<sup>log<sub>"+s.noLeadFormat(3)+"</sub>(D ÷ 10)<sup>0.01</sup></sup>"):"D ÷ 10"):"min(D ÷ 10, 25)"},
-			flavor:"which follows its own special laws".split(" ").map(x=>x.split("").join("&nbsp;".repeat(5))).join(" ".repeat(11))
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<4;i++) {
+				let req = 18000/10**i,effect,formulaText
+				function flavorFormat(txt,n) {return txt.split(" ").map(x=>x.split("").join("&nbsp;".repeat(n))).join(" ".repeat(n*2+1))}
+				if (i===3) {
+					effect = function(){
+						let d = g.totalDiscoveries
+						if (!g.achievement[805]) return d.div(c.e3).add(c.d1).min(c.d1_25)
+						let s = achievement(805).effect()
+						return (d.div(c.d10).gt(s))?[s,Decimal.div(d.log10().sub(c.d1),s.log10()),c.d0_01].decimalPowerTower().div(c.e2).add(c.d1):d.div(c.e3).add(c.d1)
+					}
+					formulaText = function(){let b = g.totalDiscoveries.div(c.d10),s = achievement(805).effect();return g.achievement[805]?(b.gte(s)?(s.noLeadFormat(3)+"<sup>log<sub>"+s.noLeadFormat(3)+"</sub>(D ÷ 10)<sup>0.01</sup></sup>"):"D ÷ 10"):"min(D ÷ 10, 25)"}					
+				} else {
+					effect = function(){return Decimal.FC_NN(1,0,req).div(g.fastestWormholeReset.max(c.d18)).log10().max(c.d0).simplex(2).mul(c.d10).div(4-i).fix(c.d0)}
+					formulaText = ()=>"(max(log("+BEformat(req)+" ÷ max(t, 18)), 0)<sup>2</sup> - 0.25)"+formulaFormat.mult(Decimal.FC_NN(1,0,5/(i+2)))
+				}
+				out[507+i] = {
+					name:"Hyperspeed"+achievement.roman(i+1),
+					get description(){return "Destroy the universe within "+timeFormat(req)+" of starting it"},
+					check:function(){return g.timeThisWormholeReset<req},
+					event:"wormholeResetBefore",
+					progress:function(){return (g.timeThisWormholeReset<req)?{percent:achievement.wormholeProgress(),text:timeFormat(req-g.timeThisWormholeReset)+" left"}:"Failed"},
+					reward:((i===3)?"The game runs {}% faster (based on total Discoveries)":("Stardust Boost "+(3*i+1)+" is {}% stronger (based on fastest Wormhole reset, cap at 18 seconds)")),
+					flavor:flavorFormat(["Nothing travels faster than the speed of light","with the possible exception","of bad news","which follows its own special laws"][i],[1,2,3,5][i]),
+					effect:effect,
+					effectFormat:x=>((i===3)?x.sub(c.d1).mul(c.e2):x).noLeadFormat(3),
+					formulaText:formulaText
+				}
+			}
+			return out
+		})(),
 		511:{
 			name:"Enneract",
 			get description(){return "Reach "+BEformat(c.d9_999e99)+" stardust first, then raise that to the power of 9 with a single reset";},
@@ -897,42 +738,32 @@ const achievementList = {
 			description:"Destroy the universe, never having more dark stars than normal stars (including allocated)",
 			check:function(){return g.shiningBrightTonight;},
 			event:"wormholeResetBefore",
-			progress:function(){return g.shiningBrightTonight?"Still possible":"Failed";},
+			progress:function(){return g.shiningBrightTonight?achievement.wormholeProgress():"Failed";},
 			get reward(){return "Dark stars are 0.25% cheaper per normal star (total: "+percentOrMult(N(0.9975**g.stars))+")"},
 			flavor:"Like diamonds in the sky"
 		},
-		513:{
-			name:"Duplicated",
-			description:"Bulk buy 20 dark stars at once",
-			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
-			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d20,0);},
-			get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
-			flavor:"The greatest shortcoming of the human race is our inability to understand the exponential function."
-		},
-		514:{
-			name:"Duplicated II",
-			description:"Bulk buy 35 dark stars at once",
-			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
-			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d35,0);},
-			prevReq:[513],
-			get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
-			flavor:"Anyone who believes exponential growth can go on forever in a finite world is either a madman or an economist."
-		},
-		515:{
-			name:"Duplicated III",
-			description:"Bulk buy 50 dark stars at once",
-			check:function(){return true;},					/* This gets checked locally by the dark star gaining function */
-			progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),c.d50,0);},
-			prevReq:[514],
-			get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
-			flavor:"10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10<sup>10</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>"
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {
+				let req = [c.d20,c.d35,c.d50][i]
+				out[513+i] = {
+					name:"Duplicated"+achievement.roman(i+1),
+					description:"Bulk buy "+req.toString()+" dark stars at once",
+					prevReq:(i===0)?[]:[512+i],
+					check:function(){return true}, /* gets checked locally by the dark star gaining function */
+					progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),req,0)},
+					get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars.format())+"×)"},
+					flavor:["The greatest shortcoming of the human race is our inability to understand the exponential function.","Anyone who believes exponential growth can go on forever in a finite world is either a madman or an economist.",(()=>{let out = "10";for (let i=0;i<99;i++){out = "10<sup>"+out+"</sup>"};return out})()][i]
+				}
+			}
+			return out
+		})(),
 		516:{
 			name:"Black Hole Era",
 			description:"Destroy a universe that has no stars",
 			check:function(){return g.stars===0;},
 			event:"wormholeResetBefore",
-			progress:function(){return g.stars===0?"Still achievable":"Failed";},
+			progress:function(){return g.stars===0?achievement.wormholeProgress():"Failed";},
 			reward:"Stars in the 5th and 10th rows additionally make the respective Masteries 1% stronger",
 			flavor:"Eyes as black and as shiny as chips of obsidian stared back into his. They were eyes like black holes, letting nothing out, not even information."
 		},
@@ -976,48 +807,36 @@ const achievementList = {
 			description:"Destroy the universe with no more than 15 stardust upgrades (note that the axis autobuyer upgrade and Mastery unlocks always persist on reset)",
 			check:function(){return effectiveStardustUpgrades()<=15;},
 			event:"wormholeResetBefore",
-			progress:function(){let o=effectiveStardustUpgrades();return o>15?"Failed":((15-o)+" upgrade"+(o===14?"":"s")+" left");},
+			progress:function(){let o=effectiveStardustUpgrades();return (o>15)?"Failed":{percent:achievement.wormholeProgress(),text:((15-o)+" upgrade"+(o===14?"":"s")+" left")}},
 			get reward(){return (this.yellowValue.eq(c.d0)?"Square":"{}th")+" root the cost of the first level of each Stardust Upgrade"},
 			effect:function(y=this.yellowValue){return y.mul(c.d8).add(c.d2)},
 			effectFormat:x=>x.noLeadFormat(2),
 			yellowBreakpoints:[c.d200,c.e3,0],
 			flavor:"The worst advertisement for Socialism is its adherents.",
 		},
-		521:{
-			name:"Bejouled",
-			description:"Destroy the universe without unlocking neural energy",
-			check:function(){return energyTypesUnlocked()<5;},
-			event:"wormholeResetBefore",
-			progress:function(){return energyTypesUnlocked()<5?"Still achievable":"Failed";},
-			reward:"+50% neural and meta energy gain",
-			flavor:"5 hours of energy but you can eat it in 3 seconds"
-		},
-		522:{
-			name:"Bejouled II",
-			description:"Destroy the universe without unlocking gravitational energy",
-			check:function(){return energyTypesUnlocked()<3;},
-			event:"wormholeResetBefore",
-			progress:function(){return energyTypesUnlocked()<3?"Still achievable":"Failed";},
-			prevReq:[521],
-			reward:"+50% gravitational and spatial energy gain",
-			flavor:"25-hour energy: for those who need an extra hour in the day"
-		},
-		523:{
-			name:"Bejouled III",
-			description:"Destroy the universe without unlocking dark energy",
-			check:function(){return energyTypesUnlocked()<1;},
-			event:"wormholeResetBefore",
-			progress:function(){return energyTypesUnlocked()<1?"Still achievable":"Failed";},
-			prevReq:[522],
-			reward:"+50% dark and stelliferous energy gain",
-			flavor:"You still have six joules regardless."
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {
+				let max = 4-2*i
+				out[521+i] = {
+					name:"Bejouled"+achievement.roman(1+i),
+					description:"Destroy the universe without unlocking "+energyTypes[max]+" energy",
+					prevReq:(i===0)?[]:[520+i][i],
+					check:function(){return energyTypesUnlocked()<=max},
+					event:"wormholeResetBefore",
+					progress:function(){return (energyTypesUnlocked()<=max)?achievement.wormholeProgress():"Failed"},
+					reward:"50% "+energyTypes[max]+" and "+energyTypes[max+1]+" energy gain",
+					flavor:["5 hours of energy but you can eat it in 3 seconds","25-hour energy: for those who need an extra hour in the day","You still have six joules regardless."][i]
+				}
+			}
+			return out
+		})(),
 		524:{
 			name:"Mastery is not a trivial monster",
 			description:"Destroy the universe without having active Masteries at any point",
 			check:function(){return g.ach524possible;},
 			event:"wormholeResetBefore",
-			progress:function(){return g.ach524possible?"Still achievable":"Failed";},
+			progress:function(){return g.ach524possible?achievement.wormholeProgress():"Failed";},
 			reward:"Unlock a new row of Masteries",
 			flavor:"Now with 270% more accidents involving falling objects",
 			active:function(){return !g.activeMasteries.map(x=>x===0).includes(false);}
@@ -1027,7 +846,7 @@ const achievementList = {
 			description:"Destroy the universe without buying S axis of any kind",
 			check:function(){return g.ach525possible;},
 			event:"wormholeResetBefore",
-			progress:function(){return g.ach525possible?"Still achievable":"Failed";},
+			progress:function(){return g.ach525possible?achievement.wormholeProgress():"Failed";},
 			reward:"+0.0001 normal and dark S axis effect",
 			flavor:"Minimalism at its finest"
 		},
@@ -1036,13 +855,16 @@ const achievementList = {
 			description:"Buy a dark X axis without buying normal axis in the current Wormhole reset",
 			check:function(){return g.ach526possible&&g.darkXAxis.gt(c.d0)&&unlocked("Hawking Radiation");},
 			event:"axisBuy",
-			progress:function(){return g.ach526possible?"Still achievable":"Failed";},
+			progress:function(){return g.ach526possible?achievement.wormholeProgress():"Failed";},
 			prevReq:[525],
 			get reward(){return "+{} normal and dark S axis effect (based on total normal axis)";},
 			flavor:"",		// intentionally left blank
-			effect:function(){return Decimal.convergentSoftcap(stat.totalNormalAxis.add(c.d1).log10().div(c.e4),c.d0_0004,c.d0_0009)},
+			effect:function(){return Decimal.convergentSoftcap(stat.totalNormalAxis.add(c.d1).log10().div(c.e4),c.d0_0004,c.d0_0009).mul(studies[12].reward(3).add(c.d1))},
 			effectFormat:x=>x.format(3),
-			formulaText:()=>formulaFormat.convSoftcap("log(ΣA + 1) ÷ 10,000",c.d0_0004,c.d0_0009,stat.totalNormalAxis.gte(9999))
+			formulaText:function(){
+				let mult = studies[12].reward(3).add(c.d1)
+				return formulaFormat.convSoftcap("log(ΣA + 1)"+formulaFormat.mult(mult.div(c.e4)),c.d0_0004.mul(mult),c.d0_0009.mul(mult),stat.totalNormalAxis.gte(9999))
+			}
 		},
 		527:{
 			name:"The 4th dimension doesn't exist",
@@ -1075,7 +897,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.ee6);},
 			event:"gameloop",
 			progress:function(){return achievement.percent(g.exoticmatter,c.ee6,1);},
-			get reward(){return "The base value of the base mastery power exponent is multiplied by {} (based on unspent Hawking radiation)<br><span class=\"small\">(TL:DR - more mastery power)</span>";},
+			get reward(){return "The base value of the base mastery power exponent is multiplied by {} (based on Hawking radiation)<br><span class=\"small\">(TL:DR - more mastery power)</span>";},
 			flavor:"Go become a millionaire in real life.",
 			effect:function(){return Decimal.mul(Decimal.convergentSoftcap(g.hawkingradiation.add(c.d10).dilate(c.d0_1).div(c.d10),c.d1_75,c.d2),g.hawkingradiation.add(c.e10).log10().log10()).fix(c.d1);},
 			effectFormat:x=>x.noLeadFormat(4),
@@ -1136,7 +958,7 @@ const achievementList = {
 			get reward(){return "Every Study completion gives 1% of the relevant Study's base cost as free Discoveries (current total: "+this.effValue().noLeadFormat(2)+")"},
 			flavor:"He would automatically begin to assume that specialists in all other fields were magicians, judging the depth of their wisdom by the breadth of his own ignorance...",
 			studyValue:function(x){
-				if (x===10) return betaActive?studies[10].researchList.slice(0,g.studyCompletions[10]).map(x=>research[x].basecost).sumDecimals().mul(c.d0_01):c.d0
+				if (x===10) {return betaActive?studies[10].researchList.slice(0,g.studyCompletions[10]).map(x=>research[x].basecost).sumDecimals().mul(c.d0_01):c.d0}
 				return research[studies[x].research].basecost.mul(0.01*g.studyCompletions[x])
 			},
 			effValue:function(){return countTo(13).map(x=>this.studyValue(x)).sumDecimals()}
@@ -1181,7 +1003,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study I without any clicks in the current Wormhole",
 			check:function(){return (g.activeStudy===1)&(g.studyCompletions[1]>2)&&(!g.clickedInStudy1)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[1]<3)?"Complete Study I 3 times first":(g.activeStudy!==1)?"Enter Study I first":g.clickedInStudy1?"Failed":"Still possible"},
+			progress:function(){return (g.studyCompletions[1]<3)?"Complete Study I 3 times first":(g.activeStudy!==1)?"Enter Study I first":g.clickedInStudy1?"Failed":achievement.wormholeProgress()},
 			reward:"The third reward of Study I is 11.1% stronger",
 			flavor:"The only time a lazy man ever succeeds is when he tries to do nothing."
 		},
@@ -1190,7 +1012,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study II without any stars",
 			check:function(){return (g.activeStudy===2)&(g.studyCompletions[2]>2)&&(g.stars===0)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[2]<3)?"Complete Study II 3 times first":(g.activeStudy!==2)?"Enter Study II first":(g.stars===0)?"Still possible":"Failed"},
+			progress:function(){return (g.studyCompletions[2]<3)?"Complete Study II 3 times first":(g.activeStudy!==2)?"Enter Study II first":(g.stars===0)?achievement.wormholeProgress():"Failed"},
 			reward:"The third reward of Study II is 11.1% stronger",
 			flavor:"Let's not strive to be black holes in the meantime. Let's illuminate the world instead of darkening it, instead of tearing it to pieces. Let's prove we are worthy of being stardust."
 		},
@@ -1201,7 +1023,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return achievement.percent(g.totalDiscoveries,c.d999,0)},
 			reward:"+{}% Hawking radiation (based on percentage of unspent Discoveries)",
-			flavor:"999 Emergencies, what is your emergency?\"<br>\"MY FITBIT SAYS I’M ABOUT TO DIE!",
+			flavor:"999 Emergencies, what is your emergency?\"<br>\"MY FITBIT SAYS I'M ABOUT TO DIE!",
 			effect:function(){return unspentDiscoveries().div(g.totalDiscoveries.gte(c.d999)?g.totalDiscoveries:g.totalDiscoveries.mul(c.d999).pow(c.d0_5).max(c.d1)).add(c.d1)},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).format(2),
 			formulaText:()=>"100 × υD ÷ ΣD"
@@ -1348,44 +1170,28 @@ const achievementList = {
 			effectFormat:x=>x.format(3),
 			formulaText:()=>"log(t + 1)",
 		},
-		708:{
-			name:"Mind-bending Curvature",
-			req:N("7.77e777"),
-			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
-			check:function(){return achievement(501).realEffect().gte(this.req)},
-			event:"gameloop",
-			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)+"<br>(Estimated real time to get: "+timeFormat(this.req.root(achievement(501).effectExp()).sub(c.d1).mul(c.e4).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))+")"},
-			reward:"Masteries 101 and 103 can be activated simultaneously",
-			flavor:"God is a philosophical black hole - the point where reason breaks down."
-		},
-		709:{
-			name:"Mind-bending Curvature II",
-			req:N("8.88e888"),
-			prevReq:[708],
-			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
-			check:function(){return achievement(501).realEffect().gte(this.req)},
-			event:"gameloop",
-			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)+"<br>(Estimated real time to get: "+timeFormat(this.req.root(achievement(501).effectExp()).sub(c.d1).mul(c.e4).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))+")"},
-			get reward(){return "The "+achievement.label(501)+" reward divides dark axis costs"},
-			flavor:"God not only plays dice, but sometimes throws them where they cannot be seen."
-		},
-		710:{
-			name:"Mind-bending Curvature III",
-			req:N("9.99e999"),
-			prevReq:[709],
-			get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+this.req.format()+"×"},
-			check:function(){return achievement(501).realEffect().gte(this.req)},
-			event:"gameloop",
-			progress:function(){return achievement.percent(achievement(501).realEffect(),this.req,1)+"<br>(Estimated real time to get: "+timeFormat(this.req.root(achievement(501).effectExp()).sub(c.d1).mul(c.e4).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))+")"},
-			reward:"Mastery 103 is 9× stronger",
-			flavor:"Auschwitz will forever remain the black hole of the entire human history"
-		},
+		...(()=>{
+			let out = {}
+			for (let i=0;i<3;i++) {
+				let req = Decimal.FC_NN(1,1,777+111*i+Math.log10(7.77+1.11*i))
+				out[708+i] = {
+					name:"Mind-bending Curvature"+achievement.roman(i+1),
+					get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+req.format()+"×"},
+					check:function(){return achievement(501).realEffect().gte(req)},
+					event:"gameloop",
+					progress:function(){return {percent:achievement.percent(achievement(501).realEffect(),req,1),text:"Estimated real time to get: "+timeFormat(req.root(achievement(501).effectExp()).sub(c.d1).mul(achievement(501).perSec()).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))}},
+					get reward(){return ["Masteries 101 and 103 can be activated simultaneously","The "+achievement.label(501)+" reward divides dark axis costs","Mastery 103 is 9× stronger"][i]},
+					flavor:["God is a philosophical black hole - the point where reason breaks down.","God not only plays dice, but sometimes throws them where they cannot be seen.","Auschwitz will forever remain the black hole of the entire human history"][i]
+				}
+			}
+			return out
+		})(),
 		711:{
 			name:"Moonlight Capital",
 			description:"Generate 1 chroma per second with 40 stars or less",
 			check:function(){return g.ach711Progress<41},
 			event:"gameloop",
-			progress:function(){return g.ach711Progress===61?"1 chroma per second has not been reached in the current Matrix":("Best is "+g.ach711Progress+" stars")},
+			progress:function(){return (g.ach711Progress===61)?("1 chroma per second has "+(unlocked("Matrix")?"not been reached in the current Matrix":"never been reached")):("Best is "+g.ach711Progress+" stars")},
 			get reward(){return "Unlock Mastery 105, and Mastery 105 works with {}% efficiency"+((g.ach711Progress===0)?"":(" (based on least number of stars that 1 chroma per second was generated with. Next milestone at "+Math.min(g.ach711Progress-1,39)+")"))},
 			flavor:"I only know two pieces; one is 'Clair de lune' and the other isn't",
 			milestones:function(){return 40-g.ach711Progress},
@@ -1440,7 +1246,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study IV with just one Stardust reset",
 			check:function(){return (g.activeStudy===4)&(g.studyCompletions[4]>2)&&(g.TotalStardustResets<2)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[4]<3)?"Complete Study IV 3 times first":(g.activeStudy!==4)?"Enter Study IV first":g.TotalStardustResets>1?"Failed":"Still possible"},
+			progress:function(){return (g.studyCompletions[4]<3)?"Complete Study IV 3 times first":(g.activeStudy!==4)?"Enter Study IV first":g.TotalStardustResets>1?"Failed":achievement.wormholeProgress()},
 			reward:"The third reward of Study IV is 11.1% stronger",
 			flavor:"Nature abhors a vacuum, and if I can only walk with sufficient carelessness I am sure to be filled.",
 		},
@@ -1473,13 +1279,13 @@ const achievementList = {
 			description:"Have 26 black and white lumens each",
 			check:function(){return g.lumens[6].gt(c.d25)&&g.lumens[7].gt(c.d25)},
 			event:"lumenGain",
-			progress:function(){return this.check()?"Due to the way achievements work, you need to gain 1 more lumen of any kind to get this.":achievement.percent(Decimal.add(g.lumens[6].min(c.d26),g.lumens[7].min(c.d26)),c.d52,0)},
+			progress:function(){return achievement.percent(Decimal.add(g.lumens[6].min(c.d26),g.lumens[7].min(c.d26)),c.d52,0)},
 			get reward(){return "Research 13-8 is 2.6% stronger, and you will now generate all chromas at once with (1 ÷ "+c.e15.format()+") efficiency if chroma generation is enabled."},
 			flavor:"Game under construction: all mechanics must wear hardcaps.",
 		},
 		719:{
 			name:"OMCCDV II",
-			req:N(44059),
+			req:Decimal.FC_NN(1,0,44059),
 			description:"Reach 44,059 total axis",
 			prevReq:[719],
 			check:function(){return stat.totalAxis.gte(this.req)},
@@ -1521,8 +1327,12 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){
 				if (stat.realSAxis.eq(c.d0)) return "Need an S axis"
-				for (let i=6;i>=0;i--) if (Decimal.lt(g[axisCodes[i]+"Axis"],g[axisCodes[i+1]+"Axis"].mul(c.d3))) return g[axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+g[axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"
-				return "Wormhole now to get this achievement!"
+				let text = "Wormhole now to get this achievement!", minratio = c.d3
+				for (let i=0;i<=axisCodes.length-2;i++) {
+					if (g[axisCodes[i+1]+"Axis"].gt(c.d0)) {minratio = minratio.min(Decimal.div(g[axisCodes[i]+"Axis"],g[axisCodes[i+1]+"Axis"]))}
+					if (Decimal.lt(g[axisCodes[i]+"Axis"],g[axisCodes[i+1]+"Axis"].mul(c.d3))) {text = g[axisCodes[i]+"Axis"].noLeadFormat(3)+" / "+g[axisCodes[i+1]+"Axis"].mul(c.d3).noLeadFormat(3)+" "+axisCodes[i]+" axis"}
+				}
+				return {percent:minratio.toNumber()/0.03,text:text}
 			},
 			reward:"The softcap of the 3rd dark star effect is 3% weaker",
 			flavor:"\"Reaching Base 3 Needs a massive 1.00E100<br>Which takes 2 hours to do<br>Base 3 is the final base. You have to reach<br>ω^ω^ω Which takes 1 day to do.\"<br>- Stat Mark",
@@ -1624,7 +1434,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study V without any temporary research (this does not cover Study research)",
 			check:function(){return (g.activeStudy===5)&&(g.studyCompletions[5]>2)&&(totalResearch.temporary===0)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[5]<3)?"Complete Study V 3 times first":(g.activeStudy!==5)?"Enter Study V first":totalResearch.temporary===0?"Still possible":"Failed"},
+			progress:function(){return (g.studyCompletions[5]<3)?"Complete Study V 3 times first":(g.activeStudy!==5)?"Enter Study V first":totalResearch.temporary===0?achievement.wormholeProgress():"Failed"},
 			reward:"The third reward of Study V is 11.1% stronger",
 			flavor:"We have progressed from the stone age and moved on to the age of stone hearted people.",
 		},
@@ -1642,7 +1452,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study VI in 6 seconds or less",
 			check:function(){return (g.activeStudy===6)&&(g.studyCompletions[6]>2)&&(g.timeThisWormholeReset<6)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[6]<3)?"Complete Study VI 3 times first":(g.activeStudy!==6)?"Enter Study VI first":(g.timeThisWormholeReset<6)?(timeFormat(6-g.timeThisWormholeReset)+" left"):"Failed"},
+			progress:function(){return (g.studyCompletions[6]<3)?"Complete Study VI 3 times first":(g.activeStudy!==6)?"Enter Study VI first":(g.timeThisWormholeReset<6)?{percent:achievement.wormholeProgress(),text:(timeFormat(6-g.timeThisWormholeReset)+" left")}:"Failed"},
 			reward:"The third reward of Study VI is 11.1% stronger",
 			flavor:"Life is wide, limitless. There is no border, no frontier.",
 		},
@@ -1706,7 +1516,7 @@ const achievementList = {
 			description:"Reach 1 year of game time in the current Wormhole with less than 1 hour of real time",
 			check:function(){return g.truetimeThisWormholeReset.gte(c.d31556926)&&(g.timeThisWormholeReset<3600)},
 			event:"gameloop",
-			progress:function(){return (g.timeThisWormholeReset<3600)?(achievement.percent(g.truetimeThisWormholeReset.div(c.d31556926),c.d1,0)+"; "+timeFormat(3600-g.timeThisWormholeReset)+" left<br>At your current progress you need to reach "+c.d31556926.sub(g.truetimeThisWormholeReset).div(3600-g.timeThisWormholeReset).format(2)+"× tickspeed to get this"):"Failed"},
+			progress:function(){return (g.timeThisWormholeReset<3600)?{percent:achievement.percent(g.truetimeThisWormholeReset.div(c.d31556926),c.d1,0),text:timeFormat(3600-g.timeThisWormholeReset)+" left (at your current progress you need to reach "+c.d31556926.sub(g.truetimeThisWormholeReset).div(3600-g.timeThisWormholeReset).format(2)+"× tickspeed to get this)"}:"Failed"},
 			get reward(){return "Multiply the research 24-12 effect softcap start by the number of seconds in the current Wormhole (currently: ×"+g.truetimeThisWormholeReset.max(c.d1).format(2)+")"},
 			flavor:"Hold Infinity in the palm of your hand and Reality in a game",
 		},
@@ -1722,7 +1532,7 @@ const achievementList = {
 				prevReq:[(i===0)?810:(820+i)],
 				check:function(){return g.studyCompletions[10]>i},
 				event:"wormholeResetAfter",
-				progress:function(){return ((g.activeStudy===10)&&(studyPower(10)===i))?achievement.percent(stat.totalDarkAxis,stat.wormholeDarkAxisReq,0):("Enter Study of Studies ("+triads[i]+") first")},
+				progress:function(){return ((g.activeStudy===10)&&(studyPower(10)===i))?achievement.wormholeProgress():("Enter Study of Studies ("+triads[i]+") first")},
 				reward:rewards[i],
 				flavor:flavors[i],
 				beta:i===3
@@ -1759,9 +1569,10 @@ const achievementList = {
 		902:{
 			name:"Seven Leaf Clover",
 			description:"Complete the fourth level of Study VII with over 1,000,000,000 luck essence and no more than 165 Stardust resets",
+			prevReq:[905],
 			check:function(){return (g.activeStudy===7)&&(g.studyCompletions[7]>2)&&(g.luckEssence>=1e9)&&(g.TotalStardustResets<=165)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[7]<3)?"Complete Study VII 3 times first":(g.activeStudy!==7)?"Enter Study VII first":(g.TotalStardustResets<=165)?((g.luckEssence>=1e9)?"All requirements satisfied":(achievement.percent(N(g.luckEssence),c.e9,0)+"; "+(165-g.TotalStardustResets)+" resets left")):"Failed"},
+			progress:function(){return (g.studyCompletions[7]<3)?"Complete Study VII 3 times first":(g.activeStudy!==7)?"Enter Study VII first":(g.TotalStardustResets<=165)?{percent:achievement.percent(N(g.luckEssence),c.e9,0),text:(165-g.TotalStardustResets)+" resets left"}:"Failed"},
 			reward:"The third reward of Study VII is 11.1% stronger",
 			flavor:"I busted a mirror and got seven years of bad luck, but my lawyer thinks he can get me five.",
 			beta:true
@@ -1771,7 +1582,7 @@ const achievementList = {
 			get description(){return "Have each of the last 10 Wormhole resets give at least "+c.inf.format()+"× more Hawking radiation than the last"},
 			check:function(){return this.current()===9},
 			event:"wormholeResetAfter",
-			progress:function(){return (9-this.current())+" more Wormholes needed<br>Current pending HR: "+achievement.percent(stat.pendinghr,N(g.previousWormholeRuns.last10[0].gain).mul(c.inf),1).replace("Progress: ","")},
+			progress:function(){return (g.previousWormholeRuns.last10.length===0)?"Do a Wormhole first":{percent:(this.current()+Decimal.div(stat.pendinghr,N(g.previousWormholeRuns.last10[0].gain)).add(c.d1).log(c.inf).min(c.d1).toNumber())/0.09,text:(9-this.current())+" more Wormholes needed; current pending HR: "+stat.pendinghr.format()+" / "+N(g.previousWormholeRuns.last10[0].gain).mul(c.inf).format()}},
 			reward:"Hawking radiation gain is multiplied by {} (based on total Wormhole runs which gave a reward, up to 10,000)",
 			flavor:"There are no black holes - in the sense of regimes from which light can't escape to infinity.",
 			effect:function(){
@@ -1785,6 +1596,19 @@ const achievementList = {
 				for (let i=0;i<(g.previousWormholeRuns.last10.length-1);i++) {if (Decimal.gte(g.previousWormholeRuns.last10[i].gain,N(g.previousWormholeRuns.last10[i+1].gain).mul(c.inf))) {valid++} else {break}}
 				return valid
 			},
+			beta:true
+		},
+		904:{
+			name:"Millionaire II",
+			get description(){return "Reach "+BEformat(c.e2e6)+" stardust";},
+			check:function(){return g.stardust.gt(c.e2e6);},
+			event:"gameloop",
+			progress:function(){return achievement.percent(g.stardust,c.e2e6,1);},
+			get reward(){return "Research 9-15 and 10-13 are {}× stronger (based on Hawking radiation)";},
+			flavor:"If you don't come from a rich family, a rich family must come from you.",
+			effect:function(){return g.hawkingradiation.add(c.e100).log10().log10().pow(c.d5).div(c.d32);},
+			effectFormat:x=>x.format(3),
+			formulaText:()=>"log<sup>[2]</sup>(HR + "+c.e100.format()+")<sup>5</sup> ÷ 32",
 			beta:true
 		},
 		905:{
@@ -1821,7 +1645,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study VIII without having Masteries active at any point and without buying any dark axis with a cost greater than 1",
 			check:function(){return (g.activeStudy===8)&&(g.studyCompletions[8]>2)&&g.ach524possible&&g.ach908possible},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[8]<3)?"Complete Study VIII 3 times first":(g.activeStudy!==8)?"Enter Study VIII first":g.ach524possible?(g.ach908possible?"Still possible":"Failed due to spending too much on a dark axis"):"Failed due to having Masteries"},
+			progress:function(){return (g.studyCompletions[8]<3)?"Complete Study VIII 3 times first":(g.activeStudy!==8)?"Enter Study VIII first":g.ach524possible?(g.ach908possible?achievement.wormholeProgress():"Failed due to spending too much on a dark axis"):"Failed due to having Masteries"},
 			reward:"The third reward of Study VIII is 11.1% stronger",
 			flavor:"No eye at all is better than an evil eye, dark master!",
 			beta:true
@@ -1831,7 +1655,7 @@ const achievementList = {
 			description:"Complete the fourth level of Study IX with 0 experientia",
 			check:function(){return (g.activeStudy===9)&&(g.studyCompletions[9]>2)&&(g.study9.xp.eq(c.d0))},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[9]<3)?"Complete Study IX 3 times first":(g.activeStudy!==9)?"Enter Study IX first":g.study9.xp.eq(c.d0)?"Requirement met! Wormhole to get achievement":("Current experientia: "+g.study9.xp.format())},
+			progress:function(){return (g.studyCompletions[9]<3)?"Complete Study IX 3 times first":(g.activeStudy!==9)?"Enter Study IX first":g.study9.xp.eq(c.d0)?achievement.wormholeProgress():("Current experientia: "+g.study9.xp.format())},
 			reward:"The third reward of Study IX is 11.1% stronger",
 			flavor:"Everyone is a prisoner of his own experiences",
 			beta:true
@@ -1839,7 +1663,7 @@ const achievementList = {
 		917:{
 			name:"Ant God's Ascension",
 			description:"Buy all Spatial Synergism research",
-			prevReq:[824],
+			prevReq:[824,905],
 			check:function(){for (let i of researchGroupList.spatialsynergism.contents) {if (!g.research[i]){return false}};return true},
 			event:"researchBuy",
 			progress:function(){return achievement.percent(N(ownedResearchInGroup("spatialsynergism").length),c.d56,0)},
@@ -1853,10 +1677,10 @@ const achievementList = {
 		920:{
 			name:"Hyperbolic Ontology",
 			description:"Complete the Ontological Triad using a Study combination from a previous Triad",
-			prevReq:[824],
+			prevReq:[824,905],
 			check:function(){return (g.activeStudy===10)&&(studyPower(10)===3)&&["147","258","369"].includes(g.study10Options.sort((a,b)=>a-b).join(""))},
 			event:"wormholeResetBefore",
-			progress:function(){return ((g.activeStudy!==10)||(studyPower(10)!==3))?"Enter the Ontological Triad and select I+IV+VII, II+V+VIII or III+VI+IX first":(g.TotalStardustResets<=165)?((g.luckEssence>=1e9)?"All requirements satisfied":(achievement.percent(N(g.luckEssence),c.e9,0)+"; "+(165-g.TotalStardustResets)+" resets left")):"Failed"},
+			progress:function(){return ((g.activeStudy!==10)||(studyPower(10)!==3))?"Enter the Ontological Triad and select I+IV+VII, II+V+VIII or III+VI+IX first":achievement.wormholeProgress()},
 			get reward(){return "The third reward of Study of Studies is {}% stronger<br>(based on Studies completed as part of the Ontological Triad"+((g.ach920Completions===511)?"":(".<br>Remaining: "+countTo(9).filter(x=>(g.ach920Completions&(2**(x-1)))===0).map(x=>roman(x)).join(", ")))+")"},
 			effect:function(){return Decimal.FC_NN(1,0,1+this.milestones()/81)},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).format(2),
@@ -1869,26 +1693,30 @@ const achievementList = {
 		926:{
 			name:"Scrivener's Moon",
 			description:"Complete the fourth level of Study XI in 9 seconds or less",
+			prevReq:[905],
 			check:function(){return (g.activeStudy===11)&&(g.studyCompletions[11]>2)&&(g.timeThisWormholeReset<9)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[11]<3)?"Complete Study XI 3 times first":(g.activeStudy!==11)?"Enter Study XI first":(g.timeThisWormholeReset<9)?(timeFormat(9-g.timeThisWormholeReset)+" left"):"Failed"},
+			progress:function(){return (g.studyCompletions[11]<3)?"Complete Study XI 3 times first":(g.activeStudy!==11)?"Enter Study XI first":(g.timeThisWormholeReset<9)?{percent:achievement.wormholeProgress(),text:timeFormat(9-g.timeThisWormholeReset)+" left"}:"Failed"},
 			reward:"The third reward of Study XI is 11.1% stronger",
 			flavor:"Never moon a werewolf.",
 			beta:true
 		},
 		...(()=>{
 			let out = {}
-			for (let i=0;i<3;i++) {out[927+i] = {
-				name:"Iarmhéid"+[""," II"," III"][i],
-				description:"Have "+(136+i*7)+" total Luck Upgrades",
-				prevReq:(i===0)?[]:[926+i],
-				check:function(){return Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals().gte(136+i*7)},
-				event:"buyLuckUpgrade",
-				progress:function(){return achievement.percent(Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals(),N(136+i*7),0)},
-				get reward(){return "Add 1 free level to "+(x=>toTitleCase(x[0])+" "+luckUpgrades[x[0]][x[1]].name)([["trifolium","antiAxis"],["quatrefolium","prismatic"],["cinquefolium","luck"]][i])},
-				flavor:["The key is not to prioritize what's on your schedule...","...but to schedule your priorities.","Would alemaninc's players be satisfied with how low his game is on the schedule?","TBD","TBD"][i],
-				beta:true
-			}}
+			for (let i=0;i<3;i++) {
+				let req = [N(133),N(140),N(147)]
+				out[927+i] = {
+					name:"Iarmhéid"+[""," II"," III"][i],
+					description:"Have "+req.toString()+" total Luck Upgrades",
+					prevReq:[[],[905,927],[928]][i],
+					check:function(){return Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals().gte(req)},
+					event:"buyLuckUpgrade",
+					progress:function(){return achievement.percent(Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals(),N(req),0)},
+					get reward(){return "Add 1 free level to "+(x=>toTitleCase(x[0])+" "+luckUpgrades[x[0]][x[1]].name)([["trifolium","antiAxis"],["quatrefolium","prismatic"],["cinquefolium","luck"]][i])},
+					flavor:["The key is not to prioritize what's on your schedule...","...but to schedule your priorities.","Would alemaninc's players be satisfied with how low his game is on the schedule?","TBD","TBD"][i],
+					beta:true
+				}
+			}
 			return out
 		})(),
 		931:{
@@ -1906,11 +1734,12 @@ const achievementList = {
 			beta:true
 		},
 		932:{
-			name:"Uberkatzchen",
+			name:"Crazy Rolling in Metal",
 			description:"Complete the fourth level of Study XII with no more than 7 Stardust Upgrades",
+			prevReq:[905],
 			check:function(){return (g.activeStudy===12)&&(g.studyCompletions[12]>2)&&(effectiveStardustUpgrades()<=7)},
 			event:"wormholeResetBefore",
-			progress:function(){return (g.studyCompletions[12]<3)?"Complete Study XII 3 times first":(g.activeStudy!==12)?"Enter Study XII first":(effectiveStardustUpgrades()>7)?"Failed":((7-effectiveStardustUpgrades())+" upgrades left")},
+			progress:function(){return (g.studyCompletions[12]<3)?"Complete Study XII 3 times first":(g.activeStudy!==12)?"Enter Study XII first":(effectiveStardustUpgrades()>7)?"Failed":{percent:achievement.wormholeProgress(),text:(7-effectiveStardustUpgrades())+" upgrades left"}},
 			reward:"The third reward of Study XII is 11.1% stronger",
 			flavor:"You are now a chieftain of a zebra tribe.<br>(how is this even possible?)",
 			beta:true
@@ -2295,9 +2124,26 @@ const secretAchievementList = {
 			for (let i=0;i<9;i++) {if (Decimal.gte(g.previousWormholeRuns.last10[i].gain,g.previousWormholeRuns.last10[i+1].gain)) {return false}}
 			return true
 		},
-		rarity:3
+		event:"wormholeResetAfter",
+		rarity:4
 	},
-	// skip 56 numbers for meta-achievements
+	46:{
+		name:"Angels with Filthy Souls",
+		description:"Enter the Ontological Triad with Studies I, II and III",
+		check:function(){return (g.activeStudy===10)&&(studyPower(10)===3)&&(g.study10Options.sum()===6)},
+		event:"wormholeResetBefore",
+		flavor:"One... two... three... TEN!",
+		rarity:2
+	},
+	47:{
+		name:"Angels with Even Filthier Souls",
+		description:"Complete the Ontological Triad with Studies I, II and III",
+		check:function(){return (g.activeStudy===10)&&(studyPower(10)===3)&&(g.study10Options.sum()===6)},
+		event:"wormholeResetAfter",
+		flavor:"Keep the change, ya filthy animal...",
+		rarity:4
+	},
+	// skip 53 numbers for meta-achievements
 	...(()=>{
 		let names = ["The Giver","Secret Keeper","General Secretary of the Workers' Party","[REDACTED]","The Nameless Ones","Secrets of the Darkest Art","alemaninc"]
 		let flavors = ["I feel sorry for anyone who is in a place where he feels strange and stupid."]
@@ -2415,7 +2261,15 @@ function showAchievementInfo(id) {
 		txt += "<p>Reward: "+rewardText.join("<br>")+"</p>";
 	}
 	if (g.achievement[id]) {txt += (((typeof achievement(id).milestones)==="undefined")?true:(achievement(id).milestones()===achievement(id).maxMilestones))?"<p style=\"color:#00cc00\">(Completed!)</p>":("<p style=\"color:#00cccc\">(Completed | reward upgradable | "+achievement(id).milestones()+" / "+achievement(id).maxMilestones+" milestones reached)</p>");}
-	else {txt += "<p style=\"color:#ffcc00\">"+ach.progress()+"</p>";}
+	else {
+		let raw = ach.progress()
+		let percent = Array.isArray(raw)?raw:((typeof raw) === "object")?raw.percent:undefined
+		let tooltip = ((typeof raw) === "string")?raw:(((typeof raw) === "object")&&(!Array.isArray(raw)))?raw.text:undefined
+		let out = []
+		if (percent!==undefined) {out.push(((typeof percent)==="number")?("Progress: "+percent.toFixed(3)+"%"):("Progress: "+percent[0].toFixed(3)+"% ("+percent[1].noLeadFormat(3)+" / "+percent[2].noLeadFormat(3)+")"))}
+		if (tooltip!==undefined) {out.push(tooltip)}
+		txt += "<p style=\"color:#ffcc00\">"+out.join("; ")+"</p>"
+	}
 	if (ach.flavor!==undefined&&g.achievement[id]) {txt += "<p style=\"font-size:10px;color:#ffffff;white-space:break-spaces;color:"+blackOrWhiteContrast(hexToRGB(colors.primary))+"\">\""+ach.flavor+"\"</p>";}
 	d.innerHTML("achievementInfo",txt)
 }
@@ -2423,6 +2277,7 @@ function addAchievement(x) {
 	if (achievement(x).beta&&(!betaActive)) return
 	if (achievement(x).check()&&(!g.achievement[x])) {
 		g.achievement[x]=true;
+		if (g.achOnProgressBar===x) {g.achOnProgressBar="N"}
 		let tier = achievement.tierOf(x)
 		let colors = achievement.tierColors[tier]
 		notify("Achievement Get! \""+achievement(x).name+"\" ["+x+"]",colors.primary);

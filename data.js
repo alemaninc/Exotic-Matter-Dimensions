@@ -7,7 +7,13 @@ Everything that is represented in "g" as an object generated from a list of keys
 */
 const axisCodes = "XYZWVUTS".split("");
 const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x,"anti"+x]).flat()
+
 const starList = countTo(10).map(x=>countTo(4).map(y=>x*10+y)).flat()
+
+const energyTypes = ["dark","stelliferous","gravitational","spatial","neural","meta","vacuum","mental","dimensional","temporal"];
+const energyResources = ["Exotic matter gain","Stardust gain","Dark matter gain","Free X axis","Mastery power gain","Energy gain","Hawking radiation gain","Knowledge gain","All axis costs","Tickspeed"];
+const energyDeterminers = ["exotic matter","stardust","dark matter","X axis","mastery power","all energies","Hawking radiation","knowledge","all axis","tickspeed"];
+const energyHyper = [3,3,3,2,3,3,3,3,3,2];
 
 const studies = [
 	{    // 0 is used for utilities
@@ -54,7 +60,7 @@ const studies = [
 		reward_desc:function() {return [
 			"The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
 			"Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,2),
-			"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as "+((g.highestGalaxies>galaxyEffects[5].req)?(galaxyEffects[5].boost.value().mul(c.e2).format()+"%"):"half")+" of this value. Does not work in Study II."
+			"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as "+((g.highestGalaxies>=galaxyEffects[5].req)?(galaxyEffects[5].boost.value().mul(c.e2).format()+"%"):"half")+" of this value. Does not work in Study II."
 		]}
 	},
 	{
@@ -268,7 +274,7 @@ const studies = [
 	},
 	{
 		name:"Lunar Clock",
-		unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,c.e100,c.e100][studyPower(11)]},
+		unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,betaActive?N(126196):c.e100,c.e100][studyPower(11)]},
 		active:function(){
 			let num = Math.floor(g.timeThisWormholeReset/0.75)%12
 			return (num<8)?axisCodes[num]:["R","Q","P","O"][num-8]
@@ -276,7 +282,7 @@ const studies = [
 		lunarMinutes:function(){return Math.floor((g.timeThisWormholeReset*80)%60)},
 		description:function(){return "Only X axis of all types are initially active, and the active type will change every 750 milliseconds. Additionally, row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter is capped at 1."},
 		research:"r33_3",
-		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12500):c.e100,c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12500):c.e100,betaActive?N(13500):c.e100,c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[11]){
 			if (num===1) return [c.d256,N(270),N(282),N(292),c.d300][comp]
 			if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),c.d8][comp].pow(studyRewardBoost(11,2))
@@ -291,25 +297,48 @@ const studies = [
 	},
 	{
 		name:"Titanium Will",
-		unlockReq:function(){return [147,1e100,1e100,1e100][studyPower(12)]},
-		description:function(){return "Non-permanent research have no effect; stardust resets are disabled; dark matter gain is capped at 1; all dark axis cost divisors are disabled. Unlock Titanium Empowerments in the Dark Matter tab."},
+		unlockReq:function(){return [147,152,999,999][studyPower(12)]},
+		description:function(){return "Non-permanent research have no effect; stardust resets are disabled; dark matter gain is capped at 1; all dark axis cost divisors are disabled. Unlock Titanium Empowerments in the Dark Matter tab which weaken the dark matter cap to a softcap."},
 		research:"r33_13",
 		goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.d60,c.d70][comp]},
-		scp:function(x=g.titaniumEmpowerments){return x.div(c.d10)},
-		sc:function(p=studies[12].scp()){
-			let amt = calcStatUpTo("darkmatterPerSec","Study XII")
-			return p.eq(c.d0)?amt.min(c.d1):Decimal.logarithmicSoftcap(amt,c.d1,p.recip())
+		sc:function(x=calcStatUpTo("darkmatterPerSec","Study XII"),p=g.study12.fortitude){
+			return p.eq(c.d0)?x.min(c.d1):Decimal.logarithmicSoftcap(x,c.d1,p.recip())
+		},
+		empowerment:{
+			base:c.ee7,
+			scale:N(1.12),
+			req:function(x=g.study12.empowerments){return [this.base,this.scale,x].decimalPowerTower()},
+			affordable:function(x=g.exoticmatter){return x.lt(this.base)?g.study12.empowerments:x.log(this.base).log(this.scale).floor().add(c.d1)},
+			gain:function(){g.study12.empowerments = this.affordable()}
+		},
+		fortitude:{
+			max:function(x=g.study12.empowerments){
+				let out = x
+				return out
+			},
+			gain:function(x=g.study12.empowerments){
+				let out = [x,c.em4,stat.tickspeed].productDecimals()
+				return out
+			},
+			lim:function(x,max=this.max()){
+				if (max.eq(c.d0)) {return c.d0}
+				return Decimal.pow(max.add(c.d1),Decimal.sub(c.d1,Decimal.log(x.add(c.d1),max.add(c.d1)).add(c.d1).recip())).sub(c.d1)
+			},
+			invlim:function(x,max=this.max()){
+				if (x.gte(max)) {return c.maxvalue}
+				return Decimal.pow(max.add(c.d1),Decimal.sub(c.d1,Decimal.log(x.add(c.d1),max.add(c.d1))).recip().sub(c.d1)).sub(c.d1)
+			}
 		},
 		reward:function(num,comp=g.studyCompletions[12]){
 			if (num===1) return comp/400
-			if (num===2) return [c.d16,N(comp),studyRewardBoost(12,2)].productDecimals()
+			if (num===2) return [c.d0,c.d16,c.d24,c.d28,c.d32][comp].mul(studyRewardBoost(12,2))
 			if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mul(studyRewardBoost(12,3))
 			functionError("studies[12].reward",arguments)
 		},
 		reward_desc:function(){return [
-			"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s"),
+			"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s")+" each",
 			"Up to "+studyRewardHTML(12,2,0)+" extra free dark stars from "+achievement.label(527)+" (based on yellow lumens)",
-			achievement.label(526)+" reward affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
+			achievement.label(526)+" reward is "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% stronger and affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
 		]}
 	},
 	{

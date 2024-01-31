@@ -70,8 +70,8 @@ const contributors = {
 const logEntries = [
 	/*
 	next major:{name:"",changes:[
-		["BALANCE","Study of Studies now affects Achievement 604 \"Graduation\""],
-		["BALANCE","Achievement 712 \"Rewind\" now requires 3600 yellow lumens to be boosted (from 3500), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."]
+		["BALANCE","Achievement 712 \"Rewind\" now requires 3600 yellow lumens to be boosted (from 3500), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
+		["BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
 		["CONTENT","107 new research going up to row 47"]
 	]}
 	blank entry:
@@ -79,6 +79,15 @@ const logEntries = [
 
 	]},
 	*/
+	{num:"𝕍1.5(b).6",date:"2024-01-31",name:"A Rather Different Content Wall",changes:[
+		["BUGFIX","It is once again possible to Wormhole if you have never done it before"],
+		["INTERFACE","Achievement boxes are now 50% taller when reviewing yellow light due to Achievement 819's new reward description overflowing"],
+		["QOL","Ascetic max buy research will no longer buy Study research unless this is the target research"],
+		["QOL","It is now possible to select an achievement to continually show its progress on the global progress bar"],
+		["REVERSE BUGFIX","Removed a completion tooltip from Achievement 718 \"Softcap-colored Lights\" which only appeared following a bug. No one should be getting this anyway at this point"],
+		["TEXTFIX","Achievements 708-710 \"Mind-bending Curvature\" no longer show an incorrect estimated time to get if Achievement 816 \"Cosmic Mind\" is owned"],
+		["TEXTFIX","Empowered anti-V axis now correctly references the dark Y axis instead of dark V"]
+	]},
 	{num:"𝕍1.5(b).5",date:"2024-01-27",changes:[
 		["BUGFIX","Luck upgrades can be purchased without crashing the game"],
 		["QOL","'Set Overclock to softcap start' no longer puts you very slightly (∼0.04%) below the softcap start"]

@@ -1798,17 +1798,19 @@ const research = (function(){
 				XI-1+					clock face spins
 				XI-2+					clock pulses every 750ms
 				XI-3+					wrong time
-				XI-4					faster animation                            
+				XI-4					changing speed                           
 				*/
 				let date = new Date()
 				let mode = (StudyE(11)?studyPower(11):-1)
 				if (mode>1) { // XI-3+
 					let phase = Math.floor(g.timeThisWormholeReset/0.75)+1
-					let mult = Math.sin(phase)*10**Math.cos(phase**1.5)*3600*((mode===3)?3:1)
+					let mult = Math.sin(phase)*10**Math.cos(phase**1.5)*360
 					date = new Date((Date.now()%86250)*mult)
 				}
 				// XI-1+, XI-2+
-				let f = (mode===-1)?0:(mode===0)?(g.timeThisWormholeReset*Math.PI/4.5):((Date.now()%99750)*Math.sin(Math.floor(g.timeThisWormholeReset/0.75)*2)*0.001*10**((Math.floor(g.timeThisWormholeReset/0.75)**1.1*1000)%1)*((mode===3)?3:1))
+				let f = (mode===-1)?0:(mode===0)?(g.timeThisWormholeReset*Math.PI/4.5):((Date.now()%99750)*Math.sin(Math.floor(g.timeThisWormholeReset/0.75)*2)*0.001*10**((Math.floor(g.timeThisWormholeReset/0.75)**1.1*1000)%1))
+				// XI-4
+				if (mode===3) {f *= 1+Math.sin(Math.PI*g.timeThisWormholeReset*8/3)/250}
 				let h = Math.PI*(((date.getHours())%12)/6+(date.getMinutes())/360+(date.getSeconds())/21600)
 				let m = Math.PI*((date.getMinutes())/30+(date.getSeconds())/1800)
 				let out = [[50,50,5]]
@@ -1925,7 +1927,7 @@ const research = (function(){
 				visibility:function(){return researchConditionsMet(researchList.finality[t][i])},
 				type:"normal",
 				basecost:N(131313),
-				icon:icon[dictionary(t,[["EM","exoticmatter"],["DM","darkmatter"],["AM","antimatter"],["S","stardust"],["HR","hr"],["K","knowledge"]])]+icon.plus,
+				get icon(){return "<span style=\"color:"+researchGroupList["finality"+i].color+"\">η</span><br>"+icon[dictionary(t,[["EM","exoticmatter"],["DM","darkmatter"],["AM","antimatter"],["S","stardust"],["HR","hr"],["K","knowledge"]])]+"<br><span style=\"color:"+researchGroupList["finality"+i].color+"\">υ</span>"},
 				effect:function(power){return c.d1_005.pow(power)},
 				group:"finality"+i
 			}}}
@@ -2047,6 +2049,7 @@ function researchPower(row,col) {
 	// non-row by row effects
 	if (g.research.r9_5&&["r6_5","r6_6","r7_5","r8_5"].includes(id)) {out = out.mul(researchEffect(9,5).pow(totalAchievements))}
 	if (researchList.study7.includes(id)) {out = out.mul(studies[7].reward(2).div(c.e2))}
+	if (g.achievement[904]&&["r9_15","r10_13"].includes(id)) {out = out.mul(achievement(904).effect())}
 	if (g.achievement[931]&&(col===8)) {out = out.mul(achievement(931).effect().div(c.e2).add(c.d1))}
 	if (research[id].group==="spatialsynergism") {
 		out = out.mul(stat.spatialSynergismPower)
@@ -2367,6 +2370,7 @@ function asceticMaxBuyResearch(id,recursion=false) { // buys only 1 adjacent res
 		list.push(id)
 	}
 	list.reverse()
+	list = list.filter((x,i)=>(x.type!=="study")||(i===(list.length-1)))
 	let regen = false
 	for (let i of list) regen ||= buySingleResearch(researchRow(i),researchCol(i))
 	updateResearchTree()

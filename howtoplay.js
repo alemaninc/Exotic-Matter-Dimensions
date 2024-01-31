@@ -240,7 +240,7 @@ const HTPtexts = [
 		visibility:function(){return unlocked("Luck")},
 		paragraphs:[
 			"Once you complete Study VII, you will start generating luck shards.",
-			"These luck shards can be used to buy runes - there are three types of rune.",
+			"These luck shards can be used to buy runes - you start with only trifolium available, but unlock more types over time.",
 			"Each type of rune can be spent on refundable luck upgrades."
 		]
 	},
@@ -249,7 +249,7 @@ const HTPtexts = [
 		visibility:function(){return unlocked("Prismatic")},
 		paragraphs:[
 			"Once you buy research 20-8, you will generate prismatic based on all your lumen types.",
-			"You can spend this Prismatic on Prismatic Upgrades. Most Prismatic Upgrades work like normal upgrades - however, a few have a negative effect in addition to their positive one. These can be refunded, but you will not get spent prismatic back."
+			"You can spend this Prismatic on Prismatic Upgrades. Most Prismatic Upgrades work like normal upgrades - however, a few have a negative effect in addition to their positive one. These can be refunded."
 		]
 	},
 	{
