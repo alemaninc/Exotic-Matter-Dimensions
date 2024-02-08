@@ -627,12 +627,12 @@ const achievementList = {
 			flavor:"The urge to destroy is also a creative urge.",
 			perSec:function(){
 				let out = c.em4
-				if (g.achievement[816]) out = out.mul(c.d2)
+				if (g.achievement[816]) {out = out.mul(c.d2)}
 				return out
 			},
 			effectExp:function(active=MasteryE(101)){
-				if (active) return masteryEffect(101)
-				if (g.achievement[615]) return masteryEffect(101).pow(c.d0_5)
+				if (active) {return masteryEffect(101)}
+				if (g.achievement[615]) {return masteryEffect(101).pow(c.d0_5)}
 				return c.d1
 			},
 			realEffect:function() {return g.truetimeThisWormholeReset.mul(this.perSec()).add(c.d1).pow(this.effectExp());}
@@ -752,7 +752,7 @@ const achievementList = {
 					prevReq:(i===0)?[]:[512+i],
 					check:function(){return true}, /* gets checked locally by the dark star gaining function */
 					progress:function(){return achievement.percent(stat.maxAffordableDarkStars.sub(g.darkstars),req,0)},
-					get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars.format())+"×)"},
+					get reward(){return "2× dark matter per dark star (total: "+c.d2.pow(g.darkstars).format()+"×)"},
 					flavor:["The greatest shortcoming of the human race is our inability to understand the exponential function.","Anyone who believes exponential growth can go on forever in a finite world is either a madman or an economist.",(()=>{let out = "10";for (let i=0;i<99;i++){out = "10<sup>"+out+"</sup>"};return out})()][i]
 				}
 			}
@@ -1256,9 +1256,14 @@ const achievementList = {
 			check:function(){return true}, // checked locally
 			progress:function(){let min = countTo(5).map(x=>stat["stardustUpgrade"+x+"Cost"]).reduce((x,y)=>x.min(y));return min.lt(c.inf.recip())?"You can achieve this if you buy a stardust upgrade right now!":achievement.percent(min.recip(),c.inf,1)},
 			reward:"The 9-achievement Wormhole Milestone effect is raised to the power of {} (based on time in the current Wormhole)",
-			effect:function(){return g.truetimeThisWormholeReset.div(c.e4).add(c.d10).log10().log10().div(c.d10).add(c.d1)},
+			timeMult:function(){
+				let out = c.em4
+				if (g.wormholeUpgrades[4]) {out = out.mul(c.e2)}
+				return out
+			},
+			effect:function(){return g.truetimeThisWormholeReset.mul(this.timeMult()).add(c.d10).log10().log10().div(c.d10).add(c.d1)},
 			effectFormat:x=>x.format(4),
-			formulaText:()=>"log<sup>[2]</sup>(t ÷ 10,000 + 10) ÷ 10 + 1",
+			formulaText:function(){return "log<sup>[2]</sup>(t"+formulaFormat.mult(this.timeMult())+" + 10) ÷ 10 + 1"},
 			flavor:"I am incapable of conceiving infinity, and yet I do not accept finity.",
 		},
 		717:{
@@ -1578,19 +1583,19 @@ const achievementList = {
 			beta:true
 		},
 		903:{
-			name:"The Wheelchair's Future in Infinity",
+			name:"The Long-Awaited Remake",
 			get description(){return "Have each of the last 10 Wormhole resets give at least "+c.inf.format()+"× more Hawking radiation than the last"},
 			check:function(){return this.current()===9},
 			event:"wormholeResetAfter",
 			progress:function(){return (g.previousWormholeRuns.last10.length===0)?"Do a Wormhole first":{percent:(this.current()+Decimal.div(stat.pendinghr,N(g.previousWormholeRuns.last10[0].gain)).add(c.d1).log(c.inf).min(c.d1).toNumber())/0.09,text:(9-this.current())+" more Wormholes needed; current pending HR: "+stat.pendinghr.format()+" / "+N(g.previousWormholeRuns.last10[0].gain).mul(c.inf).format()}},
-			reward:"Hawking radiation gain is multiplied by {} (based on total Wormhole runs which gave a reward, up to 10,000)",
+			reward:"Hawking radiation gain is multiplied by {} (based on total Wormhole runs which gave a reward, up to 10,000), and unlock Wormhole Upgrades",
 			flavor:"There are no black holes - in the sense of regimes from which light can't escape to infinity.",
 			effect:function(){
 				let res = Math.min(g.WormholeResets,1e4)
-				return Decimal.FC_NN(1,0,10**Math.log10(Math.max(1,Math.min(res,1e4)))**1.5)
+				return Decimal.FC_NN(1,0,10**(0.0015*Math.min(g.WormholeResets,1e4)))
 			},
 			effectFormat:x=>x.format(),
-			formulaText:()=>"10<sup>log(max(1, min(W, 10,000)))<sup>1.5</sup>",
+			formulaText:()=>"10<sup>0.0015 × min(W, 10,000)</sup>",
 			current:function(){
 				let valid = 0 // the number of runs which already satisfy the achievement requirement
 				for (let i=0;i<(g.previousWormholeRuns.last10.length-1);i++) {if (Decimal.gte(g.previousWormholeRuns.last10[i].gain,N(g.previousWormholeRuns.last10[i+1].gain).mul(c.inf))) {valid++} else {break}}
@@ -1704,9 +1709,9 @@ const achievementList = {
 		...(()=>{
 			let out = {}
 			for (let i=0;i<3;i++) {
-				let req = [N(133),N(140),N(147)]
+				let req = [N(133),N(140),N(147)][i]
 				out[927+i] = {
-					name:"Iarmhéid"+[""," II"," III"][i],
+					name:"Irelande Douze Pointe"+achievement.roman(i+1),
 					description:"Have "+req.toString()+" total Luck Upgrades",
 					prevReq:[[],[905,927],[928]][i],
 					check:function(){return Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals().gte(req)},
@@ -1723,9 +1728,9 @@ const achievementList = {
 			name:"The Shining Law of Conservation of Information",
 			description:"Activate all research",
 			prevReq:[907,917],
-			check:function(){return totalResearch.overall()===341},
+			check:function(){return totalResearch.overall()===340},
 			event:"researchBuy",
-			progress:function(){return achievement.percent(N(totalResearch.overall()),N(341),0)},
+			progress:function(){return achievement.percent(N(totalResearch.overall()),N(340),0)},
 			reward:"All research in column 8 is {}% stronger (based on total Discoveries)",
 			effect:function(){return g.totalDiscoveries.add(c.d10).log10().log10().pow(c.d3)},
 			effectFormat:x=>x.format(3),
@@ -2266,9 +2271,8 @@ function showAchievementInfo(id) {
 		let percent = Array.isArray(raw)?raw:((typeof raw) === "object")?raw.percent:undefined
 		let tooltip = ((typeof raw) === "string")?raw:(((typeof raw) === "object")&&(!Array.isArray(raw)))?raw.text:undefined
 		let out = []
-		if (percent!==undefined) {out.push(((typeof percent)==="number")?("Progress: "+percent.toFixed(3)+"%"):("Progress: "+percent[0].toFixed(3)+"% ("+percent[1].noLeadFormat(3)+" / "+percent[2].noLeadFormat(3)+")"))}
-		if (tooltip!==undefined) {out.push(tooltip)}
-		txt += "<p style=\"color:#ffcc00\">"+out.join("; ")+"</p>"
+		if (percent!==undefined) {percent = ((typeof percent)==="number")?("Progress: "+percent.toFixed(3)+"%"):("Progress: "+percent[0].toFixed(3)+"% ("+percent[1].noLeadFormat(3)+" / "+percent[2].noLeadFormat(3)+")")}
+		txt += "<p style=\"color:#ffcc00\">"+(((percent!==undefined)&&(tooltip!==undefined))?(percent+" ("+tooltip+")"):(percent!==undefined)?percent:(tooltip!==undefined)?tooltip:functionError("showAchievementInfo",arguments))+"</p>"
 	}
 	if (ach.flavor!==undefined&&g.achievement[id]) {txt += "<p style=\"font-size:10px;color:#ffffff;white-space:break-spaces;color:"+blackOrWhiteContrast(hexToRGB(colors.primary))+"\">\""+ach.flavor+"\"</p>";}
 	d.innerHTML("achievementInfo",txt)

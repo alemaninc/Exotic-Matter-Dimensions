@@ -44,7 +44,7 @@ const subtabProperties = {
 			glow:function(){if (g.glowOptions.emptyMasteryRow) {for (let i=1;i<=totalMasteryRows;i++) {if ((g.activeMasteries[i]===0)&&(stat["masteryRow"+i+"Unlocked"])) {return true}}};}
 		},
 		offlineTime:{
-			glow:function(){return (overclockActive&&g.glowOptions.overclock)}
+			glow:function(){return ((timeState===1)&&g.glowOptions.overclock)}
 		},
 		corruption:{
 			visible:function(){return unlocked("Corruption")}
@@ -77,6 +77,7 @@ const subtabProperties = {
 			glow:function(){
 				if (g.glowOptions.observe) {for (let i=0;i<4;i++) {if (g[observationResources[i]].gte(observationCost(i))) {return true}}}
 				if (g.glowOptions.buyPermanentResearch) {for (let i of buyablePermanentResearch) if (researchConditionsMet(i)&&g.totalDiscoveries.gte(researchCost(i))) {return true}}
+				return false
 			}
 		},
 		studies:{
@@ -87,6 +88,7 @@ const subtabProperties = {
 			glow:function(){
 				if (lightTiersUnlocked()===0) {return false}
 				if (g.glowOptions.noChromaGeneration&&(typeof g.activeChroma!=="number")) {return true}
+				return false
 			}
 		},
 		galaxies:{
@@ -119,6 +121,14 @@ const subtabProperties = {
 			visible:function(){return unlocked("Antimatter")},
 			glow:function(){
 				if (g.glowOptions.buyDarkAxis) {for (let i of axisCodes.filter(x=>antiAxisUnlocked(x))) {if (g.antimatter.gt(antiAxisCost(i))) {return true}}};
+				return false
+			}
+		},
+		wormholeUpgrades:{
+			visible:function(){return g.achievement[903]},
+			glow:function(){
+				if (g.glowOptions.buyWormholeUpgrade) {for (let i=1;i<13;i++) {if ((g.wormholeUpgrades[i]<wormholeUpgrades[i].max)&&g.hawkingradiation.gte(wormholeUpgrades[x].cost)) {return true}}}
+				return false
 			}
 		}
 	},
@@ -191,8 +201,9 @@ const hotkeys = {
 	hotkeyList:{
 		...Object.fromEntries(countTo(tabList.length).map(x=>["Open "+ordinal(x)+" tab",Object.fromEntries([["baseKey","Digit"+(x%10)],["down",()=>hotkeys.tryOpenTab(x)],["visible",()=>true]])])),
 		...Object.fromEntries(countTo(Object.values(subtabList).map(x=>x.length).reduce((x,y)=>Math.max(x,y))).map(x=>["Open "+ordinal(x)+" subtab",Object.fromEntries([["baseKey","shift+Digit"+(x%10)],["down",()=>hotkeys.tryOpenSubTab(x)],["visible",()=>true]])])),
-		"Overclock":{baseKey:"KeyO",down:()=>toggleOverclock(),visible:()=>true},
-		"Freeze time":{baseKey:"shift+KeyO",down:()=>toggleFreeze(),visible:()=>true},
+		"Overclock":{baseKey:"KeyO",down:()=>setTimeState(1),visible:()=>true},
+		"Freeze time":{baseKey:"shift+KeyO",down:()=>setTimeState(2),visible:()=>true},
+		"Equalize time":{baseKey:"alt+KeyO",down:()=>setTimeState(3),visible:()=>true},
 		"Stardust reset":{baseKey:"KeyS",down:()=>attemptStardustReset(),visible:()=>unlocked("Stardust")||g.exoticmatter.gte(stat.stardustExoticMatterReq)},
 		"Force Stardust reset":{baseKey:"shift+KeyS",down:()=>stardustReset(),visible:()=>unlocked("Stardust")},
 		"Wormhole reset":{baseKey:"KeyW",down:()=>{if((g.activeStudy===0)||Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)){attemptWormholeReset()}},visible:()=>unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)},
@@ -209,7 +220,7 @@ function toggleHotkey(name) {
 	hotkeys.toBeChanged=name
 	hotkeys.isChanging=true
 	popup({
-		text:"We're sorry to hear that you hate "+formatHotkey(g.hotkeys[name])+". Press the key you would you like to try on next for \""+name+"\".<br>You can use the Shift key.",
+		text:"We're sorry to hear that you hate "+formatHotkey(g.hotkeys[name])+". Press the key you would you like to try on next for \""+name+"\".<br>You can use the Shift and Alt keys as modifiers.",
 		buttons:[["Disable","g.hotkeys['"+name+"']=null"],["Cancel",""]]
 	})
 }
@@ -230,13 +241,13 @@ function hotkeyHandler(isUp){
 			if (["value","innerHTML"].map(x=>document.activeElement[x]).includes("6")&&e.key==="9") addSecretAchievement(10)
 			return
 		}
-		let key = (e.shiftKey?"shift+":"")+e.code
+		let key = (e.altKey?"alt+":"")+(e.shiftKey?"shift+":"")+e.code
 		if (StudyE(1)) {	
 			if (Object.values(g.hotkeys).includes(key)) notify("Hotkeys are disabled in Study I","#990000","#ffffff")
 			return
 		}
 		if (hotkeys.isChanging) {
-			if (["ShiftLeft","ShiftRight"].includes(e.code)) return
+			if (["ctrl","alt","shift"].map(x=>e.code.toLowerCase().includes(x)).includes(true)) {return}
 			d.display("div_fancyPopupScreen","none")
 			g.hotkeys[hotkeys.toBeChanged]=key
 			hotkeys.isChanging=false

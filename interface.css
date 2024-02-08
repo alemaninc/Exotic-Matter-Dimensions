@@ -94,7 +94,7 @@ span.xscript {
 span.xscript sub {
 	position:absolute;
 	left:0.1em;
-	bottom:-1ex;
+	top:1ex;
 }
 table {
 	border-collapse:collapse;
@@ -569,6 +569,14 @@ tab {
 	width:200px;
 	height:350px;
 }
+.autobuyerlevel {
+	position:absolute;
+	top:5px;
+	left:5px;
+	width:190px;
+	color:rgba(0,0,0,0.5);
+	font-size:11px;
+}
 .automatortoggleon {
 	background-color:#00ff00;
 	color:#009900;
@@ -882,8 +890,8 @@ tab {
 	border-color:rgba(0,153,0,0.9);
 }
 .overclockOption {
-	height:90px;
-	width:120px;
+	height:60px;
+	width:180px;
 	color:#00ff00;
 	font-weight:700;
 	border-style:solid;
@@ -891,6 +899,7 @@ tab {
 	border-width:1px;
 	border-color:#00ff00;
 	background-color:#009900;
+	margin:3px;
 }
 #overclockFooter {
 	position:absolute;
@@ -1164,6 +1173,23 @@ tab {
 }
 #button_titaniumEmpowerment.locked {
 	background-color:#999999;
+}
+.wormholeUpgrade {
+	height:110px;
+	width:275px;
+	border-radius:8px;
+	border-style:solid;
+	border-color:#000000;
+	font-size:11px;
+}
+.wormholeUpgrade.unlocked,.wormholeUpgrade.maxed {
+	background-image:repeating-radial-gradient(circle,#190033,#330066 10%,#190033 20%);
+	color:#ffffff;
+}
+.wormholeUpgrade.maxed {filter:brightness(50%)}
+.wormholeUpgrade.locked {
+	background-color:#666666;
+	color:#000000;
 }
 .corruptionContainer {
 	height:150px;

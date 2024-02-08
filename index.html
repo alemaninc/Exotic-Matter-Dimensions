@@ -61,9 +61,10 @@
 						<p>When enabled, Overclock provides a <span id="span_overclockSpeedupFactor" class="big _time"></span>× time boost at the cost of <span id="span_overclockCost"></span> seconds of dilated time per real-life second.</p>
 						<p id="span_overclockCostScaling" class="big _time2"></p>
 						<div id="overclockFooter">
-							<button class="overclockOption" id="button_overclockActive" onClick="toggleOverclock()"></button>
+							<button class="overclockOption" id="button_overclockActive" onClick="setTimeState(1)"></button>
 							<button class="overclockOption" id="button_overclockToSoftcap" onClick="overclockToSoftcap();updateOverclockScrollbar()">Set Overclock to the softcap start</button>
-							<button class="overclockOption" id="button_freezeGame" onClick="toggleFreeze()"></button>
+							<button class="overclockOption" id="button_freezeGame" onClick="setTimeState(2)"></button>
+							<button class="overclockOption" id="button_equalizeTime" onClick="setTimeState(3)"></button>
 						</div>
 					</div>
 					<div id="div_dilationUpgrades" class="dilationDiv"></div>
@@ -146,6 +147,7 @@
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','luck')" id="button_subtab_wormhole_luck" style="display:none;filter:brightness(60%)">Luck</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','prismatic')" id="button_subtab_wormhole_prismatic" style="display:none;filter:brightness(60%)">Prismatic</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','antimatter')" id="button_subtab_wormhole_antimatter" style="display:none;filter:brightness(60%)">Antimatter</button>
+					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','wormholeUpgrades')" id="button_subtab_wormhole_wormholeUpgrades" style="display:none;filter:brightness(60%);font-size:11px;">Wormhole Upgrades</button>
 				</div>
 				<p id="div_hr_disabledTop">You have <span id="span_hr_disabledTop" class="big _wormhole"></span> Hawking radiation</p>
 				<div class="subtab wormhole" id="subtab_wormhole_research">
@@ -221,6 +223,9 @@
 					<p><span id="div_antimatter_disabledTop">You have <span class="big _antimatter" id="span_antimatter_disabledTop"></span> antimatter<br>You are gaining <span class="big _antimatter" id="span_antimatterPerSec_disabledTop"></span> antimatter per second</span><br id="br_antimatter_disabledTop">Each anti-axis increases the effective number of the respective normal and dark axis.</p>
 					<button id="button_maxAntiAxis" onClick="buyMaxAntiAxis(Array(12).fill('u'))">Buy Max Anti-Axis (<span id="span_affordableAntiAxis"></span>)</button><br>
 					<div id="div_antiAxisContainer" style="width:900px"></div>
+				</div>
+				<div class="subtab wormhole" id="subtab_wormhole_wormholeUpgrades" style="display:none">
+					<table id="wormholeUpgradeContainer" style="color:#ffffff;font-size:75%"></table>
 				</div>
 			</div>
 			<div class="tab" id="bigtab_options" style="display:none;font-size:0;">
@@ -311,32 +316,36 @@
 				</div>
 				<div class="subtab automation" id="subtab_automation_automation">
 					<div class="automatordiv" id="axisAutobuyer">
+						<span class="autobuyerlevel" id="span_axisAutobuyerLevel"></span>
 						<h3>Axis Autobuyer</h3>
 						<button class="automatortoggleon" id="button_axisAutobuyerToggle" onClick="toggle('axisAutobuyerOn')"></button><br>
 						Interval: <span id="span_axisAutobuyerInterval"></span><br>
-						<button id="button_axisAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('axis')">Reduce the interval by 5%<br>Cost: <span id="span_axisAutobuyerCost"></span> exotic matter</button><br>
+						<button id="button_axisAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('axis')"></button><br>
 						<table id="table_axisAutobuyerLimits"></table>
 					</div>
 					<div class="automatordiv" id="darkAxisAutobuyer" style="display:none">
+						<span class="autobuyerlevel" id="span_darkAxisAutobuyerLevel"></span>
 						<h3>Dark Axis Autobuyer</h3>
 						<button class="automatortoggleon" id="button_darkAxisAutobuyerToggle" onClick="toggle('darkAxisAutobuyerOn')"></button><br>
 						Interval: <span id="span_darkAxisAutobuyerInterval"></span><br>
-						<button id="button_darkAxisAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('darkAxis')">Reduce the interval by 5%<br>Cost: <span id="span_darkAxisAutobuyerCost"></span> dark matter</button><br>
+						<button id="button_darkAxisAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('darkAxis')"></button><br>
 						<table id="table_darkAxisAutobuyerLimits"></table>
 					</div>
 					<div class="automatordiv" id="stardustUpgradeAutobuyer" style="display:none">
+						<span class="autobuyerlevel" id="span_stardustUpgradeAutobuyerLevel"></span>
 						<h3>Stardust Upgrade Autobuyer</h3>
 						<button class="automatortoggleon" id="button_stardustUpgradeAutobuyerToggle" onClick="toggle('stardustUpgradeAutobuyerOn')"></button><br>
 						Interval: <span id="span_stardustUpgradeAutobuyerInterval"></span><br>
-						<button id="button_stardustUpgradeAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('stardustUpgrade')">Reduce the interval by 5%<br>Cost: <span id="span_stardustUpgradeAutobuyerCost"></span> stelliferous energy</button><br>
+						<button id="button_stardustUpgradeAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('stardustUpgrade')"></button><br>
 						<table id="table_stardustUpgradeAutobuyerLimits"></table>
 						<button id="button_lockManualStardustUpgrades" class="starbuybutton" onClick="g.confirmations.buyStardustUpgrade=!g.confirmations.buyStardustUpgrade"></button>
 					</div>
 					<div class="automatordiv" id="starAutobuyer" style="display:none">
+						<span class="autobuyerlevel" id="span_starAutobuyerLevel"></span>
 						<h3>Star Autobuyer</h3>
 						<button class="automatortoggleon" id="button_starAutobuyerToggle" onClick="toggle('starAutobuyerOn')"></button><br>
 						Interval: <span id="span_starAutobuyerInterval"></span><br>
-						<button id="button_starAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('star')">Reduce the interval by 5%<br>Cost: <span id="span_starAutobuyerCost"></span> stardust</button><br>
+						<button id="button_starAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('star')"></button><br>
 						<label for="starAutobuyerMax">Max stars to buy:</label><input id="starAutobuyerMax" type="text"></input><br>
 						<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="narrowbutton" onClick="inputStarAllocatorBuild()">Input build</button><br><button class="narrowbutton" onClick="importStarAllocatorBuild()">Import build</button><button class="narrowbutton" onClick="exportStarAllocatorBuild()">Export build</button><br>The star allocator runs on the same interval as the autobuyer.</span>
 					</div>
@@ -353,10 +362,11 @@
 						<input id="wormholeAutomatorValue" type="text"></input>
 					</div>
 					<div class="automatordiv" id="researchAutobuyer" style="display:none">
+						<span class="autobuyerlevel" id="span_researchAutobuyerLevel"></span>
 						<h3>Research Autobuyer</h3>
 						<button class="automatortoggleon" id="button_researchAutobuyerToggle" onClick="toggle('researchAutobuyerOn')"></button><br>
 						Interval: <span id="span_researchAutobuyerInterval"></span><br>
-						<button id="button_researchAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('research')">Reduce the interval by 5%<br>Cost: <span id="span_researchAutobuyerCost"></span> mastery power</button><br>
+						<button id="button_researchAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('research')"></button><br>
 						<label for="researchAutobuyerMode">Setting:</label><button class="genericbutton" id="button_researchAutobuyerMode" onClick="selectOption('researchAutobuyerMode',countTo(researchAutobuyerModes.length,true),'mode',x=>researchAutobuyerModes[x])"></button><br>
 					</div>
 				</div>

@@ -41,14 +41,24 @@ const HTPtexts = [
 		visibility:function(){return true},
 		paragraphs:[
 			"While not playing, you gain dilated time at a rate of 1 second of dilated time per second spent offline.",
-			"Dilated time can be used to Overclock the game. Overclock uses dilated time to accelerate production.{0}",
-			"Below a multiplier of {1}×, Overclock is equally efficient to playing online. However, above this threshold, the Overclock cost increases much quicker than the multiplier given, causing some dilated time to be wasted.",
+			"Dilated time can be used to Overclock the game. Overclock uses dilated time to accelerate production.{0}<br>Below a multiplier of {1}×, Overclock is equally efficient to playing online. However, above this threshold, the Overclock cost increases much quicker than the multiplier given, causing some dilated time to be wasted.",
+			"Time can also be frozen. While time is frozen, you will accumulate dilated time as if the game was closed, but you can still interact with it.",
+			"Finally, time can also be equalized. This will make all frames exactly 50 milliseconds long, removing randomness caused by factors like processor speed - any excess is added as further dilated time. This is useful for timed achievements such as 212.",
 			"{2}"
 		],
 		dynamics:[
 			()=>(g.stars>21||unlocked("Hawking Radiation"))?" Unlike tickspeed, the Overclock multiplier affects things like the 'real' time played.":"",
-			()=>dilationUpgrades[1].effect().toFixed(0),
+			()=>stat.overclockSoftcap.toFixed(0),
 			()=>g.dilationUpgradesUnlocked===0?"":"Later in the game, dilated time can also be spent on Dilation Upgrades, which improve Overclock in different ways."
+		]
+	},
+	{
+		name:"Tickspeed",
+		visibility:function(){return stat.tickspeed.neq(c.d1)},
+		paragraphs:[
+			"Tickspeed is a multiplier to how fast the game runs.",
+			"It affects all resources which are generated 'per second' - this is exotic matter, mastery power (including the timer), the W axis effect, dark matter, energy and so on.",
+			"It does not affect the 'time played' stat (although there is a separate statistic accounting for tickspeed) or anything which would make tickspeed hinder progress - for example, the timers for timed achievements such as 212."
 		]
 	},
 	{

@@ -254,9 +254,9 @@ const studies = [
 		rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
 		reward:function(num,comp=g.studyCompletions[10]){
 			let step = this.rewardStep(num,comp)
-			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,c.em4,c.d1_5em4][step]).add(c.d1)
-			if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([c.d1,c.d1_5][step-1]).div([c.d80,c.d640][step-1]).max(c.d1)
-			if (num===3) return [g.antimatter.add(c.e10).layerplus(-3),[c.d0,c.d0_25,c.d0_3][step],studyRewardBoost(10,3)].productDecimals()
+			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,betaActive?N(1.1e-4):c.em4,N(1.7e-4)][step]).add(c.d1)
+			if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([c.d1,c.d1_5][step-1]).div([betaActive?c.d75:c.d80,c.d640][step-1]).max(c.d1)
+			if (num===3) return [g.antimatter.add(c.e10).layerplus(-3),[c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][step],studyRewardBoost(10,3)].productDecimals()
 			if (num===4) return [c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
 			functionError("studies[10].reward",arguments)
 		},
@@ -267,14 +267,14 @@ const studies = [
 			"The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).format())+"% more effective",
 		]},
 		rewardFormulas:{
-			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001","0.00015"][studies[10].rewardStep(1,comp)]+" + 1"},
-			2:function(comp=g.studyCompletions[10]){let step = studies[10].rewardStep(2,comp);return (step===0)?"0":("max((★ + G × 6)"+((step===2)?"<sup>1.5</sup>":"")+" × "+(step===2?"0.15625":"1.25")+" - 100, 0)")},
-			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+") "+formulaFormat.mult([c.d0,c.d0_25,c.d0_3][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
+			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001"+(betaActive?"1":""),"0.00017"][studies[10].rewardStep(1,comp)]+" + 1"},
+			2:function(comp=g.studyCompletions[10]){let step = studies[10].rewardStep(2,comp);return (step===0)?"0":("max((★ + G × 6)"+((step===2)?"<sup>1.5</sup>":"")+" × "+(step===2?"0.15625":betaActive?"1.333":"1.25")+" - 100, 0)")},
+			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+") "+formulaFormat.mult([c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
 		},
 	},
 	{
 		name:"Lunar Clock",
-		unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,betaActive?N(126196):c.e100,c.e100][studyPower(11)]},
+		unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,betaActive?N(126196):c.e100,betaActive?N(141421):c.e100][studyPower(11)]},
 		active:function(){
 			let num = Math.floor(g.timeThisWormholeReset/0.75)%12
 			return (num<8)?axisCodes[num]:["R","Q","P","O"][num-8]
@@ -282,7 +282,7 @@ const studies = [
 		lunarMinutes:function(){return Math.floor((g.timeThisWormholeReset*80)%60)},
 		description:function(){return "Only X axis of all types are initially active, and the active type will change every 750 milliseconds. Additionally, row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter is capped at 1."},
 		research:"r33_3",
-		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12500):c.e100,betaActive?N(13500):c.e100,c.e100][comp]},
+		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12496):c.e100,betaActive?N(13456):c.e100,betaActive?N(14142):c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[11]){
 			if (num===1) return [c.d256,N(270),N(282),N(292),c.d300][comp]
 			if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),c.d8][comp].pow(studyRewardBoost(11,2))
@@ -389,9 +389,14 @@ const luckUpgrades = {
 		star:{
 			name:"Stars",
 			desc:"Star costs are raised to the power of {}",
-			eff:(x=effLuckUpgradeLevel("quatrefolium","star"))=>c.d0_95.pow(x),
+			base:function(){
+				let out = c.d0_95
+				if (g.wormholeUpgrades[8]) {out = out.div(wormholeUpgrades[8].eff())}
+				return out
+			},
+			eff:function(x=effLuckUpgradeLevel("quatrefolium","star")){return this.base().pow(x)},
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"0.95<sup>λ</sup>"
+			formula:function(){return this.base().noLeadFormat(3)+"<sup>λ</sup>"}
 		},
 		darkstar:{
 			name:"Dark Stars",
@@ -623,6 +628,92 @@ const nonRefundablePrismaticUpgrades = prismaticUpgradeList.filter(upg=>!prismat
 const refundablePrismaticUpgrades = prismaticUpgradeList.filter(upg=>prismaticUpgrades[upg].refundable)
 function prismaticUpgradeName(upg) {return "Prismatic Upgrade "+((prismaticUpgrades[upg].refundable)?("R"+(refundablePrismaticUpgrades.indexOf(upg)+1)):(nonRefundablePrismaticUpgrades.indexOf(upg)+1))+" \""+prismaticUpgrades[upg].name+"\""}
 for (let upg of prismaticUpgradeList) prismaticUpgrades[upg].variables = prismaticUpgrades[upg].variables.split("")
+
+const wormholeUpgrades = {
+	1:{
+		name:"More Upgrades α",
+		text:function(){return "Gain "+this.eff().format()+"× more Hawking radiation (based on Wormhole Upgrades)"},
+		cost:Decimal.FC_NN(1,1,3000),
+		eff:function(){return Decimal.FC_NN(1,1,[20,25,32,40,50,64,80,100,125][countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[1]]*[10,11,12].map(x=>g.wormholeUpgrades[x]/20+1).product())},
+	},
+	2:{
+		name:"More Upgrades β",
+		text:function(){return "Gain ^"+this.eff().noLeadFormat(4)+" more Hawking radiation (based on Wormhole Upgrades)"},
+		cost:Decimal.FC_NN(1,1,3500),
+		eff:function(){return Decimal.FC_NN(1,0,1+Math.log10(1+((countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[2])/2)+([10,11,12].map(x=>g.wormholeUpgrades[x]).sum())/12)/100)}
+	},
+	3:{
+		name:"More Galaxies",
+		text:function(){return "Galaxy Boosts 2 and 4 use better formulas"},
+		cost:c.maxvalue
+	},
+	4:{
+		name:"More Wormhole α",
+		text:function(){return "The "+achievement.label(716)+" reward timer increases 100× faster"},
+		cost:Decimal.FC_NN(1,1,4000)
+	},
+	5:{
+		name:"More Achievement",
+		text:function(){return "The "+achievement.label(501)+" reward softcaps at "+this.eff().noLeadFormat(3)+" instead of 75 (based on total achievements)"},
+		cost:Decimal.FC_NN(1,1,4500),
+		eff:function(){return Decimal.FC_NN(1,0,(totalAchievements>=200)?(totalAchievements/2):(75+totalAchievements**4/64e6))}
+	},
+	6:{
+		name:"More Studies",
+		text:function(){return "Multiply the anti-Y axis effect by "+this.eff().noLeadFormat(4)+" (based on total Study completions)"},
+		cost:Decimal.FC_NN(1,1,5000),
+		eff:function(){return Decimal.FC_NN(1,0,1+g.studyCompletions.slice(1,13).sum()/1000+g.studyCompletions[13]/2000)}
+	},
+	7:{
+		name:"More Wormhole β",
+		text:function(){return "The gray lumen effect base is increased by "+percentOrMult(this.eff(),3)+" (based on Hawking radiation)"},
+		cost:c.maxvalue,
+		eff:function(){return g.hawkingradiation.add(c.d1).log10().div(c.e5).add(c.d1)}
+	},
+	8:{
+		name:"More Maxima",
+		text:function(){return "The Quatrefolium "+luckUpgrades.quatrefolium.star.name+" base is divided by "+this.eff().noLeadFormat(3)+" (based on highest galaxies)"},
+		cost:c.maxvalue,
+		eff:function(){return N(g.highestGalaxies/500+1)}
+	},
+	9:{
+		name:"More Capitalism",
+		text:function(){return "Autobuyer interval caps are halved"},
+		cost:c.maxvalue
+	},
+	// 1, 2, 4, 5+10, 6+11+12, 7, 8, 3, 9
+	10:{
+		name:"More Space α",
+		text:function(){return "All normal and dark axis costs are raised to the power of "+formatRepeatableWormholeUpgEff(10,x=>x.noLeadFormat(2))},
+		get cost(){return Decimal.decibel(g.wormholeUpgrades[10]+17).div(0.36**(Math.max(g.wormholeUpgrades[10]-9,0)**2/100)).mul(c.d0_9).round().mul(c.e2).pow10()},
+		eff:function(x=g.wormholeUpgrades[10]){return Decimal.FC_NN(1,0,1-x/200)},
+		max:20
+	},
+	11:{
+		name:"More Space β",
+		text:function(){return "All anti-axis costs are raised to the power of "+formatRepeatableWormholeUpgEff(11,x=>x.noLeadFormat(2))},
+		get cost(){return Decimal.decibel(g.wormholeUpgrades[11]+17).div(0.4**(Math.max(g.wormholeUpgrades[11]-9,0)**2/100)).round().mul(c.e2).pow10()},
+		eff:function(x=g.wormholeUpgrades[11]){return Decimal.FC_NN(1,0,1-x/100)},
+		max:20
+	},
+	12:{
+		name:"More Upgrades γ",
+		text:function(){return "Generate an additional <span style=\"white-space:nowrap\">log(<i>pending stardust</i> + 10)<sup>"+((g.wormholeUpgrades[12]===20)?"":formatRepeatableWormholeUpgEff(12,x=>x.noLeadFormat(1)))+"</sup></span> stardust per second"},
+		get cost(){return c.maxvalue},
+		eff:function(x=g.wormholeUpgrades[12]){return (x===0)?c.mmaxvalue:(x===1)?c.d0:N(x/20)},
+		max:20
+	}
+}
+// placeholder handler
+for (let i=1;i<13;i++) {
+	if (wormholeUpgrades[i]===undefined) {wormholeUpgrades[i] = {
+		name:"More Placeholders",
+		text:function(){return "This does absolutely nothing as of yet"},
+		cost:c.maxvalue
+	}}
+}
+for (let i=1;i<10;i++) {wormholeUpgrades[i].max=1}
+
 const corruption = {
 	list:{
 		axis:{

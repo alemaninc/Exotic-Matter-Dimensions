@@ -108,13 +108,22 @@ function updateHTML() {
 			d.innerHTML("span_overclockCost",N(stat.overclockCost).noLeadFormat(3))
 			d.class("span_overclockCost",stat.baseOverclockSpeedup>(stat.overclockSoftcap+1e-10)?"big _time2":"big _time")
 			d.innerHTML("span_overclockCostScaling",(stat.baseOverclockSpeedup>(stat.overclockSoftcap+1e-10))?("Overclock costs are much higher above "+N(stat.overclockSoftcap).noLeadFormat(3)+"×"):"")
-			d.innerHTML("button_overclockActive",overclockActive?"Disable Overclock":"Enable Overclock")
-			d.element("button_overclockActive").style["background-color"] = overclockActive?"#000000":""
+			d.innerHTML("button_overclockActive",(timeState===1)?"Disable Overclock":"Enable Overclock")
+			d.element("button_overclockActive").style["background-color"] = (timeState===1)?"#000000":""
 			d.display("button_overclockToSoftcap",dilationUpgrades[1].effect()>stat.overclockSoftcap?"inline-block":"none")
-			d.innerHTML("button_freezeGame",gameFrozen?"Unfreeze time":"Freeze time")
-			d.element("button_freezeGame").style["background-color"] = gameFrozen?"#000033":""
-			d.element("button_freezeGame").style["color"] = gameFrozen?"#00ffff":""
-			d.element("button_freezeGame").style["border-color"] = gameFrozen?"#00ffff":""
+			d.innerHTML("button_freezeGame",(timeState===2)?"Unfreeze time":"Freeze time")
+			d.element("button_freezeGame").style["background-color"] = (timeState===2)?"#000033":""
+			d.element("button_freezeGame").style["color"] = (timeState===2)?"#00ffff":""
+			d.element("button_freezeGame").style["border-color"] = (timeState===2)?"#00ffff":""
+			if (timeAlwaysEqualized()) {
+				d.display("button_equalizeTime","none")
+			} else {
+				d.display("button_equalizeTime","inline-block")
+				d.innerHTML("button_equalizeTime",(timeState===3)?"Normalize time":"Set all frames to 50ms")
+				d.element("button_equalizeTime").style["background-color"] = (timeState===3)?"#333300":""
+				d.element("button_equalizeTime").style["color"] = (timeState===3)?"#ffff00":""
+				d.element("button_equalizeTime").style["border-color"] = (timeState===3)?"#ffff00":""
+			}
 			if (g.dilationUpgradesUnlocked>0) {
 				d.display("div_dilationUpgrades","inline-block")
 				for (let i=1;i<5;i++) {
@@ -321,9 +330,9 @@ function updateHTML() {
 				d.display("div_wormholeMilestone"+i,allUnlocked?"inline-block":(Number(nextMilestoneNum)>=Number(i))?"inline-block":"none")
 				d.element("div_wormholeMilestone"+i).style.filter = allUnlocked?"":(nextMilestoneNum===i)?"brightness(50%)":""
 			}
-			d.innerHTML("span_wormholeMilestone9Effect",showFormulas?formulaFormat(wormholeMilestone9Formula()):stat.wormholeMilestone9Effect.format(4))
-			d.innerHTML("span_wormholeMilestone18Effect",showFormulas?formulaFormat(wormholeMilestone18Formula()):timeFormat(wormholeMilestone18Effect()))
-			d.innerHTML("span_wormholeMilestone27Effect",showFormulas?formulaFormat(wormholeMilestone27Formula()):wormholeMilestone27Effect().format(2))
+			d.innerHTML("span_wormholeMilestone9Effect",showFormulas?formulaFormat(wormholeMilestone9.formula()):stat.wormholeMilestone9Effect.format(4))
+			d.innerHTML("span_wormholeMilestone18Effect",showFormulas?(formulaFormat(wormholeMilestone18.formula())+" seconds"):timeFormat(wormholeMilestone18.eff()))
+			d.innerHTML("span_wormholeMilestone27Effect",showFormulas?formulaFormat(wormholeMilestone27.formula()):wormholeMilestone27.eff().format(2))
 		}
 	}
 	if (g.activeTab==="stardust") {
@@ -449,12 +458,13 @@ function updateHTML() {
 		if (StudyE(1)) openTab("wormhole")
 		for (let id of Object.keys(autobuyers)) { // Autobuyer stuff
 			d.display(id+"Autobuyer",autobuyers[id].unlockReq()?"inline-block":"none");
+			d.innerHTML("span_"+id+"AutobuyerLevel","Level "+g[id+"AutobuyerUpgrades"]+" / "+autobuyerMeta.cap(id))
 			d.class("button_"+id+"AutobuyerToggle",g[id+"AutobuyerOn"]?"automatortoggleon":"automatortoggleoff");
 			d.innerHTML("button_"+id+"AutobuyerToggle",g[id+"AutobuyerOn"]?"On":"Off");
 			d.innerHTML("span_"+id+"AutobuyerInterval",timeFormat(autobuyerMeta.interval(id)));
+			d.innerHTML("button_"+id+"AutobuyerUpgrade","Reduce the interval by "+((g[id+"AutobuyerUpgrades"]>=autobuyerMeta.softcap(id))?"1":"5")+"%<br>Cost: "+autobuyerMeta.cost(id).noLeadFormat(2)+" "+autobuyers[id].extRes)
 			d.display("button_"+id+"AutobuyerUpgrade",g[id+"AutobuyerUpgrades"]>=autobuyerMeta.cap(id)?"none":"inline-block");
 			d.element("button_"+id+"AutobuyerUpgrade").style["background-color"]=autobuyerMeta.cost(id).gte(g[autobuyers[id].resource])?"#b2b2b2":"#cccccc";
-			d.innerHTML("span_"+id+"AutobuyerCost",autobuyerMeta.cost(id).format(2));
 		}
 		d.tr("tr_darkAxisAutobuyerMaxStars",achievement.ownedInTier(5)>=2);
 		d.display("wormholeMilestone5",achievement.ownedInTier(5)>=5?"inline-block":"none");
@@ -671,6 +681,12 @@ function updateHTML() {
 				d.display("button_empoweredAnti"+name+"Axis",stat["empoweredAnti"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empoweredAnti"+name+"AxisAmount",BEformat(stat["empoweredAnti"+name+"Axis"],2));
 			}
+		} else if (g.activeSubtabs.wormhole==="wormholeUpgrades") {
+			for (let i=1;i<13;i++) {
+				d.class("button_wormholeUpgrade"+i,"wormholeUpgrade "+((g.wormholeUpgrades[i]>=wormholeUpgrades[i].max)?"maxed":g.hawkingradiation.gte(wormholeUpgrades[i].cost)?"unlocked":"locked"))
+				d.innerHTML("span_wormholeUpgrade"+i+"Text",wormholeUpgrades[i].text())
+				d.innerHTML("span_wormholeUpgrade"+i+"Cost",(Math.max(wormholeUpgrades[i].max,2)===g.wormholeUpgrades[i])?"Maxed":("Cost: "+wormholeUpgrades[i].cost.format()+" HR"))
+			}
 		}
 	}
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
@@ -680,7 +696,8 @@ function tick(time) {																																		 // The game loop, which 
 		error("An error has occurred which would have caused time to reverse by "+timeFormat(time)+"")
 		return
 	} else if (time===0) {return} // not an error but no point causing lag
-	if ((StudyE(3)||StudyE(9))&&(!overclockActive)) {
+	if ((timeState===0)&&timeAlwaysEqualized()) {timeState = 3} // time is always equalized in Studies 3 and 9 unless Overclock is active
+	if (timeState===3) {
 		let diff = time-0.05
 		g.dilatedTime += diff
 		time -= diff
@@ -770,7 +787,7 @@ function tick(time) {																																		 // The game loop, which 
 		o.add("masteryPower",stat.masteryPowerPerSec.mul(time));
 	}
 	if (achievement.ownedInTier(5)===30&&g.activeStudy===0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
-	if (achievement.ownedInTier(5)>=10) incrementStardust(stat.tickspeed.mul(time));
+	incrementStardust(stat.stardustPerSec.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
 	let chromaToGet = stat.chromaPerSec.mul(time)

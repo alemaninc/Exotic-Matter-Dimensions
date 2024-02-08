@@ -36,7 +36,7 @@ function unbreak(str) { // prevent targeting inside HTML tags
 		if (i===" "&&(!inTag)) out+="&nbsp;"
 		else out+=i
 	}
-	return out
+	return "<span style=\"white-space:nowrap\">"+out+"</span>"
 }
 function arrowJoin(a,b) {return a+"&nbsp;→&nbsp;"+b}
 Object.defineProperty(Array.prototype,"remove",{

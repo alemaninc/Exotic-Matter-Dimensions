@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).6",
+	current:"𝕍1.5(b).7",
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -86,6 +86,26 @@ d.glow = function(id,active){
 	if (active) document.getElementById(id).classList.add("glownotify");
 	else document.getElementById(id).classList.remove("glownotify");
 }
+const o = {			// o = "operations"
+	add(variable,value) {
+		g[variable]=g[variable].add(value).fix(0);
+	},
+	sub(variable,value) {
+		g[variable]=g[variable].sub(value).fix(0);
+	},
+	mul(variable,value) {
+		g[variable]=g[variable].mul(value).fix(1);
+	},
+	div(variable,value) {
+		g[variable]=g[variable].div(value).fix(1);
+	},
+	pow(variable,value) {
+		g[variable]=g[variable].pow(value).fix(1);
+	},
+	root(variable,value) {
+		g[variable]=g[variable].root(value).fix(1);
+	}
+};
 const c = deepFreeze({		 // c = "constant"
 	...constant,
 	dm16			: Decimal.FC_NN(-1,0,16),

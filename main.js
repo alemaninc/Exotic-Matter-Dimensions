@@ -226,7 +226,8 @@ const basesave = {
 	study12:{
 		empowerments:c.d0,
 		fortitude:c.d0
-	}
+	},
+	wormholeUpgrades:[null,...Array(12).fill(0)]
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = ["Y"]
@@ -260,8 +261,7 @@ var themeAchievementCount = 0;
 function gameClick() {
 	g.clickedInStudy1=true
 }
-var overclockActive = false
-var gameFrozen = false
+var timeState = 0 // 0 = normal, 1 = overclock, 2 = frozen, 3 = equalized
 const dilationUpgrades = [
 	null,
 	{
@@ -315,30 +315,24 @@ function overclockToSoftcap() {
 	g.dilationPower=Math.log2(stat.overclockSoftcap)
 	updateOverclockScrollbar()
 }
-function toggleOverclock() {
-	overclockActive = !overclockActive
-	if (overclockActive&&gameFrozen) gameFrozen = false
-}
-function toggleFreeze() {
-	gameFrozen = !gameFrozen
-	if (overclockActive&&gameFrozen) overclockActive = false
-}
+function setTimeState(x) {timeState = (timeState===x)?0:x}
+function timeAlwaysEqualized() {return StudyE(3)||StudyE(9)}
 function updateOverclockScrollbar() {
 	d.element('dilationSpeedupFactor').max = Math.ceil(Math.log2(dilationUpgrades[1].effect())*1000)/1000
 	d.element('dilationSpeedupFactor').value = g.dilationPower
 }
 function getRealOverclockSpeedup() {
-	if (gameFrozen) {
+	if (timeState===2) {
 		overclockSpeedupFactor = 0
 		g.dilatedTime += deltatime
-	} else if (overclockActive) {
+	} else if (timeState===1) {
 		let added = stat.baseOverclockSpeedup-1
 		let cost = stat.overclockCost*deltatime
 		let affordable = Math.min(1,g.dilatedTime/cost)
 		overclockSpeedupFactor = 1+added*affordable
 		g.dilatedTime -= cost*affordable
-		if (Math.abs(g.dilatedTime)<1e-12) g.dilatedTime = 0
-		if (affordable<1) overclockActive = false
+		if (Math.abs(g.dilatedTime)<1e-12) {g.dilatedTime = 0}
+		if (affordable<1) {timeState = 0}
 	} else {
 		overclockSpeedupFactor = 1
 	}
@@ -489,7 +483,7 @@ const storyEntries = {
 }
 function openStory(x) {
 	if (storyEntries[x]!==undefined) {
-		g.overclockActive=false
+		timeState = 0
 		if (!g.storySnippets.includes(x)) g.storySnippets.push(x);
 		popup({text:"<h1 id=\"storyTitle\">"+x+"</h1>"+storyEntries[x],buttons:[["Close",""]]})
 	}
@@ -644,7 +638,7 @@ const masteryData = {
 	85:{icon:"<span class=\"_mastery\">MP</span><sup>+</sup>"},
 	91:{icon:"<span class=\"_time\">t</span>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
 	92:{icon:"<span class=\"_time\">t</span><sup>-1</sup>→<span class=\"_mastery\">M<sub>8x</sub></span>"},
-	101:{icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>"},
+	101:{icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>",softcap:function(){return g.wormholeUpgrades[5]?wormholeUpgrades[5].eff():c.d75}},
 	102:{icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>"},
 	103:{icon:"<span class=\"_research\">K</span><sup>+</sup>"},
 	104:{icon:"<span class=\"_stars\">L</span><sup>+</sup>",req:function(){return g.research.r10_11}},
@@ -731,7 +725,7 @@ function masteryEffect(x) {
 	if (x===85) return [g.masteryPower.add(c.d10).log10().log10(),masteryBoost(85),c.d0_2].productDecimals();
 	if (x===91) return g.masteryPower.add(c.d10).log10().log10().div(c.d10).mul(Decimal.mul(c.d0_3,g.truetimeThisStardustReset.add(c.d10).log10())).mul(masteryBoost(91)).add(c.d1);
 	if (x===92) return g.masteryPower.add(c.d10).log10().log10().div(c.d10).div(Decimal.mul(c.d0_3,g.truetimeThisStardustReset.add(c.d10).log10())).mul(masteryBoost(92)).add(c.d1);
-	if (x===101) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d1).log10().add(c.d1).pow(masteryBoost(101).div(c.d2)),c.d75,c.d2);
+	if (x===101) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d1).log10().add(c.d1).pow(masteryBoost(101).div(c.d2)),masteryData[101].softcap(),c.d2);
 	if (x===102) return g.masteryPower.add(c.d1).dilate(c.d2div3).pow(masteryBoost(102).mul(c.d0_0175));
 	if (x===103) return g.masteryPower.add(c.d10).dilate(c.d0_2).sub(c.d9).pow(masteryBoost(103));
 	if (x===104) return masteryBoost(104).mul(g.masteryPower.gt(c.ee3)?g.masteryPower.log10().sub(c.d500):g.masteryPower.add(c.d1).log10().pow(c.d2).div(2000)).div(500).pow10()
@@ -783,7 +777,7 @@ function masteryBoost(x) {
 	}
 	if (row===10) {
 		b = b.mul(stat.stardustBoost11);
-		if (achievement.ownedInTier(5)>=27) b = b.mul(wormholeMilestone27Effect().div(c.e2).add(c.d1));
+		if (achievement.ownedInTier(5)>=27) b = b.mul(wormholeMilestone27.eff().div(c.e2).add(c.d1));
 		if (g.research.r20_9&&[102,104].includes(x)) b = b.mul(researchEffect(20,9))
 		if (x===103) {
 			if (g.achievement[710]) b = b.mul(c.d9);
@@ -849,7 +843,7 @@ function masteryFormula(x) {
 	if (x===85) return "log<sup>[2]</sup>(MP + 10)"+formulaFormat.mult(masteryBoost(85).mul(c.d0_2))
 	if (x===91) return "log<sup>[2]</sup>(MP + 10)"+formulaFormat.mult(masteryBoost(91).mul(c.d0_03))+" × log(t + 10) + 1"
 	if (x===92) return "log<sup>[2]</sup>(MP + 10)"+formulaFormat.mult(masteryBoost(92).div(c.d3))+" ÷ log(t + 10) + 1"
-	if (x===101) return formulaFormat.logSoftcap("log(MP + 10)"+formulaFormat.exp(masteryBoost(101).div(c.d2)),c.d75,c.d2,masteryEffect(101).gt(c.d75))
+	if (x===101) return formulaFormat.logSoftcap("log(MP + 10)"+formulaFormat.exp(masteryBoost(101).div(c.d2)),masteryData[101].softcap(),c.d2,Decimal.gte(masteryEffect(101),masteryData[101].softcap()))
 	if (x===102) return "10<sup>log(MP + 1)<sup>2 ÷ 3</sup>"+formulaFormat.mult(masteryBoost(102).mul(c.d0_0175))+"</sup>"
 	if (x===103) return "(10<sup>log(MP + 10)<sup>0.2</sup></sup> - 9)"+formulaFormat.exp(masteryBoost(103))
 	if (x===104) return "10<sup>("+(g.masteryPower.gt(c.ee3)?"log(MP) - 500":"log(MP + 1)<sup>2</sup> ÷ 2,000")+")"+formulaFormat.mult(masteryBoost(104).div(c.d500))+"</sup>"
@@ -1062,16 +1056,18 @@ function buyStardustUpgrade(x) {
 	for (let i of achievementEvents.stardustUpgrade) addAchievement(i);
 }
 const autobuyers = {
-	axis:{baseInterval:5,baseCost:c.e25,costGrowth:c.d1_05,resource:"exoticmatter",unlockReq:function(){return g.stardustUpgrades[1]>0;}},
-	darkAxis:{baseInterval:5,baseCost:c.e25,costGrowth:c.d1_05,resource:"darkmatter",unlockReq:function(){return achievement.ownedInTier(5)>=1;}},
-	stardustUpgrade:{baseInterval:30,baseCost:c.e100,costGrowth:c.d1_1,resource:"stelliferousEnergy",unlockReq:function(){return achievement.ownedInTier(5)>=3;}},
-	star:{baseInterval:15,baseCost:c.e25,costGrowth:c.d1_08,resource:"stardust",unlockReq:function(){return achievement.ownedInTier(5)>=4;}},
-	research:{baseInterval:60,baseCost:c.ee4,costGrowth:c.d1_03,resource:"masteryPower",unlockReq:function(){return g.achievement[817]}},
+	axis:{baseInterval:5,baseCost:c.e25,costGrowth:c.d1_05,resource:"exoticmatter",extRes:"exotic matter",unlockReq:function(){return g.stardustUpgrades[1]>0;}},
+	darkAxis:{baseInterval:5,baseCost:c.e25,costGrowth:c.d1_05,resource:"darkmatter",extRes:"dark matter",unlockReq:function(){return achievement.ownedInTier(5)>=1;}},
+	stardustUpgrade:{baseInterval:30,baseCost:c.e100,costGrowth:c.d1_1,resource:"stelliferousEnergy",extRes:"stelliferous energy",unlockReq:function(){return achievement.ownedInTier(5)>=3;}},
+	star:{baseInterval:15,baseCost:c.e25,costGrowth:c.d1_08,resource:"stardust",extRes:"stardust",unlockReq:function(){return achievement.ownedInTier(5)>=4;}},
+	research:{baseInterval:60,baseCost:c.ee4,costGrowth:c.d1_03,resource:"masteryPower",extRes:"mastery power",unlockReq:function(){return g.achievement[817]}},
 };
 const autobuyerMeta = {
-	cost:function(id){return [autobuyers[id].baseCost,autobuyers[id].costGrowth,N(g[id+"AutobuyerUpgrades"])].decimalPowerTower();},
-	interval:function(id){return Math.max(0.1,autobuyers[id].baseInterval*0.95**g[id+"AutobuyerUpgrades"]);},
-	cap:function(id){return Math.ceil(Math.log(0.1/autobuyers[id].baseInterval)/Math.log(0.95));}
+	cost:function(id,n=g[id+"AutobuyerUpgrades"]){return [autobuyers[id].baseCost,autobuyers[id].costGrowth,N(n)].decimalPowerTower()},
+	maxInterval:function(){return g.wormholeUpgrades[9]?0.05:0.1},
+	interval:function(id,n=g[id+"AutobuyerUpgrades"]){return Math.max(this.maxInterval(),autobuyers[id].baseInterval*0.95**Math.min(n,this.softcap(id))*0.99**Math.max(n-this.softcap(id),1));},
+	softcap:function(id){return Math.ceil(Math.log(this.maxInterval()/autobuyers[id].baseInterval)/Math.log(0.95))},
+	cap:function(id){return this.softcap(id)+Math.max(Math.ceil(Math.log(this.maxInterval()/(autobuyers[id].baseInterval*0.95**this.softcap(id)))/Math.log(0.99)),0);},
 };
 function upgradeAutobuyer(id) {
 	while ((g[autobuyers[id].resource].gte(autobuyerMeta.cost(id))) && (g[id+"AutobuyerUpgrades"]<autobuyerMeta.cap(id))) {
@@ -1237,7 +1233,7 @@ function formatStarEffect(x) {
 	if (x===42) return c.e18.format()
 	if ([61,62,63].includes(x)) return starEffect(60).format(2)
 	if (Math.floor(x/10)===9) return starEffect(90).format(2)
-	return starEffect(x).format(x===64?3:2)
+	return starEffect(x).noLeadFormat(x===64?3:2)
 }
 function showStarEffectFormula(x) {
 	if (x===42) return "10<sup>18</sup>"
@@ -1639,7 +1635,7 @@ function wormholeReset() {
 		g.fastestWormholeReset=Decimal.min(g.fastestWormholeReset,g.timeThisWormholeReset);
 	}
 	if (g.wormholeResets===0) {
-		g.overclockActive=false
+		timeState = 0
 		d.display("wormholeAnimation","inline-block");
 		let start = Date.now();
 		while (Date.now()-start<1e4) d.element("wormholeAnimation").style.opacity = (Date.now()-start)/1e4;
@@ -1770,23 +1766,41 @@ const wormholeMilestoneList = {
 	27:{dynamic:"Row 10 Masteries are {v}% stronger (based on Hawking radiation)",static:"Row 10 Masteries are now stronger based on Hawking radiation"},
 	30:{text:"Gain all pending stardust immediately. Does not work in Studies.",notification:"You now gain all pending stardust immediately as long as you are not in a Study. Congratulations on completing your collection!"}
 };
-function wormholeMilestone9Mult() {
-	let mult = c.dm0_1
-	if (g.achievement[716]) mult = mult.mul(achievement(716).effect())
-	return mult
+const wormholeMilestone9 = {
+	mult:function(){
+		let mult = c.dm0_1
+		if (g.achievement[716]) mult = mult.mul(achievement(716).effect())
+		return mult
+	},
+	eff:function(x=g.hawkingradiation) {return c.e.pow(x.div(c.d10).add(c.d1).quad_slog().mul(wormholeMilestone9.mult()));},
+	formula:function(){return "e<sup>slog(HR ÷ 10 + 1)"+formulaFormat.mult(wormholeMilestone9.mult(),4)+"</sup>"}
 }
-function wormholeMilestone9Effect(x=g.hawkingradiation) {return c.e.pow(x.div(c.d10).add(c.d1).quad_slog().mul(wormholeMilestone9Mult()));}
-function wormholeMilestone9Formula(){return "e<sup>slog(HR ÷ 10 + 1)"+formulaFormat.mult(wormholeMilestone9Mult(),4)+"</sup>"}
-function wormholeMilestone18Effect(x=g.hawkingradiation) {return Decimal.convergentSoftcap(x.add(c.d1).log10().pow(c.d1_5).mul(c.d200),c.d86400,c.d3155692599,1);}
-function wormholeMilestone18Formula(){
-	let out = "log(HR + 1)<sup>1.5</sup> × 200"
-	return wormholeMilestone18Effect().gte(c.d86400)?("10<sup>"+formulaFormat.convSoftcap(out,c.d86400.log10(),c.d3155692599.log10(),true)+"</sup>"):out
+const wormholeMilestone18 = {
+	mult:function(){
+		let out = c.d200
+		return out
+	},
+	scstart:function(){
+		let out = c.d86400 // 24 hours
+		return out
+	},
+	sclim:function(){
+		let out = c.d3155692599 // 100 years
+		return out
+	},
+	eff:function(x=g.hawkingradiation){return Decimal.convergentSoftcap(x.add(c.d1).log10().pow(c.d1_5).mul(this.mult()),this.scstart(),this.sclim(),1);},
+	formula:function(){
+		let out = "log(HR + 1)<sup>1.5</sup>"+formulaFormat.mult(this.mult())
+		return Decimal.gte(this.eff(),this.scstart())?("10<sup>log("+formulaFormat.convSoftcap(out,this.scstart().log10(),this.sclim().log10(),true)+")"):out
+	}
 }
-function wormholeMilestone27Effect(x=g.hawkingradiation) {
-	let out = x.div(c.e3).add(c.d1).log10().pow(c.d0_3).mul(c.d10);
-	return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(out,c.d25,c.d1),c.d50,c.e2);
+const wormholeMilestone27 = {
+	eff:function(x=g.hawkingradiation) {
+		let out = x.div(c.e3).add(c.d1).log10().pow(c.d0_3).mul(c.d10);
+		return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(out,c.d25,c.d1),c.d50,c.e2);
+	},
+	formula:function() {return formulaFormat.convSoftcap(formulaFormat.logSoftcap("log(HR ÷ 1,000 + 1)<sup>0.3</sup> × 10",c.d25,c.d1,wormholeMilestone27.eff().gt(c.d25)),c.d50,c.e2,wormholeMilestone27.eff().gt(c.d50))}
 }
-function wormholeMilestone27Formula() {return formulaFormat.convSoftcap(formulaFormat.logSoftcap("log(HR ÷ 1,000 + 1)<sup>0.3</sup> × 10",c.d25,c.d1,wormholeMilestone27Effect().gt(c.d25)),c.d50,c.e2,wormholeMilestone18Effect().gt(c.d50))}
 function wormholeMilestoneText(x) {
 	if (x===9) return "Stars and stardust upgrades cost less based on your Hawking radiation"
 	if (x===18) return "Add extra time to the dark T axis timer based on your Hawking radiation"
@@ -1994,7 +2008,11 @@ const lightEffect = [
 		}
 	},
 	{
-		base:function(){return c.e5},
+		base:function(){
+			let out = c.e5
+			if (g.wormholeUpgrades[7]) {out = out.mul(wormholeUpgrades[7].eff())}
+			return out
+		},
 		softcap:function(){return c.e2},
 		value:function(x=g.lumens[8]){
 			let divisor = x.div(this.softcap()).max(c.d1).log10().pow(c.d2).add(c.d1)
@@ -2059,14 +2077,15 @@ const galaxyEffects = [
 	{
 		req:2,
 		boost:{
-			value:function(n=g.galaxies){return [c.d1_15,effectiveGalaxies(2,1,n),c.d0_9].decimalPowerTower()},
+			exp:function(){return g.wormholeUpgrades[3]?c.d1_2:c.d0_9},
+			value:function(n=g.galaxies){return [c.d1_15,effectiveGalaxies(2,1,n),this.exp()].decimalPowerTower()},
 			text:function(){
 				function eff(gal){return galaxyEffects[2].boost.value(gal).mul(stat.chromaGainBase).pow(affordableStars(gal))}
 				return (this.value().gt(c.d10)?"{}×":"+{}%")+" chroma gain per star<br><span class=\"small\">(this is currently a "+arrowJoin(eff(g.galaxies).noLeadFormat(2),eff(g.galaxies+1).noLeadFormat(2)+"× multiplier overall from stars)")
 			},
 			format:function(e){return this.value().gte(c.d10)?e.noLeadFormat(3):e.sub(c.d1).mul(c.e2).noLeadFormat(2)},
 			formula:function(){
-				let out = "1.15<sup>"+effectiveGalaxyFormulaText(2,1)+"<sup>0.9</sup></sup>"
+				let out = "1.15<sup>"+effectiveGalaxyFormulaText(2,1)+"<sup>"+this.exp().noLeadFormat(3)+"</sup></sup>"
 				if (galaxyEffects[2].boost.value().lt(c.d10)) out = "("+out+" - 1) × 100"
 				return out
 			}
@@ -2106,10 +2125,11 @@ const galaxyEffects = [
 	{
 		req:6,
 		boost:{
-			value:function(n=g.galaxies){return effectiveGalaxies(4,1,n).add(c.d1).pow(c.d0_5)},
+			exp:function(){return g.wormholeUpgrades[3]?c.d0_6:c.d0_5},
+			value:function(n=g.galaxies){return effectiveGalaxies(4,1,n).add(c.d1).pow(this.exp())},
 			text:function(){return "The base gain of prismatic is increased to ((<i>x</i> + 1)<sup>{}</sup> - 1)"},
 			format:function(e){return e.noLeadFormat(4)},
-			formula:function(){return effectiveGalaxyFormulaText(4,1,{add:1})+"<sup>0.5</sup>"}
+			formula:function(){return effectiveGalaxyFormulaText(4,1,{add:1})+"<sup>"+this.exp().noLeadFormat(3)+"</sup>"}
 		},
 		penalty:{
 			value:function(n=g.galaxies){return effectiveGalaxies(4,0,n).mul(c.d10).max(c.d1).log10().pow(c.d1_5).div(c.e2)},
@@ -2429,6 +2449,18 @@ function antiAxisDimBoost(type,next=false) {
 }
 function antiAxisDimBoostFormula(type){return "(ln("+type+formulaFormat.mult(antiAxisDimBoostPower(type).div(c.e3))+" + 1)<sup>0.9</sup> - 1) × "+c.e2.noLeadFormat(3)+"%"}
 
+function buyWormholeUpg(x) {
+	if ((g.wormholeUpgrades[x]<wormholeUpgrades[x].max)&&g.hawkingradiation.gte(wormholeUpgrades[x].cost)) {
+		g.wormholeUpgrades[x]++
+		o.sub("hawkingradiation",wormholeUpgrades[x].cost)
+	}
+}
+function wormholeUpgName(x) {return "Wormhole Upgrade "+x+" \""+wormholeUpgrades[x].name+"\""}
+function formatRepeatableWormholeUpgEff(x,func) {
+	if (g.wormholeUpgrades[x]>=wormholeUpgrades[x].max) {return func(wormholeUpgrades[x].eff())}
+	return arrowJoin(func(wormholeUpgrades[x].eff(g.wormholeUpgrades[x])),func(wormholeUpgrades[x].eff(g.wormholeUpgrades[x]+1)))
+}
+
 const topResources = [
 	{
 		text:function(){return "<span class=\"_exoticmatter\">"+g.exoticmatter.format()+"</span> exotic matter"+((g.exoticmatter.lt(c.ee9)||g.exoticmatter.gt_tolerance(stat.exoticmatterPerSec,1e-4))?(" (<span class=\"_exoticmatter\">"+stat.exoticmatterPerSec.noLeadFormat(2)+"</span> / s)"):"");},
@@ -2456,7 +2488,7 @@ const topResources = [
 	},
 	{
 		condition:function(){return g.dilatedTime>0;},
-		text:function(){return "<span class=\"_time\">"+timeFormat(g.dilatedTime)+"</span> dilated time"+(gameFrozen?(" <span class=\"blue\">(Frozen)</span>"):overclockActive?(" <span class=\"_time2\">("+N(stat.baseOverclockSpeedup).noLeadFormat(3)+"× Overclock)</span>"):"");},
+		text:function(){return "<span class=\"_time\">"+timeFormat(g.dilatedTime)+"</span> dilated time "+["","<span class=\"_time2\">("+N(stat.baseOverclockSpeedup).noLeadFormat(3)+"× Overclock)</span>","<span class=\"blue\">(Frozen)</span>","<span class=\"yellow\">(Equalized)</span>"][timeState];},
 	},
 	{
 		text:function(){return "<span class=\"_time\">"+stat.tickspeed.format(3)+"×</span> tickspeed";},
