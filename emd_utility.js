@@ -6,7 +6,7 @@ const version = {
 	nextProgress:[
 		1, // tier 8 hell
 		[
-			144/200, // Study XIII completed
+			158/200, // Study XIII completed
 			200/200  // Study XIII implemented
 		],
 		[
