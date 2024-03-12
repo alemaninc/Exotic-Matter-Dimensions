@@ -881,6 +881,14 @@
 			return x.div(10).floor().pow10().mul([1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x.mod(10).toNumber()])
 		}
 
+		Decimal.fracDecibel_arithmetic = function(x) { // weighted arithmetic mean of two adjacent decibels
+			return Decimal.add(Decimal.decibel(x.floor()).mul(c.d1.sub(x.mod(c.d1))),Decimal.decibel(x.floor().add(c.d1)).mul(x.mod(c.d1)))
+		}
+
+		Decimal.fracDecibel_geometric = function(x) { // weighted geometric mean of two adjacent decibels
+			return Decimal.mul(Decimal.decibel(x.floor()).pow(c.d1.sub(x.mod(c.d1))),Decimal.decibel(x.floor().add(c.d1)).pow(x.mod(c.d1)))
+		}
+
 		Decimal.valid = function (x) {
 			return !Object.values(new Decimal(x)).includes(NaN)
 		}
@@ -2916,16 +2924,6 @@ for (var i = 0; i < 10; ++i)
 			return this.add(1).pow(p).sub(1)
 		}
 
-		Decimal.prototype.format = function(precision) {
-			return BEformat(this,precision);
-		};
-
-		Decimal.prototype.noLeadFormat = function(precision) {
-			if (this.layer !== 0) return BEformat(this)
-			let exponent = this.abs().log10().add(1e-8).floor()
-			for (let i=0;i<precision;i++) if (Decimal.eq_tolerance(this.mul(Decimal.pow(10,i-exponent)),this.mul(Decimal.pow(10,i-exponent)).round(),1e-7)) return BEformat(this,i)
-			return BEformat(this,precision)
-		}
 		return Decimal;
 	}();
 
@@ -3088,14 +3086,15 @@ const notations = {
 	},
 	"Tetration":function(x,sub="Tetration"){
 		let height = x.slog()
-		if (height<1e6) {return "10 ⇈ "+height.toPrecision(6)}
-		return "10 ⇈ "+notations[sub](height,sub,5)
+		if (height<1e6) {return "10 ⇈ "+height.toPrecision(7)}
+		return "10 ⇈ "+notations[sub](height,sub,6)
 	},
 	"Time":function(x){
 		let hours=x.mul(constant.e4).quad_slog().log(constant.d2).log(constant.d2).mul(constant.d2_4);
 		let minutes=hours.mod(constant.d1).mul(constant.d60)
 		let seconds=minutes.mod(constant.d1).mul(constant.d60)
-		return [hours,minutes,seconds].map(x=>x.floor().toString().padStart(2,"0")).join(":")
+		let milliseconds=seconds.mod(constant.d1).mul(constant.e3)
+		return [hours,minutes,seconds].map(x=>x.floor().toString().padStart(2,"0")).join(":")+"<sub>"+milliseconds.floor().toString().padStart(3,"0")+"</sub>"
 	}
 }
 function gformat(value,precision=0,notation="Scientific",subnotation=notation) {
@@ -3109,34 +3108,6 @@ function gformat(value,precision=0,notation="Scientific",subnotation=notation) {
 	if (x.lt(constant.em5)) return "(1 ÷ "+gformat(x.recip(),precision,notation,subnotation)+")";
 	if (x.lt(constant.e6)) return notationSupport.formatSmall(x,precision)
 	return notations[notation](x,subnotation)
-}
-function timeFormat(x) {
-	x = N(x);
-	if (x.eq(constant.d0)) return "0 seconds";
-	if (x.eq(Infinity)) return "Infinite time";
-	if (x.lt(constant.d0)) return "-"+timeFormat(x.neg())
-	if (x.lt(constant.em30)) return "(1 ÷ "+x.recip().noLeadFormat(2)+") seconds";
-	if (x.lt(constant.d1)) {
-		let exp = x.log10().div(constant.d3).neg().ceil();
-		let num = x.mul(constant.e3.pow(exp)).noLeadFormat(2)
-		let unit = ["milli","micro","nano","pico","femto","atto","zepto","yocto","ronto","quecto"][exp.toNumber()-1]+"second"+((num==="1")?"":"s");
-		return num+" "+unit;
-	}
-	if (x.lt(constant.d60)) return x.noLeadFormat(2)+" seconds";
-	if (x.lt(constant.d3600)) return x.div(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
-	if (x.lt(constant.d86400)) return x.div(constant.d3600).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
-	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gte(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
-	return BEformat(x.div(constant.d31556926),2)+" years";
-}
-function rateFormat(x) {
-	x = N(x);
-	if (!Decimal.valid(x)) throw "Cannot access rateFormat("+x+")"
-	if (x.sign === 0) return "0 per second"
-	if (x.sign === -1) return "-"+rateFormat(x.neg())
-	if (x.eq(constant.d1)) return "1 per second"
-	if (x.gt(constant.d1)) return x.noLeadFormat(2)+" per second"
-	if (x.lt(constant.d1)) return "1 per "+timeFormat(x.recip())
-	throw "Cannot access rateFormat("+x+")"
 }
 function decimalStructuredClone(obj) {
 	if (typeof obj === "object") {

@@ -27,14 +27,14 @@ function alemanicHash(message,length=512) {
 	}
 	return out.map(x => base64[Math.floor(Math.abs(x))%64]).join("")
 }
-function unbreak(str) { // prevent targeting inside HTML tags
-	let inTag = false
+function unbreak(str) {
+	let inTag = false // prevent targeting inside HTML tags
 	let out = ""
 	for (let i of str.split("")) {
-		if (i==="<") inTag=true
-		else if (i===">") inTag=false
-		if (i===" "&&(!inTag)) out+="&nbsp;"
-		else out+=i
+		if (i==="<") {inTag=true}
+		else if (i===">") {inTag=false}
+		if (i===" "&&(!inTag)) {out+="&nbsp;"}
+		else {out+=i}
 	}
 	return "<span style=\"white-space:nowrap\">"+out+"</span>"
 }
@@ -233,7 +233,7 @@ function blackOrWhiteContrast(color) {
 const viewportHeight = window.innerHeight
 const viewportWidth = window.innerWidth
 const viewportDiagonalLength = Math.sqrt(viewportHeight**2+viewportWidth**2)
-function tableGenerator(array) {return "<table>"+array.map(row=>"<tr>"+row.map(col=>"<td>"+col+"</td>").join("")+"</tr>").join("")+"</table>"}
+function tableGenerator(array,tableStyle="",trStyle="",tdStyle="") {return "<table style=\""+tableStyle+"\">"+array.map(row=>"<tr style=\""+trStyle+"\">"+row.map(col=>"<td style=\""+tdStyle+"\">"+col+"</td>").join("")+"</tr>").join("")+"</table>"}
 function checkTypo(str1,str2){
 	let diff = 0
 	let f1 = checkTypo.wordFreq(str1)
@@ -272,3 +272,51 @@ function pageHeight() {return Math.max(body.scrollHeight, body.offsetHeight, htm
 function pageWidth() {return Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth)}
 function scrollX() {return Math.max(body.scrollLeft,html.scrollLeft)}
 function scrollY() {return Math.max(body.scrollTop,html.scrollTop)}
+const wordShift = {
+	predictableRandom:function(x) {
+		let start = Math.pow(x % 97, 4.3) * 232344573;
+		const a = 15485863;
+		const b = 521791;
+		start = (start * a) % b;
+		for (let i = 0; i < (x * x) % 90 + 90; i++) {start = (start * a) % b;}
+		return start / b;
+	},
+	randomSymbol:function(){return String.fromCharCode(ranint(161,255))},
+	wordCycle(list, noBuffer = false) {
+    const len = list.length;
+    const tick = Math.floor(Date.now() / 250) % (len * 5);
+    const mod5 = ((Date.now() / 250) % (len * 5)) % 5;
+    const largeTick = Math.floor(tick / 5);
+    let v = list[largeTick];
+    // Blend with adjacent words, in such a way that mod5 being 0 or 5 corresponds with a 0.5 blend parameter
+    if (mod5 < 0.6) {v = this.blendWords(list[(largeTick + list.length - 1) % list.length], list[largeTick], (mod5 + 0.6) / 1.2);}
+		else if (mod5 > 4.4) {v = this.blendWords(list[largeTick], list[(largeTick + 1) % list.length], (mod5 - 4.4) / 1.2);}
+    v = this.randomCrossWords(v, 0.1 * Math.pow(mod5 - 2.5, 4) - 0.6);
+    if (noBuffer) return v;
+    const maxWordLen = Math.max(...list.map(x => x.length));
+    const bufferSpace = (maxWordLen - v.length) / 2;
+    // Buffer the result with ALT+255 on either side to prevent the ui from twitching.
+    // Spaces do not work due to being automatically collapsed, and css fixing this causes other issues.
+    return " ".repeat(Math.ceil(bufferSpace)) + v + " ".repeat(Math.floor(bufferSpace));
+  },
+  // Note that while frac may appear to specify the proportion of letters randomized, it may end up being slightly less
+  // depending on the specific string length and random output sometimes giving outputs which aren't coprime
+  randomCrossWords(str, frac = 0.7) {
+    if (frac <= 0) return str;
+    const x = str.split("");
+    for (let i = 0; i < x.length * frac; i++) {
+      const randomIndex = Math.floor(this.predictableRandom(Math.floor(Date.now() / 500) % 964372 + 1.618 * i) * x.length);
+      x[randomIndex] = this.randomSymbol();
+    }
+    return x.join("");
+  },
+  // This should only be used on words which will end up being completely randomized, because the unscrambled appearance
+  // of the output may look bad. Blends two strings together to produce a string of intermediate length, taking a
+  // specifed fraction (param, 0 to 1) from the first word and the rest (1 - param) from the second
+  blendWords(first, second, param) {
+    if (param <= 0) return first;
+    if (param >= 1) return second;
+    return first.substring(0, first.length * (1 - param)) + second.substring(second.length * (1 - param), second.length);
+  }
+}
+function gradientText(text,gradient) {return "<span style=\"background:"+gradient+";-webkit-background-clip:text;-webkit-text-fill-color:transparent;\">"+text+"</span>"}

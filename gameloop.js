@@ -23,9 +23,8 @@ function updateHTML() {
 	d.class("button_wormholeReset",stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"wormholeResetButton":"lockedStardustResetButton");
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";
 	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
-	let showFooter = (g.footerDisplay==="All tabs")?true:(g.footerDisplay==="Only Axis tab")?(g.activeTab==="main"&&g.activeSubtabs.main==="axis"):(g.footerDisplay==="None")?false:undefined
-	d.display("footer",showFooter?"inline-block":"none")
-	if (showFooter) ProgressBar()
+	d.display("footer",showFooter()?"inline-block":"none")
+	if (showFooter()) ProgressBar()
 	for (let tab of tabList) {
 		if (tabVisibility[tab]()) {
 			d.display("button_bigtab_"+tab,"inline-block")
@@ -54,7 +53,7 @@ function updateHTML() {
 				d.innerHTML("span_exoticmatterPerSec_disabledTop",stat.exoticmatterPerSec.noLeadFormat(2))
 			}
 			d.innerHTML("span_affordableAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableAxis(x).sub(g[x+"Axis"]).max(c.d0)).sumDecimals().format())
-			for (let i=0;i<8;i++) {
+			for (let i=0;i<12;i++) {
 				let type = axisCodes[i];
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
 				if (stat.axisUnlocked>i) {
@@ -63,10 +62,10 @@ function updateHTML() {
 						d.display("span_real"+type+"Axis","none")
 					} else {
 						d.display("span_real"+type+"Axis","inline-block")
-						d.innerHTML("span_real"+type+"Axis","Effective: "+stat["real"+type+"Axis"].noLeadFormat(2));
+						d.innerHTML("span_real"+type+"Axis","Effective: "+stat["real"+type+"Axis"].noLeadFormat(3));
 					}
 					d.innerHTML("span_"+type+"AxisAmount",BEformat(g[type+"Axis"])+((stat["free"+type+"Axis"].gt(c.d0))?(" + "+stat["free"+type+"Axis"].noLeadFormat(2)):""));
-					d.innerHTML("span_"+type+"AxisEffect",stat[type+"AxisEffect"].noLeadFormat([2,2,2,2,2,2,2,4][i]));
+					d.innerHTML("span_"+type+"AxisEffect",stat[type+"AxisEffect"][miscStats[type+"AxisEffect"].from1?"formatFrom1":"noLeadFormat"](miscStats[type+"AxisEffect"].precision));
 					d.innerHTML("span_"+type+"AxisCost",BEformat(stat[type+"AxisCost"]));
 				}
 			}
@@ -236,13 +235,13 @@ function updateHTML() {
 					let display = true;
 					if (i>0) if (value.eq(oldvalue)) display = false;
 					if (i===0&&(value.eq(c.d0)||value.eq(c.d1))) display = false;
-					if (next.show !== undefined) display = next.show()
+					if (next.show !== undefined) display = next.show(oldvalue)
 					d.tr("SSBtable_row"+i,display)
 					if (display) {
 						d.element("SSBtable_row"+i).style.color=next.color??""
 						d.innerHTML("SSBtable_label"+i,next.label)
 						d.innerHTML("SSBtable_text"+i,next.text(oldvalue))
-						d.innerHTML("SSBtable_total"+i,value.noLeadFormat(data.precision))
+						d.innerHTML("SSBtable_total"+i,data.from1?value.formatFrom1(data.precision):value.noLeadFormat(data.precision))
 					}
 				}
 			}
@@ -387,17 +386,17 @@ function updateHTML() {
 				}
 				d.innerHTML("span_affordableDarkAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableDarkAxis(x).sub(g["dark"+x+"Axis"]).max(c.d0)).sumDecimals().format())
 				d.innerHTML("span_baseDarkMatterGain",calcStatUpTo("darkmatterPerSec","Dark X Axis").noLeadFormat(2)); // first non-"base" modifier
-				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gte(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(2));
-				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lte(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(2));
-				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"darkstarbutton":"lockeddarkstarbutton");
+				d.innerHTML("span_darkMatterFreeAxis1",stat.darkMatterFreeAxis.gte(c.d1)?"1":stat.darkMatterFreeAxis.pow(c.d1).recip().noLeadFormat(3));
+				d.innerHTML("span_darkMatterFreeAxis2",stat.darkMatterFreeAxis.lte(c.d1)?"1":stat.darkMatterFreeAxis.max(c.d1).noLeadFormat(3));
+				d.class("button_darkstar",stat.totalDarkAxis.gte(stat.darkStarReq)?"unlocked":"locked");
 				let darkStarButtonText = (achievement.ownedInTier(5)<7?"Reset dark matter to gain ":"Gain ")+((stat.totalDarkAxis.gte(stat.darkStarReq)&&g.darkstarBulk)?(stat.maxAffordableDarkStars.sub(g.darkstars).format(0)+" dark stars"):"a dark star");
 				if (showFormulas) darkStarButtonText += " (Need "+darkStarReqFormula()+" total dark axis)"
-				else darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(stat.maxAffordableDarkStars.max(g.darkstars)).format(0)+" dark axis)"
+				else darkStarButtonText += "<br>(Progress"+(stat.totalDarkAxis.gte(stat.darkStarReq)?" to next":"")+": "+stat.totalDarkAxis.format(0)+" / "+darkStarReq(g.darkstarBulk?stat.maxAffordableDarkStars.max(g.darkstars):g.darkstars).format(0)+" dark axis)"
 				darkStarButtonText += "<br><br>"+darkStarEffectHTML();
 				d.innerHTML("span_darkstars",BEformat(g.darkstars));
-				d.innerHTML("span_realDarkStars",Decimal.eq(g.darkstars,stat.realDarkStars)?"":("Effective: "+stat.realDarkStars.noLeadFormat(3)))
+				d.innerHTML("span_realDarkStars",Decimal.eq(g.darkstars,stat.realDarkStars)?"":("Effective: "+(Decimal.eq(g.darkstars,maxAffordableDarkStars())?stat.realDarkStars.noLeadFormat(3):arrowJoin(stat.realDarkStars.noLeadFormat(3),calcStatWithDifferentBase("realDarkStars",maxAffordableDarkStars()).noLeadFormat(3)))))
 				d.innerHTML("span_darkStarMainText",darkStarButtonText);
-				for (let i=0;i<8;i++) {
+				for (let i=0;i<12;i++) {
 					let type = axisCodes[i];
 					d.display("button_dark"+type+"Axis",(4+g.stardustUpgrades[0]>i)?"inline-block":"none")
 					if (4+g.stardustUpgrades[0]>i) {
@@ -406,22 +405,23 @@ function updateHTML() {
 							d.display("span_realdark"+type+"Axis","none")
 						} else {
 							d.display("span_realdark"+type+"Axis","inline-block")
-							d.innerHTML("span_realdark"+type+"Axis","Effective: "+stat["realdark"+type+"Axis"].noLeadFormat(2));
+							d.innerHTML("span_realdark"+type+"Axis","Effective: "+stat["realdark"+type+"Axis"].noLeadFormat(3));
 						}
 						d.innerHTML("span_dark"+type+"AxisAmount",BEformat(g["dark"+type+"Axis"])+((stat["freedark"+type+"Axis"].gt(c.d0))?(" + "+stat["freedark"+type+"Axis"].noLeadFormat(2)):""));
-						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"].noLeadFormat([2,2,2,3,3,3,2,4][i]));
+						d.innerHTML("span_dark"+type+"AxisEffect",stat["dark"+type+"AxisEffect"][miscStats["dark"+type+"AxisEffect"].from1?"formatFrom1":"noLeadFormat"](miscStats["dark"+type+"AxisEffect"].precision));
 						d.innerHTML("span_dark"+type+"AxisCost",darkAxisCost(type,g["dark"+type+"Axis"],true).format());
 					}
 					let v1 = stat.realDarkStars;
-					let v2 = realDarkStars(stat.maxAffordableDarkStars.max(g.darkstars.add(c.d1)));
-					d.innerHTML("span_darkStarEffect2"+type,showFormulas?darkStarEffect2LevelFormula(type):(Decimal.eq(darkStarEffect2Level(type,v1),darkStarEffect2Level(type,v2))?(darkStarEffect2Level(type,v1).mul(c.d10).noLeadFormat(4)+"%"):arrowJoin(darkStarEffect2Level(type,v1).mul(c.d10).noLeadFormat(4)+"%",+darkStarEffect2Level(type,v2).mul(c.d10).noLeadFormat(4)+"%")));
+					let v2 = calcStatWithDifferentBase("realDarkStars",stat.maxAffordableDarkStars.max(g.darkstars.add(c.d1)));
+					let dsMult = ((axisCodes.indexOf(type)>7)?c.d5:c.d10)
+					d.innerHTML("span_darkStarEffect2"+type,showFormulas?darkStarEffect2LevelFormula(type):(Decimal.eq(darkStarEffect2Level(type,v1),darkStarEffect2Level(type,v2))?(darkStarEffect2Level(type,v1).mul(dsMult).noLeadFormat(4)+"%"):arrowJoin(darkStarEffect2Level(type,v1).mul(dsMult).noLeadFormat(4)+"%",+darkStarEffect2Level(type,v2).mul(dsMult).noLeadFormat(4)+"%")));
 				}
 				d.innerHTML("span_darkUAxisEffectAlt",stat.darkUAxisEffect.pow(stat.totalDarkAxis).format(3))
 				for (let name of empowerableDarkAxis) {
 					d.display("button_empoweredDark"+name+"Axis",stat["empoweredDark"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 					d.innerHTML("span_empoweredDark"+name+"AxisAmount",BEformat(stat["empoweredDark"+name+"Axis"],2));
 				}
-				if (StudyE(12)) {
+				if (StudyE(12)||study13.bound(275)) {
 					d.display("div_titaniumEmpowerments","inline-block")
 					d.innerHTML("span_titaniumEmpowerments",g.study12.empowerments.format())
 					d.innerHTML("span_fortitude",g.study12.fortitude.noLeadFormat(3))
@@ -441,11 +441,9 @@ function updateHTML() {
 				let type = energyTypes[i]
 				if (energyTypesUnlocked()>i) {
 					d.display(type+"EnergyDiv","inline-block");
-					d.innerHTML(type+"EnergyAmount",g[type+"Energy"].format(2));
-					let perSec = stat[type+"EnergyPerSec"]
-					let perSecPrecision = perSec.gt(1.1)?2:perSec.sub(c.d1).log10().neg().floor().add(c.d2).min(c.d12).toNumber()
-					d.innerHTML(type+"EnergyPerSec",energyPerSec(i).format(perSecPrecision));
-					d.innerHTML(type+"EnergyEffect",energyEffect(i).format(4));
+					d.innerHTML(type+"EnergyAmount",g[type+"Energy"].formatFrom1(2));
+					d.innerHTML(type+"EnergyPerSec",energyPerSec(i).formatFrom1(2));
+					d.innerHTML(type+"EnergyEffect",energyEffect(i).noLeadFormat(4));
 					if (i<6) {d.display("span_"+type+"EnergyResetLayer",g.studyCompletions[3]>0?"inline-block":"none")}
 				} else {
 					d.display(type+"EnergyDiv","none");
@@ -466,7 +464,12 @@ function updateHTML() {
 			d.display("button_"+id+"AutobuyerUpgrade",g[id+"AutobuyerUpgrades"]>=autobuyerMeta.cap(id)?"none":"inline-block");
 			d.element("button_"+id+"AutobuyerUpgrade").style["background-color"]=autobuyerMeta.cost(id).gte(g[autobuyers[id].resource])?"#b2b2b2":"#cccccc";
 		}
-		d.tr("tr_darkAxisAutobuyerMaxStars",achievement.ownedInTier(5)>=2);
+		let visibleAxis = unlocked("Matrix")?12:unlocked("Hawking Radiation")?(8+study13.rewardLevels.slabdrill):(4+g.stardustUpgrades[0])
+		for (let i=0;i<12;i++) {
+			d.display("div_axisAutobuyerMax"+axisCodes[i],(visibleAxis>i)?"inline-block":"none")
+			d.display("div_darkAxisAutobuyerMax"+axisCodes[i],(visibleAxis>i)?"inline-block":"none")
+		}
+		d.display("div_darkAxisAutobuyerMaxStars",(achievement.ownedInTier(5)>=2)?"inline-block":"none");
 		d.display("wormholeMilestone5",achievement.ownedInTier(5)>=5?"inline-block":"none");
 		if (achievement.ownedInTier(5)>=6) {d.display("button_lockManualStardustUpgrades","inline-block");d.innerHTML("button_lockManualStardustUpgrades","Manual buying of stardust upgrades "+(g.confirmations.buyStardustUpgrade?"dis":"en")+"abled")}
 		else {d.display("button_lockManualStardustUpgrades","none")}
@@ -482,7 +485,7 @@ function updateHTML() {
 		d.innerHTML("button_wormholeAutomatorToggle",g.wormholeAutomatorOn?"On":"Off");
 		d.innerHTML("button_researchAutobuyerMode",researchAutobuyerModes[g.researchAutobuyerMode]??"All free research")
 		// input storage
-		for (let i=0;i<8;i++) {
+		for (let i=0;i<12;i++) {
 			g.axisAutobuyerCaps[i]=d.element("axisAutobuyerMax"+axisCodes[i]).value;
 			g.darkAxisAutobuyerCaps[i]=d.element("darkAxisAutobuyerMax"+axisCodes[i]).value;
 		}
@@ -497,7 +500,7 @@ function updateHTML() {
 			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format()+" / "+g.totalDiscoveries.format());
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
-			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10) × 10",stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
+			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10)"+formulaFormat.mult(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
 			d.innerHTML("span_knowledgePerSec",stat.knowledgePerSec.format(2));
 			d.element("researchContainer").style["padding-bottom"] = d.element("discoveryPanel").clientHeight+"px"
 			if (researchSelected !== "") {(researchSelected==="u")?unknownResearchInfo():showResearchInfo(researchRow(researchSelected),researchCol(researchSelected))}
@@ -511,15 +514,14 @@ function updateHTML() {
 			if (showingResearchLoadouts) {for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),"researchLoadout"+(researchLoadoutSelected===(i+1)?" selected":""))}
 			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
-			if (visible.includes("r33_3")) d.innerHTML("button_research_r33_3_visible",research.r33_3.icon)
-			if (visible.includes("r33_13")) d.innerHTML("button_research_r33_13_visible",research.r33_13.icon)
+			for (let i of ["r27_8","r33_3","r33_13","r44_8"]) {if (visible.includes(i)) {d.innerHTML("button_research_"+i+"_visible",research[i].icon)}}
 		} else if (g.activeSubtabs.wormhole==="studies") {
 			let visible = visibleStudies()
 			for (let i of visible) {
 				d.innerHTML("span_study"+i+"Description",studies[i].description())
 				d.innerHTML("button_study"+i,studyButtons.text(i))
 				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
-				d.innerHTML("span_study"+i+"Reward",studies[i].reward_desc().join("<br><br>"));
+				d.innerHTML("span_study"+i+"Reward","<ol>"+studies[i].reward_desc().map(x=>"<li>"+x+"</li>").join("")+"</ol>");
 			}
 			if (visible.includes(10)) updateStudyDiv(10)
 		} else if (g.activeSubtabs.wormhole==="light") {
@@ -553,7 +555,7 @@ function updateHTML() {
 				d.innerHTML("span_cyanLightSign",stat.cyanLightEffect.gte(c.d10)?"×":"%")
 			}
 			if (lightTiersUnlocked()>2) {
-				d.innerHTML("span_blackLightSign",g.lumens[7].gte(c.d25)?"×":"%")
+				d.innerHTML("span_blackLightSign",g.lumens[7].mul(study13.rewards.radiance.eff().mul).gte(c.d25)?"×":"%")
 				d.display("div_grayLight",lightTiersUnlocked()===4?"inline-block":"none")
 			}
 			if (unlocked("Prismatic")) {
@@ -584,16 +586,18 @@ function updateHTML() {
 				}
 			}
 			let tooltip = "All effects unlocked."
-			for (let i=1;i<galaxyEffects.length;i++) if (g.highestGalaxies+1<galaxyEffects[i].req) {
-				tooltip = "Next pair of effects at "+(galaxyEffects[i].req-1)+" galaxies"
-				break
+			for (let i=1;i<galaxyEffects.length;i++) {
+				if (g.highestGalaxies+1<galaxyEffects[i].req) {
+					tooltip = "Next pair of effects at "+N(galaxyEffects[i].req).sub(effectiveGalaxies.add()).ceil().add(c.d1).format()+" galaxies"
+					break
+				}
 			}
 			d.innerHTML("span_galaxyEffectTooltip",tooltip)
 		} else if (g.activeSubtabs.wormhole==="luck") {
 			d.innerHTML("span_luckShards",g.luckShards.format(2))
 			d.innerHTML("span_luckShardsPerSec",stat.luckShardsPerSec.format(2))
 			d.innerHTML("span_luckShardEff1",showFormulas?formulaFormat(luckShardEffect1Formula()):luckShardEffect1().format(2))
-			d.innerHTML("span_luckShardEff2",showFormulas?formulaFormat(luckShardEffect2Formula()):luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).format(2):luckShardEffect2().format(3))
+			d.innerHTML("span_luckShardEff2",showFormulas?formulaFormat(luckShardEffect2Formula()):luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).format(3):luckShardEffect2().format(4))
 			d.innerHTML("span_luckShardEff2Sign",luckShardEffect2().gt(c.d0_1)?"%":"×")
 			for (let type of luckRuneTypes) {
 				if (runeTypeUnlocked(type)) {
@@ -606,10 +610,10 @@ function updateHTML() {
 							d.display("button_"+type+upg,"inline-block")
 							let affordable = affordableLuckUpgrades(type,upg).max(c.d1)
 							let bought = g.luckUpgrades[type][upg]
-							let eff = effLuckUpgradeLevel(type,upg)
+							let eff = stat["luckUpgLevel_"+type+"_"+upg]
 							d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",(Decimal.eq(bought,eff)?bought.format():arrowJoin(bought.format(),eff.noLeadFormat(3)))+"<br>(+"+affordable.format()+")")
 							d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
-							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(effLuckUpgradeLevel(type,upg,Decimal.add(bought,affordableLuckUpgrades(type,upg).max(c.d1)))))))
+							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(calcStatWithDifferentBase("luckUpgLevel_"+type+"_"+upg,g.luckUpgrades[type][upg].add(c.d1))))))
 						} else {
 							d.display("button_"+type+upg,"none")
 						}
@@ -639,7 +643,11 @@ function updateHTML() {
 					let maxed = unlimited?false:Decimal.eq(owned,data.max)
 					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,(showFormulas&&(typeof data.formula[i]==="function"))?formulaFormat(data.formula[i]()):(maxed||(typeof data.formula[i]!=="function"))?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length===1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
 					let classList = ["prismaticUpgrade"]
-					if (data.refundable) classList.push("refundable")
+					if (data.refundable) {
+						classList.push("refundable")
+						d.class("button_lose1PrismaticUpgrade_"+upg,"refundPrismaticUpgrade "+(prismaticUpgrades[upg].loseLevelGlow()?"no":"")+"glow")
+						d.class("button_loseAllPrismaticUpgrade_"+upg,"refundPrismaticUpgrade "+(prismaticUpgrades[upg].loseLevelGlow()?"no":"")+"glow")
+					}
 					if (maxed) {classList.push("maxed","unlocked")} else if (affordable.eq(c.d0)) {classList.push("locked")} else {classList.push("unlocked")}
 					d.class("button_prismaticUpgrade_"+upg,classList.join(" "))
 				} else {
@@ -654,20 +662,20 @@ function updateHTML() {
 				d.innerHTML("span_antimatterPerSec_disabledTop",stat.antimatterPerSec.format(2))
 			}
 			d.innerHTML("span_affordableAntiAxis",axisCodes.filter(x=>antiAxisUnlocked(x)).map(x=>maxAffordableAntiAxis(x).sub(g["anti"+x+"Axis"]).max(c.d0)).sumDecimals().format())
-			for (let i=0;i<8;i++) {
+			for (let i=0;i<12;i++) {
 				let type = axisCodes[i];
-				let unlocked = antiAxisUnlocked(type)
-				d.display("button_anti"+type+"Axis",unlocked?"inline-block":"none")
-				if (unlocked) {
+				let visible = antiAxisUnlocked(type)
+				d.display("button_anti"+type+"Axis",visible?"inline-block":"none")
+				if (visible) {
 					d.class("button_anti"+type+"Axis","axisbutton "+(corruption.list.antiAxis.isCorrupted(type)?"corrupted":g.antimatter.gt(stat["anti"+type+"AxisCost"])?"anti":"locked"));
 					if (Decimal.eq(g["anti"+type+"Axis"],stat["realanti"+type+"Axis"])) {
 						d.display("span_realanti"+type+"Axis","none")
 					} else {
 						d.display("span_realanti"+type+"Axis","inline-block")
-						d.innerHTML("span_realanti"+type+"Axis","Effective: "+stat["realanti"+type+"Axis"].noLeadFormat(2));
+						d.innerHTML("span_realanti"+type+"Axis","Effective: "+stat["realanti"+type+"Axis"].noLeadFormat(3));
 					}
 					d.innerHTML("span_anti"+type+"AxisAmount",BEformat(g["anti"+type+"Axis"])+((stat["freeanti"+type+"Axis"].gt(c.d0))?(" + "+stat["freeanti"+type+"Axis"].noLeadFormat(2)):""));
-					d.innerHTML("span_anti"+type+"AxisEffect",stat["anti"+type+"AxisEffect"].noLeadFormat([2,3,3,2,3,5,0,4][i]));
+					d.innerHTML("span_anti"+type+"AxisEffect",stat["anti"+type+"AxisEffect"][miscStats["anti"+type+"AxisEffect"].from1?"formatFrom1":"noLeadFormat"](miscStats["anti"+type+"AxisEffect"].precision));
 					d.innerHTML("span_anti"+type+"AxisCost",BEformat(stat["anti"+type+"AxisCost"]));
 				}
 				let v1 = antiAxisDimBoost(type);
@@ -681,11 +689,75 @@ function updateHTML() {
 				d.display("button_empoweredAnti"+name+"Axis",stat["empoweredAnti"+name+"Axis"].gt(c.d0)?"inline-block":"none");
 				d.innerHTML("span_empoweredAnti"+name+"AxisAmount",BEformat(stat["empoweredAnti"+name+"Axis"],2));
 			}
+			if (g.studyCompletions[13]>23) {
+				d.display("div_antimatterGalaxies","inline-block")
+				d.innerHTML("span_antimatterGalaxies",g.antimatterGalaxies.format())
+				d.class("button_antimatterGalaxy",g.antimatter.gte(antimatterGalaxy.req())?"unlocked":"locked");
+				let buttonText = "Gain "+((g.antimatter.gte(antimatterGalaxy.req())&&g.antimatterGalaxyBulk)?(antimatterGalaxy.affordable().sub(g.antimatterGalaxies).format()+" antimatter galaxies"):"an antimatter galaxy");
+				if (showFormulas) {buttonText += " (Need "+antimatterGalaxy.reqFormula()+" antimatter)"}
+				else {buttonText += "<br>(Progress"+(g.antimatter.gte(antimatterGalaxy.req())?" to next":"")+": "+g.antimatter.format()+" / "+antimatterGalaxy.req(g.antimatterGalaxyBulk?antimatterGalaxy.affordable().max(g.antimatterGalaxies):g.antimatterGalaxies).format()+" antimatter)"}
+				buttonText += "<br><br>"+antimatterGalaxy.effectHTML();
+				d.innerHTML("span_antimatterGalaxies",g.antimatterGalaxies.format());
+				d.innerHTML("span_realAntimatterGalaxies",Decimal.eq(g.antimatterGalaxies,stat.realAntimatterGalaxies)?"":("Effective: "+(Decimal.eq(g.antimatterGalaxies,antimatterGalaxy.affordable())?stat.realAntimatterGalaxies.noLeadFormat(3):arrowJoin(stat.realAntimatterGalaxies.noLeadFormat(3),calcStatWithDifferentBase("realAntimatterGalaxies",antimatterGalaxy.affordable()).noLeadFormat(3)))))
+				d.innerHTML("span_antimatterGalaxyMainText",buttonText);
+			} else {
+				d.display("div_antimatterGalaxies","none")
+			}
 		} else if (g.activeSubtabs.wormhole==="wormholeUpgrades") {
 			for (let i=1;i<13;i++) {
 				d.class("button_wormholeUpgrade"+i,"wormholeUpgrade "+((g.wormholeUpgrades[i]>=wormholeUpgrades[i].max)?"maxed":g.hawkingradiation.gte(wormholeUpgrades[i].cost)?"unlocked":"locked"))
-				d.innerHTML("span_wormholeUpgrade"+i+"Text",wormholeUpgrades[i].text())
+				let text = wormholeUpgrades[i].text()
+				if (wormholeUpgrades[i].eff!==undefined) {
+					text = text.replace("{}",showFormulas?formulaFormat(wormholeUpgrades[i].formula()):(Math.max(g.wormholeUpgrades[i],1)>=wormholeUpgrades[i].max)?wormholeUpgrades[i].format(wormholeUpgrades[i].eff()):arrowJoin(wormholeUpgrades[i].format(wormholeUpgrades[i].eff(g.wormholeUpgrades[i])),wormholeUpgrades[i].format(wormholeUpgrades[i].eff(g.wormholeUpgrades[i]+1))))
+				}
+				d.innerHTML("span_wormholeUpgrade"+i+"Text",text)
 				d.innerHTML("span_wormholeUpgrade"+i+"Cost",(Math.max(wormholeUpgrades[i].max,2)===g.wormholeUpgrades[i])?"Maxed":("Cost: "+wormholeUpgrades[i].cost.format()+" HR"))
+			}
+		} else if (g.activeSubtabs.wormhole==="study13") {
+			let p = studyPower(13), colors // [border, background, text]
+			let h = (p<24)?(p/24):(p<56)?((p+8)/32):(p<96)?((p+24)/40):(p<144)?((p+48)/48):(p<256)?((p+80)/56):((Math.floor(Date.now()/5000)+0.5+Math.sin(((Date.now()%5000)-2500)*Math.PI/5000)/2)%6)
+			if (h<1) {colors = ["rgba(51,"+(51*h)+",0,0.9)","rgba(102,"+(102*h)+",0,0.9)","rgb(204,"+(204*h)+",0)"]}
+			else if (h<2) {colors = ["rgba("+(51*(2-h))+",51,0,0.9)","rgba("+(102*(2-h))+",102,0,0.9)","rgb("+(204*(2-h))+",204,0)"]}
+			else if (h<3) {colors = ["rgba(0,51,"+(51*(h-2))+",0.9)","rgba(0,102,"+(102*(h-2))+",0.9)","rgb(0,204,"+(204*(h-2))+")"]}
+			else if (h<4) {colors = ["rgba(0,"+(51*(4-h))+",51,0.9)","rgba(0,"+(102*(4-h))+",102,0.9)","rgb(0,"+(204*(4-h))+",204)"]}
+			else if (h<5) {colors = ["rgba("+(51*(h-4))+",0,51,0.9)","rgba("+(102*(h-4))+",0,102,0.9)","rgb("+(204*(h-4))+",0,204)"]}
+			else if (h<6) {colors = ["rgba(51,0,"+(51*(6-h))+",0.9)","rgba(102,0,"+(102*(6-h))+",0.9)","rgba(204,0,"+(204*(6-h))+")"]}
+			d.element("div_study13").style["border-color"] = colors[0]
+			d.element("div_study13").style["background-color"] = colors[1]
+			d.element("div_study13").style["color"] = colors[2]
+			d.innerHTML("button_study13",studyButtons.text(13))
+			d.class("button_study13","studyButton "+studyButtons.class(13))
+			d.innerHTML("span_study13Binding","Select Bindings from the tree below. Each Binding adds additional conditions to Study XIII, but increases your binding level.<br>This Study can be bulk-completed, and upon completion your completions will increase to your total binding level."+(((g.studyCompletions[13]>199)||unlocked("Matrix"))?"<br>Upon reaching the dark axis goal with 256 binding levels, your completions will instantly increase to 256 without needing to exit the Study.":""))
+			d.innerHTML("span_study13Name",study13.name())
+			d.innerHTML("span_study13Goal",achievement.perAchievementReward[9].currentVal.format())
+			d.innerHTML("span_study13Completions",g.studyCompletions[13])
+			let nextReward = study13.allRewards.map(x=>study13.rewards[x].breakpoints[0]).filter(x=>x>g.studyCompletions[13]).reduce((x,y)=>Math.min(x,y),Infinity)
+			let nextUpgrade = study13.allRewards.filter(x=>![0,study13.rewards[x].breakpoints.length].includes(study13.rewardLevels[x])).map(x=>study13.rewards[x].breakpoints[study13.rewardLevels[x]]).reduce((x,y)=>Math.min(x,y),Infinity)
+			let rewardText = []
+			if (nextReward!==Infinity) {rewardText.push("You will unlock a new reward at "+nextReward+" completion"+((nextReward===1)?"":"s"))}
+			if (nextUpgrade!==Infinity) {rewardText.push("An existing reward will be upgraded at "+nextUpgrade+" completions")}
+			d.innerHTML("span_study13Reward",(rewardText.length===0)?"All rewards unlocked":rewardText.join("<br>"))
+			if (study13.activeT3==="bindings") {
+				if (study13.bindingSelected===undefined) {
+					d.innerHTML("study13BindingInfo","Hover over a Binding to see more information")
+				} else {
+					let data = study13.bindings[study13.bindingSelected]
+					d.innerHTML("study13BindingInfo",(study13.bindingPower(study13.bindingSelected).eq(c.d1)?"":("<span style=\"float:right;font-size:50%\">"+study13.bindingPower(study13.bindingSelected).mul(c.e2).noLeadFormat(3)+"% Powered</span><br>"))+"<h6 style=\"font-size:16px;margin:0px;\">Binding "+study13.bindingSelected+"</h6><p>"+data.description()+"</p><p>["+data.lv+" binding level"+((data.lv===1)?"":"s")+"]</p>"+((g.study13ShowParentBindings&&(data.adjacent_req.length>0))?("<p>[Need Binding"+((data.adjacent_req.length===1)?"":"s")+" "+data.adjacent_req.joinWithAnd()+"]</p>"):"")+"<p>"+(g.study13Bindings[study13.bindingSelected]?"<span style=\"color:#ff6666\">(Active)</span>":"<span style=\"color:#999999\">(Inactive)</span>")+"</p>")
+				}
+				for (let i of [236,265,275]) {d.innerHTML("button_study13Binding"+i,study13.bindings[i].icon)}
+			} else if (study13.activeT3==="rewards") {
+				if (study13.rewardSelected===undefined) {
+					d.innerHTML("study13RewardInfo",(g.studyCompletions[13]===0)?"When you unlock a reward, it will appear to the left.":"Hover over a reward to see more information")
+				} else {
+					let selected = study13.rewardSelected
+					let data = study13.rewards[selected]
+					let prevLv = study13.prevRewardLevels[selected]
+					let currLv = study13.rewardLevels[selected]
+					let out = "<h5 style=\"font-size:20px;margin:0px;\">"+data.name+"</h5><br>"
+					if (data.type==="composite") {out += "<table style=\"text-align:left\"><colgroup><col style=\"width:140px\"><col style=\"width:340px\"></colgroup>"+countTo(currLv).map(x=>"<tr"+((x<=prevLv)?"":" style=\"color:var(--binding_light)\"")+"><td style=\"vertical-align:top;\">Level "+x+" ("+data.breakpoints[x-1]+")</td><td style=\"vertical-align:top;\">"+data.desc(x)+"</td></tr>").join("")+"</table>"}
+					else {out += data.desc(currLv,prevLv)}
+					d.innerHTML("study13RewardInfo",out)
+				}
 			}
 		}
 	}
@@ -706,9 +778,10 @@ function tick(time) {																																		 // The game loop, which 
 	g.timeThisStardustReset+=time;
 	g.timeThisWormholeReset+=time;
 	g.timeThisSpacetimeReset+=time;
-	if (StudyE(9)) if (g.timeThisWormholeReset>=9) studies[9].reset()
+	if (StudyE(9)) {if (g.timeThisWormholeReset>=9) {studies[9].reset()}}
+	if (study13.bound(236)&&(g.timeThisWormholeReset>study13.bindingEff(236))) {wormholeReset();popup({text:stat.totalDarkAxis.gt(stat.wormholeDarkAxisReq)?"You have automatically completed Study XIII through Binding 236.":("You failed Study XIII due to running out of time for Binding 236.<br>You reached "+stat.totalDarkAxis.format()+" / "+studies[13].goal().format()+" dark axis"),buttons:[["Close",""]]})}
 	updateStats()
-	if (g.achievement[717]&&(!unlocked("Corruption"))) for (let i of corruption.all) if (corruption.list[i].visible()) unlockFeature("Corruption")
+	if (!unlocked("Corruption")) {for (let i of ["axis","darkAxis","antiAxis"]) {if (corruption.list[i].visible()) {unlockFeature("Corruption");addAchievement(930)}}}
 
 
 	// Time section
@@ -746,10 +819,20 @@ function tick(time) {																																		 // The game loop, which 
 			newsSupport.newsletter.spamStart=Date.now()+3000
 		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
 	}
-	
+	if (Decimal.gt(stat.tickspeed,g.bestTickspeedThisMatrix)) {g.bestTickspeedThisMatrix = stat.tickspeed}
+	if (Decimal.gt(stat.tickspeed,g.bestTickspeed)) {g.bestTickspeed = stat.tickspeed}
+	if (g.baselessMilestones[4]!==13) {
+		milestoneLoop: for (let i=0;i<5;i++) {
+			if ((g.activeStudy!==13)||(studyPower(13)<[24,56,96,144,200][i])) {continue milestoneLoop}
+			while (g.baselessMilestones[i]<13) {
+				if (Decimal.gte(numberOfDigits(g.exoticmatter),achievement(921+i).nextMilestone(g.baselessMilestones[i]))) {g.baselessMilestones[i]++} else {continue milestoneLoop}
+			}
+		}
+	}
+	if (g.achOnProgressBar!=="N") {if (achievement(g.achOnProgressBar).maxMilestones!==undefined) {if (achievement(g.achOnProgressBar).milestones()===achievement(g.achOnProgressBar).maxMilestones) {g.achOnProgressBar="N"}}}
 	
 	// Dark Matter section
-	if (StudyE(12)) {g.study12.fortitude = studies[12].fortitude.lim(studies[12].fortitude.invlim(g.study12.fortitude,studies[12].fortitude.max()).add(studies[12].fortitude.gain().mul(time)),studies[12].fortitude.max())}
+	if (StudyE(12)||study13.bound(275)) {g.study12.fortitude = studies[12].fortitude.lim(studies[12].fortitude.invlim(g.study12.fortitude,studies[12].fortitude.max()).add(studies[12].fortitude.gain().mul(time)),studies[12].fortitude.max())}
 
 
 	// Research section
@@ -763,16 +846,17 @@ function tick(time) {																																		 // The game loop, which 
 			forceExit = true
 			exitText = "Relevant study research not owned ("+researchOut(studies[g.activeStudy].research)+")"
 		}
-		if (studyPower(g.activeStudy)>=studies[0].effectiveMaxCompletions[g.activeStudy]) {
+		if ((g.activeStudy!==13)&&(studyPower(g.activeStudy)>=studies[0].effectiveMaxCompletions[g.activeStudy])) {
 			forceExit = true
 			exitText = "Placeholder level entered (current: "+(studyPower(g.activeStudy)+1)+", max: "+studies[0].effectiveMaxCompletions[g.activeStudy]+")"
 		}
 		if (forceExit) {
-			popup({text:"You have been forcefully removed from Study "+roman(g.activeStudy)+" due to the presence of a bug. Sorry!<br>Details: "+exitText+"<br>Please tell alemaninc about this.",buttons:[["Close",""]]})
+			popup({text:"You have been forcefully removed from Study "+studies[0].roman(g.activeStudy)+" due to the presence of a bug. Sorry!<br>Details: "+exitText+"<br>Please tell alemaninc about this.",buttons:[["Close",""]]})
 			wormholeReset()
 			g.activeStudy=0
 		}
 	}
+	if ((g.activeStudy===13)&&(studyPower(13)===256)&&Decimal.gte(stat.totalDarkAxis,stat.wormholeDarkAxisReq)) {g.studyCompletions[13]=256}
 
 
 	// Incrementer section - this comes last because otherwise resets don't work properly
@@ -783,7 +867,7 @@ function tick(time) {																																		 // The game loop, which 
 	incrementExoticMatter(stat.exoticmatterPerSec.mul(time));
 	g.exoticmatter = g.exoticmatter.max(stat.exoticmatterPerSec.mul(g.achievement[112]?c.d60:g.achievement[111]?c.d30:g.achievement[110]?c.d15:0)).fix(c.d0);
 	if (unlocked("Masteries")) {
-		o.add("baseMasteryPowerGain",deltaBaseMasteryPowerGain().mul(time));
+		o.add("baseMasteryPowerGain",stat.deltaMasteryTimer.mul(time));
 		o.add("masteryPower",stat.masteryPowerPerSec.mul(time));
 	}
 	if (achievement.ownedInTier(5)===30&&g.activeStudy===0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));

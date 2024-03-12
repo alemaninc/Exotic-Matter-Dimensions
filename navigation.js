@@ -35,8 +35,8 @@ const subtabProperties = {
 	main:{
 		axis:{
 			glow:function(){
-				if (autobuyerMeta.interval("axis")===0.1&&g.axisAutobuyerOn) return false;
-				if (g.glowOptions.buyAxis) {for (let i=0;i<8;i++) {if (g.exoticmatter.gt(axisCost(axisCodes[i]))&&(stat.axisUnlocked>i)) {return true}}};
+				if ((autobuyerMeta.interval("axis")<=0.1)&&g.axisAutobuyerOn) return false;
+				if (g.glowOptions.buyAxis) {for (let i=0;i<12;i++) {if (g.exoticmatter.gt(axisCost(axisCodes[i]))&&(stat.axisUnlocked>i)) {return true}}};
 			}
 		},
 		masteries:{
@@ -63,9 +63,11 @@ const subtabProperties = {
 		darkMatter:{
 			visible:function(){return unlocked("Dark Matter")},
 			glow:function(){
-				if (autobuyerMeta.interval("darkAxis")===0.1&&g.darkAxisAutobuyerOn) return false;
-				if (g.glowOptions.buyDarkAxis) {for (let i=0;i<4+g.stardustUpgrades[0];i++) {if (g.darkmatter.gt(darkAxisCost(axisCodes[i]))) {return true}}};
-				if (g.glowOptions.gainDarkStar&&stat.totalDarkAxis.gte(stat.darkStarReq)) {return true};
+				if ((autobuyerMeta.interval("darkAxis")>0.1)||(!g.darkAxisAutobuyerOn)) {
+					if (g.glowOptions.buyDarkAxis) {for (let i=0;i<4+g.stardustUpgrades[0];i++) {if (g.darkmatter.gt(darkAxisCost(axisCodes[i]))) {return true}}};
+					if (g.glowOptions.gainDarkStar&&stat.totalDarkAxis.gte(stat.darkStarReq)) {return true};
+				}
+				if ((StudyE(12)||study13.bound(275))&&g.glowOptions.study12&&g.exoticmatter.gt(studies[12].empowerment.req())) {return true}
 			}
 		},
 		energy:{
@@ -125,11 +127,14 @@ const subtabProperties = {
 			}
 		},
 		wormholeUpgrades:{
-			visible:function(){return g.achievement[903]},
+			visible:function(){return g.achievement[903]||unlocked("Matrix")},
 			glow:function(){
-				if (g.glowOptions.buyWormholeUpgrade) {for (let i=1;i<13;i++) {if ((g.wormholeUpgrades[i]<wormholeUpgrades[i].max)&&g.hawkingradiation.gte(wormholeUpgrades[x].cost)) {return true}}}
+				if (g.glowOptions.buyWormholeUpgrade) {for (let i=1;i<13;i++) {if ((g.wormholeUpgrades[i]<wormholeUpgrades[i].max)&&g.hawkingradiation.gte(wormholeUpgrades[i].cost)) {return true}}}
 				return false
 			}
+		},
+		study13:{
+			visible:function(){return unlocked("Study XIII")}
 		}
 	},
 	achievements:{

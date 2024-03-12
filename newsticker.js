@@ -204,7 +204,7 @@ const newsSupport = {
 				["4(a)(v)(ϟ)","you and every person you are socially connected to within six degrees of separation dies",2],
 				["4(a)(v)(Ϙ)","both of the below are true simultaneously:",1],
 				["4(a)(v)(Ϙ)(α)","the alemaninc Inc. company is dissolved",2],
-				["4(a)(v)(Ϙ)(β)","universe evolves to a state of no thermodynamic free energy, and will therefore be unable to sustain processes that increase entropy (hence referred to as \"heat death\")",2],
+				["4(a)(v)(Ϙ)(β)","the universe evolves to a state of no thermodynamic free energy, and will therefore be unable to sustain processes that increase entropy (hence referred to as \"heat death\")",2],
 				["4(b)","If these Terms and Conditions are violated you also agree to allow our bomb squad to firebomb your house.",2],
 				["5","You also agree to prostrate yourself before His Imperial Grand Lord of All the World 〜 Master of Creation, nicodium \"cubane/cubane\" \"al-maniac\".<br><br>This includes clicking the below link, where the Terms and Conditions are continued:<br><a target=\"_blank\" href=\"https://youtu.be/dQw4w9WgXcQ\" style=\"color:inherit\"><i>Exotic Matter Dimensions 𝕍2 Newsletter, Terms and Conditions, Section B</a>",2],
 				["6","You also agree to pay our taxes, which are as follows:",1],
@@ -283,7 +283,7 @@ const newsSupport = {
 				if (newsSupport.newsletter.remaining.includes(7)) {newsSupport.newsletter.remaining.remove(7);newsSupport.newsletter.remaining.push(7)} // riddle 8 always comes last
 			}
 		},
-		finalNotify:function(){notify("Verification is complete! Your final task: use the name of the Secret Achievement you are about to get as a promotion code.","#009999","#00ffff")}
+		finalNotify:function(){notify(g.secretAchievement[33]?"You must really love OMCCDV if you came back a second time... perhaps you wish to partake in its revival?<br>Sadly you are in the wrong place. Here there are only PROMOTIONS!":"Verification is complete! Your final task: use the name of the Secret Achievement you are about to get as a promotion code.","#009999","#00ffff")}
 	},
 	readMore:function(){
 		newsSupport.readMoreIteration++
@@ -389,7 +389,7 @@ const newsList = [
 	{text:"A concoction of varied pastries, puzzling grass and towers and citadels tall as though they piece the very sky... Seriously, how is this my game repertoire?!"},
 	{text:"They say if you look in a mirror and ping alemaninc three times in a row you'll instantly die."},
 	{get text(){return "Once upon a time, there was a young child named Northo. One day, Northo went to alemaninc, the world-renowned creator of exotic matter, and said to Him: \"less discord, more commits thanks.\" And alemaninc said: \"Do you not know that Discord is the lifeblood of commits? Without Discord, there would be no exotic matter at all. Run along now, young one, and perhaps one day we will meet again in Tier "+(achievement.tiersUnlocked().length+1)+".\" And Northo never spoke of Discord in a negative light again. The end."},get weight(){return ((Object.keys(achievement.length)>15)&&(achievement.nextTier()===null))?0:1}},
-	{get text(){return newsSupport.jacorb.filter(x=>x.visible).map(x=>"You have "+x.value+" "+x.label+". <span style=\"color:#8a8767;text-shadow: 0px 1px 0px #a0a67c;\">(softcapped to "+x.softcapped+")</span>").join(". ")},get weight(){return unlocked("Stardust")?1:0}},
+	{get text(){return newsSupport.jacorb.filter(x=>x.visible).map(x=>"You have "+x.value+" "+x.label+" <span class=\"_jacorb\">(softcapped to "+x.softcapped+")</span>").join(". ")},get weight(){return unlocked("Stardust")?1:0}},
 	{text:"You feel like making exotic matter. But no one wants to eat your exotic matter.",get weight(){return stat.totalNormalAxis.eq(c.d0)?1:0}},
 	{text:"You feel like making dark matter. But no one wants to eat your dark matter.",get weight(){return ((g.stardustUpgrades[4]>0)&&stat.totalDarkAxis.eq(c.d0))?1:0}},
 	{text:"The universe has now turned into exotic matter, to the molecular level.",get weight(){return g.exoticmatter.gt(c.e12)?1:0}},
@@ -407,7 +407,7 @@ const newsList = [
 	{get text(){return "You have "+newsSupport.formatZP()+". Wait, what's a Zip Point?"}},
 	{text:"Welcome back to another episode of \"Exotic Math Dimensions\" by alemaninc! We all know that 2 + 2 = 5. But there are still many people who unknowingly partake in logic denial by claiming that 2 + 2 = 4. In this episode I will prove once and for all that 2 + 2 = 5. We all know that 9 + 10 = 21. If we subtract 0.5 from both sides, we get 9 + 9.5 = 20.5. Now, when we add 0.5 to both sides, we get 9.5 + 9.5 = 21. Now the two terms on the left side are equal. The next step is to divide both sides by 2 to produce 4.75 + 4.75 = 10.5. Now, we subtract 2.75 from both sides, getting 2 + 4.75 = 7.75. Finally, we subtract 2.75 from both sides again, and so we get our final answer of 2 + 2 = 5! Stay tuned for another episode of \"Exotic Math Dimensions\" by alemaninc, where we will prove that quaternion multiplication is sorcery made up by communists."},
 	{text:"This message was written by xhwzwka. Who's that, you may ask? Ask him! He's 324862 years old, his real name is &lt;unknown&gt;, his Discord number is xhwzwka#7155, he lives at 72 W Street and his credit card number is 72917164954."},
-	{text:"Hello, dear players of \"Exotic Matter Dimensions\"! alemaninc left his computer unattended, so I thought I might have some fun with this. alemaninc's real name is $, he lives at $ in $, $ and he is $ years old but still $ and gets a suspicious amount of $ from $ who $. If you see this message, ping alemaninc \"$\" at $ and post a screenshot in $.".replaceAll("$",newsSupport.redacted)},
+	{text:"Hello, dear players of <i>Exotic Matter Dimensions</i>! alemaninc left his computer unattended, so I thought I might have some fun with this. alemaninc's real name is $, he lives at $ in $, $ and he is $ years old but still $ and gets a suspicious amount of $ from $ who $. If you see this message, ping alemaninc \"$\" at $ and post a screenshot in $.".replaceAll("$",newsSupport.redacted)},
 	{get text(){return [Array.random(newsSupport.CSSBaseShades)].map(x=>"<span style=\"color:"+newsSupport.intBaseShade(x)+"\">This news message is "+x+".</span>")[0]}},
 	{text:"They say that stardust tastes like everything at once.",get weight(){return unlocked("Stardust")?1:0}},
 	{text:"If you dilate time fast enough, you can start to see blue sparks."},
@@ -448,7 +448,7 @@ const newsList = [
 	{text:"An unidentified developer of Exotic Matter Dimensions would like to recommend that you play <a href=\"https://ivark.github.io/AntimatterDimensions/\" target=\"_blank\">Antimatter Dimensions</a>."},
 	{text:"An unidentified developer of Exotic Matter Dimensions would like to recommend that you play <a href=\"http://semenar.ru/matter-dim-test/\" target=\"_blank\">Matter Dimensions</a>."},
 	{text:"An unidentified developer of Exotic Matter Dimensions would like to recommend that you play <a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" target=\"_blank\">Strange Matter Dimensions</a>."},
-	{text:"2 + 2 = 2 × 2 = 2<sup>2</sup> = 2↑↑2"},
+	{text:"2 + 2 = 2 × 2 = 2<sup>2</sup> = 2⇈2"},
 	{get text(){if(g.dilationUpgradesUnlocked===4){return "error"};return "You're so close to unlocking Dilation Upgrade "+(g.dilationUpgradesUnlocked+1)+"! You only need "+BEformat(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)+"× tickspeed"},get weight(){return [0,4].includes(g.dilationUpgradesUnlocked)?0:1}},
 	{text:"Exotic matter has made time travel possible. Unfortunately nobody who tried it has returned yet."},
 	{text:"The next statement is false."+newsSupport.br(100)+"The previous statement is true."},
@@ -479,7 +479,7 @@ const newsList = [
 	{text:"<span onClick=\"g.newsTickerSpeed*=-1\">Click this to make the news ticker reverse direction</span>"},
 	{visibleChars:countTo(7,true).select(2),get text(){return "\"JavaScript's not the best language, "+Array.random(["English","Polish","French","Finnish","Python"]).split("").map((x,i)=>this.visibleChars.includes(i)?x:"<span style=\"opacity:0.5\">#</span>").join("")+" is.\" - alemaninc"}},
 	{basetext:"A preview of the next update: once you reach $ $, you gain access to the $ $, which in turn lets you unlock $. Each $ has a $ each second to $, giving a $ to $. However, this effect only works in $ unless you have $ or the $ achievement. When you reach {1} $, you can exchange them for a $, and when you get {1} $ you beat the game.".replaceAll("$",newsSupport.redacted),get text(){return this.basetext.replaceAll("{1}",c.inf.format())}},
-	{text:"Did you know £ is powered by $ by Patashu? However, at the time when alemaninc was making £, $ didn't have a working superlogarithm function! So, alemaninc decided to improve his copy of $. Now, £ is one of the only games powered by $ where the superlogarithm works. All the other games powered by $ are forever doomed to have a broken superlogarithm. How cruel of alemaninc to not donate his functional functions to $.".replaceAll("$","<i>break_eternity.js</i>").replaceAll("£","\"Exotic Matter Dimensions\"")},
+	{text:"Did you know £ is powered by $ by Patashu? However, at the time when alemaninc was making £, $ didn't have a working superlogarithm function! So, alemaninc decided to improve his copy of $. Now, £ is one of the only games powered by $ where the superlogarithm works. All the other games powered by $ are forever doomed to have a broken superlogarithm. How cruel of alemaninc to not donate his functional functions to $.".replaceAll("$","<i>break_eternity.js</i>").replaceAll("£","<i>Exotic Matter Dimensions</i>")},
 	{text:"To jest próba \"Wiadomości 2.0\". Wiadomości 2.0 będzie zawierać funkcje włączając opcję czytania wiadomości w językach obcych."},
 	{text:"- .... .. ... / .. ... / .- / - . ... - / --- ..-. / .-..-. -. . .-- ... / ..--- .-.-.- ----- .-..-. .-.-.- / -. . .-- ... / ..--- .-.-.- ----- / .-- .. .-.. .-.. / .... .- ...- . / ..-. ..- -. -.-. - .. --- -. ... / .. -. -.-. .-.. ..- -.. .. -. --. / - .... . / .- -... .. .-.. .. - -.-- / - --- / .-. . -.-. . .. ...- . / - .... . / -. . .-- ... / .. -. / -- --- .-. ... . / -.-. --- -.. . .-.-.-"},
 	{text:"Okay Google, destroy the universe.",get weight(){return unlocked("Hawking Radiation")?1:0}},
@@ -625,7 +625,7 @@ const newsList = [
 	{text:"<span onClick=\"g.newsTickerSpeed=Math.max(1,Math.min(g.newsTickerSpeed*0.99,20))\">Click here to make the news ticker even more unbearably slow</span>",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
 	{text:"<span onClick=\"g.newsTickerSpeed=Math.max(1500,g.newsTickerSpeed+100)\">Click here to make the news ticker even more overwhelmingly fast</span>",get weight(){return (g.newsTickerSpeed>=999)?1:0}},
 	{text:"Does exotic antimatter exist?"+newsSupport.br(100)+"No one knows.",get weight(){return unlocked("Antimatter")?1:0}},
-	{text:"We have a lucky reader on the line! This lucky reader, who resides in #ticker-suggestions, wants to say to you all: \"yes\". How enlightening!"}
+	{text:"We have a lucky reader on the line! This lucky reader, who resides in #ticker-suggestions, wants to say to you all: \"yes\". How enlightening! In response, our CEO himself, alemaninc \"\" alemaninc, says: \"This is going in the news ticker out of context now :D\"."}
 ]
 // bottom
 var newsOrder = []

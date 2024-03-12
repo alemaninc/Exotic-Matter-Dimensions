@@ -1,7 +1,19 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).7",
+	current:"𝕍1.5(b).8",
+	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
+	nextProgress:[
+		1, // tier 8 hell
+		[
+			144/200, // Study XIII completed
+			200/200  // Study XIII implemented
+		],
+		[
+			23/33,  // achievements completed
+			33/33   // achievements implemented
+		]
+	],
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -82,6 +94,46 @@ function popupInput() {return d.element("span_fancyPopupInput").value}
 function functionError(functionName,argumentList) {error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")}
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
 function BEformat(value,precision=0) {return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");}
+function timeFormat(x) {
+	x = N(x);
+	if (x.eq(constant.d0)) return "0 seconds";
+	if (x.eq(Infinity)) return "Infinite time";
+	if (x.lt(constant.d0)) return "-"+timeFormat(x.neg())
+	if (x.lt(constant.em30)) return "(1 ÷ "+x.recip().noLeadFormat(2)+") seconds";
+	if (x.lt(constant.d1)) {
+		let exp = x.log10().div(constant.d3).neg().ceil();
+		let num = x.mul(constant.e3.pow(exp)).noLeadFormat(2)
+		let unit = ["milli","micro","nano","pico","femto","atto","zepto","yocto","ronto","quecto"][exp.toNumber()-1]+"second"+((num==="1")?"":"s");
+		return num+" "+unit;
+	}
+	if (x.lt(constant.d60)) return x.noLeadFormat(2)+" seconds";
+	if (x.lt(constant.d3600)) return x.div(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	if (x.lt(constant.d86400)) return x.div(constant.d3600).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gte(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
+	return BEformat(x.div(constant.d31556926),2)+" years";
+}
+function rateFormat(x) {
+	x = N(x);
+	if (!Decimal.valid(x)) throw "Cannot access rateFormat("+x+")"
+	if (x.sign === 0) return "0 per second"
+	if (x.sign === -1) return "-"+rateFormat(x.neg())
+	if (x.eq(constant.d1)) return "1 per second"
+	if (x.gt(constant.d1)) return x.noLeadFormat(2)+" per second"
+	if (x.lt(constant.d1)) return "1 per "+timeFormat(x.recip())
+	throw "Cannot access rateFormat("+x+")"
+}
+Decimal.prototype.format = function(precision) {
+	return BEformat(this,precision);
+};
+Decimal.prototype.noLeadFormat = function(precision,tolerance=1e-7) {
+	if (this.layer !== 0) return BEformat(this)
+	let exponent = this.abs().log10().add(1e-8).floor()
+	for (let i=0;i<precision;i++) if (Decimal.eq_tolerance(this.mul(Decimal.pow(10,i-exponent)),this.mul(Decimal.pow(10,i-exponent)).round(),tolerance)) return BEformat(this,i)
+	return BEformat(this,precision)
+}
+Decimal.prototype.formatFrom1 = function(precision) {
+	return this.eq(c.d1)?"1":this.noLeadFormat(Math.max(0,Math.min(15,precision+Math.max(0,1-Math.ceil(this.sub(c.d1).abs().max(1e-15).min(1e15).log(constant.d10).toNumber())))),1e-12)
+}
 d.glow = function(id,active){
 	if (active) document.getElementById(id).classList.add("glownotify");
 	else document.getElementById(id).classList.remove("glownotify");
@@ -119,6 +171,7 @@ const c = deepFreeze({		 // c = "constant"
 	eme5			: Decimal.FC_NN(1,1,-1e5),
 	em40			: Decimal.FC_NN(1,1,-40),
 	em16			: Decimal.FC_NN(1,1,-16),
+	em12			: Decimal.FC_NN(1,0,1e-12),
 	em8				: Decimal.FC_NN(1,0,1e-8),
 	em4				: Decimal.FC_NN(1,0,1e-4),
 	d1_5em4		: Decimal.FC_NN(1,0,1.5e-4),
@@ -142,6 +195,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_045		: Decimal.FC_NN(1,0,0.045),
 	d0_05			: Decimal.FC_NN(1,0,0.05),
 	d0_059		: Decimal.FC_NN(1,0,0.059),
+	d0_06			: Decimal.FC_NN(1,0,0.06),
 	d0_07			: Decimal.FC_NN(1,0,0.07),
 	d0_075		: Decimal.FC_NN(1,0,0.075),
 	d0_08			: Decimal.FC_NN(1,0,0.08),
@@ -177,6 +231,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_9			: Decimal.FC_NN(1,0,0.9),
 	d0_95			: Decimal.FC_NN(1,0,0.95),
 	d0_97			: Decimal.FC_NN(1,0,0.97),
+	d0_98			: Decimal.FC_NN(1,0,0.98),
 	d0_99			: Decimal.FC_NN(1,0,0.99),
 	d0_995		: Decimal.FC_NN(1,0,0.995),
 	d0_999		: Decimal.FC_NN(1,0,0.999),
@@ -185,6 +240,7 @@ const c = deepFreeze({		 // c = "constant"
 	d1_003		: Decimal.FC_NN(1,0,1.003),
 	d1_004		: Decimal.FC_NN(1,0,1.004),
 	d1_005		: Decimal.FC_NN(1,0,1.005),
+	d1_008		: Decimal.FC_NN(1,0,1.008),
 	d1_009		: Decimal.FC_NN(1,0,1.009),
 	d1_01			: Decimal.FC_NN(1,0,1.01),
 	d1_02			: Decimal.FC_NN(1,0,1.02),
@@ -283,6 +339,7 @@ const c = deepFreeze({		 // c = "constant"
 	d256			: Decimal.FC_NN(1,0,256),
 	d275			: Decimal.FC_NN(1,0,275),
 	d300			: Decimal.FC_NN(1,0,300),
+	d308			: Decimal.FC_NN(1,0,308),
 	inflog		: Decimal.FC_NN(1,0,308.25471555991675),
 	d320			: Decimal.FC_NN(1,0,320),
 	d325			: Decimal.FC_NN(1,0,325),
@@ -297,6 +354,7 @@ const c = deepFreeze({		 // c = "constant"
 	d600			: Decimal.FC_NN(1,0,600),
 	d640			: Decimal.FC_NN(1,0,640),
 	d700			: Decimal.FC_NN(1,0,700),
+	d720			: Decimal.FC_NN(1,0,720),
 	d750			: Decimal.FC_NN(1,0,750),
 	d800			: Decimal.FC_NN(1,0,800),
 	d900			: Decimal.FC_NN(1,0,900),
@@ -311,10 +369,12 @@ const c = deepFreeze({		 // c = "constant"
 	d2350			: Decimal.FC_NN(1,0,2350),
 	d4800			: Decimal.FC_NN(1,0,4800),
 	d5e3			: Decimal.FC_NN(1,0,5000),
+	d5040			: Decimal.FC_NN(1,0,5040),
 	d7e3			: Decimal.FC_NN(1,0,7e3),
 	d8e3			: Decimal.FC_NN(1,0,8e3),
 	d102400div9:Decimal.FC_NN(1,0,102400/9), // 11337.778
 	d18000		: Decimal.FC_NN(1,0,18000),
+	d40320		: Decimal.FC_NN(1,0,40320),
 	d44444		: Decimal.FC_NN(1,0,44444),
 	d5e4			: Decimal.FC_NN(1,0,5e4),
 	e5				: Decimal.FC_NN(1,0,1e5),
@@ -325,6 +385,7 @@ const c = deepFreeze({		 // c = "constant"
 	d5e7			: Decimal.FC_NN(1,0,5e7),
 	e8				: Decimal.FC_NN(1,0,1e8),
 	d2e8			: Decimal.FC_NN(1,0,2e8),
+	e9				: Decimal.FC_NN(1,0,1e9),
 	d2pow31		: Decimal.FC_NN(1,0,2147483648),
 	d2_5e9		: Decimal.FC_NN(1,0,2.5e9),
 	d3155692599:Decimal.FC_NN(1,0,3155692599),
@@ -338,6 +399,7 @@ const c = deepFreeze({		 // c = "constant"
 	d9e15			: Decimal.FC_NN(1,1,15.954242509439325),
 	e16				: Decimal.FC_NN(1,1,16),
 	d1_5e16		: Decimal.FC_NN(1,1,16.17609125905568),
+	e17				: Decimal.FC_NN(1,1,17),
 	e18				: Decimal.FC_NN(1,1,18),
 	d5e18			: Decimal.FC_NN(1,1,18.69897000433602),
 	e20				: Decimal.FC_NN(1,1,20),
@@ -383,7 +445,10 @@ const c = deepFreeze({		 // c = "constant"
 });
 function percentOrMult(num,precision=2,classname) {
 	let number,sign
-	if (num.lte(c.d0_1)) {
+	if (num.eq(c.d0)) {
+		number="0"
+		sign="×"
+	} else if (num.lte(c.d0_1)) {
 		number=num.recip().noLeadFormat(precision)
 		sign="÷"
 	} else if (num.gte(c.d10)) {
@@ -396,9 +461,21 @@ function percentOrMult(num,precision=2,classname) {
 	if (typeof classname === "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
 }
+function percentOrDiv(num,precision=2,classname) { // for effects which are always negative
+	let number,sign
+	if (num.lte(c.d0_1)) {
+		number=num.max(c.minvalue).recip().noLeadFormat(precision)
+		sign="×"
+	} else {
+		number=c.d1.sub(num).mul(c.e2).noLeadFormat(precision)
+		sign="%"
+	}
+	if (typeof classname === "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
+	return number+sign
+}
 function numberOfDigits(num){return num.abs().max(c.d1).log10().floor().add(c.d1)}
 function img(src,alttext,height,width=height) {return "<img src=\"img/"+src+".png\" alt=\""+alttext+"\" height=\""+height+"\" width=\""+width+"\">"}
-function formulaFormat(str) {return unbreak("<i>"+str+"</i>")}
+function formulaFormat(str) {return "<i>"+unbreak(str)+"</i>"}
 formulaFormat.bracketize = function(str) {
 	let out = (str.search(" ")===-1)?str:("("+str+")")
 	while (out.substring(0,2)==="(("&&out.substring(out.length-2)==="))") out = out.substring(1,out.length-1)

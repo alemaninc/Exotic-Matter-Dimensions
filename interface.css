@@ -1,7 +1,7 @@
 :root {
 	--exoticmatter:#00ff00;
 	--time:#00cc00;
-	--time2:#ff0000;
+	--time2:#ff3333;
 	--mastery:#ff0099;
 	--achievements:#ffff00;
 	--stardust:-webkit-radial-gradient(circle,#ff0,#f60);
@@ -22,6 +22,11 @@
 	--exp:#ffcc00;
 	--antimatter:#990000;
 	--titanium:#556677;
+	--bindingBackground:rgba(47,36,25,0.9);
+	--bindingBorder:rgba(143,112,51,0.9);
+	--binding:#8f7033;
+	--binding_light:#c29233;
+	--binding_dark:#7a5f33;
 }
 .big {
 	font-size:120%;
@@ -66,6 +71,7 @@
 ._exp {color:var(--exp);}
 ._antimatter {color:var(--antimatter);}
 ._titanium {color:var(--titanium);}
+._binding {color:var(--binding);}
 html, body {
 	max-width:100%;
 	min-width:1200px;
@@ -79,18 +85,15 @@ button, div {
 	vertical-align:top;
 	display:inline-block;
 }
-a {
-	color:inherit;
-}
+a {color:inherit;}
+del {opacity:0.5}
 .underline {
 	text-decoration:underline
 }
 .strike {
 	text-decoration:line-through
 }
-span.xscript {
-	position:relative;
-}
+span.xscript {position:relative;}
 span.xscript sub {
 	position:absolute;
 	left:0.1em;
@@ -107,12 +110,12 @@ button,div {
 	display:inline-block;
 	position:relative;
 }
-input {
-	font-size:12px;
+input {font-size:12px;}
+._jacorb {
+	color:#8a8767;
+	text-shadow: 0px 1px 0px #a0a67c;
 }
-.small {
-	font-size:8px;
-}
+.small {font-size:8px;}
 .toptable {
 	table-layout:fixed;
 	text-align:left;
@@ -165,6 +168,7 @@ input {
 	border-radius:6px;
 	color:#000000;
 	width:calc(100vw - 30px);
+	z-index:4;
 }
 #footer {
 	height:44px;
@@ -173,6 +177,7 @@ input {
 	bottom:0px;
 	left:10px;
 	padding:0px;
+	z-index:3;
 }
 #storyTitle {
 	font-size:80px;
@@ -239,11 +244,30 @@ input {
 	width:100px;
 	height:20px;
 	font-size:9px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:4px;
+}
+.tabtier3.statistics {
+	background-color:rgba(0,128,0,0.9);
+	border-color:rgba(0,179,0,0.9);
+}
+.tabtier3.wormhole_study13 {
+	background-color:rgba(25,51,76,0.9);
+	border-color:rgba(51,76,102,0.9);
+	color:#ffffff
 }
 .tabtier4 {
 	width:90px;
 	height:18px;
 	font-size:8px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:3px;
+}
+.tabtier4.statistics {
+	background-color:rgba(0,102,0,0.9);
+	border-color:rgba(0,153,0,0.9);
 }
 .tab, .subtab {
 	width:100vw;
@@ -622,25 +646,19 @@ tab {
 	background-color:var(--darkmatter);
 	color:#ffffff;
 }
-.darkstarbutton {
+#button_darkstar {
+	padding:4px;
+	border-radius:16px;
+	width:400px;
+	height:200px;
+}
+#button_darkstar.unlocked {
 	background-color:var(--darkmatter);
 	color:#ffffff;
-	padding:4px;
-	border-radius:16px;
-	width:400px;
-	height:200px;
 }
-.lockeddarkstarbutton {
+#button_darkstar.locked {
 	background-color:#999999;
 	color:#000000;
-	padding:4px;
-	border-radius:16px;
-	width:400px;
-	height:200px;
-}
-.globalnavigation {
-	text-align:center;
-	width:96vw;
 }
 .energydivision {
 	height:115px;
@@ -731,6 +749,7 @@ tab {
 	border-radius:50%;
 	background-color:rgba(204,0,0,0.9);
 }
+.studyDot.binding {background-color:var(--binding)}
 .unknownResearchButton {
 	border-color:rgba(153,153,153,0.8);
 	background-color:#193333;
@@ -758,7 +777,7 @@ tab {
 	font-size:13px;
 	background:linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
 	padding:5px;
-	z-index:3
+	z-index:4
 }
 #button_projectedResearchCost {
 	height:16px;
@@ -781,13 +800,14 @@ tab {
 	font-size:11px;
 }
 .study {
-	height:480px;
-	width:400px;
+	height:225px;
+	width:1200px;
 	border-style:solid;
 	border-width:5px;
 	border-radius:32px;
 	margin:16px;
 	font-size:14px;
+	padding:20px;
 }
 .study0 {
 	border-color:rgba(51,0,0,0.9);
@@ -813,6 +833,13 @@ tab {
 	border-color:rgba(34,0,51,0.9);
 	background-color:rgba(68,0,102,0.9);
 	color:#8800cc;
+}
+.study td {
+	vertical-align:top;
+}
+.study ol {
+	padding-left:calc(1em + 4px);
+	margin:0px;
 }
 .studyButton {
 	height:48px;
@@ -889,8 +916,11 @@ tab {
 	border-width:4px;
 	border-color:rgba(0,153,0,0.9);
 }
+.dilationDiv h1 {
+	margin:10px;
+}
 .overclockOption {
-	height:60px;
+	height:50px;
 	width:180px;
 	color:#00ff00;
 	font-weight:700;
@@ -945,6 +975,7 @@ tab {
 	background:rgba(0,0,0,0);
 	width:auto;
 	max-width:min(720px,calc(100vw - 30px));
+	z-index:5;
 }
 .notification {
 	font-family:'Courier New', Courier, monospace;
@@ -1122,6 +1153,7 @@ tab {
 	border-radius:12px;
 	background-color:#132;
 	color:var(--luck);
+	margin:2px;
 }
 #button_maxPrismaticUpgrades {
 	background:var(--prismatic);
@@ -1147,8 +1179,9 @@ tab {
 	width:200px;
 	border-radius:12px;
 	color:#000000;
-	background-color:#999999;
 }
+.refundPrismaticUpgrade.glow {background-color:#999999;}
+.refundPrismaticUpgrade.noglow {background:var(--prismatic)}
 #button_maxAntiAxis {
 	background-color:var(--antimatter);
 	color:#ffffff;
@@ -1177,6 +1210,8 @@ tab {
 .wormholeUpgrade {
 	height:110px;
 	width:275px;
+	margin-left:6px;
+	margin-right:6px;
 	border-radius:8px;
 	border-style:solid;
 	border-color:#000000;
@@ -1191,15 +1226,81 @@ tab {
 	background-color:#666666;
 	color:#000000;
 }
+.study13BindingButton {
+	height:64px;
+	width:64px;
+	font-size:16px;
+	color:inherit;
+	border-style:groove;
+	border-width:5px;
+	border-color:var(--bindingBorder);
+	background-color:#292419;
+}
+#study13BindingInfo {
+	position:fixed;
+	font-size:14px;
+	text-align:center;
+	border-style:solid;
+	border-width:3px;
+	border-radius:12px;
+	padding:8px;
+	right:20px;
+	bottom:50px;
+	width:400px;
+	background-color:var(--bindingBackground);
+	border-color:var(--bindingBorder);
+	color:var(--binding);
+}
+.study13RewardDiv {
+	vertical-align:top;
+	border-style:solid;
+	border-width:3px;
+	border-radius:10px;
+	background-color:var(--bindingBackground);
+	border-color:var(--bindingBorder);
+	color:var(--binding);
+	height:500px;
+	margin:10px;
+	padding:20px;
+}
+.study13Reward {
+	width:330px;
+	height:16px;
+	background-color:var(--bindingBackground);
+	border-color:var(--bindingBorder);
+	color:var(--binding);
+	font-size:12px;
+	padding:4px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:4px;
+	margin:4px;
+}
+#button_antimatterGalaxy {
+	padding:4px;
+	border-radius:16px;
+	width:400px;
+	height:200px;
+}
+#button_antimatterGalaxy.unlocked {
+	background-color:var(--antimatter);
+	color:#ffffff;
+}
+#button_antimatterGalaxy.locked {
+	background-color:#999999;
+	color:#000000;
+}
 .corruptionContainer {
 	height:150px;
-	width:600px;
+	width:400px;
 	background-color:#505;
 	color:rgba(255,153,255,0.6);
 	border-style:solid;
 	border-width:3px;
-	border-radius:15px;
+	border-radius:20px;
 	border-color:#303;
+	padding:10px;
+	margin:10px;
 }
 @keyframes text-grow {
 	0% {font-size: 80%}

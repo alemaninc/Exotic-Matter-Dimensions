@@ -68,15 +68,17 @@ const HTPtexts = [
 			"By pressing {0}, you can view certain formulas within the game (you can change this key in Options > Hotkeys).",
 			"Here is an overview of some mathematical notation used in these formulas:",
 			tableGenerator([
+				["⌊x⌋","Floor"],
 				["log(n)","Logarithm"],
 				["log<sup>[x]</sup>(n)","Iterated logarithm: for example, log<sup>[2]</sup>(20) = log(log(20))"],
 				["log<sub>b</sub>(n)","Base b logarithm"],
-				["a ^^ b","Tetration"],
+				["a ⇈ b","Tetration"],
 				["slog","Superlogarithm"],
-				["Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Summation: for example, Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>2</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>2</sup>").join(" + ")+" = 30"],
-				["Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n","Product: for example, Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>n</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>("+x+")</sup>").join(" × ")+" = 27648"],
-				["Ξ<sup>[x]</sup>n","Iterated exponentiation: for example, Ξ<sup>[2]</sup>3 = 10<sup>10<sup>3</sup></sup>"]
-			])
+				["Σ<span class=\"xscript\"><sup>b</sup><sub>a</sub></span>x","Summation: for example, Σ<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>2</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>2</sup>").join(" + ")+" = 30"],
+				["Π<span class=\"xscript\"><sup>b</sup><sub>a</sub></span>x","Product: for example, Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>n</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>("+x+")</sup>").join(" × ")+" = 27648"],
+				["Ξ<sup>[x]</sup>n","Iterated exponentiation: for example, Ξ<sup>[2]</sup>3 = 10<sup>10<sup>3</sup></sup>"],
+				["dB(x)","'Decibel' function - returns a 'nice' value close to 10<sup>x ÷ 10</sup><br>(Exact value is [1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x mod 10] × 10<sup>⌊x ÷ 10⌋</sup>"]
+			],"","","border-style:solid;border-width:1px;border-color:#00ff00;padding:5px;")
 		],
 		dynamics:[
 			()=>formatHotkey(g.hotkeys["Show/hide formulas"])
@@ -215,9 +217,9 @@ const HTPtexts = [
 		visibility:function(){return unlocked("Studies")},
 		paragraphs:[
 			"Studies are unlocked by buying special red-bordered Researches.",
-			"When a Study is started, a Wormhole reset takes place and special restrictions are applied.",
-			"If you can reach a certain number of total dark axis in a Study, you can complete it. This removes the Study's restrictions, as well as giving 3 bonuses.",
-			"Each Study can be completed up to 4 times - each completion has harsher restrictions and a higher goal.",
+			"When a Study is started, a Wormhole reset takes place and special restrictions ('Bindings') are applied.",
+			"If you can reach a certain number of total dark axis in a Study, you can complete it. This disables the Study's Binding, as well as giving 3 bonuses.",
+			"Each Study can be completed up to 4 times - each completion has harsher Bindings and a higher goal.",
 			"Most Studies also unlock new research when completed."
 		]
 	},
@@ -271,4 +273,15 @@ const HTPtexts = [
 			"In addition to their primary effect, each dark axis also increases the level of the corresponding normal and dark axis multiplicatively."
 		]
 	},
+	{
+		name:"Study XIII",
+		visibility:function(){return unlocked("Study XIII")},
+		paragraphs:[
+			"Study XIII works differently from the previous Studies.",
+			"In Study XIII, you gain access to a tree of Bindings. You can click Bindings from the tree to activate them, and click them again to deactivate them. Each Binding gives binding levels.",
+			"When you enter Study XIII, the restrictions of all the Bindings you have active will take effect. However, if you can reach the goal requirement, your completions of Study XIII will increase to your binding levels.",
+			"Instead of having three rewards, Study XIII has a wide range of named rewards. These rewards are unlocked at specific thresholds of completions, and can be upgraded by getting even more completions.",
+			"Note - unlike Research, where to activate a Research you only need one of its parents, in order to activate a Binding you must have all applicable parent Bindings active."
+		]
+	}
 ].sort((a,b)=>(a.name>b.name)?1:-1)

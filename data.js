@@ -5,7 +5,7 @@ var betaActive=debugActive
 /*
 Everything that is represented in "g" as an object generated from a list of keys is stored here and executed directly before main.js.
 */
-const axisCodes = "XYZWVUTS".split("");
+const axisCodes = "XYZWVUTSRQPO".split("");
 const fullAxisCodes = axisCodes.map(x=>[x,"dark"+x,"anti"+x]).flat()
 
 const starList = countTo(10).map(x=>countTo(4).map(y=>x*10+y)).flat()
@@ -18,7 +18,8 @@ const energyHyper = [3,3,3,2,3,3,3,3,3,2];
 const studies = [
 	{    // 0 is used for utilities
 		exactFrames:" All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time.",
-		effectiveMaxCompletions:{}
+		effectiveMaxCompletions:{},
+		roman:function(x){return (x===10)?"of Studies":roman(x)}
 	},
 	{
 		name:"Autonomy",
@@ -39,7 +40,7 @@ const studies = [
 		reward_desc:function() {return [
 			"Empower "+studyRewardHTML(1,1,1)+"% of your Y axis",
 		 	"Increase the effect of stardust upgrade #2 by "+studyRewardHTML(1,2,2)+" percentage points (based on achievements)",
-			"Multiply Hawking radiation gain by "+studyRewardHTML(1,3,0)
+			"Multiply Hawking radiation gain by "+studyRewardHTML(1,3,2)
 		]},
 		rewardFormulas:{
 			2:(comp=g.studyCompletions[1],ach=totalAchievements)=>studyRewardBoost(1,2).mul(c.d10).noLeadFormat(3)+" × Σ<span class=\"xscript\"><sup>"+comp+"</sup><sub>1</sub></span>(1 - ("+(ach>=80?"A ÷ 64":("1 + A<sup>5</sup> ÷ "+BEformat(1.31072e10)))+")<sup>n-5</sup>)"
@@ -54,12 +55,12 @@ const studies = [
 		reward:function(num,comp=g.studyCompletions[2]) {
 			if (num===1) return [c.d0,c.d9,c.d16,c.d21,c.d25][comp];
 			if (num===2) return [c.d0,c.d0_07,c.d0_12,c.d0_16,c.d0_2][comp].mul(studyRewardBoost(2,2)).add(c.d1);
-			if (num===3) return [c.d0,c.d0_25,c.d0_45,c.d0_6,c.d0_75][comp].mul(studyRewardBoost(2,3));
+			if (num===3) return [c.d0,c.d0_25,c.d0_45,c.d0_6,c.d0_75][comp].mul(studyRewardBoost(2,3)).mul(c.d0_5);
 			functionError("studies[2].reward",arguments)
 		},
 		reward_desc:function() {return [
 			"The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
-			"Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,2),
+			"Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,4),
 			"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as "+((g.highestGalaxies>=galaxyEffects[5].req)?(galaxyEffects[5].boost.value().mul(c.e2).format()+"%"):"half")+" of this value. Does not work in Study II."
 		]}
 	},
@@ -83,7 +84,7 @@ const studies = [
 		},
 		reward_desc:function(){return [
 			"Increase the cap of Stardust Upgrade #5 by "+studyRewardHTML(3,1,0),
-			"Keep ^"+studyRewardHTML(3,2,studyRewardBoost(3,2).eq(c.d1)?1:3)+" of each of the first six Energies on Stardust reset",
+			"Keep ^"+studyRewardHTML(3,2,3)+" of each of the first six Energies on Stardust reset",
 			"Meta energy increases "+studyRewardHTML(3,3,2)+"× faster (based on game-time in this Wormhole)"
 		]},
 		rewardFormulas:{
@@ -134,7 +135,7 @@ const studies = [
 	{
 		name:"Event Horizon",
 		unlockReq:function(){return [N(500),N(1000),N(4000),N(11111)][studyPower(6)]},
-		effect:function(p=stat.totalDarkAxis.div(stat.wormholeDarkAxisReq).min(c.d1)){return ((g.activeStudy===10)?N(936).log10():[c.d27,c.d30,N(1.11e111).log10(),c.e3][studyPower(6)]).pow(c.d1.sub(p)).pow10()},
+		effect:function(p=stat.totalDarkAxis.div(stat.wormholeDarkAxisReq).min(c.d1)){return (((g.activeStudy===10)&&(studyPower(10)===2))?N(936).log10():[c.d27,c.d30,N(1.11e111).log10(),c.e3][studyPower(6)]).pow(c.d1.sub(p)).pow10()},
 		description:function(){return "The game runs "+this.effect(c.d0).format()+"× slower. However, as you get closer to the goal of the Study this penalty gradually reduces up to a minimum of 10×."},
 		research:"r16_8",
 		goal:function(comp=studyPower(6)){return [N(4500),N(4800),N(9999),N(22222)][comp]},
@@ -170,7 +171,7 @@ const studies = [
 		},
 		reward_desc:function(){return [
 			"Empower "+studyRewardHTML(7,1,3)+"% of your dark W axis",
-			"Research unlocked by Study VII works at "+studyRewardHTML(7,2,0)+"% efficiency",
+			"Research unlocked by Study VII works at "+studyRewardHTML(7,2,3)+"% efficiency",
 			unlocked("Luck")?("Gain "+studyRewardHTML(7,3,2)+" luck shards per second (based on Hawking radiation)"):"? ? ? (Complete to reveal)"
 		]},
 		rewardFormulas:{
@@ -202,7 +203,7 @@ const studies = [
 		unlockReq:function(){return [N(9.99e149),N(9.99e189),N("9.99e469"),N("5.67e1234")][studyPower(9)]},
 		description:function(){return "Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>. If not finished within 9 seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars. Depending on how much experientia you have, the penalty of this Study is either increased or mitigated. "+studies[0].exactFrames},
 		research:"r23_11",
-		goal:function(comp=studyPower(9)){return N(999)},
+		goal:function(){return N(999)},
 		reward:function(num,comp=g.studyCompletions[9]){
 			if (num===1) return [Infinity,0.09,0.06,0.03,0][comp]
 			if (num===2) return c.d0_5.pow(N(comp/3).mul(studyRewardBoost(9,2)))
@@ -221,7 +222,7 @@ const studies = [
 		},
 		timeLeft:function(){return 9-g.timeThisWormholeReset},
 		deltaXP:function(x=g.darkstars,comp=studyPower(9)){
-			if (g.activeStudy===10) x = x.mul(c.d1_0369)
+			if ((g.activeStudy===10)&&(studyPower(10)===2)) x = x.mul(c.d1_0369)
 			let out = x.sub(g.study9.xp.div(c.d10).add([111,111,125,140][comp]+g.study9.resets))
 			if (out.sign===-1) out = out.mul(c.d10)
 			return out.floor()
@@ -242,33 +243,33 @@ const studies = [
 		description:function(){
 			let showDiffDisclaimer = false
 			for (let i of [[1,4,7],[2,5,8],[3,6,9],countTo(9)][studyPower(10)]) if (g.studyCompletions[i]<3) showDiffDisclaimer = true
-			let out = "The conditions of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously."
+			let out = "The Bindings of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously."
 			if (studyPower(10)===2) out += " However, Row 5 and 6 energy research have no effect, the Study VI effect base is reduced to 936× and you gain 3.69% more experientia."
-			if (showDiffDisclaimer) out += " (note: Study of Studies penalties are always applied at level 4)"
-			if (studyPower(10)<Math.min(g.studyCompletions[10],studies[0].effectiveMaxCompletions[10])-1) out += " <span style=\"font-weight:700;font-style:oblique\">(note: you are repeating a Triad which is already completed. Buy research "+researchOut(this.research)+" to access the next level)</span>"
+			if (showDiffDisclaimer) out += "<br><span style=\"color:var(--time2)\">(note: Study of Studies penalties are always applied at level 4)</span>"
+			if (studyPower(10)<Math.min(g.studyCompletions[10],studies[0].effectiveMaxCompletions[10])-1) out += "<br><span style=\"color:var(--time2)\">(note: you are repeating a Triad which is already completed. Buy research "+researchOut(this.researchList[g.studyCompletions[10]])+" to access the next level)</span>"
 			return out
 		},
 		researchList:["r26_5","r25_8","r26_11","r27_8"],
 		get research(){return studies[10].researchList[studyPower(10)]},
-		goal:function(comp=studyPower(10)){return [N(17444),N(7258),N(936),c.e100][comp]},
+		goal:function(comp=studyPower(10)){return [N(17444),N(7258),N(936),betaActive?N(36000):c.e100][comp]},
 		rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
 		reward:function(num,comp=g.studyCompletions[10]){
 			let step = this.rewardStep(num,comp)
-			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,betaActive?N(1.1e-4):c.em4,N(1.7e-4)][step]).add(c.d1)
-			if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([c.d1,c.d1_5][step-1]).div([betaActive?c.d75:c.d80,c.d640][step-1]).max(c.d1)
+			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,betaActive?N(1.25e-4):c.em4,N(2e-4)][step]).add(c.d1)
+			if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([betaActive?c.d2:c.d1,c.d3][step-1]).div([betaActive?N(6250):c.d80,N(4e5)][step-1]).max(c.d1).pow(studyRewardBoost(10,2))
 			if (num===3) return [g.antimatter.add(c.e10).layerplus(-3),[c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][step],studyRewardBoost(10,3)].productDecimals()
-			if (num===4) return [c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
+			if (num===4) return betaActive?[c.d1,N(1.12),N(1.21),N(1.28),c.d4div3][comp]:[c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
 			functionError("studies[10].reward",arguments)
 		},
 		reward_desc:function(){return [
 			"Multiply the U axis effect by "+studyRewardHTML(10,1,4)+" per achievement, based on luck shards (currently: "+studies[10].reward(1).pow(totalAchievements).noLeadFormat(3)+"× total)",
 			"Anti-T axis is "+studyRewardHTML(10,2,x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3))+"% stronger (based on stars and galaxies)",
 			"Tickspeed-to-energy conversion exponent is increased by "+studyRewardHTML(10,3,3)+" (based on antimatter)",
-			"The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).format())+"% more effective",
+			"The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3))+"% more effective"
 		]},
 		rewardFormulas:{
-			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001"+(betaActive?"1":""),"0.00017"][studies[10].rewardStep(1,comp)]+" + 1"},
-			2:function(comp=g.studyCompletions[10]){let step = studies[10].rewardStep(2,comp);return (step===0)?"0":("max((★ + G × 6)"+((step===2)?"<sup>1.5</sup>":"")+" × "+(step===2?"0.15625":betaActive?"1.333":"1.25")+" - 100, 0)")},
+			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001"+(betaActive?"25":""),"0.0002"][studies[10].rewardStep(1,comp)]+" + 1"},
+			2:function(comp=g.studyCompletions[10]){let step = studies[10].rewardStep(2,comp);return (step===0)?"0":("max((★ + G × 6)"+formulaFormat.exp(((step===2)?c.d3:betaActive?c.d2:c.d1).mul(studyRewardBoost(10,2)))+formulaFormat.mult(c.e2.div([betaActive?N(6250):c.d80,N(4e5)][step-1].pow(studyRewardBoost(10,2))))+" - 100, 0)")},
 			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+") "+formulaFormat.mult([c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
 		},
 	},
@@ -280,7 +281,7 @@ const studies = [
 			return (num<8)?axisCodes[num]:["R","Q","P","O"][num-8]
 		},
 		lunarMinutes:function(){return Math.floor((g.timeThisWormholeReset*80)%60)},
-		description:function(){return "Only X axis of all types are initially active, and the active type will change every 750 milliseconds. Additionally, row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter is capped at 1."},
+		description:function(){return "Only one type of axis is active at a time, starting at X and changing every 750 milliseconds. Additionally, row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter is capped at 1."},
 		research:"r33_3",
 		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12496):c.e100,betaActive?N(13456):c.e100,betaActive?N(14142):c.e100][comp]},
 		reward:function(num,comp=g.studyCompletions[11]){
@@ -297,27 +298,35 @@ const studies = [
 	},
 	{
 		name:"Titanium Will",
-		unlockReq:function(){return [147,152,999,999][studyPower(12)]},
+		unlockReq:function(){return [147,152,157,162][studyPower(12)]},
 		description:function(){return "Non-permanent research have no effect; stardust resets are disabled; dark matter gain is capped at 1; all dark axis cost divisors are disabled. Unlock Titanium Empowerments in the Dark Matter tab which weaken the dark matter cap to a softcap."},
 		research:"r33_13",
-		goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.d60,c.d70][comp]},
-		sc:function(x=calcStatUpTo("darkmatterPerSec","Study XII"),p=g.study12.fortitude){
+		goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.e2,c.d150][comp]},
+		sc:function(x=calcStatUpTo("darkmatterPerSec","Fortitude"),p=g.study12.fortitude){
 			return p.eq(c.d0)?x.min(c.d1):Decimal.logarithmicSoftcap(x,c.d1,p.recip())
 		},
 		empowerment:{
-			base:c.ee7,
-			scale:N(1.12),
-			req:function(x=g.study12.empowerments){return [this.base,this.scale,x].decimalPowerTower()},
-			affordable:function(x=g.exoticmatter){return x.lt(this.base)?g.study12.empowerments:x.log(this.base).log(this.scale).floor().add(c.d1)},
+			base:function(){
+				let out = study13.rewards.forge.eff().b
+				return out
+			},
+			scale:function(){
+				let out = study13.rewards.forge.eff().s
+				return out
+			},
+			req:function(x=g.study12.empowerments){return [this.base(),this.scale(),x].decimalPowerTower()},
+			affordable:function(x=g.exoticmatter){return x.lt(this.base())?g.study12.empowerments:x.log(this.base()).log(this.scale()).floor().add(c.d1)},
 			gain:function(){g.study12.empowerments = this.affordable()}
 		},
 		fortitude:{
 			max:function(x=g.study12.empowerments){
 				let out = x
+				if ((!StudyE(12))&&study13.bound(275)) {out = out.mul(study13.bindingEff(275))}
 				return out
 			},
 			gain:function(x=g.study12.empowerments){
 				let out = [x,c.em4,stat.tickspeed].productDecimals()
+				if ((!StudyE(12))&&study13.bound(275)) {out = out.mul(study13.bindingEff(275))}
 				return out
 			},
 			lim:function(x,max=this.max()){
@@ -337,15 +346,13 @@ const studies = [
 		},
 		reward_desc:function(){return [
 			"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s")+" each",
-			"Up to "+studyRewardHTML(12,2,0)+" extra free dark stars from "+achievement.label(527)+" (based on yellow lumens)",
+			"Up to "+studyRewardHTML(12,2,3)+" extra free dark stars from "+achievement.label(527)+" (based on yellow lumens)",
 			achievement.label(526)+" reward is "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% stronger and affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
 		]}
 	},
-	{
-		get name(){return "Placeholder"},
-		unlockReq:342,
-		description:"",
-		research:"r44_8"
+	{ // we store only 'research' for ach604 and 'goal' for stat.wormholeDarkAxisReq, everything else is in study13.js
+		research:"r44_8",
+		goal:function(){return achievement.perAchievementReward[9].currentVal}
 	}
 ];
 const fullStudyNames = [null,...countTo(12).map(x=>(x===10)?studies[x].name:("Study "+roman(x)+": "+studies[x].name))]
@@ -353,6 +360,8 @@ const fullStudyNames = [null,...countTo(12).map(x=>(x===10)?studies[x].name:("St
 const lightNames = ["red","green","blue","cyan","magenta","yellow","white","black","gray"]
 
 const luckRunes = {
+	unifolium:{baseCost:c.inf,scale:c.inf,upgBaseCost:c.d1,upgScale:c.d1_1},
+	duofolium:{baseCost:N(1e100),scale:c.e5,upgBaseCost:c.d2,upgScale:N(2**(1/3))},
 	trifolium:{baseCost:c.e4,scale:c.d1_01,upgBaseCost:c.d10,upgScale:c.d1_25},
 	quatrefolium:{baseCost:c.e6,scale:c.d1_1,upgBaseCost:c.d4,upgScale:c.d1_5},
 	cinquefolium:{baseCost:c.e14,scale:c.d3,upgBaseCost:c.d1,upgScale:c.d2}
@@ -361,27 +370,66 @@ const luckRuneTypes = Object.keys(luckRunes)
 // luck upgrades use geometric scaling as a cost formula, but rounded down - calculate amount of upgrades at which rounding no longer matters
 for (let i of luckRuneTypes) luckRunes[i].noRoundThreshold = c.e16.div(luckRunes[i].upgBaseCost).log(luckRunes[i].upgScale).ceil()
 const luckUpgrades = {
+	unifolium:{
+		cascade:{
+			name:"Cascade",
+			desc:"Each (effective) Luck Upgrade level adds {} levels to the two directly below",
+			eff:function(x=stat.luckUpgLevel_unifolium_cascade){
+				let out = x.add(c.d1).log(c.d2).div(c.e2)
+				if (out.gt(c.d0_5)) {out = out.mul(2e10).log10().log10().div(c.d2)}
+				return out
+			},
+			format:(x=this.eff())=>x.noLeadFormat(3),
+			formula:function(){
+				let out = "log<sub>2</sub>(λ + 1) ÷ 100"
+				if (this.eff().gt(c.d0_5)) {out = "log<sup>[2]</sup>("+out+" × "+BEformat(2e10)+") ÷ 2"}
+				return out
+			},
+			cascade:[]
+		}
+	},
+	duofolium:{
+		space:{
+			name:"of All Matters",
+			desc:"All axis costs are raised to the power of {}",
+			eff:(x=stat.luckUpgLevel_duofolium_space)=>x.div(c.e2).add(c.d1).pow(c.dm0_5),
+			format:(x=this.eff())=>x.noLeadFormat(3),
+			formula:()=>"(1 + λ × 0.01)<sup>-0.5</sup>",
+			cascade:["cascade"]
+		},
+		star:{
+			name:"in All Galaxies",
+			desc:"Galaxy Penalty 3 is raised to the power of {}",
+			eff:(x=stat.luckUpgLevel_duofolium_star)=>N(0.94).pow(x),
+			format:(x=this.eff())=>x.noLeadFormat(3),
+			formula:()=>"0.94<sup>λ</sup>",
+			cascade:["cascade"]
+		}
+	},
 	trifolium:{
 		normalAxis:{
 			name:"Exotic Matter",
 			desc:"Normal axis costs are raised to the power of {}",
-			eff:(x=effLuckUpgradeLevel("trifolium","normalAxis"))=>c.d99.div(c.d99.add(x)),
+			eff:(x=stat.luckUpgLevel_trifolium_normalAxis)=>c.d99.div(c.d99.add(x)),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"99 ÷ (99 + λ)"
+			formula:()=>"99 ÷ (99 + λ)",
+			cascade:["space"]
 		},
 		darkAxis:{
 			name:"Dark Matter",
 			desc:"Dark axis costs are raised to the power of {}",
-			eff:(x=effLuckUpgradeLevel("trifolium","darkAxis"))=>c.d99.div(c.d99.add(x)),
+			eff:(x=stat.luckUpgLevel_trifolium_darkAxis)=>c.d99.div(c.d99.add(x)),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"99 ÷ (99 + λ)"
+			formula:()=>"99 ÷ (99 + λ)",
+			cascade:["space","star"]
 		},
 		antiAxis:{
 			name:"Antimatter",
 			desc:"Anti-axis costs are raised to the power of {}",
-			eff:(x=effLuckUpgradeLevel("trifolium","antiAxis"))=>c.d99.div(c.d99.add(x).sub(x.div(c.d10).add(c.d1).ln().mul(c.d10))),
+			eff:(x=stat.luckUpgLevel_trifolium_antiAxis)=>c.d99.div(c.d99.add(x).sub(x.div(c.d10).add(c.d1).ln().mul(c.d10))),
 			format:(x=this.eff())=>x.noLeadFormat(3),
 			formula:()=>"99 ÷ (99 + λ - 10 × ln(1 + λ ÷ 10))",
+			cascade:["star"],
 			unlocked:function(){return g.research.r26_3}
 		}
 	},
@@ -391,26 +439,28 @@ const luckUpgrades = {
 			desc:"Star costs are raised to the power of {}",
 			base:function(){
 				let out = c.d0_95
-				if (g.wormholeUpgrades[8]) {out = out.div(wormholeUpgrades[8].eff())}
 				return out
 			},
-			eff:function(x=effLuckUpgradeLevel("quatrefolium","star")){return this.base().pow(x)},
+			eff:function(x=stat.luckUpgLevel_quatrefolium_star){return this.base().pow(x)},
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:function(){return this.base().noLeadFormat(3)+"<sup>λ</sup>"}
+			formula:function(){return this.base().noLeadFormat(3)+"<sup>λ</sup>"},
+			cascade:["normalAxis"]
 		},
 		darkstar:{
 			name:"Dark Stars",
 			desc:"Dark star costs are divided by {}",
-			eff:(x=effLuckUpgradeLevel("quatrefolium","darkstar"))=>x.gt(c.d20)?x.add(c.d5).pow(c.d0_5).sub(c.d5).div(c.d4).exp().mul(c.d2):x.div(c.d20).add(c.d1),
+			eff:(x=stat.luckUpgLevel_quatrefolium_darkstar)=>x.gt(c.d20)?x.add(c.d5).pow(c.d0_5).sub(c.d5).div(c.d4).exp().mul(c.d2):x.div(c.d20).add(c.d1),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>effLuckUpgradeLevel("quatrefolium","darkstar").gte(c.d20)?"e<sup>(λ + 5)<sup>0.5</sup> - 5) ÷ 4</sup> × 2":"1 + λ ÷ 20"
+			formula:()=>stat.luckUpgLevel_quatrefolium_darkstar.gte(c.d20)?"e<sup>(λ + 5)<sup>0.5</sup> - 5) ÷ 4</sup> × 2":"1 + λ ÷ 20",
+			cascade:["normalAxis","darkAxis"]
 		},
 		synergism:{
 			name:"Synergism",
 			desc:"Spatial Synergism research is {}% more effective",
-			eff:(x=effLuckUpgradeLevel("quatrefolium","synergism"))=>x.gt(c.d50)?x.div(c.d10).sub(c.d4).ln().div(c.d20).add(c.d1_25):x.div(c.d200).add(c.d1),
+			eff:(x=stat.luckUpgLevel_quatrefolium_synergism)=>x.gt(c.d50)?x.div(c.d10).sub(c.d4).ln().div(c.d20).add(c.d1_25):x.div(c.d200).add(c.d1),
 			format:(x=this.eff())=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
-			formula:()=>effLuckUpgradeLevel("quatrefolium","synergism").gte(c.d50)?"25 + ln(λ ÷ 10 - 4) × 5":"λ ÷ 2"
+			formula:()=>stat.luckUpgLevel_quatrefolium_synergism.gte(c.d50)?"25 + ln(λ ÷ 10 - 4) × 5":"λ ÷ 2",
+			cascade:["darkAxis","antiAxis"]
 		},
 		prismatic:{
 			name:"Quadrahedron",
@@ -420,9 +470,10 @@ const luckUpgrades = {
 				if (g.achievement[819]) out = out.mul(c.d2)
 				return out
 			},
-			eff:function(x=effLuckUpgradeLevel("quatrefolium","prismatic")){return x.add(c.d1).mul(c.e10).layerplus(-3).pow(c.d2).mul(this.power())},
+			eff:function(x=stat.luckUpgLevel_quatrefolium_prismatic){return x.add(c.d1).mul(c.e10).layerplus(-3).pow(c.d2).mul(this.power())},
 			format:(x=this.eff())=>x.noLeadFormat(4),
 			formula:function(){return this.power().noLeadFormat(3)+" × log<sup>[3]</sup>((λ + 1) × "+c.e10.format()+")<sup>2</sup>"},
+			cascade:["antiAxis"],
 			unlocked:function(){return g.research.r26_3}
 		}
 	},
@@ -430,42 +481,48 @@ const luckUpgrades = {
 		observation:{
 			name:"Science",
 			desc:"Observation costs are raised to the power of {}",
-			eff:(x=effLuckUpgradeLevel("cinquefolium","observation"))=>c.d400.div(x.gt(c.e2)?x.div(c.d25).sub(c.d3).ln().mul(c.d25).add(c.d500):x.add(c.d400)),
+			eff:(x=stat.luckUpgLevel_cinquefolium_observation)=>c.d400.div(x.gt(c.e2)?x.div(c.d25).sub(c.d3).ln().mul(c.d25).add(c.d500):x.add(c.d400)),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"400 ÷ ("+(effLuckUpgradeLevel("cinquefolium","observation").gte(c.e2)?"25 × ln(λ ÷ 25 - 3) + 500":"λ + 400")+")"
+			formula:()=>"400 ÷ ("+(stat.luckUpgLevel_cinquefolium_observation.gte(c.e2)?"25 × ln(λ ÷ 25 - 3) + 500":"λ + 400")+")",
+			cascade:["star"]
 		},
 		chroma:{
 			name:"Chroma",
 			desc:"Chroma gain is multiplied by {} (based on total lumens)",
-			eff:(x=effLuckUpgradeLevel("cinquefolium","chroma"))=>x.eq(c.d0)?c.d1:g.lumens.map(i=>i.add(c.d7).log(c.d7).pow(x.ln().add(c.d1))).sumDecimals().div(c.d7).pow10(),
+			eff:(x=stat.luckUpgLevel_cinquefolium_chroma)=>x.eq(c.d0)?c.d1:g.lumens.map(i=>i.add(c.d7).log(c.d7).pow(x.ln().add(c.d1))).sumDecimals().div(c.d7).pow10(),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"10<sup>Σ<span class=\"xscript\"><sup>9</sup><sub>1</sub></span>(log<sub>7</sub>(L<sub>n</sub> + 7)<sup>ln(λ) + 1</sup>) ÷ 7</sup>"
+			formula:()=>"10<sup>Σ<span class=\"xscript\"><sup>9</sup><sub>1</sub></span>(log<sub>7</sub>(L<sub>n</sub> + 7)<sup>ln(λ) + 1</sup>) ÷ 7</sup>",
+			cascade:["star","darkstar"]
 		},
 		axis:{
 			name:"Space",
 			desc:"Gain free normal and dark axis of the first seven types equal to sqrt(purchased axis) × {}",
-			eff:(x=effLuckUpgradeLevel("cinquefolium","axis"))=>x.gt(c.d20)?x.sub(c.d10).log10().pow(c.d1_15).mul(c.d10):x.div(c.d2),
+			eff:(x=stat.luckUpgLevel_cinquefolium_axis)=>x.gt(c.d20)?x.sub(c.d10).log10().pow(c.d1_15).mul(c.d10):x.div(c.d2),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>effLuckUpgradeLevel("cinquefolium","axis").gte(c.d20)?"10 × log(λ - 10)<sup>1.15</sup>":"λ ÷ 2"
+			formula:()=>stat.luckUpgLevel_cinquefolium_axis.gte(c.d20)?"10 × log(λ - 10)<sup>1.15</sup>":"λ ÷ 2",
+			cascade:["darkstar","synergism"]
 		},
 		radiation:{
 			name:"Radiation",
 			desc:"Hawking radiation gain is multiplied by {}",
-			eff:(x=effLuckUpgradeLevel("cinquefolium","radiation"))=>c.d1_5.pow(x).sub(c.d1).mul(c.d20).pow10(),
+			eff:(x=stat.luckUpgLevel_cinquefolium_radiation)=>c.d1_5.pow(x).sub(c.d1).mul(c.d20).pow10(),
 			format:(x=this.eff())=>x.format(),
-			formula:()=>"10<sup>20 × (1.5<sup>λ</sup> - 1)</sup>"
+			formula:()=>"10<sup>20 × (1.5<sup>λ</sup> - 1)</sup>",
+			cascade:["synergism","prismatic"]
 		},
 		luck:{
 			name:"Quadratic",
 			desc:"Luck shard gain is raised to the power of {}",
-			eff:(x=effLuckUpgradeLevel("cinquefolium","luck"))=>x.pow(x.add(c.d8).log10()).div(c.e2).add(c.d1),
+			eff:(x=stat.luckUpgLevel_cinquefolium_luck)=>x.pow(x.add(c.d8).log10()).div(c.e2).add(c.d1),
 			format:(x=this.eff())=>x.noLeadFormat(4),
 			formula:()=>"1 + λ<sup>log(λ + 8)</sup> ÷ 100",
+			cascade:["prismatic"],
 			unlocked:function(){return g.research.r26_3}
 		}
 	}
 }
 const luckUpgradeList = Object.fromEntries(luckRuneTypes.map(x=>[x,Object.keys(luckUpgrades[x])]))
+
 /*
 - name, desc, eff, format and formula are universal to all prismatic upgrades
 - each upgrade is also either:
@@ -509,23 +566,25 @@ const prismaticUpgrades = {
 	},
 	chromaOverdrive:{
 		name:"Chromatic Overdrive",
-		desc:"Chroma gain is multiplied by {x}, but chroma generation is {y}× more expensive. Having at least 1 level of this makes red, green and blue chroma cost gray chroma.",
+		desc:"Chroma gain is multiplied by {x}, but chroma generation is {y}× more expensive.{t}",
 		eff:{
 			x:(x=g.prismaticUpgrades.chromaOverdrive)=>c.d8.pow(x),
-			y:(x=g.prismaticUpgrades.chromaOverdrive)=>c.d2.pow(x.div(c.d3))
+			y:(x=g.prismaticUpgrades.chromaOverdrive)=>study13.rewards.nitro.eff().pow(x)
 		},
 		format:{
 			x:(x=prismaticUpgrades.chromaOverdrive.eff.x())=>x.format(),
-			y:(x=prismaticUpgrades.chromaOverdrive.eff.y())=>x.noLeadFormat(2)
+			y:(x=prismaticUpgrades.chromaOverdrive.eff.y())=>x.noLeadFormat(2),
+			t:()=>(g.achievement[815]&&g.ach815RewardActive)?"":" Having at least 1 level of this makes red, green and blue chroma cost gray chroma."
 		},
 		formula:{
 			x:()=>"8<sup>λ</sup>",
-			y:()=>"2<sup>λ ÷ 3</sup>"
+			y:()=>(study13.rewardLevels.nitro===18)?"2<sup>λ ÷ 9</sup>":(study13.rewardLevels.nitro===0)?"2<sup>λ ÷ 3</sup>":(study13.rewards.nitro.eff().noLeadFormat(2)+"<sup>λ</sup>")
 		},
-		variables:"xy",
+		variables:"xyt",
 		baseCost:c.e5,
 		scale:c.d8,
-		refundable:true
+		refundable:true,
+		loseLevelGlow:function(){return stat.chromaCostMultiplier.gt(c.d1)}
 	},
 	lumenThresholdReduction1:{
 		name:"Illumenati I",
@@ -597,7 +656,7 @@ const prismaticUpgrades = {
 		formula:{x:()=>"λ + 1"},
 		variables:"x",
 		cost:function(x=g.prismaticUpgrades.prismLab){return Decimal.fromComponents(1,1,Math.floor(88.8*10**(x/7))+0.948412965778601)},
-		costFormula:()=>"8.88 × 10<sup>floor(88.8 × 10<sup>λ ÷ 7</sup>)</sup>",
+		costFormula:()=>"8.88 × 10<sup>⌊88.8 × 10<sup>λ ÷ 7</sup>⌋</sup>",
 		max:c.d8,
 		unlockReq:function(){return g.research.r21_8}
 	},
@@ -621,6 +680,44 @@ const prismaticUpgrades = {
 		costFormula:()=>BEformat(9.99e25)+" × 999<sup>λ</sup> × 9<sup>λ<sup>"+(g.prismaticUpgrades.prismCondenser.gte(c.e2)?"log(λ)":"2")+"</sup></sup>",
 		max:N(999),
 		unlockReq:function(){return g.research.r21_9}
+	},
+	prismLab2:{
+		name:"Lab Amplifier",
+		desc:"Prismal research are stronger<br><table>"+countTo(3).map(x=>"<tr><td style=\"width:60px;text-align:left\">Row "+(x+21)+":</td><td style=\"width:120px;text-align:right\">{"+String.fromCharCode(119+x)+"}%</td></tr>").join("")+"</table>",
+		eff:{
+			x:(x=g.prismaticUpgrades.prismLab2)=>x.div(c.e2).add(c.d1),
+			y:(x=g.prismaticUpgrades.prismLab2)=>x.div(c.d150).add(c.d1),
+			z:(x=g.prismaticUpgrades.prismLab2)=>x.div(c.d225).add(c.d1)
+		},
+		format:{
+			x:(x=prismaticUpgrades.prismLab2.eff.x())=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
+			y:(x=prismaticUpgrades.prismLab2.eff.y())=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
+			z:(x=prismaticUpgrades.prismLab2.eff.z())=>x.sub(c.d1).mul(c.e2).noLeadFormat(3)
+		},
+		formula:{
+			x:()=>"λ",
+			y:()=>"λ ÷ 1.5",
+			z:()=>"λ ÷ 2.25"
+		},
+		variables:"xyz",
+		cost:(x=g.prismaticUpgrades.prismLab2)=>c.d1_004.pow(x).mul(c.d225).pow10(),
+		costFormula:()=>"10<sup>225 × 1.004<sup>λ</sup></sup>",
+		max:N(900),
+		unlockReq:function(){return g.studyCompletions[13]>23}
+	},
+	masterSpark:{
+		name:"Master Spark",
+		desc:"You can activate both Row 11 Masteries at once, but they are {x}% weaker",
+		eff:(x=g.prismaticUpgrades.masterSpark)=>x.eq(c.d0)?c.d1:x.div(c.e2),
+		format:{x:(x=prismaticUpgrades.masterSpark.eff())=>c.d1.sub(x).mul(c.e2).format()},
+		formula:{x:()=>"(100 - λ) mod 100"},
+		variables:"x",
+		cost:function(x=g.prismaticUpgrades.masterSpark){return [x.add(c.d1).div(c.d50),x.sub(c.d49).max(c.d0).pow(c.d2).div(1250)].sumDecimals().pow10().pow10()},
+		costFormula:()=>"Ξ<sup>[2]</sup>(λ ÷ 50 + max(λ - 49, 0)<sup>2</sup> ÷ 1,250)",
+		max:c.e2,
+		refundable:true,
+		loseLevelGlow:function(){return false},
+		unlockReq:function(){return g.studyCompletions[13]>23}
 	}
 }
 const prismaticUpgradeList = Object.keys(prismaticUpgrades)
@@ -632,75 +729,92 @@ for (let upg of prismaticUpgradeList) prismaticUpgrades[upg].variables = prismat
 const wormholeUpgrades = {
 	1:{
 		name:"More Upgrades α",
-		text:function(){return "Gain "+this.eff().format()+"× more Hawking radiation (based on Wormhole Upgrades)"},
+		text:function(){return "Gain {}× more Hawking radiation (based on Wormhole Upgrades)"},
 		cost:Decimal.FC_NN(1,1,3000),
-		eff:function(){return Decimal.FC_NN(1,1,[20,25,32,40,50,64,80,100,125][countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[1]]*[10,11,12].map(x=>g.wormholeUpgrades[x]/20+1).product())},
+		eff:function(){return Decimal.FC_NN(1,1,[20,25,32,40,50,64,80,100,125][countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[1]]*(x=>Math.max(x/20+1,x/10,x/5-4))([10,11,12].map(x=>g.wormholeUpgrades[x]).sum()))},
+		format:x=>x.format(),
+		formula:()=>"10<sup>dB(U<sub>R</sub> + 14) × max("+countTo(3).map(x=>"U<sub>NR</sub>"+formulaFormat.mult(N(2**x/40))+formulaFormat.add(N(2**(x-1)*(2-x)))).join(", ")+")"
 	},
 	2:{
 		name:"More Upgrades β",
-		text:function(){return "Gain ^"+this.eff().noLeadFormat(4)+" more Hawking radiation (based on Wormhole Upgrades)"},
-		cost:Decimal.FC_NN(1,1,3500),
-		eff:function(){return Decimal.FC_NN(1,0,1+Math.log10(1+((countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[2])/2)+([10,11,12].map(x=>g.wormholeUpgrades[x]).sum())/12)/100)}
+		text:function(){return "Gain ^{} more Hawking radiation (based on Wormhole Upgrades)"},
+		cost:Decimal.FC_NN(1,1,3300),
+		eff:function(){return Decimal.FC_NN(1,0,1+Math.log10(1+((countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[2])/2)+([10,11,12].map(x=>g.wormholeUpgrades[x]).sum())/12)/100)},
+		format:x=>x.noLeadFormat(4),
+		formula:()=>"1 + log(1 + U<sub>R</sub> ÷ 2 + U<sub>NR</sub> ÷ 12) ÷ 100"
 	},
 	3:{
-		name:"More Galaxies",
+		name:"More Galaxies α",
 		text:function(){return "Galaxy Boosts 2 and 4 use better formulas"},
-		cost:c.maxvalue
+		cost:Decimal.FC_NN(1,1,22000)
 	},
 	4:{
 		name:"More Wormhole α",
 		text:function(){return "The "+achievement.label(716)+" reward timer increases 100× faster"},
-		cost:Decimal.FC_NN(1,1,4000)
+		cost:Decimal.FC_NN(1,1,3600)
 	},
 	5:{
 		name:"More Achievement",
-		text:function(){return "The "+achievement.label(501)+" reward softcaps at "+this.eff().noLeadFormat(3)+" instead of 75 (based on total achievements)"},
-		cost:Decimal.FC_NN(1,1,4500),
-		eff:function(){return Decimal.FC_NN(1,0,(totalAchievements>=200)?(totalAchievements/2):(75+totalAchievements**4/64e6))}
+		text:function(){return "The "+achievement.label(501)+" reward softcaps at {} instead of 75 (based on total achievements)"},
+		cost:Decimal.FC_NN(1,1,4000),
+		eff:function(){return Decimal.FC_NN(1,0,(totalAchievements>=200)?(totalAchievements/2):(75+totalAchievements**4/64e6))},
+		format:x=>x.noLeadFormat(3),
+		formula:()=>(totalAchievements>=200)?"A ÷ 2":("75 + A<sup>4</sup> ÷ "+BEformat(64e6))
 	},
 	6:{
 		name:"More Studies",
-		text:function(){return "Multiply the anti-Y axis effect by "+this.eff().noLeadFormat(4)+" (based on total Study completions)"},
-		cost:Decimal.FC_NN(1,1,5000),
-		eff:function(){return Decimal.FC_NN(1,0,1+g.studyCompletions.slice(1,13).sum()/1000+g.studyCompletions[13]/2000)}
+		text:function(){return "Multiply the anti-Y axis effect by {} (based on total Study completions)"},
+		cost:Decimal.FC_NN(1,1,4500),
+		eff:function(){return Decimal.FC_NN(1,0,1+g.studyCompletions.slice(1,13).sum()*0.002+g.studyCompletions[13]/1000)},
+		format:x=>x.noLeadFormat(4),
+		formula:()=>"1 + (Σ<span class=\"xscript\"><sup>12</sup><sub>1</sub></span>S<sub>n</sub>) × 0.002 + S<sub>13</sub> × 0.001"
 	},
 	7:{
 		name:"More Wormhole β",
-		text:function(){return "The gray lumen effect base is increased by "+percentOrMult(this.eff(),3)+" (based on Hawking radiation)"},
-		cost:c.maxvalue,
-		eff:function(){return g.hawkingradiation.add(c.d1).log10().div(c.e5).add(c.d1)}
+		text:function(){return "The gray lumen effect base is increased by {}"+(this.eff().gte(c.d10)?"×":"%")+" (based on Hawking radiation)"},
+		cost:Decimal.FC_NN(1,1,5250),
+		eff:function(){return g.hawkingradiation.add(c.d1).log10().div(c.e5).add(c.d1)},
+		format:x=>(g.hawkingradiation.gt("e900000")?x.noLeadFormat(4):x.sub(c.d1).mul(c.e2).noLeadFormat(3)),
+		formula:()=>(g.hawkingradiation.gt("e900000")?"1 + log(HR + 1) ÷ 100,000":"log(HR + 1) ÷ 1,000")
 	},
 	8:{
 		name:"More Maxima",
-		text:function(){return "The Quatrefolium "+luckUpgrades.quatrefolium.star.name+" base is divided by "+this.eff().noLeadFormat(3)+" (based on highest galaxies)"},
-		cost:c.maxvalue,
-		eff:function(){return N(g.highestGalaxies/500+1)}
+		text:function(){return "Each level of Quatrefolium "+luckUpgrades.quatrefolium.star.name+" raises Stardust Upgrade costs to the power of {} (based on highest galaxies, total: ^"+this.eff().pow(stat.luckUpgLevel_quatrefolium_star).noLeadFormat(3)+")"},
+		cost:Decimal.FC_NN(1,1,6750),
+		eff:function(){return N(g.highestGalaxies/500+1).recip()},
+		format:x=>x.noLeadFormat(3),
+		formula:()=>"(1 + G ÷ 500)<sup>-1</sup>"
 	},
 	9:{
 		name:"More Capitalism",
 		text:function(){return "Autobuyer interval caps are halved"},
-		cost:c.maxvalue
+		cost:Decimal.FC_NN(1,1,1e5)
 	},
-	// 1, 2, 4, 5+10, 6+11+12, 7, 8, 3, 9
 	10:{
-		name:"More Space α",
-		text:function(){return "All normal and dark axis costs are raised to the power of "+formatRepeatableWormholeUpgEff(10,x=>x.noLeadFormat(2))},
-		get cost(){return Decimal.decibel(g.wormholeUpgrades[10]+17).div(0.36**(Math.max(g.wormholeUpgrades[10]-9,0)**2/100)).mul(c.d0_9).round().mul(c.e2).pow10()},
-		eff:function(x=g.wormholeUpgrades[10]){return Decimal.FC_NN(1,0,1-x/200)},
-		max:20
+		name:"More Space",
+		text:function(){return "All axis costs are raised to the power of {}"},
+		get cost(){return repeatableWormholeUpgradeCost(N(4000),N(1e7),15,g.wormholeUpgrades[10])},
+		eff:function(x=g.wormholeUpgrades[10]){return Decimal.FC_NN(1,0,1-x/100)},
+		format:x=>x.noLeadFormat(2),
+		formula:()=>"1 + λ ÷ 100",
+		max:15
 	},
 	11:{
-		name:"More Space β",
-		text:function(){return "All anti-axis costs are raised to the power of "+formatRepeatableWormholeUpgEff(11,x=>x.noLeadFormat(2))},
-		get cost(){return Decimal.decibel(g.wormholeUpgrades[11]+17).div(0.4**(Math.max(g.wormholeUpgrades[11]-9,0)**2/100)).round().mul(c.e2).pow10()},
-		eff:function(x=g.wormholeUpgrades[11]){return Decimal.FC_NN(1,0,1-x/100)},
-		max:20
+		name:"More Galaxies β",
+		text:function(){return "Star costs are raised to the power of {}"},
+		get cost(){return repeatableWormholeUpgradeCost(N(4500),N(2e6),25,g.wormholeUpgrades[11])},
+		eff:function(x=g.wormholeUpgrades[11]){return Decimal.mul(Decimal.pow(c.d0_9,x),Decimal.pow(N(1.0011053698),N(x-1).simplex(2)))},
+		format:x=>x.noLeadFormat(3),
+		formula:()=>"0.9<sup>λ</sup> × (0.1 ÷ 0.9<sup>25</sup>)<sup>(λ<sup>2</sup> - λ) ÷ 600</sup>",
+		max:25
 	},
 	12:{
 		name:"More Upgrades γ",
-		text:function(){return "Generate an additional <span style=\"white-space:nowrap\">log(<i>pending stardust</i> + 10)<sup>"+((g.wormholeUpgrades[12]===20)?"":formatRepeatableWormholeUpgEff(12,x=>x.noLeadFormat(1)))+"</sup></span> stardust per second"},
-		get cost(){return c.maxvalue},
+		text:function(){return "Generate an additional <span style=\"white-space:nowrap\">log(<i>pending stardust</i> + 10)<sup>{}</sup></span> stardust per second"},
+		get cost(){return repeatableWormholeUpgradeCost(N(4500),N(5e6),20,g.wormholeUpgrades[12])},
 		eff:function(x=g.wormholeUpgrades[12]){return (x===0)?c.mmaxvalue:(x===1)?c.d0:N(x/20)},
+		format:x=>x.noLeadFormat(1),
+		formula:()=>"min(log(λ), (λ - 1) ÷ 10, λ ÷ 20)",
 		max:20
 	}
 }
@@ -724,9 +838,9 @@ const corruption = {
 			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
-			isCorrupted:function(type){return g.exoticmatter.div(realAxisCostDivisor(type)).root(realAxisCostExponent(type)).gt(this.start())},
+			isCorrupted:function(type){return axisCost(type).mul(realAxisCostDivisor(type)).root(realAxisCostExponent(type)).gt(this.start())},
 			visible:function(){
-				for (let i of axisCodes) if (this.isCorrupted(i)) return true
+				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false
 			}
 		},
@@ -738,9 +852,9 @@ const corruption = {
 			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
-			isCorrupted:function(type){return g.darkmatter.div(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type)).gt(this.start())},
+			isCorrupted:function(type){return darkAxisCost(type).mul(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type)).gt(this.start())},
 			visible:function(){
-				for (let i of axisCodes) if (this.isCorrupted(i)) return true
+				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false
 			}
 		},
@@ -752,9 +866,9 @@ const corruption = {
 			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
-			isCorrupted:function(type){return g.antimatter.div(realAntiAxisCostDivisor(type)).root(realAntiAxisCostExponent(type)).gt(this.start())},
+			isCorrupted:function(type){return antiAxisCost(type).mul(realAntiAxisCostDivisor(type)).root(realAntiAxisCostExponent(type)).gt(this.start())},
 			visible:function(){
-				for (let i of axisCodes) if (this.isCorrupted(i)) return true
+				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false
 			}
 		}

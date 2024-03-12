@@ -143,20 +143,20 @@ const largeNumberVisualizationVariables = [
 ]
 const largeNumberVisualizationNumbers = [
 	{value:c.e10,name:"Dialogue"},
-	{value:c.d3.pow(c.d27),name:"3↑↑3"},
+	{value:c.d3.pow(c.d27),name:"3⇈3"},
 	{value:N(2**27*3**14*125*49*11),name:"the number of Rubik's cube combinations"},
 	{value:N(6.02214076e23),name:"Avogadro's number"},
 	{value:N(1.989e33),name:"solar mass / g"},
 	{value:N(7.401196841564901e45),name:"the number of 4<sup>3</sup> Rubik's cube combinations"},
 	{value:N(17*2**259),name:"the Eddington number"},
 	{value:c.e100,name:"Googol"},
-	{value:N(2**512),name:"4↑↑3"},
+	{value:N(2**512),name:"4⇈3"},
 	{value:N(8.4506e184),name:"volume of observable universe / l<span class=\"xscript\"><sup>3</sup><sub>P</sub></span>"},
 	{value:c.inf,name:"Double floating-point Infinity"},
 	{value:c.ee3,name:achievement.label(311)+" requirement",visible:function(){return g.achievement[311]}},
 	{value:N(3003).pow10(),name:"Millillion"},
 	{value:c.d2.pow(16384),name:"Quadruple floating-point Infinity"},
-	{value:c.d2.pow(65536),name:"2↑↑5"},
+	{value:c.d2.pow(65536),name:"2⇈5"},
 	{value:c.e44031,name:achievement.label(413)+" requirement",visible:function(){return g.achievement[413]}},
 	{value:c.d2.pow(276709),name:"the Hitchhiker's number"},
 	{value:c.ee6,name:achievement.label(529)+" requirement",visible:function(){return g.achievement[529]}},
@@ -191,17 +191,63 @@ function SSBsmall(x,y,hyper) {
 	let symbol=(hyper===2)?" × ":(hyper===3)?" ^ ":" ? ";
 	return ("<span class=\"small\">"+unbreak("("+x+" "+symbol+" "+y+")")+"</span>").replaceAll("<span&nbsp;class=\"small\">","<span class=\"small\">");
 }
-function masteryDependencies(i){
-	if (typeof i === "array") return Array.removeDuplicates(i.map(x=>masteryDependencies(x)))
-	let out = ["knowledgeEffect"]
-	if (Math.floor(i/10)===1) out.push("SAxisEffect","realSAxis")
-	if (Math.floor(i/10)===2) out.push("spatialEnergyEffect")
-	if (Math.floor(i/10)===4) out.push("totalNormalAxis")
-	if (Math.floor(i/10)===10) out.push("stardustBoost11")
-	// masteries boosting other masteries
-	if (i<40) out.push(masteryDependencies(40+i%10))
-	if (Math.floor(i/10)===8) out.push(masteryDependencies([91,92]))
-	if (i===104) out.push(masteryDependencies(112))
+function masteryDependencies(id){
+	if (Array.isArray(id)) {return Array.removeDuplicates(id.map(x=>masteryDependencies(x)).flat())}
+	let out = ["knowledgeEffect",...bindingDependencies(234)]
+	let row = Math.floor(id/10)
+	// row-specific effects
+	if (row===1) {out.push("SAxisEffect","realSAxis",...masteryDependencies(52),...researchDependencies("r4_6"),...researchDependencies("r4_10"),...bindingDependencies(53))}
+	if (row===2) {out.push("spatialEnergyEffect",...researchDependencies("r5_13"))}
+	if (row===3) {out.push(...bindingDependencies(44))}
+	if (row===4) {out.push("totalNormalAxis")}
+	if (id===42) {out.push(...bindingDependencies(265))}
+	if ([61,63].includes(id)) {out.push(...researchDependencies("r20_7"))}
+	if (row===8) {out.push(masteryDependencies([91,92]),bindingDependencies(265))}
+	if (id===85) {out.push(...bindingDependencies(265))}
+	if (row===10) {out.push("stardustBoost11")}
+	if (id===101) {out.push(bindingDependencies(186))}
+	if ([102,104].includes(id)) {out.push(researchDependencies("r20_9"))}
+	if (id===104) {out.push(masteryDependencies(112))}
+	// inter-row effects
+	if (id<40) {out.push(masteryDependencies(40+id%10))}
+	if (row<11) {out.push(...researchDependencies("r6_11"))}
+	if ((row%2)===1) {out.push(...bindingDependencies(196))}
+	return Array.removeDuplicates(out.flat())
+}
+function researchDependencies(id){
+	if (Array.isArray(id)) {return Array.removeDuplicates(id.map(x=>researchDependencies(x)).flat())}
+	let row = researchRow(id), col = researchCol(id), out = []
+	// row-specific effects
+	if (id==="r2_14") {out.push("realXAxis")}
+	if (id==="r6_5") {out.push(...bindingDependencies(49))}
+	if (id==="r8_2") {out.push("totalDarkAxis","redLightEffect",...bindingDependencies(245))}
+	if (id==="r8_14") {out.push(...bindingDependencies(41))}
+	if (id==="r11_5") [out.push(...researchDependencies("r34_13"))]
+	if ((row===13)&&(col>6)&&(col<10)) {out.push(...bindingDependencies("r36_15"))}
+	if (id==="r13_8") {out.push(...researchDependencies(["r15_5","r15_11"]))}
+	if (id==="r14_10") {out.push(...researchDependencies("r37_15"))}
+	if (id==="r25_14") {out.push("antiXAxisEffect")}
+	if (id==="r32_14") {out.push(researchDependencies("r34_12"))}
+	if (id==="r37_1") {out.push("TAxisEffect","realTAxis","darkTAxisEffect","realdarkTAxis","antiTAxisEffect","realantiTAxis")}
+	// inter-row effects
+	if (["r1_3","r1_8","r1_3"].includes(id)) {out.push(...researchDependencies("r8_11"),...bindingDependencies(55))}
+	if (["r6_5","r6_6","r7_5","r8_5"].includes(id)) {out.push(...researchDependencies("r9_5"))}
+	if ([5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {out.push(bindingDependencies(254))}
+	if (researchList.study7.includes(id)) {out.push(bindingDependencies(265))}
+	if (study13.researchBindings[id]!==undefined) {out.push(bindingDependencies(study13.researchBindings[id]))}
+	// group effects
+	if (research[id].group==="spatialsynergism") {out.push("spatialSynergismPower",bindingDependencies([33,37]))}
+	else if ((research[id].group??"").substring(0,8)==="finality") {out.push(...bindingDependencies(415))}
+	return Array.removeDuplicates(out.flat())
+}
+function bindingDependencies(id){
+	if (Array.isArray(id)) {return Array.removeDuplicates(id.map(x=>bindingDependencies(x)).flat())}
+	let out = []
+	// row-specific effects
+	if (id===192) {out.push("totalNormalAxis")}
+	// inter-row effects
+	if (Object.keys(study13.rewards.weakenBindings.eff(study13.rewards.weakenBindings.breakpoints.length)).includes(String(id))) {out.push("study13RewardWeakBindings")}
+	if (study13.metaBindings[id]!==undefined) {for (let i of study13.metaBindings[id]) {out.push(bindingDependencies(i))}}
 	return Array.removeDuplicates(out.flat())
 }
 const statTemplates = {
@@ -244,7 +290,7 @@ const statTemplates = {
 		return {
 			label:achievement.label(id),
 			func:function(prev){return g.achievement[id]?prev.mul(achievement(id).effect()):prev},
-			text:function(){return "× "+achievement(id).effect().format(2)},
+			text:function(){return "× "+achievement(id).effect().noLeadFormat(3)},
 			dependencies:dependencies,
 			show:function(){return g.achievement[id]&&achievement(id).effect().neq(c.d1)},
 		}
@@ -289,9 +335,10 @@ const statTemplates = {
 	},
 	darkStarEffect2:function(axis){
 		let hyper = (axis==="V")?2:3
+		let axisNum = axisCodes.indexOf(axis)
 		return {
 			label:"Dark Stars",
-			mod:function(){return darkStarEffect2Level(axis).div(c.d10).add(c.d1);},
+			mod:function(){return darkStarEffect2Level(axis).div((axisNum>7)?c.d20:c.d10).add(c.d1);},
 			func:(axis==="V")?function(prev){return prev.mul(this.mod());}:function(prev){return prev.pow(this.mod())},
 			text:function(){return [null,null,"×","^"][hyper]+" "+this.mod().noLeadFormat(3);},
 			dependencies:["realDarkStars"],
@@ -322,24 +369,20 @@ const statTemplates = {
 		mod:function(){return g.achievement[209]?stat.totalNormalAxis.mul(achievement(209).effect()):c.d0;},
 		func:function(prev){return prev.add(this.mod());},
 		text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.totalNormalAxis.format(),achievement(209).effectFormat(achievement(209).effect()),2);},
-		dependencies:["totalNormalAxis"],
+		dependencies:["totalNormalAxis",...bindingDependencies([162,192])],
 		show:function(){return this.mod().neq(c.d0)}
 	},
 	ach210Reward:function(type){
 		return {
 			label:achievement.label(210),
-			mod:function(){
-				if (!g.achievement[210]) return c.d0
-				let out = g[type+"Axis"].div(achievement(210).effect())
-				if (out.gt(c.d80)) out=out.mul(c.d80).pow(c.d0_5)
-				return out
-			},
+			mod:function(){return g.achievement[210]?achievement(210).value(type):c.d0},
 			func:function(prev){return prev.add(this.mod());},
 			text:function(){
 				let out = SSBsmall(g[type+"Axis"].format(),achievement(210).effect().recip().noLeadFormat(3),2)
-				if (this.mod().gte(c.d80)) out = SSBsmall(SSBsmall(out,80,2),0.5,3)
+				if (this.mod().gte(c.d80)) out = SSBsmall(SSBsmall(out,c.d80.pow(achievement(210).scp().recip().sub(c.d1)).noLeadFormat(3),2),achievement(210).scp().noLeadFormat(3),3)
 				return "+ "+this.mod().format(2)+" "+out;
 			},
+			dependencies:[...bindingDependencies([164,174,184,192])],
 			show:function(){return this.mod().neq(c.d0)}
 		};
 	},
@@ -347,13 +390,14 @@ const statTemplates = {
 		label:"Research 1-8",
 		func:function(prev){return g.research.r1_8?prev.mul(researchEffect(1,8)):prev},
 		text:function(){return "× "+researchEffect(1,8).noLeadFormat(2);},
+		dependencies:[...researchDependencies("r1_8")],
 		show:function(){return g.research.r1_8&&researchEffect(1,8).neq(c.d1)}
 	},
 	ach501Reward:{
 		label:achievement.label(501),
 		func:function(prev){return g.achievement[501]?prev.mul(achievement(501).realEffect()):prev;},
 		text:function(){return "× "+achievement(501).realEffect().format(2);},
-		dependencies:masteryDependencies(101),
+		dependencies:[masteryDependencies(101),...bindingDependencies([166,176])].flat(),
 		show:function(){return g.achievement[501]}
 	},
 	ach525_526Reward:[
@@ -367,16 +411,17 @@ const statTemplates = {
 			label:achievement.label(526),
 			func:function(prev){return g.achievement[526]?prev.add(achievement(526).effect()):prev;},
 			text:function(){return "+ "+achievement(526).effect().format(3);},
-			dependencies:["totalNormalAxis"],
+			dependencies:["totalNormalAxis","redLightEffect",...bindingDependencies(245)],
 			show:function(){return g.achievement[526]&&stat.totalNormalAxis.neq(c.d0)}
 		}
 	],
 	ach528Reward:function(type){
 		return {
 			label:achievement.label(528),
-			mod:function(){return g.achievement[528]?Decimal.linearSoftcap(g[type+"Axis"].mul(achievement(528).effect()),c.d100,c.d2,1):c.d0;},
+			mod:function(){return g.achievement[528]?achievement(528).value(type):c.d0;},
 			func:function(prev){return prev.add(this.mod());},
-			text:function(){return "+ "+this.mod().format(2)+" <span class=\"small\">("+(this.mod().gte(c.e2)?("10 ^ "+formulaFormat.linSoftcap("log("+g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3)+")",c.d2,c.d2,this.mod().gte(c.e2),true)):(g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3))+")")+"</span>";},
+			text:function(){return "+ "+this.mod().format(2)+" <span class=\"small\">("+(this.mod().gte(c.e2)?("10 ^ "+formulaFormat.linSoftcap("log("+g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3)+")",c.d2,achievement(528).scp(),this.mod().gte(c.e2),true)):(g[type+"Axis"].format()+" ÷ "+achievement(528).effect().recip().noLeadFormat(3))+")")+"</span>";},
+			dependencies:[...bindingDependencies([168,178,188])],
 			show:function(){return this.mod().neq(c.d0)}
 		};
 	},
@@ -390,6 +435,7 @@ const statTemplates = {
 			},
 			func:function(prev){return g.research["r"+row+"_"+col]?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().format(2)},
+			dependencies:[...researchDependencies(["r"+row+"_"+col,"r17_8"])],
 			show:function(){return g.research["r"+row+"_"+col]}
 		}
 	},
@@ -403,7 +449,7 @@ const statTemplates = {
 	study9:{
 		label:"Study IX",
 		func:function(prev){return (StudyE(9)&&prev.gt(c.d10))?prev.dilate(studies[9].experientiaEffect()):prev},
-		text:function(){return "dilate "+studies[9].experientiaEffect().noLeadFormat(4)},
+		text:function(){return "10 ^ log(<i>x</i>) ^ "+studies[9].experientiaEffect().noLeadFormat(4)},
 		show:function(){return StudyE(9)},
 		color:"#cc0000"
 	},
@@ -425,9 +471,63 @@ const statTemplates = {
 				return out
 			},
 			func:function(prev){return (op===3)?prev.pow(this.mod()):(op===2)?prev.mul(this.mod()):functionError("statTemplates.finalityResearch",arguments)},
-			text:function(){return "^ "+this.mod().noLeadFormat(4)},
-			show:function(){return g.research[researchList.finality[type][1]]}
+			text:function(){return ["×","^"][op-2]+" "+this.mod().noLeadFormat(4)},
+			dependencies:[...Array.removeDuplicates(researchList.finality[type].slice(1,13).map(x=>researchDependencies(x)).flat())],
+			show:function(){return this.mod().neq(c.d1)}
 		}
+	},
+	duofoliumSpace:{
+		label:"Duofolium "+luckUpgrades.duofolium.space.name,
+		func:function(prev){return prev.mul(luckUpgrades.duofolium.space.eff())},
+		text:function(){return "× "+luckUpgrades.duofolium.space.eff().noLeadFormat(3)},
+		dependencies:["luckUpgLevel_duofolium_space"],
+		show:function(){return g.luckUpgrades.duofolium.space.gt(c.d0)}
+	},
+	wormholeUpg10:{
+		label:wormholeUpgName(10),
+		func:function(prev){return prev.mul(wormholeUpgrades[10].eff())},
+		text:function(){return "× "+wormholeUpgrades[10].eff().noLeadFormat(2)},
+		show:function(){return g.wormholeUpgrades[10]>0}
+	},
+	study13MatterBoost:function(type,op){
+		let data = study13.rewards[type+"Boost"]
+		return {
+			label:study13.rewardLabel(type+"Boost"),
+			func:function(prev){return (op===3)?prev.pow(data.eff()):(op===2)?prev.mul(data.eff()):functionError("statTemplates.study13MatterBoost",arguments)},
+			text:function(){return ["×","^"][op-2]+" "+data.eff().noLeadFormat(4)},
+			show:function(){return study13.rewardLevels.emBoost!==0}
+		}
+	},
+	study13SacNum1:{
+		label:study13.rewardLabel("sacredNumber",1),
+		func:function(prev){return (study13.rewardLevels.sacredNumber>0)?prev.mul(420):prev},
+		text:function(){return "× 420"},
+		show:function(){return study13.rewardLevels.sacredNumber>0}
+	},
+	ach912Reward:{
+		label:achievement.label(912),
+		func:function(prev){return g.achievement[912]?prev.pow(c.d1_01):prev},
+		text:function(){return "^ 1.01"},
+		show:function(){return g.achievement[912]}
+	},
+	binding225:function(hyper){
+		if (hyper===2) {return {
+			label:"Study XIII Binding 225",
+			func:function(prev){return study13.bound(225)?prev.mul(study13.bindingEff(225)):prev},
+			text:function(){return "× "+study13.bindingEff(225).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(225)],
+			show:function(){return study13.bound(225)&&study13.bindingEff(225).neq(c.d1)},
+			color:"var(--binding)"
+		}}
+		if (hyper===3) {return {
+			label:"Study XIII Binding 225",
+			func:function(prev){return (study13.bound(225)&&prev.gt(c.d10))?prev.dilate(study13.bindingEff(225)):prev},
+			text:function(){return "10 ^ log(<i>x</i>) ^ "+study13.bindingEff(225).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(225)],
+			show:function(prev){return study13.bound(225)&&prev.gt(c.d10)&&study13.bindingEff(225).neq(c.d1)},
+			color:"var(--binding)"
+		}}
+		functionError("statTemplates.binding225",arguments)
 	}
 }
 function statFormat(formulaShown,formulaHidden,className) {
@@ -442,6 +542,7 @@ miscStats.exoticmatterPerSec={
 	precision:2,
 	modifiers:[
 		statTemplates.base("1",c.d1,false),
+		// multipliers
 		{
 			label:"X Axis",
 			mod:function(){return stat.XAxisEffect.pow(stat.realXAxis);},
@@ -505,6 +606,7 @@ miscStats.exoticmatterPerSec={
 				label:"Star "+i,
 				func:function(prev){return g.star[i]?prev.mul(starEffect(i)):prev;},
 				text:function(){return "× "+starEffect(i).format(2);},
+				dependencies:[...bindingDependencies(57)],
 				show:function(){return g.star[i]}
 			})
 			return out
@@ -532,7 +634,7 @@ miscStats.exoticmatterPerSec={
 			label:"Research 1-3",
 			func:function(prev){return g.research.r1_3?prev.mul(Decimal.pow(researchEffect(1,3),stat.totalNormalAxis)):prev;},
 			text:function(){return "× "+Decimal.pow(researchEffect(1,3),stat.totalNormalAxis).format(2)+" "+SSBsmall(researchEffect(1,3).noLeadFormat(2),stat.totalNormalAxis.format(0),3);},
-			dependencies:["totalNormalAxis"],
+			dependencies:["totalNormalAxis",...researchDependencies("r1_3")],
 			show:function(){return g.research.r1_3&&researchEffect(1,3).neq(c.d1)&&stat.totalNormalAxis.neq(c.d0)}
 		},
 		{
@@ -541,6 +643,7 @@ miscStats.exoticmatterPerSec={
 			text:function(){return "× "+achievement(518).effect().format(2);},
 			show:function(){return g.achievement[518]&&achievement(518).effect().neq(c.d1)}
 		},
+		// exponents
 		{
 			label:"S Axis",
 			func:function(prev){return prev.pow(stat.SAxisEffect.pow(stat.realSAxis));},
@@ -557,7 +660,7 @@ miscStats.exoticmatterPerSec={
 		{
 			label:"Dark Energy",
 			func:function(prev){return prev.pow(stat.darkEnergyEffect);},
-			text:function(){return "^ "+stat.darkEnergyEffect.format(4);},
+			text:function(){return "^ "+stat.darkEnergyEffect.noLeadFormat(4);},
 			dependencies:["darkEnergyEffect"],
 			show:function(){return stat.darkEnergyEffect.neq(c.d1)}
 		},
@@ -568,22 +671,41 @@ miscStats.exoticmatterPerSec={
 			show:function(){return g.achievement[401]}
 		},
 		statTemplates.finalityResearch("EM",3),
+		{
+			label:"Study XIII Binding 135",
+			func:function(prev){return study13.bound(135)?prev.pow(study13.bindingEff(135)):prev},
+			text:function(){return "^ "+study13.bindingEff(135).noLeadFormat(3)},
+			show:function(){return study13.bound(135)},
+			dependencies:[...bindingDependencies(135)],
+			color:"var(--binding)"
+		},
+		{
+			label:"Study XIII Binding 299",
+			func:function(prev){return study13.bound(299)?prev.pow(study13.bindingEff(299)):prev},
+			text:function(){return "^ "+study13.bindingEff(299).noLeadFormat(3)},
+			show:function(){return study13.bound(299)},
+			dependencies:[...bindingDependencies(299)],
+			color:"var(--binding)"
+		},
 		statTemplates.study7,
+		// dilations
 		statTemplates.study9,
+		statTemplates.binding225(3),
+		// tickspeed
 		statTemplates.tickspeed()
 	]
 };
 miscStats.pendingstardust={
 	type:"breakdown",
 	label:"Stardust gain",
-	visible:function(){return masteryData[42].req()&&g.exoticmatter.gt(stat.stardustExoticMatterReq.div(c.d10));},
+	visible:function(){return masteryData[42].req()||unlocked("Stardust");},
 	category:"Stardust gain",
 	precision:2,
 	modifiers:[
 		{
 			label:"Base Gain",
 			func:function(){return g.exoticmatter.lt(stat.stardustExoticMatterReq)?c.d0:g.exoticmatter.div(stat.stardustExoticMatterReq.div(c.d10)).dilate(studies[4].reward(1));},
-			text:function(){return "10 ^ log("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ÷ "+stat.stardustExoticMatterReq.div(c.d10).format()+") ^ "+studies[4].reward(1).noLeadFormat(3);},
+			text:function(){return g.exoticmatter.gt(stat.stardustExoticMatterReq.div(c.d10))?("10 ^ log("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ÷ "+stat.stardustExoticMatterReq.div(c.d10).format()+") ^ "+studies[4].reward(1).noLeadFormat(3)):("Need at least "+stat.stardustExoticMatterReq.format()+" exotic matter");},
 			dependencies:["stardustExoticMatterReq"],
 			show:function(){return true}
 		},
@@ -600,6 +722,13 @@ miscStats.pendingstardust={
 			text:function(){return "^ "+stat.stardustExponent.noLeadFormat(4)},
 			dependencies:["stardustExponent"],
 			show:function(){return stat.stardustExponent.neq(c.d1)}
+		},
+		{
+			label:"Stardust gain dilations",
+			func:function(prev){return prev.gt(c.d10)?prev.dilate(stat.stardustDilation):prev},
+			text:function(){return "10 ^ log(<i>x</i>) ^ "+stat.stardustDilation.noLeadFormat(4)},
+			dependencies:["stardustDilation"],
+			show:function(prev){return prev.gt(c.d10)&&stat.stardustDilation.neq(c.d1)}
 		}
 	],
 };
@@ -630,7 +759,7 @@ miscStats.stardustMultiplier={
 			mod:function(){return achievement(208).effect().pow(stat.totalNormalAxis);},
 			func:function(prev){return g.achievement[208]?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(achievement(208).effect().noLeadFormat(4),stat.totalNormalAxis.format(0),3);},
-			dependencies:["totalNormalAxis"],
+			dependencies:["totalNormalAxis",...bindingDependencies(192)],
 			show:function(){return g.achievement[208]&&stat.totalNormalAxis.neq(c.d0)}
 		},
 		{
@@ -679,8 +808,24 @@ miscStats.stardustMultiplier={
 			mod:function(){return g.hawkingradiation.max(c.d1).pow(researchEffect(2,10))},
 			func:function(prev){return g.research.r2_10?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(g.hawkingradiation.format(),researchEffect(2,10).noLeadFormat(3),3)},
+			dependencies:[...researchDependencies("r2_10")],
 			show:function(){return g.research.r2_10&&g.hawkingradiation.gt(c.d1)}
-		}
+		},
+		{
+			label:"Study XIII Binding 248",
+			func:function(prev){return study13.bound(248)?prev.div(study13.bindingEff(248)):prev},
+			text:function(){return "÷ "+study13.bindingEff(248).noLeadFormat(2)},
+			dependencies:[...bindingDependencies(248)],
+			show:function(){return study13.bound(248)},
+			color:"var(--binding)"
+		},
+		{
+			label:study13.rewardLabel("century",2),
+			mod:function(){return c.e100.pow(g.studyCompletions[13])},
+			func:function(prev){return (study13.rewardLevels.century>1)?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().format()+" "+SSBsmall(c.e100.format(),g.studyCompletions[13],3)},
+			show:function(){return study13.rewardLevels.century>1}
+		},
 	]
 };
 miscStats.stardustExponent={
@@ -700,7 +845,7 @@ miscStats.stardustExponent={
 		{
 			label:"Stelliferous Energy",
 			func:function(prev){return prev.mul(stat.stelliferousEnergyEffect);},
-			text:function(){return "× "+stat.stelliferousEnergyEffect.format(4);},
+			text:function(){return "× "+stat.stelliferousEnergyEffect.noLeadFormat(4);},
 			dependencies:["stelliferousEnergyEffect"],
 			show:function(){return stat.stelliferousEnergyEffect.neq(c.d1)}
 		},
@@ -718,9 +863,28 @@ miscStats.stardustExponent={
 			show:function(){return galaxyEffects[2].penalty.value().neq(c.d1)&&(g.stars<40)}
 		},
 		statTemplates.finalityResearch("S",2),
+		{
+			label:"Study XIII Binding 85",
+			func:function(prev){return study13.bound(85)?prev.mul(study13.bindingEff(85)):prev},
+			text:function(){return "× "+study13.bindingEff(85).noLeadFormat(3)},
+			show:function(){return study13.bound(85)},
+			dependencies:[...bindingDependencies(85)],
+			color:"var(--binding)"
+		},
 		statTemplates.study7
 	]
 };
+miscStats.stardustDilation={
+	type:"breakdown",
+	label:"Stardust gain dilations",
+	visible:function(){return stat.pendingstardust.gt(c.d10)&&stat.stardustDilation.neq(c.d1)},
+	category:"Stardust gain",
+	precision:4,
+	modifiers:[
+		statTemplates.base("1",c.d1,false),
+		statTemplates.binding225(2)
+	]
+}
 miscStats.stardustPerSec={
 	type:"breakdown",
 	label:"Stardust per second",
@@ -729,6 +893,7 @@ miscStats.stardustPerSec={
 	precision:2,
 	modifiers:[
 		statTemplates.base("0",c.d0,false),
+		// additions
 		{
 			label:"Wormhole Milestone 10",
 			func:function(prev){return (achievement.ownedInTier(5)>=10)?prev.add(c.d1):prev},
@@ -739,10 +904,11 @@ miscStats.stardustPerSec={
 			label:wormholeUpgName(12),
 			mod:function(){return (g.wormholeUpgrades[12]>0)?stat.pendingstardust.add(c.d10).log10().pow(wormholeUpgrades[12].eff()):c.d0},
 			func:function(prev){return prev.add(this.mod())},
-			text:function(){return "+ "+this.mod().format(2)},
+			text:function(){return "+ "+this.mod().noLeadFormat(2)},
 			dependencies:["pendingstardust"],
 			show:function(){return g.wormholeUpgrades[12]>0}
 		},
+		// tickspeed
 		statTemplates.tickspeed()
 	]
 }
@@ -756,14 +922,14 @@ miscStats.darkmatterPerSec={
 		{
 			label:"Base Gain",
 			func:function(){return g.stardust.gt(c.e12)?g.stardust.div(c.e11).dilate(c.d0_5).div(c.d10):g.stardust.div(c.e12);},
-			text:function(){return g.stardust.gt(c.e12)?(unbreak("("+statFormat("S",g.stardust.format(),"_stardust")+" ÷ "+BEformat(c.e11)+")")+" "+unbreak("dilate 0.5 ÷ 10")):(statFormat("S",g.stardust.noLeadFormat(2),"_stardust")+" ÷ "+BEformat(c.e12));},
+			text:function(){return g.stardust.gt(c.e12)?("10 ^ ("+statFormat("S",g.stardust.format(),"_stardust")+" ÷ "+BEformat(c.e11)+") ^ 0.5 ÷ 10"):(statFormat("S",g.stardust.noLeadFormat(2),"_stardust")+" ÷ "+BEformat(c.e12));},
 			show:function(){return true}
 		},
 		{
 			label:"Dark Stars",
 			func:function(prev){return prev.aps(darkStarEffect1())},
 			text:function(){return "(<i>x</i> + 1) ^ "+darkStarEffect1().noLeadFormat(3)+" - 1"},
-			dependencies:["realDarkStars","redLightEffect"],
+			dependencies:["realDarkStars","redLightEffect",...bindingDependencies(245)],
 			show:function(){return stat.realDarkStars.neq(c.d0)}
 		},
 		{
@@ -773,6 +939,7 @@ miscStats.darkmatterPerSec={
 			show:function(){return StudyE(11)},
 			color:"#cc0000"
 		},
+		// multipliers
 		{
 			label:"Dark X Axis",
 			mod:function(){return stat.darkXAxisEffect.pow(stat.realdarkXAxis);},
@@ -825,7 +992,7 @@ miscStats.darkmatterPerSec={
 			mod:function(){return Decimal.pow(researchEffect(1,13),stat.totalDarkAxis);},
 			func:function(prev){return g.research.r1_13?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(researchEffect(1,13).noLeadFormat(2),stat.totalDarkAxis.format(0),3);},
-			dependencies:["totalDarkAxis"],
+			dependencies:["totalDarkAxis",...researchDependencies("r1_13")],
 			show:function(){return g.research.r1_13&&researchEffect(1,13).neq(c.d1)&&stat.totalDarkAxis.neq(c.d0)}
 		},
 		{
@@ -833,9 +1000,10 @@ miscStats.darkmatterPerSec={
 			mod:function(){return achievement(706).effect().pow(stat.realdarkWAxis)},
 			func:function(prev){return g.achievement[706]?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(achievement(706).effect().noLeadFormat(2),stat.realdarkWAxis.format(0),3);},
-			dependencies:["realdarkWAxis"],
+			dependencies:["realdarkWAxis",...bindingDependencies(204)],
 			show:function(){return g.achievement[706]&&stat.realdarkWAxis.neq(c.d0)}
 		},
+		// exponents
 		{
 			label:"Dark S Axis",
 			mod:function(){return stat.darkSAxisEffect.pow(stat.realdarkSAxis);},
@@ -847,20 +1015,33 @@ miscStats.darkmatterPerSec={
 		{
 			label:"Gravitational Energy",
 			func:function(prev){return prev.pow(stat.gravitationalEnergyEffect);},
-			text:function(){return "^ "+stat.gravitationalEnergyEffect.format(4);},
+			text:function(){return "^ "+stat.gravitationalEnergyEffect.noLeadFormat(4);},
 			dependencies:["gravitationalEnergyEffect"],
 			show:function(){return stat.gravitationalEnergyEffect.neq(c.d1)}
 		},
 		statTemplates.finalityResearch("DM",3),
-		statTemplates.study7,
-		statTemplates.study9,
 		{
-			label:"Study XII",
-			func:function(prev){return StudyE(12)?studies[12].sc(prev):prev},
-			text:function(){return g.study12.fortitude.eq(c.d0)?"min(<i>x</i>, 1)":formulaFormat.logSoftcap("<i>x</i>",c.d1,g.study12.fortitude.recip(),true)},
-			show:function(){return StudyE(12)},
-			color:"#cc0000"
+			label:"Study XIII Binding 291",
+			func:function(prev){return study13.bound(291)?prev.pow(study13.bindingEff(291)):prev},
+			text:function(){return "^ "+study13.bindingEff(291).noLeadFormat(3)},
+			show:function(){return study13.bound(291)},
+			dependencies:[...bindingDependencies(291)],
+			color:"var(--binding)"
 		},
+		statTemplates.study7,
+		// dilations
+		statTemplates.study9,
+		statTemplates.binding225(3),
+		// limits
+		{
+			label:"Fortitude",
+			func:function(prev){return (StudyE(12)||study13.bound(275))?studies[12].sc(prev):prev},
+			text:function(){return g.study12.fortitude.eq(c.d0)?"min(<i>x</i>, 1)":formulaFormat.logSoftcap("<i>x</i>",c.d1,g.study12.fortitude.recip(),true)},
+			show:function(){return StudyE(12)||study13.bound(275)},
+			dependencies:[...bindingDependencies(275)],
+			color:"var(--titanium)"
+		},
+		// tickspeed
 		statTemplates.tickspeed(),
 	]
 };
@@ -889,7 +1070,88 @@ miscStats.darkMatterFreeAxis={
 			label:"Research 2-6",
 			func:function(prev){return g.research.r2_6?prev.mul(researchEffect(2,6)):prev},
 			text:function(){return "× "+researchEffect(2,6).noLeadFormat(4)},
+			dependencies:[...researchDependencies("r2_6")],
 			show:function(){return g.research.r2_6}
+		},
+		{
+			label:"Study XIII Binding 395",
+			func:function(prev){return study13.bound(395)?prev.mul(study13.bindingEff(395)):prev},
+			text:function(){return "× "+study13.bindingEff(395).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(395)],
+			show:function(){return study13.bound(395)},
+			color:"var(--binding)"
+		}
+	]
+}
+miscStats.realDarkStars={
+	type:"breakdown",
+	label:"Effective dark stars",
+	visible:function(){return Decimal.neq(g.darkstars,stat.realDarkStars)},
+	category:"Dark Matter",
+	precision:3,
+	modifiers:[
+		{
+			label:"Purchased",
+			func:function(){return g.darkstars},
+			text:function(){return g.darkstars.format()},
+			show:function(){return true}
+		},
+		// additions
+		{
+			label:"Study II",
+			func:function(prev){return StudyE(2)?prev.add(unspentStars()):prev},
+			text:function(){return "+ "+unspentStars()},
+			show:function(){return StudyE(2)}
+		},
+		{
+			label:"Study II reward 3",
+			mod:function(){return studies[2].reward(3).mul(unspentStars()+(g.stars-unspentStars())*galaxyEffects[5].boost.value())},
+			func:function(prev){return StudyE(2)?prev:prev.add(this.mod())},
+			text:function(){return "+ "+this.mod().noLeadFormat(3)},
+			dependencies:["redLightEffect",...bindingDependencies(245)],
+			show:function(){return !StudyE(2)}
+		},
+		{
+			label:"Research 10-15",
+			func:function(prev){return g.research.r10_15?prev.add(researchEffect(10,15)):prev},
+			text:function(){return "+ "+researchEffect(10,15).noLeadFormat(3)},
+			dependencies:[...researchDependencies("r10_15")],
+			show:function(){return g.research.r10_15}
+		},
+		{
+			label:"Antimatter Galaxies",
+			func:function(prev){return prev.add(antimatterGalaxy.effect1())},
+			text:function(){return "+ "+antimatterGalaxy.effect1().noLeadFormat(3)},
+			dependencies:["realAntimatterGalaxies"],
+			show:function(){return stat.realAntimatterGalaxies.neq(c.d0)}
+		},
+		...(()=>{
+			let out = []
+			for (let i of [107,117]) {out.push({
+				label:"Study XIII Binding "+i,
+				func:function(prev){return study13.bound(i)?prev.sub(study13.bindingEff(i)):prev},
+				text:function(){return "- "+study13.bindingEff(i).noLeadFormat(3)},
+				dependencies:[...bindingDependencies(i)],
+				show:function(){return study13.bound(i)},
+				color:"var(--binding)"
+			})}
+			return out
+		})(),
+		// limits
+		{
+			label:"Negative Darkness",
+			func:function(prev){return prev.max(c.d0)},
+			text:function(){return "max(<i>x</i>, 0)"},
+			show:function(prev){return prev.sign===-1}
+		},
+		// multipliers
+		{
+			label:"Study XIII Binding 306",
+			func:function(prev){return study13.bound(306)?prev.mul(study13.bindingEff(306)):prev},
+			text:function(){return "× "+study13.bindingEff(306).noLeadFormat(4)},
+			dependencies:[...bindingDependencies(306)],
+			show:function(){return study13.bound(306)},
+			color:"var(--binding)"
 		}
 	]
 }
@@ -907,6 +1169,7 @@ miscStats.masteryPowerPerSec={
 			dependencies:["masteryTimer","baseMasteryPowerExponent"],
 			show:function(){return true}
 		},
+		// multipliers
 		{
 			label:achievement.label(104),
 			func:function(prev){return g.achievement[104]?prev.mul(c.d1_04):prev;},
@@ -924,7 +1187,7 @@ miscStats.masteryPowerPerSec={
 		{
 			label:"Stardust Boost 7",
 			func:function(prev){return prev.mul(stat.stardustBoost7.pow(stardustBoost7Exp()));},
-			text:function(){return "× "+stat.stardustBoost7.pow(stardustBoost7Exp()).format(2)+" "+SSBsmall(stat.stardustBoost7.format(4),formulaFormat.logSoftcap(g.truetimeThisStardustReset.format(2)+" ^ 0.5",c.e3,c.d4,g.truetimeThisStardustReset.gt(c.e6),true),3);},
+			text:function(){return "× "+stat.stardustBoost7.pow(stardustBoost7Exp()).format(2)+" "+SSBsmall(stat.stardustBoost7.format(4),g.truetimeThisStardustReset.gt(c.e6)?("10 ^ ("+formulaFormat.logSoftcap("log("+g.truetimeThisStardustReset.format(2)+") ÷ 2",c.d3,c.d4,g.truetimeThisStardustReset.gt(c.e6),true)+")"):("("+g.truetimeThisStardustReset.format(2)+" ^ 0.5"),3);},
 			dependencies:["stardustBoost7"],
 			show:function(){return stat.stardustBoost7.neq(c.d1)}
 		},
@@ -937,14 +1200,26 @@ miscStats.masteryPowerPerSec={
 			show:function(){return g.achievement[413]&&(g.SAxis.neq(c.d0)||g.darkSAxis.neq(c.d0))}
 		},
 		statTemplates.ach501Reward,
+		// exponents
 		{
 			label:"Neural Energy",
 			func:function(prev){return prev.pow(stat.neuralEnergyEffect);},
-			text:function(){return "^ "+stat.neuralEnergyEffect.format(4);},
+			text:function(){return "^ "+stat.neuralEnergyEffect.noLeadFormat(4);},
 			dependencies:["neuralEnergyEffect"],
 			show:function(){return stat.neuralEnergyEffect.neq(c.d1)}
 		},
+		{
+			label:"Study XIII Binding 312",
+			func:function(prev){return study13.bound(312)?prev.pow(study13.bindingEff(312)):prev},
+			text:function(){return "^ "+study13.bindingEff(312).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(312)],
+			show:function(){return study13.bound(312)},
+			color:"var(--binding)"
+		},
 		statTemplates.study7,
+		// dilations
+		statTemplates.binding225(3),
+		// tickspeed
 		statTemplates.tickspeed()
 	]
 };
@@ -959,7 +1234,7 @@ miscStats.baseMasteryPowerExponent={
 			label:"Base",
 			exp:function(){return N(c.d1_2);},
 			func:function(){return g.exoticmatter.pow(c.d0_1).add(c.d10).log10().log10().add(c.d1).pow(this.exp());},
-			text:function(){return unbreak("(log<sup>[2]</sup>("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ^ 0.1 + 10) + 1)")+" ^ "+this.exp().format(2);},
+			text:function(){return unbreak("(log<sup>[2]</sup>("+statFormat("EM",g.exoticmatter.format(),"_exoticmatter")+" ^ 0.1 + 10) + 1)")+" ^ "+this.exp().noLeadFormat(4);},
 			show:function(){return true}
 		},
 		{
@@ -993,6 +1268,7 @@ miscStats.baseMasteryPowerExponent={
 			label:"Research 19-7",
 			func:function(prev){return g.research.r19_7?prev.add(researchEffect(19,7)):prev},
 			text:function(){return "+ "+researchEffect(19,7).noLeadFormat(3)},
+			dependencies:[...researchDependencies("r19_7")],
 			show:function(){return g.research.r19_7}
 		},
 		{
@@ -1013,18 +1289,45 @@ miscStats.masteryTimer={
 	precision:2,
 	modifiers:[
 		{
-			label:"Time since mastery swap",
+			label:"Time since Mastery unassignment",
 			func:function(){return g.baseMasteryPowerGain},
 			text:function(){return "+ "+g.baseMasteryPowerGain.format(2)},
 			show:function(){return true}
 		},
 		{
 			get label(){return visibleStudies().includes(8)?"Study VIII reward 3":achievement.label(310)},
-			func:function(prev){return studies[8].reward(3).mul(deltaBaseMasteryPowerGain()).add(prev)},
-			text:function(){return "+ "+studies[8].reward(3).mul(deltaBaseMasteryPowerGain()).format(2)+" "+SSBsmall(studies[8].reward(3).noLeadFormat(2),deltaBaseMasteryPowerGain().noLeadFormat(2),2)},
+			func:function(prev){return studies[8].reward(3).mul(stat.deltaMasteryTimer).add(prev)},
+			text:function(){return "+ "+studies[8].reward(3).mul(stat.deltaMasteryTimer).format(2)+" "+SSBsmall(studies[8].reward(3).noLeadFormat(2),stat.deltaMasteryTimer.noLeadFormat(3),2)},
 			show:function(){return studies[8].reward(3).neq(c.d0)},
-			dependencies:["redLightEffect","tickspeed"]
-		}
+			dependencies:["deltaMasteryTimer","redLightEffect",...bindingDependencies(245),"tickspeed"]
+		},
+	]
+}
+miscStats.deltaMasteryTimer={
+	type:"breakdown",
+	label:"Mastery timer speed",
+	visible:function(){return stat.deltaMasteryTimer.neq(c.d1)},
+	category:"Mastery Power",
+	precision:3,
+	modifiers:[
+		statTemplates.base("1",c.d1,false),
+		{
+			label:"Research 6-5",
+			mod:function(){return researchEffect(6,5).mul(totalAchievements).add(c.d1)},
+			func:function(prev){return g.research.r6_5?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)},
+			dependencies:[...researchDependencies("r6_5")],
+			show:function(){return g.research.r6_5}
+		},
+		{
+			label:"Study XIII Binding 318",
+			func:function(prev){return study13.bound(318)?prev.div(study13.bindingEff(318)):prev},
+			text:function(){return "÷ "+study13.bindingEff(318).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(318)],
+			show:function(){return study13.bound(318)},
+			color:"var(--binding)"
+		},
+		statTemplates.tickspeed()
 	]
 }
 miscStats.XAxisEffect={
@@ -1035,6 +1338,7 @@ miscStats.XAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("2",c.d2,true),
+		// additions
 		{
 			label:"Y Axis",
 			mod:function(){return Decimal.mul(stat.YAxisEffect,stat.unempoweredYAxis);},
@@ -1050,6 +1354,7 @@ miscStats.XAxisEffect={
 			show:function(){return achievement.ownedInTier(1)>0}
 		},
 		statTemplates.ach209Reward,
+		// multipliers
 		{
 			label:"Empowered Y Axis",
 			mod:function(){return stat.YAxisEffect.pow(stat.empoweredYAxis);},
@@ -1060,48 +1365,33 @@ miscStats.XAxisEffect={
 		},
 		statTemplates.masteryMul(21),
 		statTemplates.res1_8,
-		{
-			label:"Research 2-2",
-			mod:function(){return researchEffect(2,2).mul(g.XAxis).div(c.e2).add(c.d1);},
-			func:function(prev){return g.research.r2_2?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">"+unbreak("("+researchEffect(2,2).div(c.e2).noLeadFormat(2)+" × "+g.XAxis.format(0)+" + 1)")+"</span>";},
-			show:function(){return g.research.r2_2&&researchEffect(2,2).neq(c.d0)&&g.XAxis.neq(c.d0)}
-		},
-		{
-			label:"Research 2-4",
-			mod:function(){return researchEffect(2,4).mul(g.truetimeThisWormholeReset).div(c.e2).add(c.d1);},
-			func:function(prev){return g.research.r2_4?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">"+unbreak("("+researchEffect(2,4).div(c.e2).noLeadFormat(2)+" × "+g.truetimeThisWormholeReset.format(2)+" + 1)")+"</span>";},
-			show:function(){return g.research.r2_4&&researchEffect(2,4).neq(c.d0)&&g.truetimeThisWormholeReset.neq(c.d0)}
-		},
-		{
-			label:"Research 2-7",
-			mod:function(){return researchEffect(2,7).mul(g.spatialEnergy.log10()).div(c.e2).add(c.d1);},
-			func:function(prev){return g.research.r2_7?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">"+unbreak("("+researchEffect(2,7).div(c.e2).noLeadFormat(2)+" × "+g.spatialEnergy.log10().format(2)+" + 1)")+"</span>";},
-			show:function(){return g.research.r2_7&&researchEffect(2,7).neq(c.d0)&&g.spatialEnergy.neq(c.d1)}
-		},
-		{
-			label:"Research 2-9",
-			mod:function(){return researchEffect(2,9).mul(g.darkXAxis).div(c.e2).add(c.d1);},
-			func:function(prev){return g.research.r2_9?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">"+unbreak("("+researchEffect(2,9).div(c.e2).noLeadFormat(2)+" × "+g.darkXAxis.format(0)+" + 1)")+"</span>";},
-			show:function(){return g.research.r2_9&&researchEffect(2,9).neq(c.d0)&&g.darkXAxis.neq(c.d0)}
-		},
-		{
-			label:"Research 2-12",
-			mod:function(){return researchEffect(2,12).mul(g.totalDiscoveries).div(c.e2).add(c.d1);},
-			func:function(prev){return g.research.r2_12?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">"+unbreak("("+researchEffect(2,12).div(c.e2).noLeadFormat(2)+" × "+g.totalDiscoveries.format(0)+" + 1)")+"</span>"},
-			show:function(){return g.research.r2_12&&researchEffect(2,12).neq(c.d0)&&g.totalDiscoveries.neq(c.d0)}
-		},
+		...(()=>{
+			let out = []
+			for (let i of [
+				[2,()=>g.XAxis],
+				[4,()=>g.truetimeThisWormholeReset],
+				[7,()=>g.spatialEnergy.log10()],
+				[9,()=>g.darkXAxis],
+				[12,()=>g.totalDiscoveries]
+			]) {out.push({
+				label:"Research 2-"+i[0],
+				mod:function(){return researchEffect(2,i[0]).mul(i[1]()).div(c.e2).add(c.d1);},
+				func:function(prev){return g.research["r2_"+i[0]]?prev.mul(this.mod()):prev},
+				text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">"+unbreak("("+researchEffect(2,i[0]).div(c.e2).noLeadFormat(2)+" × "+i[1]().noLeadFormat(2)+" + 1)")+"</span>"},
+				dependencies:[...researchDependencies("r2_"+i[0])],
+				show:function(){return g.research["r2_"+i[0]]&&this.mod().neq(c.d1)}
+			})}
+			return out
+		})(),
+		// exponents
 		{
 			label:"Research 2-14",
 			func:function(prev){return g.research.r2_14?prev.pow(researchEffect(2,14)):prev;},
 			text:function(){return "^ "+researchEffect(2,14).noLeadFormat(4);},
-			dependencies:["realXAxis"],
+			dependencies:[...researchDependencies("r2_14")],
 			show:function(){return g.research.r2_14&&researchEffect(2,14).neq(c.d0)&&g.XAxis.neq(c.d0)}
-		}
+		},
+		statTemplates.study13MatterBoost("em",3)
 	]
 };
 miscStats.YAxisEffect={
@@ -1112,6 +1402,7 @@ miscStats.YAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("0.1",c.d0_1,true),
+		// additions
 		{
 			label:achievement.label(113),
 			func:function(prev){return g.achievement[113]?prev.add(g.YAxis.mul(c.d0_0004)):prev},
@@ -1119,6 +1410,7 @@ miscStats.YAxisEffect={
 			show:function(){return g.achievement[113]&&g.YAxis.neq(c.d0)}
 		},
 		statTemplates.ach209Reward,
+		// multipliers
 		{
 			label:"Stardust Boost 2",
 			func:function(prev){return prev.mul(stat.stardustBoost2);},
@@ -1135,7 +1427,25 @@ miscStats.YAxisEffect={
 			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall("1.123","floor("+stat.realDarkStars.noLeadFormat(3)+" ÷ 7)",3)},
 			dependencies:["realDarkStars"],
 			show:function(){return g.achievement[804]}
-		}
+		},
+		{
+			label:achievement.label(911),
+			mod:function(){return achievement(911).effect().mul(stat.totalDarkAxis).add(c.d1)},
+			func:function(prev){return g.achievement[911]?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)},
+			dependencies:["totalDarkAxis"],
+			show:function(){return g.achievement[911]}
+		},
+		{
+			label:"P Axis",
+			mod:function(){return stat.PAxisEffect.pow(stat.realPAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.PAxisEffect.noLeadFormat(3),stat.realPAxis.noLeadFormat(3),3)},
+			dependencies:["PAxisEffect","realPAxis"],
+			show:function(){return this.mod().neq(c.d1)}
+		},
+		// exponents
+		statTemplates.study13MatterBoost("em",3)
 	]
 };
 miscStats.ZAxisEffect={
@@ -1160,13 +1470,16 @@ miscStats.ZAxisEffect={
 			dependencies:["stardustBoost10"],
 			show:function(){return true}
 		},
+		// additions
 		statTemplates.ach209Reward,
+		// multipliers
 		statTemplates.res1_8,
+		// exponents
 		{
 			label:"Research 6-1",
 			func:function(prev){return g.research.r6_1?[prev,stat.darkEnergyEffect,researchEffect(6,1)].decimalPowerTower():prev;},
 			text:function(){return "^ "+stat.darkEnergyEffect.pow(researchEffect(6,1)).format(4)+" "+(researchEffect(6,1).eq(c.d1)?"":SSBsmall(stat.darkEnergyEffect.format(4),researchEffect(6,1).noLeadFormat(4),3));},
-			dependencies:["darkEnergyEffect"],
+			dependencies:["darkEnergyEffect",...researchDependencies("r6_1")],
 			show:function(){return g.research.r6_1&&stat.darkEnergyEffect.neq(c.d1)&&researchEffect(6,1).neq(c.d0)}
 		},
 		{
@@ -1174,9 +1487,10 @@ miscStats.ZAxisEffect={
 			mod:function(){return stat.SAxisEffect.pow(Decimal.mul(researchEffect(16,4),stat.realSAxis))},
 			func:function(prev){return g.research.r16_4?prev.pow(this.mod()):prev},
 			text:function(){return "^ "+this.mod().format(4)+" "+SSBsmall(stat.SAxisEffect.format(4),researchEffect(16,4).eq(c.d1)?stat.realSAxis.noLeadFormat(2):SSBsmall(stat.realSAxis.noLeadFormat(2),researchEffect(16,4).noLeadFormat(2),2),3)},
-			dependencies:["SAxisEffect","realSAxis"],
+			dependencies:["SAxisEffect",...researchDependencies("r16_4"),"realSAxis"],
 			show:function(){return g.research.r16_4&&stat.SAxisEffect.neq(c.d1)&&stat.realSAxis.neq(c.d0)}
-		}
+		},
+		statTemplates.study13MatterBoost("em",3)
 	]
 };
 miscStats.WAxisEffect={
@@ -1199,15 +1513,18 @@ miscStats.WAxisEffect={
 			show:function(){return true}
 		},
 		statTemplates.ach209Reward,
+		// multipliers
 		statTemplates.timeResearch(16,10),
 		statTemplates.res1_8,
+		// exponents
 		{
 			label:"Stardust Boost 3",
 			func:function(prev){return prev.pow(stat.stardustBoost3);},
 			text:function(){return "^ "+stat.stardustBoost3.format(4);},
 			dependencies:["stardustBoost3"],
 			show:function(){return stat.stardustBoost3.neq(c.d1)}
-		}
+		},
+		statTemplates.study13MatterBoost("em",3)
 	]
 };
 miscStats.VAxisEffect={
@@ -1218,8 +1535,27 @@ miscStats.VAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("3",c.d3,true),
+		// additions
 		statTemplates.ach209Reward,
+		{
+			label:"Study XIII Binding 182",
+			func:function(prev){return study13.bound(182)?prev.sub(study13.bindingEff(182)):prev},
+			text:function(){return "- "+study13.bindingEff(182).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(182)],
+			show:function(){return study13.bound(182)},
+			color:"var(--binding)"
+		},
+		// multipliers
 		statTemplates.res1_8,
+		// limit
+		{
+			label:"Negative Space",
+			func:function(prev){return prev.max(c.d1)},
+			text:function(){return "max(<i>x</i>, 1)"},
+			show:function(prev){return prev.lt(c.d1)},
+			color:"var(--time2)"
+		},
+		// exponents
 		{
 			label:"Stardust Boost 8",
 			func:function(prev){return prev.pow(stat.stardustBoost8);},
@@ -1245,9 +1581,10 @@ miscStats.VAxisEffect={
 			label:"Research 6-13",
 			func:function(prev){return g.research.r6_13?[prev,stat.spatialEnergyEffect,researchEffect(6,13)].decimalPowerTower():prev},
 			text:function(){return "^ "+stat.spatialEnergyEffect.pow(researchEffect(6,13)).format(4)+" "+(researchEffect(6,13).eq(c.d1)?"":SSBsmall(stat.spatialEnergyEffect.format(4),researchEffect(6,13).noLeadFormat(4),3));},
-			dependencies:["spatialEnergyEffect"],
+			dependencies:["spatialEnergyEffect",...researchDependencies("r6_13")],
 			show:function(){return g.research.r6_13&&stat.spatialEnergyEffect.neq(c.d1)&&researchEffect(6,13).neq(c.d0)}
-		}
+		},
+		statTemplates.study13MatterBoost("em",3)
 	]
 };
 miscStats.UAxisEffect={
@@ -1263,7 +1600,17 @@ miscStats.UAxisEffect={
 			text:function(){return "10 ^ "+unbreak("(log<sup>[2]</sup>("+statFormat("S",g.stardust.format(0),"_stardust")+" + "+BEformat(c.e10)+") ^ 2 ÷ 10)");},
 			show:function(){return true}
 		},
+		{
+			label:"Study XIII Binding 172",
+			func:function(prev){return study13.bound(172)?prev.pow(study13.bindingEff(172)):prev},
+			text:function(){return "^ "+study13.bindingEff(172).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(172)],
+			show:function(){return study13.bound(172)},
+			color:"var(--binding)"
+		},
+		// additions
 		statTemplates.ach209Reward,
+		// multipliers
 		statTemplates.res1_8,
 		{
 			label:"Galaxy Boost 3",
@@ -1279,6 +1626,7 @@ miscStats.UAxisEffect={
 			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(studies[10].reward(1).noLeadFormat(4),String(totalAchievements),3)},
 			show:function(){return g.studyCompletions[10]>0}
 		},
+		// exponents
 		{
 			label:achievement.label(511),
 			func:function(prev){return g.achievement[511]?prev.pow(c.d1_009):prev},
@@ -1289,9 +1637,10 @@ miscStats.UAxisEffect={
 			label:"Research 5-2",
 			func:function(prev){return g.research.r5_2?[prev,stat.stelliferousEnergyEffect,researchEffect(5,2)].decimalPowerTower():prev},
 			text:function(){return "^ "+stat.stelliferousEnergyEffect.pow(researchEffect(5,2)).format(4)+" "+(researchEffect(5,2).eq(c.d1)?"":SSBsmall(stat.stelliferousEnergyEffect.format(4),researchEffect(5,2).noLeadFormat(4),3));},
-			dependencies:["stelliferousEnergyEffect"],
+			dependencies:["stelliferousEnergyEffect",...researchDependencies("r5_2")],
 			show:function(){return g.research.r5_2&&stat.stelliferousEnergyEffect.neq(c.d1)&&researchEffect(5,2).neq(c.d0)}
-		}
+		},
+		statTemplates.study13MatterBoost("em",3)
 	]
 };
 miscStats.TAxisEffect={
@@ -1308,7 +1657,9 @@ miscStats.TAxisEffect={
 			dependencies:["totalNormalAxis"],
 			show:function(){return true}
 		},
+		// additions
 		statTemplates.ach209Reward,
+		// multipliers
 		statTemplates.res1_8,
 		{
 			label:"Green Light",
@@ -1317,13 +1668,27 @@ miscStats.TAxisEffect={
 			dependencies:["greenLightEffect"],
 			show:function(){return stat.greenLightEffect.neq(c.d1)&&g.SAxis.neq(c.d0)}
 		},
+		// exponents
 		{
 			label:"Research 5-1",
 			func:function(prev){return g.research.r5_1?[prev,stat.darkEnergyEffect,researchEffect(5,1)].decimalPowerTower():prev},
 			text:function(){return "^ "+stat.darkEnergyEffect.pow(researchEffect(5,1)).format(4)+" "+(researchEffect(5,1).eq(c.d1)?"":SSBsmall(stat.darkEnergyEffect.format(4),researchEffect(5,1).noLeadFormat(4),3));},
-			dependencies:["darkEnergyEffect"],
+			dependencies:["darkEnergyEffect",...researchDependencies("r5_1")],
 			show:function(){return g.research.r5_1&&stat.darkEnergyEffect.neq(c.d1)&&researchEffect(5,1).neq(c.d0)}
-		}
+		},
+		statTemplates.study13MatterBoost("em",3),
+		...(()=>{
+			let out = []
+			for (let i of [106,116]) {out.push({
+				label:"Study XIII Binding "+i,
+				func:function(prev){return study13.bound(i)?prev.pow(study13.bindingEff(i)):prev},
+				text:function(){return "^ "+study13.bindingEff(i).noLeadFormat(3)},
+				dependencies:[...bindingDependencies(i)],
+				show:function(){return study13.bound(i)},
+				color:"var(--binding)"
+			})}
+			return out
+		})()
 	]
 };
 miscStats.SAxisEffect={
@@ -1331,22 +1696,75 @@ miscStats.SAxisEffect={
 	label:"S Axis effect",
 	visible:function(){return stat.axisUnlocked>=8;},
 	category:"Axis effects",
-	precision:4,
+	precision:3,
+	from1:true,
 	modifiers:[
 		statTemplates.base("1.025",c.d1_025,true),
+		// additions
 		...statTemplates.ach525_526Reward,
+		// exponents
 		{
 			label:achievement.label(505),
 			func:function(prev){return g.achievement[505]?prev.pow(achievement(505).effect()):prev},
 			text:function(){return "^ "+achievement(505).effect().noLeadFormat(3);},
 			show:function(){return g.achievement[505]}
+		},
+		statTemplates.ach912Reward,
+		{
+			label:"Study XIII Binding 331",
+			func:function(prev){return study13.bound(331)?prev.pow(study13.bindingEff(331)):prev},
+			text:function(){return "^ "+study13.bindingEff(331).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(331)],
+			show:function(){return study13.bound(331)},
+			color:"var(--binding)"
 		}
 	]
 };
+miscStats.RAxisEffect={
+	type:"breakdown",
+	label:"R Axis effect",
+	visible:function(){return stat.axisUnlocked>=9;},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("0.95",c.d0_95,true)
+	]
+}
+miscStats.QAxisEffect={
+	type:"breakdown",
+	label:"Q Axis effect",
+	visible:function(){return stat.axisUnlocked>=10;},
+	category:"Axis effects",
+	precision:2,
+	from1:true,
+	modifiers:[
+		statTemplates.base("1.15",c.d1_15,true)
+	]
+}
+miscStats.PAxisEffect={
+	type:"breakdown",
+	label:"P Axis effect",
+	visible:function(){return stat.axisUnlocked>=11;},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("10",c.d10,true)
+	]
+}
+miscStats.OAxisEffect={
+	type:"breakdown",
+	label:"O Axis effect",
+	visible:function(){return stat.axisUnlocked>=12;},
+	category:"Axis effects",
+	precision:5,
+	modifiers:[
+		statTemplates.base("1.005",c.d1_005,true)
+	]
+}
 for (let i=0;i<axisCodes.length;i++) {
 	let type = axisCodes[i]
 	let out = [statTemplates.base("0",c.d0,false)]
-	// additive effects
+	// additions
 	out.push(statTemplates.darkMatterFreeAxis(type))
 	if (i===0) out.push(
 		{
@@ -1379,26 +1797,56 @@ for (let i=0;i<axisCodes.length;i++) {
 		show:function(){return g.achievement[302+i]}
 	})
 	if (i<4) {out.push(statTemplates.row2Star(i+21))} else {out.push(statTemplates.row6Star(i+57))}
-	if (i<7) out.push(statTemplates.ach210Reward(axisCodes[i+1]))
+	if (i<11) out.push(statTemplates.ach210Reward(axisCodes[i+1]))
 	if (i===7) out.push({
 		label:"Research 3-2",
 		func:function(prev){return g.research.r3_2?prev.add(researchEffect(3,2)):prev},
 		text:function(){return "+ "+researchEffect(3,2).noLeadFormat(2);},
+		dependencies:[...researchDependencies("r3_2")],
 		show:function(){return g.research.r3_2&&researchEffect(3,2).neq(c.d0)}
 	})
 	if (i<7) out.push({
 		label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
 		func:function(prev){return prev.add(g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
 		text:function(){return "+ "+g[type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g[type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
-		show:function(){return effLuckUpgradeLevel("cinquefolium","axis").neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+		dependencies:["luckUpgLevel_cinquefolium_axis"],
+		show:function(){return stat.luckUpgLevel_cinquefolium_axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
 	})
-	// multiplicative effects
+	if (i===7) {for (let i of [94,124]) {out.push({
+		label:"Study XIII Binding "+i,
+		func:function(prev){return study13.bound(i)?prev.sub(study13.bindingEff(i)):prev},
+		text:function(){return "- "+study13.bindingEff(i).noLeadFormat(3)},
+		dependencies:[...bindingDependencies(i)],
+		show:function(){return study13.bound(i)},
+		color:"var(--binding)"
+	})}}
+	// limit
+	out.push({
+		label:"Negative Space",
+		func:function(prev){return prev.max(c.d0)},
+		text:function(){return "max(<i>x</i>, 0)"},
+		show:function(prev){return prev.sign===-1},
+		color:"var(--time2)"
+	})
+	// multipliers
 	if (i===0) out.push({
 		label:"Spatial Energy",
 		func:function(prev){return prev.mul(stat.spatialEnergyEffect);},
-		text:function(){return "× "+stat.spatialEnergyEffect.format(4);},
+		text:function(){return "× "+stat.spatialEnergyEffect.noLeadFormat(4);},
 		dependencies:["spatialEnergyEffect"],
 		show:function(){return stat.spatialEnergyEffect.neq(c.d1)}
+	})
+	// exponents
+	out.push({
+		label:"Study XIII Binding 194",
+		func:function(prev){
+			let start = (type==="O")?c.d0:achievement(210).value(axisCodes[i+1])
+			return (study13.bound(194)&&prev.gt(start))?(start.eq(c.d0)?c.d0:prev.div(start).pow(study13.bindingEff(194)).mul(start)):prev
+		},
+		text:function(){return "(<i>x</i> ÷ "+((i==="O")?"0":achievement(210).value(axisCodes[i+1]).noLeadFormat(3))+") ^ "+study13.bindingEff(194).noLeadFormat(3)+" × "+((i==="O")?"0":achievement(210).value(axisCodes[i+1]).noLeadFormat(3))},
+		dependencies:[...bindingDependencies([164,174,184,192,194])],
+		show:function(prev){return study13.bound(194)&&prev.gt(achievement(210).value(type))},
+		color:"var(--binding)"
 	})
 	// softcap
 	out.push(statTemplates.axisSoftcap(type,"var(--exoticmatter)"))
@@ -1406,9 +1854,9 @@ for (let i=0;i<axisCodes.length;i++) {
 	miscStats["free"+type+"Axis"] = {
 		type:"breakdown",
 		label:"Free "+type+" Axis",
-		visible:function(){return stat["free"+type+"Axis"].neq(c.d0)},
+		visible:function(){return Decimal.neq(g[type+"Axis"],stat["real"+type+"Axis"])},
 		category:"Free axis",
-		precision:2,
+		precision:"SO".includes(type)?3:2,
 		modifiers:out
 	}
 }
@@ -1423,6 +1871,7 @@ for (let group of ["","dark","anti"]) {
 				text:function(){return g[group+type+"Axis"].format()},
 				show:function(){return true}
 			},
+			// additions
 			{
 				label:"Free "+groupName+type+" Axis",
 				func:function(prev){return prev.add(stat["free"+group+type+"Axis"])},
@@ -1431,12 +1880,23 @@ for (let group of ["","dark","anti"]) {
 				show:function(){return stat["free"+group+type+"Axis"].neq(c.d0)},
 			}
 		]
+		// multipliers
 		if (["","dark"].includes(group)) out.push({
 			label:"Anti-"+type+" Axis",
 			func:function(prev){return prev.mul(antiAxisDimBoost(type))},
 			text:function(){return "× "+antiAxisDimBoost(type).noLeadFormat(4)},
+			dependencies:[...researchDependencies(["r26_14",researchList.antimatter[type+"1"]]),...bindingDependencies(244)],
 			show:function(){return antiAxisDimBoost(type).neq(c.d1)}
 		})
+		if (i<11) out.push({
+			label:groupName+"O Axis",
+			mod:function(){return stat[group+"OAxisEffect"].pow(stat["real"+group+"OAxis"])},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return this.mod().noLeadFormat(5)+" "+SSBsmall(stat[group+"OAxisEffect"].noLeadFormat(5),stat["real"+group+"OAxis"].noLeadFormat(4),3)},
+			dependencies:[group+"OAxisEffect","real"+group+"OAxis"],
+			show:function(){return this.mod().neq(c.d1)}
+		})
+		// limits
 		out.push({
 			label:"Study XI",
 			func:function(prev){return (StudyE(11)&&(studies[11].active()!==type))?c.d0:prev},
@@ -1448,19 +1908,20 @@ for (let group of ["","dark","anti"]) {
 			func:dictionary(group,[
 				["",function(prev){return (stat.axisUnlocked>i)?prev:c.d0}],
 				["dark",function(prev){return (g.stardustUpgrades[0]+4>i)?prev:c.d0}],
-				["anti",function(prev){return antiAxisUnlocked(type)?prev:c.d0}]
+				["anti",function(prev){return antiAxisActive(type)?prev:c.d0}]
 			]),
 			text:function(){return "0"},
 			dependencies:["axisUnlocked"],
 			show:function(){return g[group+type+"Axis"].sign!==stat["real"+group+type+"Axis"].sign}
 		})
+		// initialize
 		miscStats["real"+group+type+"Axis"] = {
 			type:"breakdown",
 			label:"Effective "+groupName+type+" Axis",
 			visible:function(){return unlocked("Antimatter")&&Decimal.neq(g[group+type+"Axis"],stat["real"+group+type+"Axis"])},
 			newRow:(group!=="")&&(type==="X"),
 			category:"Effective axis",
-			precision:2,
+			precision:"SO".includes(type)?4:3,
 			modifiers:out
 		}
 	}
@@ -1474,6 +1935,7 @@ miscStats.darkXAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("3",c.d3,true),
+		// multipliers
 		{
 			label:achievement.label(802),
 			mod:function(){return g.observations[3].div(c.e2).add(c.d1)},
@@ -1482,8 +1944,10 @@ miscStats.darkXAxisEffect={
 			show:function(){return g.achievement[802]}
 		},
 		statTemplates.timeResearch(16,9),
+		// exponents
 		statTemplates.darkStarEffect2("X"), 
-		statTemplates.masteryPow(61)
+		statTemplates.masteryPow(61),
+		statTemplates.study13MatterBoost("dm",3)
 	]
 };
 miscStats.darkYAxisEffect={
@@ -1494,12 +1958,14 @@ miscStats.darkYAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("4",c.d4,true),
+		// additions
 		{
 			label:achievement.label(704),
 			func:function(prev){return g.achievement[704]?prev.add(5/9):prev},
 			text:function(){return "+ 0.5555"},
 			show:function(){return g.achievement[704]}
 		},
+		// exponents
 		statTemplates.darkStarEffect2("Y"),
 		{
 			label:"Star 84",
@@ -1511,7 +1977,8 @@ miscStats.darkYAxisEffect={
 			label:"Research 14-10",
 			func:function(prev){return g.research.r14_10?prev.pow(researchEffect(14,10)):prev},
 			text:function(){return "^ "+researchEffect(14,10).format(4)},
-			show:function(){return g.research.r14_10}
+			show:function(){return g.research.r14_10},
+			dependencies:[...researchDependencies("r14_10")]
 		},
 		{
 			label:"Anti-V Axis",
@@ -1521,6 +1988,7 @@ miscStats.darkYAxisEffect={
 			dependencies:["antiVAxisEffect","realantiVAxis"],
 			show:function(){return stat.antiVAxisEffect.neq(c.d0)&&stat.realantiVAxis.neq(c.d0)}
 		},
+		statTemplates.study13MatterBoost("dm",3)
 	]
 };
 miscStats.darkZAxisEffect={
@@ -1536,6 +2004,7 @@ miscStats.darkZAxisEffect={
 			text:function(){return "10 ^ "+unbreak("(log("+statFormat("EM",g.exoticmatter.format(0),"_exoticmatter")+" ^ 0.005 ÷ 10 + 1) ^ 0.2)")+" ^ 0.2";},
 			show:function(){return true}
 		},
+		// exponents
 		statTemplates.darkStarEffect2("Z"),
 		{
 			label:"Stardust Boost 6",
@@ -1543,7 +2012,8 @@ miscStats.darkZAxisEffect={
 			text:function(){return "^ "+stat.stardustBoost6.format(4);},
 			dependencies:["stardustBoost6"],
 			show:function(){return stat.stardustBoost6.neq(c.d1)}
-		}
+		},
+		statTemplates.study13MatterBoost("dm",3)
 	]
 };
 miscStats.darkWAxisEffect={
@@ -1551,15 +2021,17 @@ miscStats.darkWAxisEffect={
 	label:"Dark W Axis effect",
 	visible:function(){return g.stardustUpgrades[4]>0;},
 	category:"Axis effects",
-	precision:3,
+	precision:2,
+	from1:true,
 	modifiers:[
 		statTemplates.base("1.15",c.d1_15,true),
+		// exponents
 		statTemplates.darkStarEffect2("W"),
 		{
 			label:"Research 6-14",
 			func:function(prev){return g.research.r6_14?[prev,stat.neuralEnergyEffect,researchEffect(6,14)].decimalPowerTower():prev;},
 			text:function(){return "^ "+stat.neuralEnergyEffect.pow(researchEffect(6,14)).format(4)+" "+(researchEffect(6,14).eq(c.d1)?"":SSBsmall(stat.neuralEnergyEffect.format(4),researchEffect(6,14).noLeadFormat(4),3));},
-			dependencies:["neuralEnergyEffect"],
+			dependencies:["neuralEnergyEffect",...researchDependencies("r6_14")],
 			show:function(){return g.research.r6_14&&stat.neuralEnergyEffect.neq(c.d1)&&researchEffect(6,14).neq(c.d0)}
 		},
 		{
@@ -1567,7 +2039,8 @@ miscStats.darkWAxisEffect={
 			func:function(prev){return g.achievement[808]?prev.pow(achievement(808).effect()):prev},
 			text:function(){return "^ "+achievement(808).effect().toFixed(4)},
 			show:function(){return g.achievement[808]}
-		}
+		},
+		statTemplates.study13MatterBoost("dm",3)
 	]
 };
 miscStats.darkVAxisEffect={
@@ -1578,7 +2051,9 @@ miscStats.darkVAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("10",c.d10,true),
-		statTemplates.darkStarEffect2("V")
+		// multipliers
+		statTemplates.darkStarEffect2("V"),
+		statTemplates.study13MatterBoost("dm",2)
 	]
 };
 miscStats.darkUAxisEffect={
@@ -1587,16 +2062,19 @@ miscStats.darkUAxisEffect={
 	visible:function(){return (g.stardustUpgrades[0]>1)&&(g.stardustUpgrades[4]>0);},
 	category:"Axis effects",
 	precision:3,
+	from1:true,
 	modifiers:[
 		statTemplates.base("1.02",c.d1_02,true),
+		// exponents
 		statTemplates.darkStarEffect2("U"),
 		{
 			label:"Research 5-3",
 			func:function(prev){return g.research.r5_3?[prev,stat.gravitationalEnergyEffect,researchEffect(5,3)].decimalPowerTower():prev},
 			text:function(){return "^ "+stat.gravitationalEnergyEffect.pow(researchEffect(5,3)).format(4)+" "+(researchEffect(5,3).eq(c.d1)?"":SSBsmall(stat.gravitationalEnergyEffect.format(4),researchEffect(5,3).noLeadFormat(4),3));},
-			dependencies:["gravitationalEnergyEffect"],
+			dependencies:["gravitationalEnergyEffect",...researchDependencies("r5_3")],
 			show:function(){return g.research.r5_3&&stat.gravitationalEnergyEffect.neq(c.d1)&&researchEffect(5,3).neq(c.d0)}
-		}
+		},
+		statTemplates.study13MatterBoost("dm",3)
 	]
 };
 miscStats.darkTAxisEffect={
@@ -1617,7 +2095,21 @@ miscStats.darkTAxisEffect={
 			text:function(){return unbreak("10 ^ log("+statFormat("t",this.time().format(0),"_time")+" ÷ 1,000 + 1)")+" ^ 0.5";},
 			show:function(){return true}
 		},
-		statTemplates.darkStarEffect2("T")
+		// exponents
+		statTemplates.darkStarEffect2("T"),
+		statTemplates.study13MatterBoost("dm",3),
+		...(()=>{
+			let out = []
+			for (let i of [106,116]) {out.push({
+				label:"Study XIII Binding "+i,
+				func:function(prev){return study13.bound(i)?prev.pow(study13.bindingEff(i)):prev},
+				text:function(){return "^ "+study13.bindingEff(i).noLeadFormat(3)},
+				dependencies:[...bindingDependencies(i)],
+				show:function(){return study13.bound(i)},
+				color:"var(--binding)"
+			})}
+			return out
+		})()
 	]
 };
 miscStats.darkSAxisEffect={
@@ -1625,13 +2117,78 @@ miscStats.darkSAxisEffect={
 	label:"Dark S Axis effect",
 	visible:function(){return (g.stardustUpgrades[0]>3)&&(g.stardustUpgrades[4]>0);},
 	category:"Axis effects",
-	precision:4,
+	precision:3,
+	from1:true,
 	modifiers:[
 		statTemplates.base("1.01",c.d1_01,true),
+		// additions
 		...statTemplates.ach525_526Reward,
-		statTemplates.darkStarEffect2("S")
+		// exponents
+		statTemplates.darkStarEffect2("S"),
+		statTemplates.ach912Reward,
+		{
+			label:"Study XIII Binding 339",
+			func:function(prev){return study13.bound(339)?prev.pow(study13.bindingEff(339)):prev},
+			text:function(){return "^ "+study13.bindingEff(339).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(339)],
+			show:function(){return study13.bound(339)},
+			color:"var(--binding)"
+		}
 	]
 };
+miscStats.darkRAxisEffect={
+	type:"breakdown",
+	label:"Dark R Axis effect",
+	visible:function(){return (g.stardustUpgrades[0]>4)&&(g.stardustUpgrades[4]>0);},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("0.9",c.d0_9,true),
+		// exponents
+		statTemplates.darkStarEffect2("R"),
+	]
+}
+miscStats.darkQAxisEffect={
+	type:"breakdown",
+	label:"Dark Q Axis effect",
+	visible:function(){return (g.stardustUpgrades[0]>5)&&(g.stardustUpgrades[4]>0);},
+	category:"Axis effects",
+	precision:2,
+	modifiers:[
+		{
+			label:"Base",
+			func:function(){return g.hawkingradiation.add(c.d1).log10().pow(c.d0_75).div(c.e2).pow10()},
+			text:function(){return "10 ^ (log("+statFormat("HR",g.hawkingradiation.format(),"_wormhole")+" + 1) ^ 0.75 ÷ 100)"},
+			show:function(){return true}
+		},
+		// exponents
+		statTemplates.darkStarEffect2("Q"),
+	]
+}
+miscStats.darkPAxisEffect={
+	type:"breakdown",
+	label:"Dark P Axis effect",
+	visible:function(){return (g.stardustUpgrades[0]>6)&&(g.stardustUpgrades[4]>0);},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("0.98",c.d0_98,true),
+		// exponents
+		statTemplates.darkStarEffect2("P"),
+	]
+}
+miscStats.darkOAxisEffect={
+	type:"breakdown",
+	label:"Dark O Axis effect",
+	visible:function(){return (g.stardustUpgrades[0]>7)&&(g.stardustUpgrades[4]>0);},
+	category:"Axis effects",
+	precision:5,
+	modifiers:[
+		statTemplates.base("1.005",c.d1_005,true),
+		// exponents
+		statTemplates.darkStarEffect2("O"),
+	]
+}
 miscStats.axisCostDivisor={
 	type:"breakdown",
 	label:"Normal Axis Cost Divisor",
@@ -1640,6 +2197,7 @@ miscStats.axisCostDivisor={
 	precision:2,
 	modifiers:[
 		statTemplates.base("1",c.d1,false),
+		// multipliers
 		statTemplates.masteryMul(12),
 		{
 			label:"V Axis",
@@ -1654,9 +2212,18 @@ miscStats.axisCostDivisor={
 			mod:function(){return achievement(207).effect().pow(stat.totalNormalAxis);},
 			func:function(prev){return g.achievement[207]?prev.div(this.mod()):prev;},
 			text:function(){return "÷ "+this.mod().format(2)+" "+SSBsmall(achievement(207).effect().noLeadFormat(3),stat.totalNormalAxis.format(0),3);},
-			dependencies:["totalNormalAxis"],
+			dependencies:["totalNormalAxis",...bindingDependencies()],
 			show:function(){return g.achievement[207]&&stat.totalNormalAxis.neq(c.d0)}
 		},
+		{
+			label:"Study XIII Binding 125",
+			func:function(prev){return study13.bound(125)?prev.div(study13.bindingEff(125)):prev},
+			text:function(){return "÷ "+study13.bindingEff(125).noLeadFormat(3)},
+			show:function(){return study13.bound(125)},
+			dependencies:[...bindingDependencies(125)],
+			color:"var(--binding)"
+		},
+		// dilations
 		statTemplates.study9
 	]
 };
@@ -1683,7 +2250,7 @@ miscStats.axisCostExponent={
 		{
 			label:"Dimensional Energy",
 			func:function(prev){return prev.mul(stat.dimensionalEnergyEffect)},
-			text:function(){return "× "+stat.dimensionalEnergyEffect.format(4)},
+			text:function(){return "× "+stat.dimensionalEnergyEffect.noLeadFormat(4)},
 			dependencies:["dimensionalEnergyEffect"],
 			show:function(){return stat.dimensionalEnergyEffect.neq(c.d1)}
 		},
@@ -1691,13 +2258,26 @@ miscStats.axisCostExponent={
 			label:"Trifolium "+luckUpgrades.trifolium.normalAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.normalAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.normalAxis.eff().format(3)},
-			show:function(){return effLuckUpgradeLevel("trifolium","normalAxis").neq(c.d0)}
+			dependencies:["luckUpgLevel_trifolium_normalAxis"],
+			show:function(){return stat.luckUpgLevel_trifolium_normalAxis.neq(c.d0)}
+		},
+		statTemplates.duofoliumSpace,
+		statTemplates.wormholeUpg10,
+		{
+			label:"R Axis",
+			mod:function(){return stat.RAxisEffect.pow(stat.realRAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.RAxisEffect.noLeadFormat(3),stat.realRAxis.noLeadFormat(3),3)},
+			dependencies:["RAxisEffect","realRAxis"],
+			show:function(){return this.mod().neq(c.d1)}
 		},
 		{
-			label:wormholeUpgName(10),
-			func:function(prev){return prev.mul(wormholeUpgrades[10].eff())},
-			text:function(){return "× "+wormholeUpgrades[10].eff().noLeadFormat(2)},
-			show:function(){return g.wormholeUpgrades[10]>0}
+			label:"Study XIII Binding 95",
+			func:function(prev){return study13.bound(95)?prev.mul(study13.bindingEff(95)):prev},
+			text:function(){return "× "+study13.bindingEff(95).noLeadFormat(3)},
+			show:function(){return study13.bound(95)},
+			dependencies:[...bindingDependencies(95)],
+			color:"var(--binding)"
 		}
 	]
 };
@@ -1709,6 +2289,7 @@ miscStats.darkAxisCostDivisor={
 	precision:2,
 	modifiers:[
 		statTemplates.base("1",c.d1,false),
+		// multipliers
 		{
 			label:"Dark Y Axis",
 			mod:function(){return stat.darkYAxisEffect.pow(stat.realdarkYAxis);},
@@ -1724,6 +2305,7 @@ miscStats.darkAxisCostDivisor={
 			dependencies:masteryDependencies(101),
 			show:function(){return g.achievement[709]}
 		},
+		// dilations
 		statTemplates.study9,
 	]
 };
@@ -1753,7 +2335,8 @@ miscStats.darkAxisCostExponent={
 			label:"Trifolium "+luckUpgrades.trifolium.darkAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.darkAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.darkAxis.eff().format(3)},
-			show:function(){return effLuckUpgradeLevel("trifolium","darkAxis").neq(c.d0)}
+			dependencies:["luckUpgLevel_trifolium_darkAxis"],
+			show:function(){return stat.luckUpgLevel_trifolium_darkAxis.neq(c.d0)}
 		},
 		{
 			label:achievement.label(806),
@@ -1761,11 +2344,23 @@ miscStats.darkAxisCostExponent={
 			text:function(){return "× 0.95";},
 			show:function(){return g.achievement[806]}
 		},
+		statTemplates.duofoliumSpace,
+		statTemplates.wormholeUpg10,
 		{
-			label:wormholeUpgName(11),
-			func:function(prev){return prev.mul(wormholeUpgrades[11].eff())},
-			text:function(){return "× "+wormholeUpgrades[11].eff().noLeadFormat(2)},
-			show:function(){return g.wormholeUpgrades[11]>0}
+			label:"Dark P Axis",
+			mod:function(){return stat.darkPAxisEffect.pow(stat.realdarkPAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.darkPAxisEffect.noLeadFormat(3),stat.darkPAxis.noLeadFormat(3),3)},
+			dependencies:["darkPAxisEffect","realdarkPAxis"],
+			show:function(){return this.mod().neq(c.d1)}
+		},
+		{
+			label:"Study XIII Binding 15",
+			func:function(prev){return study13.bound(15)?prev.mul(study13.bindingEff(15)):prev},
+			text:function(){return "× "+study13.bindingEff(15).noLeadFormat(3)},
+			show:function(){return study13.bound(15)},
+			dependencies:[...bindingDependencies(15)],
+			color:"var(--binding)"
 		}
 	]
 };
@@ -1777,6 +2372,7 @@ miscStats.antiAxisCostDivisor={
 	precision:2,
 	modifiers:[
 		statTemplates.base("1",c.d1,false),
+		// multipliers
 		{
 			label:"Anti-W Axis",
 			mod:function(){return stat.antiWAxisEffect.pow(stat.realantiWAxis)},
@@ -1784,6 +2380,14 @@ miscStats.antiAxisCostDivisor={
 			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiWAxisEffect.noLeadFormat(2),stat.realantiWAxis.noLeadFormat(3),3)},
 			dependencies:["antiWAxisEffect","realantiWAxis"],
 			show:function(){return stat.antiWAxisEffect.neq(c.d1)&&stat.realantiWAxis.neq(c.d0)}
+		},
+		{
+			label:study13.rewardLabel("sacredNumber",2),
+			mod:function(){return N(13.37).pow(stat.totalAntiAxis)},
+			func:function(prev){return (study13.rewardLevels.sacredNumber>1)?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall("13.37",stat.totalAntiAxis.format(),3)},
+			dependencies:["totalAntiAxis"],
+			show:function(){return (study13.rewardLevels.sacredNumber>1)&&(stat.totalAntiAxis.neq(c.d0))}
 		}
 	]
 }
@@ -1806,8 +2410,27 @@ miscStats.antiAxisCostExponent={
 			label:"Trifolium "+luckUpgrades.trifolium.antiAxis.name,
 			func:function(prev){return prev.mul(luckUpgrades.trifolium.antiAxis.eff())},
 			text:function(){return "× "+luckUpgrades.trifolium.antiAxis.eff().format(3)},
-			show:function(){return effLuckUpgradeLevel("trifolium","antiAxis").neq(c.d0)}
+			dependencies:["luckUpgLevel_trifolium_antiAxis"],
+			show:function(){return stat.luckUpgLevel_trifolium_antiAxis.neq(c.d0)}
 		},
+		statTemplates.duofoliumSpace,
+		{
+			label:achievement.label(909),
+			mod:function(){return achievement(909).effect().mul(stat.totalAntiAxis).add(c.d1)},
+			func:function(prev){return g.achievement[909]?prev.div(this.mod()):prev},
+			text:function(){return "÷ "+this.mod().noLeadFormat(4)},
+			dependencies:["totalAntiAxis"],
+			show:function(){return g.achievement[909]}
+		},
+		{
+			label:"Anti-Q Axis",
+			mod:function(){return stat.antiQAxisEffect.pow(stat.realantiQAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.antiQAxisEffect.noLeadFormat(3),stat.realantiQAxis.noLeadFormat(3),3)},
+			dependencies:["antiQAxisEffect","realantiQAxis"],
+			show:function(){return this.mod().neq(c.d1)}
+		},
+		statTemplates.wormholeUpg10
 	]
 }
 miscStats.energyGainSpeed={
@@ -1833,7 +2456,7 @@ miscStats.energyGainSpeed={
 		{
 			label:"Meta Energy",
 			func:function(prev){return prev.mul(stat.metaEnergyEffect);},
-			text:function(){return "× "+stat.metaEnergyEffect.format(4);},
+			text:function(){return "× "+stat.metaEnergyEffect.noLeadFormat(4);},
 			dependencies:["metaEnergyEffect"],
 			show:function(){return stat.metaEnergyEffect.neq(c.d1)}
 		},
@@ -1842,12 +2465,14 @@ miscStats.energyGainSpeed={
 			mod:function(){return researchEffect(8,5).mul(totalAchievements).add(c.d1)},
 			func:function(prev){return g.research.r8_5?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().noLeadFormat(2)},
+			dependencies:[...researchDependencies("r8_5")],
 			show:function(){return g.research.r8_5&&researchEffect(8,5).neq(c.d0)&&totalAchievements>0}
 		},
 		{
 			label:"Research 9-13",
 			func:function(prev){return g.research.r9_13?prev.mul(researchEffect(9,13)):prev},
 			text:function(){return "× "+researchEffect(9,13).format(2)},
+			dependencies:[...researchDependencies("r9_13")],
 			show:function(){return g.research.r9_13}
 		},
 		{
@@ -1860,12 +2485,29 @@ miscStats.energyGainSpeed={
 			label:"Research 15-7",
 			func:function(prev){return g.research.r15_7?prev.mul(researchEffect(15,7)):prev},
 			text:function(){return "× "+researchEffect(15,7).format(2)},
+			dependencies:[...researchDependencies("r15_7")],
 			show:function(){return g.research.r15_7}
+		},
+		{
+			label:"Q Axis",
+			mod:function(){return stat.QAxisEffect.pow(stat.realQAxis)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.QAxisEffect.noLeadFormat(3),stat.realQAxis.noLeadFormat(3),3)},
+			dependencies:["QAxisEffect","realQAxis"],
+			show:function(){return this.mod().neq(c.d1)}
+		},
+		{
+			label:"Study XIII Binding 58",
+			func:function(prev){return study13.bound(58)?prev.div(study13.bindingEff(58)):prev},
+			text:function(){return "÷ "+study13.bindingEff(58).noLeadFormat(2)},
+			show:function(){return study13.bound(58)},
+			dependencies:[...bindingDependencies(58)],
+			color:"var(--binding)"
 		},
 		statTemplates.tickspeed(()=>[
 			g.achievement[408]?achievement(408).effect():c.d1,
 			studies[10].reward(3)
-		].sumDecimals(),"Tickspeed",["redLightEffect"])
+		].sumDecimals(),"Tickspeed",["redLightEffect",...bindingDependencies(245)])
 	]
 };
 miscStats.energyEffectBoost={
@@ -1887,6 +2529,7 @@ miscStats.energyEffectBoost={
 			label:"Research 10-2",
 			func:function(prev){return g.research.r10_2?prev.mul(researchEffect(10,2)):prev},
 			text:function(){return "× "+researchEffect(10,2).noLeadFormat(4)},
+			dependencies:[...researchDependencies("r10_2")],
 			show:function(){return g.research.r10_2}
 		}
 	]
@@ -1899,6 +2542,7 @@ miscStats.tickspeed={
 	precision:3,
 	modifiers:[
 		statTemplates.base("1",c.d1,false),
+		// multipliers
 		{
 			label:"Dilation Upgrade 4",
 			func:function(prev){return prev.mul(dilationUpgrades[4].effect())},
@@ -1935,7 +2579,7 @@ miscStats.tickspeed={
 			label:"Research 5-15",
 			func:function(prev){return g.research.r5_15?prev.mul(stat.metaEnergyEffect.pow(researchEffect(5,15))):prev},
 			text:function(){return "× "+stat.metaEnergyEffect.pow(researchEffect(5,15)).format(4)+" "+(researchEffect(5,15).eq(c.d1)?"":SSBsmall(stat.metaEnergyEffect.format(4),researchEffect(5,15).noLeadFormat(4),3));},
-			dependencies:["metaEnergyEffect"],
+			dependencies:["metaEnergyEffect",...researchDependencies("r5_15")],
 			show:function(){return g.research.r5_15&&stat.metaEnergyEffect.neq(c.d1)&&researchEffect(5,15).neq(c.d0)}
 		},
 		{
@@ -1943,6 +2587,7 @@ miscStats.tickspeed={
 			mod:function(){return researchEffect(6,6).mul(totalAchievements).add(c.d1);},
 			func:function(prev){return g.research.r6_6?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().noLeadFormat(3);},
+			dependencies:[...researchDependencies("r6_6")],
 			show:function(){return g.research.r6_6&&researchEffect(6,6).neq(c.d0)&&totalAchievements>0}
 		},
 		{
@@ -1963,6 +2608,7 @@ miscStats.tickspeed={
 			label:"Research 14-6",
 			func:function(prev){return g.research.r14_6?prev.mul(researchEffect(14,6)):prev;},
 			text:function(){return "× "+researchEffect(14,6).format(3);},
+			dependencies:[...researchDependencies("r14_6")],
 			show:function(){return g.research.r14_6}
 		},
 		{
@@ -1975,7 +2621,7 @@ miscStats.tickspeed={
 		{
 			label:"Temporal Energy",
 			func:function(prev){return prev.mul(stat.temporalEnergyEffect)},
-			text:function(){return "× "+stat.temporalEnergyEffect.format(4)},
+			text:function(){return "× "+stat.temporalEnergyEffect.noLeadFormat(4)},
 			dependencies:["temporalEnergyEffect"],
 			show:function(){return stat.temporalEnergyEffect.neq(c.d1)}
 		},
@@ -1983,7 +2629,7 @@ miscStats.tickspeed={
 			label:"Research 37-1",
 			func:function(prev){return g.research.r37_1?prev.mul(researchEffect(37,1)):prev},
 			text:function(){return "× "+researchEffect(37,1).noLeadFormat(3)},
-			dependencies:["TAxisEffect","realTAxis","darkTAxisEffect","realdarkTAxis","antiTAxisEffect","realantiTAxis"],
+			dependencies:[...researchDependencies("r37_1")],
 			show:function(){return g.research.r37_1}
 		},
 		{
@@ -1993,11 +2639,58 @@ miscStats.tickspeed={
 			show:function(){return galaxyEffects[5].penalty.value().neq(c.d1)&&(unspentStars()<20)}
 		},
 		{
+			label:study13.rewardLabel("clock"),
+			mod:function(){return [
+				Decimal.FC_NN(1,0,1+g.studyCompletions[13]/128),
+				StudyE(13)?Decimal.FC_NN(1,0,1+studyPower(13)/512):c.d1,
+				c.d1_1,
+				c.d1_01
+			].slice(0,study13.rewardLevels.clock)},
+			func:function(prev){return (study13.rewardLevels.clock>0)?prev.mul(this.mod().productDecimals()):prev},
+			text:function(){return "× "+this.mod().productDecimals().noLeadFormat(4)+((study13.rewardLevels.clock>1)?("<span class=\"small\"> ("+this.mod().map(x=>x.noLeadFormat(3)).join(" × ")+")</span>"):"")},
+			show:function(){return study13.rewardLevels.clock>0}
+		},
+		{
+			label:"Antimatter Galaxies",
+			mod:function(){return antimatterGalaxy.effect3().mul(g.galaxies).add(c.d1)},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(3)},
+			dependencies:["realAntimatterGalaxies"],
+			show:function(){return this.mod().neq(c.d1)}
+		},
+		{
+			label:"Study XIII Binding 242",
+			mod:function(){return study13.bindingEff(242).pow(stat.wormholeDarkAxisReq.sub(stat.totalDarkAxis).max(c.d0))},
+			func:function(prev){return study13.bound(242)?prev.div(this.mod()):prev},
+			text:function(){return "÷ "+this.mod().format(3)+" "+SSBsmall(study13.bindingEff(242).noLeadFormat(3),"("+stat.wormholeDarkAxisReq.format()+" - "+stat.totalDarkAxis.format()+")",3)},
+			dependencies:[...bindingDependencies(242),"wormholeDarkAxisReq","totalDarkAxis"],
+			show:function(){return study13.bound(242)&&stat.wormholeDarkAxisReq.gt(stat.totalDarkAxis)},
+			color:"var(--binding)"
+		},
+		{
+			label:"Study XIII Binding 333",
+			func:function(prev){return study13.bound(333)?prev.div(study13.bindingEff(333)):prev},
+			text:function(){return "÷ "+study13.bindingEff(333).noLeadFormat(3)},
+			dependencies:[...bindingDependencies(333)],
+			show:function(){return study13.bound(333)&&(g.stars<60)},
+			color:"var(--binding)"
+		},
+		// limits
+		{
 			label:"Temporal Paradox",
 			func:function(prev){return prev.max(c.d0);},
-			text:function(){return "No negative numbers allowed";},
-			show:function(){return stat.tickspeed.sign===-1},
+			text:function(){return "max(<i>x</i>, 0)";},
+			show:function(prev){return prev.sign===-1},
 			color:"var(--time2)"
+		},
+		// exponents
+		{
+			label:"Study XIII Binding 337",
+			func:function(prev){return (study13.bound(337)&&prev.lt(c.d1))?prev.pow(study13.bindingEff(337)):prev},
+			text:function(){return "^ "+study13.bindingEff(337).noLeadFormat(4)},
+			show:function(prev){return study13.bound(337)&&prev.lt(c.d1)},
+			dependencies:[...bindingDependencies(337)],
+			color:"var(--binding)"
 		}
 	]
 };
@@ -2046,6 +2739,7 @@ miscStats.HRBaseApexExp={
 	precision:4,
 	modifiers:[
 		statTemplates.base("2",c.d2,true),
+		// additions
 		{
 			label:"Stardust Boost 12",
 			func:function(prev){return prev.add(stat.stardustBoost12)},
@@ -2086,6 +2780,7 @@ miscStats.HRMultiplier={
 			mod:function(){return [researchEffect(6,8),totalAchievements,g.stars].productDecimals().add(c.d1);},
 			func:function(prev){return g.research.r6_8?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().noLeadFormat(2);},
+			dependencies:[...researchDependencies("r6_8")],
 			show:function(){return g.research.r6_8&&researchEffect(6,8).neq(c.d0)&&totalAchievements>0&&g.stars>0}
 		},
 		{
@@ -2093,7 +2788,7 @@ miscStats.HRMultiplier={
 			mod:function(){return stat.metaEnergyEffect.pow(researchEffect(6,15));},
 			func:function(prev){return g.research.r6_15?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().format(4)+" "+(researchEffect(6,15).eq(c.d1)?"":SSBsmall(stat.metaEnergyEffect.format(4),researchEffect(6,15).noLeadFormat(4),3));},
-			dependencies:["metaEnergyEffect"],
+			dependencies:["metaEnergyEffect",...researchDependencies("r6_15")],
 			show:function(){return g.research.r6_15&&stat.metaEnergyEffect.neq(c.d1)&&researchEffect(6,15).neq(c.d0)}
 		},
 		{
@@ -2101,20 +2796,21 @@ miscStats.HRMultiplier={
 			mod:function(){return stat.tickspeed.pow(researchEffect(8,2));},
 			func:function(prev){return g.research.r8_2?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.tickspeed.format(2),researchEffect(8,2).noLeadFormat(4),3);},
-			dependencies:["redLightEffect","tickspeed"],
+			dependencies:[...researchDependencies("r8_2"),"tickspeed"],
 			show:function(){return g.research.r8_2&&stat.tickspeed.neq(c.d1)&&researchEffect(8,2).neq(c.d0)}
 		},
 		{
 			label:"Research 10-13",
 			func:function(prev){return g.research.r10_13?prev.mul(researchEffect(10,13)):prev},
 			text:function(){return "× "+researchEffect(10,13).format(2)},
+			dependencies:[...researchDependencies("r10_13")],
 			show:function(){return g.research.r10_13}
 		},
 		{
 			label:"Study I reward 3",
 			func:function(prev){return prev.mul(studies[1].reward(3));},
 			text:function(){return "× "+studies[1].reward(3).noLeadFormat(2);},
-			dependencies:["redLightEffect"],
+			dependencies:["redLightEffect",...bindingDependencies(245)],
 			show:function(){return g.studyCompletions[1]>0}
 		},
 		...[601,610].map(x=>statTemplates.achievementMul(x)),
@@ -2122,6 +2818,7 @@ miscStats.HRMultiplier={
 			label:"Research 15-9",
 			func:function(prev){return g.research.r15_9?prev.mul(researchEffect(15,9)):prev},
 			text:function(){return "× "+researchEffect(15,9).format(2)},
+			dependencies:[...researchDependencies("r15_9")],
 			show:function(){return g.research.r15_9}
 		},
 		statTemplates.timeResearch(16,7),
@@ -2135,7 +2832,8 @@ miscStats.HRMultiplier={
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.radiation.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.radiation.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.radiation.eff().format()},
-			show:function(){return effLuckUpgradeLevel("cinquefolium","radiation").neq(c.d0)}
+			dependencies:["luckUpgLevel_cinquefolium_radiation"],
+			show:function(){return stat.luckUpgLevel_cinquefolium_radiation.neq(c.d0)}
 		},
 		statTemplates.achievementMul(903),
 		{
@@ -2143,6 +2841,14 @@ miscStats.HRMultiplier={
 			func:function(prev){return g.wormholeUpgrades[1]?prev.mul(wormholeUpgrades[1].eff()):prev},
 			text:function(){return "× "+wormholeUpgrades[1].eff().format()},
 			show:function(){return g.wormholeUpgrades[1]>0}
+		},
+		{
+			label:"Dark Q Axis",
+			mod:function(){return stat.darkQAxisEffect.pow(stat.realdarkQAxis)},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.darkQAxisEffect.noLeadFormat(2),stat.realdarkQAxis.noLeadFormat(3),3)},
+			func:function(prev){return prev.mul(this.mod())},
+			dependencies:["darkQAxisEffect","realdarkQAxis"],
+			show:function(){return this.mod().neq(c.d1)}
 		},
 		statTemplates.achievementMul(917)
 	]
@@ -2164,7 +2870,7 @@ miscStats.HRExponent={
 		{
 			label:"Vacuum Energy",
 			func:function(prev){return prev.mul(stat.vacuumEnergyEffect)},
-			text:function(){return "× "+stat.vacuumEnergyEffect.format(4)},
+			text:function(){return "× "+stat.vacuumEnergyEffect.noLeadFormat(4)},
 			dependencies:["vacuumEnergyEffect"],
 			show:function(){return stat.vacuumEnergyEffect.neq(c.d1)}
 		},
@@ -2180,19 +2886,21 @@ miscStats.HRExponent={
 for (let i=0;i<axisCodes.length;i++) {
 	let type = axisCodes[i]
 	let out = [statTemplates.base("0",c.d0,false)]
-	// additive effects
+	// additions
 	out.push(statTemplates.ach528Reward(type))
 	if (i===0) out.push(
 		{
 			label:"Research 3-6",
 			func:function(prev){return g.research.r3_6?prev.add(researchEffect(3,6).mul(g.darkSAxis)):prev;},
 			text:function(){return "+ "+researchEffect(3,6).mul(g.darkSAxis).noLeadFormat(2)+" "+SSBsmall(g.darkSAxis.format(),researchEffect(3,6).noLeadFormat(2),2);},
+			dependencies:[...researchDependencies("r3_6")],
 			show:function(){return g.research.r3_6&&researchEffect(3,6).neq(c.d0)&&g.darkSAxis.neq(c.d0)}
 		},
 		{
 			label:"Research 3-10",
 			func:function(prev){return g.research.r3_10?prev.add(researchEffect(3,10).mul(g.darkstars)):prev;},
 			text:function(){return "+ "+researchEffect(3,10).mul(g.darkstars).noLeadFormat(2)+" "+SSBsmall(g.darkstars.format(),researchEffect(3,10).noLeadFormat(2),2);},
+			dependencies:[...researchDependencies("r3_10")],
 			show:function(){return g.research.r3_10&&researchEffect(3,10).neq(c.d0)&&g.darkstars.neq(c.d0)}
 		}
 	)
@@ -2208,6 +2916,7 @@ for (let i=0;i<axisCodes.length;i++) {
 		label:"Research 3-14",
 		func:function(prev){return g.research.r3_14?prev.add(researchEffect(3,14)):prev;},
 		text:function(){return "+ "+researchEffect(3,14).noLeadFormat(2);},
+		dependencies:[...researchDependencies("r3_14")],
 		show:function(){return g.research.r3_14&&researchEffect(3,14).neq(c.d0)}
 	})
 	if (i===1) out.push({
@@ -2221,12 +2930,14 @@ for (let i=0;i<axisCodes.length;i++) {
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.axis.name,
 			func:function(prev){return prev.add(g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()))},
 			text:function(){return "+ "+g["dark"+type+"Axis"].pow(c.d0_5).mul(luckUpgrades.cinquefolium.axis.eff()).format(3)+" "+SSBsmall(SSBsmall(g["dark"+type+"Axis"].format(),"0.5",3),luckUpgrades.cinquefolium.axis.eff().noLeadFormat(3),2)},
-			show:function(){return effLuckUpgradeLevel("cinquefolium","axis").neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
+			dependencies:["luckUpgLevel_cinquefolium_axis"],
+			show:function(){return stat.luckUpgLevel_cinquefolium_axis.neq(c.d0)&&g[type+"Axis"].neq(c.d0)}
 		},
 		{
 			label:"Research 34-4",
 			func:function(prev){return g.research.r34_4?prev.add(researchEffect(34,4)):prev},
 			text:function(){return "+ "+researchEffect(34,4).format(2)},
+			dependencies:[...researchDependencies("r34_4")],
 			show:function(){return g.research.r34_4}
 		}
 	)
@@ -2235,19 +2946,48 @@ for (let i=0;i<axisCodes.length;i++) {
 		mod:function(){return g.antiWAxis.pow(c.d2).mul(researchEffect(36,1))},
 		func:function(prev){return g.research.r36_1?prev.add(this.mod()):prev},
 		text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(SSBsmall(g.antiWAxis.format(),"2",3),researchEffect(36,1).noLeadFormat(2),2)},
+		dependencies:[...researchDependencies("r36_1")],
 		show:function(){return g.research.r36_1&&g.antiWAxis.neq(c.d0)}
 	})
-	// multiplicative effects
+	if (i===7) {for (let i of [96,126]) {out.push({
+		label:"Study XIII Binding "+i,
+		func:function(prev){return study13.bound(i)?prev.sub(study13.bindingEff(i)):prev},
+		text:function(){return "- "+study13.bindingEff(i).noLeadFormat(3)},
+		dependencies:[...bindingDependencies(i)],
+		show:function(){return study13.bound(i)},
+		color:"var(--binding)"
+	})}}
+	// limits
+	out.push({
+		label:"Negative Space",
+		func:function(prev){return prev.max(c.d0)},
+		text:function(){return "max(<i>x</i>, 0)"},
+		show:function(prev){return prev.sign===-1},
+		color:"var(--time2)"
+	})
+	// multipliers
+	// exponents
+	out.push({
+		label:"Study XIII Binding 198",
+		func:function(prev){
+			let start = achievement(528).value(type)
+			return (study13.bound(198)&&prev.gt(start))?(start.eq(c.d0)?c.d0:prev.div(start).pow(study13.bindingEff(198)).mul(start)):prev
+		},
+		text:function(){return "(<i>x</i> ÷ "+achievement(528).value(type).noLeadFormat(3)+") ^ "+study13.bindingEff(198).noLeadFormat(3)+" × "+achievement(528).value(type).noLeadFormat(3)},
+		dependencies:[...bindingDependencies(198)],
+		show:function(prev){return study13.bound(198)&&prev.gt(achievement(528).value(type))},
+		color:"var(--binding)"
+	})
 	// softcap
 	out.push(statTemplates.axisSoftcap("dark"+type,"var(--darkmatter)"))
 	// initialize
 	miscStats["freedark"+type+"Axis"] = {
 		type:"breakdown",
 		label:"Free dark "+type+" Axis",
-		visible:function(){return stat["freedark"+type+"Axis"].neq(c.d0)},
+		visible:function(){return Decimal.neq(g["dark"+type+"Axis"],stat["realdark"+type+"Axis"])},
 		category:"Free axis",
 		newRow:i===0,
-		precision:2,
+		precision:"SO".includes(type)?3:2,
 		modifiers:out
 	}
 }
@@ -2264,6 +3004,7 @@ miscStats.knowledgePerSec={
 			text:function(){return unbreak("log("+statFormat("MP",g.masteryPower.format(2),"_mastery")+" + 1)")+" ÷ log("+c.inf.format(0)+")";},
 			show:function(){return true}
 		},
+		// base multipliers
 		{
 			label:"Tier 5 achievements",
 			func:function(prev){return prev.mul(achievement.perAchievementReward[5].currentVal);},
@@ -2275,10 +3016,17 @@ miscStats.knowledgePerSec={
 			mod:function(){return researchEffect(7,5).mul(totalAchievements).add(c.d1).pow(stat.cyanLightEffect);},
 			func:function(prev){return g.research.r7_5?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(researchEffect(7,5).mul(totalAchievements).add(c.d1).format(3),stat.cyanLightEffect.noLeadFormat(3),3);},
-			dependencies:["cyanLightEffect"],
+			dependencies:["cyanLightEffect",...researchDependencies("r7_5")],
 			show:function(){return g.research.r7_5&&researchEffect(7,5).neq(c.d0)&&(totalAchievements>0)&&stat.cyanLightEffect.neq(c.d0)}
 		},
-		statTemplates.tickspeed(()=>studies[6].reward(2),"Study VI reward 2"),
+		statTemplates.tickspeed(()=>studies[6].reward(2),"Study VI reward 2",[...bindingDependencies(265)]),
+		{
+			label:study13.rewardLabel("particleLab"),
+			func:function(prev){return prev.mul(study13.rewards.particleLab.eff())},
+			text:function(){return "× "+study13.rewards.particleLab.eff().noLeadFormat(2)},
+			show:function(){return study13.rewardLevels.particleLab>0}
+		},
+		// observations
 		{
 			label:"Observations",
 			func:function(prev){return prev.aps(stat.observationEffect);},
@@ -2287,11 +3035,13 @@ miscStats.knowledgePerSec={
 			show:function(){return stat.observationEffect.neq(c.d1)},
 			color:"var(--research)"
 		},
+		// multipliers
 		{
 			label:"Research 7-5",
 			mod:function(){return researchEffect(7,5).mul(totalAchievements).add(c.d1)},
 			func:function(prev){return g.research.r7_5?prev.mul(this.mod()):prev;},
 			text:function(){return "× "+this.mod().noLeadFormat(2);},
+			dependencies:[...researchDependencies("r7_5")],
 			show:function(){return g.research.r7_5&&researchEffect(7,5).neq(c.d0)&&totalAchievements>0}
 		},
 		statTemplates.masteryMul(103),
@@ -2301,14 +3051,16 @@ miscStats.knowledgePerSec={
 			text:function(){return "× "+achievement(719).effect().format(2)+" "+SSBsmall("(1.202 + 0.0816 × "+N(g.galaxies).format()+")",g.observations.sumDecimals().format(),3)},
 			show:function(){return g.achievement[719]&&g.observations.sumDecimals().gt(c.d0)}
 		},
+		// exponents
 		{
 			label:"Mental Energy",
 			func:function(prev){return prev.pow(stat.mentalEnergyEffect)},
-			text:function(){return "^ "+stat.mentalEnergyEffect.format(4)},
+			text:function(){return "^ "+stat.mentalEnergyEffect.noLeadFormat(4)},
 			dependencies:["mentalEnergyEffect"],
 			show:function(){return stat.mentalEnergyEffect.neq(c.d1)}
 		},
 		statTemplates.finalityResearch("K",3),
+		// tickspeed
 		statTemplates.tickspeed()
 	]
 };
@@ -2325,16 +3077,22 @@ miscStats.observationEffect={
 			for (let i=0;i<4;i++) out.push({
 				label:["Exotic Matter","Nebula","Dark Matter","Black Hole"][i]+" observations",
 				base:function(){return g.observations[i].mul(i===3?c.d0_2:c.d0_1).add(c.d1)},
-				mod:function(){return this.base().gt(c.d10)?this.base().mul(c.e2).pow(c.d1div3):this.base()},
+				scp:function(){
+					let out = c.d2
+					if (g.achievement[906]) {out = out.mul(achievement(906).effect())}
+					return out.add(c.d1)
+				},
+				mod:function(){return this.base().gt(c.d10)?this.base().div(c.d10).pow(this.scp().recip()).mul(c.d10):this.base()},
 				func:function(prev){return prev.mul(this.mod())},
 				text:function(){
-					out = this.base().gt(c.d10)?SSBsmall("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i===3?"20":"10")+" + 100)","(1 ÷ 3)",3):("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i===3?"0.2":"0.1")+" + 1)")
+					out = this.base().gt(c.d10)?SSBsmall("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+formulaFormat.mult(this.scp().sub(c.d1).pow10().div((i===3)?c.d5:c.d10))+" + "+this.scp().sub(c.d1).pow10().noLeadFormat(3)+")",this.scp().recip().noLeadFormat(3),3):("("+statFormat("O<sub>"+(i+1)+"</sub>",g.observations[i].format(),"_research")+" × "+(i===3?"0.2":"0.1")+" + 1)")
 					return "× "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+out+"</span>"
 				},
 				show:function(){return g.observations[i].gt(c.d0)}
 			})
 			return out
 		})(),
+		// additions
 		{
 			label:"Anti-T Axis",
 			mod:function(){return stat.antiTAxisEffect.mul(stat.realantiTAxis)},
@@ -2359,12 +3117,14 @@ miscStats.chromaPerSec={
 			dependencies:["chromaGainBase"],
 			show:function(){return true}
 		},
+		// multipliers
 		...(()=>{
 			let out = []
-			for (let i of ["r9_7","r9_8","r9_9","r10_7","r10_8","r10_9","r13_8"]) out.push({
+			for (let i of ["r9_7","r9_8","r9_9","r9_15","r10_7","r10_8","r10_9","r13_8"]) out.push({
 				label:"Research "+researchOut(i),
 				func:function(prev){return g.research[i]?prev.mul(researchEffect(researchRow(i),researchCol(i))):prev},
 				text:function(){return "× "+researchEffect(researchRow(i),researchCol(i)).noLeadFormat(2)},
+				dependencies:[...researchDependencies(i)],
 				show:function(){return g.research[i]&&researchEffect(researchRow(i),researchCol(i)).neq(c.d1)}
 			})
 			return out
@@ -2378,12 +3138,6 @@ miscStats.chromaPerSec={
 			show:function(){return g.achievement[611]&&g.darkstars.neq(c.d0)}
 		},
 		statTemplates.masteryMul(104),
-		{
-			label:"Research 9-15",
-			func:function(prev){return g.research.r9_15?prev.mul(researchEffect(9,15)):prev},
-			text:function(){return "× "+researchEffect(9,15).format(2)},
-			show:function(){return g.research.r9_15}
-		},
 		statTemplates.timeResearch(16,6),
 		{
 			label:"Galaxy Boost 2",
@@ -2403,6 +3157,7 @@ miscStats.chromaPerSec={
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.chroma.name,
 			func:function(prev){return prev.mul(luckUpgrades.cinquefolium.chroma.eff())},
 			text:function(){return "× "+luckUpgrades.cinquefolium.chroma.eff().format(2)},
+			dependencies:["luckUpgLevel_cinquefolium_chroma"],
 			show:function(){return luckUpgrades.cinquefolium.chroma.eff().neq(c.d1)}
 		},
 		{
@@ -2424,6 +3179,15 @@ miscStats.chromaPerSec={
 			text:function(){return "× "+prismaticUpgrades.chromaOverdrive.eff.x().noLeadFormat(2)},
 			show:function(){return g.prismaticUpgrades.chromaOverdrive.neq(c.d0)}
 		},
+		statTemplates.achievementMul(905),
+		{
+			label:achievement.label(918),
+			mod:function(){return N(1.0308).pow(stat.realDarkStars)},
+			func:function(prev){return g.achievement[918]?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall("1.0308",stat.realDarkStars.noLeadFormat(3),3)},
+			dependencies:["realDarkStars"],
+			show:function(){return g.achievement[918]}
+		},
 		{
 			label:achievement.label(815),
 			mod:function(){return c.d1.sub(stat.chromaCostMultiplier).max(c.d0)},
@@ -2432,7 +3196,7 @@ miscStats.chromaPerSec={
 			dependencies:["chromaCostMultiplier"],
 			show:function(){return g.achievement[815]&&g.ach815RewardActive}
 		},
-		statTemplates.achievementMul(905),
+		// tickspeed
 		statTemplates.tickspeed(()=>studies[6].reward(1))
 	]
 }
@@ -2455,6 +3219,7 @@ miscStats.chromaCostMultiplier={
 			label:"Research 13-9",
 			func:function(prev){return g.research.r13_9?prev.div(researchEffect(13,9)):prev},
 			text:function(){return "÷ "+researchEffect(13,9).noLeadFormat(3)},
+			dependencies:[...researchDependencies("r13_9")],
 			show:function(){return g.research.r13_9}
 		},
 		{
@@ -2469,16 +3234,17 @@ miscStats.luckShardsPerSec={
 	type:"breakdown",
 	label:"Luck shard gain",
 	visible:function(){return unlocked("Luck")},
-	category:"Luck shard gain",
+	category:"Luck",
 	precision:2,
 	modifiers:[
 		{
 			label:"Base (Study VII reward 3)",
 			func:function(){return studies[7].reward(3)},
 			text:function(){return studies[7].reward(3).format(3)},
-			dependencies:["redLightEffect"],
+			dependencies:["redLightEffect",...bindingDependencies(245)],
 			show:function(){return true}
 		},
+		// multipliers
 		statTemplates.achievementMul(807),
 		...(()=>{
 			let out = []
@@ -2486,6 +3252,7 @@ miscStats.luckShardsPerSec={
 				label:"Research "+researchOut(res),
 				func:function(prev){return g.research[res]?prev.mul(researchEffect(researchRow(res),researchCol(res))):prev},
 				text:function(){return "× "+researchEffect(researchRow(res),researchCol(res)).format(2)},
+				dependencies:[...researchDependencies(res)],
 				show:function(){return g.research[res]}
 			})
 			return out
@@ -2499,21 +3266,86 @@ miscStats.luckShardsPerSec={
 		statTemplates.antiYAxis,
 		{
 			label:"Research 27-1",
-			mod:function(){return researchEffect(27,1).pow(effLuckUpgradeLevel("cinquefolium","luck"))},
+			mod:function(){return researchEffect(27,1).pow(stat.luckUpgLevel_cinquefolium_luck)},
 			func:function(prev){return g.research.r27_1?prev.mul(this.mod()):prev},
-			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(researchEffect(27,1).noLeadFormat(3),effLuckUpgradeLevel("cinquefolium","luck").noLeadFormat(3),3)},
-			show:function(){return g.research.r27_1&&effLuckUpgradeLevel("cinquefolium","luck").neq(c.d0)}
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(researchEffect(27,1).noLeadFormat(3),stat.luckUpgLevel_cinquefolium_luck.noLeadFormat(3),3)},
+			dependencies:[...researchDependencies("r27_1"),"luckUpgLevel_cinquefolium_luck"],
+			show:function(){return g.research.r27_1&&stat.luckUpgLevel_cinquefolium_luck.neq(c.d0)}
 		},
+		statTemplates.achievementMul(905),
+		statTemplates.study13SacNum1,
+		// exponents
 		{
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.luck.name,
 			func:function(prev){return prev.pow(luckUpgrades.cinquefolium.luck.eff())},
 			text:function(){return "^ "+luckUpgrades.cinquefolium.luck.eff().noLeadFormat(4)},
-			show:function(){return effLuckUpgradeLevel("cinquefolium","luck").neq(c.d0)}
+			dependencies:["luckUpgLevel_cinquefolium_luck"],
+			show:function(){return stat.luckUpgLevel_cinquefolium_luck.neq(c.d0)}
 		},
-		statTemplates.achievementMul(905),
+		// tickspeed
 		statTemplates.tickspeed()
 	]
 }
+for (let type of luckRuneTypes) {for (let upg of luckUpgradeList[type]) {
+	miscStats["luckUpgLevel_"+type+"_"+upg] = {
+		type:"breakdown",
+		label:toTitleCase(type)+" "+luckUpgrades[type][upg].name,
+		visible:function(){return runeTypeUnlocked(type)&&luckUpgradeUnlocked(type,upg)&&Decimal.neq(g.luckUpgrades[type][upg],stat["luckUpgLevel_"+type+"_"+upg])},
+		category:"Luck",
+		precision:3,
+		modifiers:(()=>{
+			let out = [{
+				label:"Purchased Level",
+				func:function(){return g.luckUpgrades[type][upg]},
+				text:function(){return g.luckUpgrades[type][upg].format()},
+				show:function(){return true}
+			}]
+			// additions
+			let res = luckUpgrades[type][upg].luckResearch
+			if (res!==undefined) {out.push({
+				label:"Research "+researchOut(res),
+				mod:function(){return researchEffect(researchRow(res),researchCol(res))},
+				func:function(prev){return g.research[res]?prev.add(this.mod()):prev},
+				text:function(){return "+ "+this.mod().noLeadFormat(3)},
+				dependencies:[...researchDependencies(res)],
+				show:function(){return g.research[res]}
+			})}
+			for (let i of [["trifolium","antiAxis",927],["quatrefolium","prismatic",928],["cinquefolium","luck","929"]]) {if ((type===i[0])&&(upg===i[1])) out.push({
+				label:achievement.label(i[2]),
+				func:function(prev){return g.achievement[i[2]]?prev.add(c.d1):prev},
+				text:function(){return "+ 1"},
+				show:function(){return g.achievement[i[2]]}
+			})}
+			let prevType = luckRuneTypes[luckRuneTypes.indexOf(type)-1]
+			if (type!=="unifolium") out.push({
+				label:"Unifolium "+luckUpgrades.unifolium.cascade.name,
+				mod:function(){return luckUpgrades[type][upg].cascade.map(x=>stat["luckUpgLevel_"+prevType+"_"+x]).sumDecimals().mul(luckUpgrades.unifolium.cascade.eff())},
+				func:function(prev){return prev.add(this.mod())},
+				text:function(){return "+ "+this.mod().format(3)},
+				dependencies:luckUpgrades[type][upg].cascade.map(x=>"luckUpgLevel_"+prevType+"_"+x),
+				show:function(){return this.mod().neq(c.d0)}
+			})
+			// multipliers
+			out.push({
+				label:"Study XIII Binding 246",
+				func:function(prev){return study13.bound(246)?prev.div(study13.bindingEff(246)):prev},
+				text:function(){return "÷ "+study13.bindingEff(246).noLeadFormat(3)},
+				dependencies:[...bindingDependencies(246)],
+				show:function(){return study13.bound(246)},
+				color:"var(--binding)"
+			},{
+				label:"Research 32-4",
+				mod:function(){return luckUpgrades[type][upg].mul(researchEffect(32,4)).add(c.d1)},
+				func:function(prev){return g.research.r32_4?prev.mul(this.mod()):prev},
+				text:function(){return "× "+this.mod().noLeadFormat(4)},
+				dependencies:[...researchDependencies("r32_4")],
+				show:function(){return g.research.r32_4}
+			})
+			// initialize
+			return out
+		})()
+	}
+}}
 miscStats.prismaticPerSec={
 	type:"breakdown",
 	label:"Prismatic gain",
@@ -2527,12 +3359,14 @@ miscStats.prismaticPerSec={
 			text:function(){return "Π<span class=\"xscript\"><sup>9</sup><sub>1</sub></span>L<sub>n</sub> ÷ "+c.e24.format()},
 			show:function(){return true}
 		},
+		// base exponents
 		{
 			label:"Galaxy Boost 4",
 			func:function(prev){return prev.aps(galaxyEffects[4].boost.value())},
 			text:function(){return "(<i>x</i> + 1) ^ "+galaxyEffects[4].boost.value().noLeadFormat(4)+" - 1"},
 			show:function(){return g.galaxies>=galaxyEffects[4].req}
 		},
+		// multipliers
 		{
 			label:prismaticUpgradeName("prismaticSpeed"),
 			func:function(prev){return prev.mul(prismaticUpgrades.prismaticSpeed.eff())},
@@ -2545,6 +3379,7 @@ miscStats.prismaticPerSec={
 				label:"Research "+r+"-"+c,
 				func:function(prev){return g.research["r"+r+"_"+c]?prev.mul(researchEffect(r,c)):prev},
 				text:function(){return "× "+researchEffect(r,c).format(3)},
+				dependencies:[...researchDependencies("r"+r+"_"+c)],
 				show:function(){return g.research["r"+r+"_"+c]}
 			})
 			return out
@@ -2555,10 +3390,12 @@ miscStats.prismaticPerSec={
 			mod:function(){return Decimal.pow(masteryEffect(104),masteryEffect(111))},
 			func:function(prev){return (MasteryE(104)&&MasteryE(111))?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(masteryEffect(104).format(2),masteryEffect(111).noLeadFormat(2),3)},
-			dependencies:Array.removeDuplicates([masteryDependencies(104),masteryDependencies(111)].flat()),
+			dependencies:[...masteryDependencies([104,111])],
 			show:function(){return MasteryE(104)&&MasteryE(111)}
 		},
 		statTemplates.achievementMul(905),
+		statTemplates.study13SacNum1,
+		// tickspeed
 		statTemplates.tickspeed()
 	]
 }
@@ -2566,10 +3403,11 @@ miscStats.antimatterPerSec={
 	type:"breakdown",
 	label:"Antimatter gain",
 	visible:function(){return unlocked("Antimatter")},
-	category:"Antimatter gain",
+	category:"Antimatter",
 	precision:2,
 	modifiers:[
 		statTemplates.base("1",c.d1,true),
+		// multipliers
 		{
 			label:"Anti-X Axis",
 			mod:function(){return stat.antiXAxisEffect.pow(stat.realantiXAxis)},
@@ -2583,6 +3421,7 @@ miscStats.antimatterPerSec={
 			label:"Research 25-15",
 			func:function(prev){return g.research.r25_15?prev.mul(researchEffect(25,15)):prev},
 			text:function(){return "× "+researchEffect(25,15).format(2)},
+			dependencies:[...researchDependencies("r25_15")],
 			show:function(){return g.research.r25_15}
 		},
 		{
@@ -2590,10 +3429,18 @@ miscStats.antimatterPerSec={
 			mod:function(){return stat.antiTAxisEffect.pow(Decimal.mul(stat.realantiTAxis,researchEffect(28,15)))},
 			func:function(prev){return g.research.r28_15?prev.mul(this.mod()):prev},
 			text:function(){return "× "+this.mod().format(2)+" "+SSBsmall(stat.antiTAxisEffect.format(2),researchEffect(28,15).eq(c.d1)?stat.realantiTAxis.noLeadFormat(3):SSBsmall(stat.realantiTAxis.noLeadFormat(3),researchEffect(28,15).noLeadFormat(3),2),3)},
-			dependencies:["antiTAxisEffect","realantiTAxis"],
-			show:function(){return g.research.r28_15}
+			dependencies:["antiTAxisEffect","realantiTAxis",...researchDependencies("r28_15")],
+			show:function(){return this.mod().neq(c.d1)}
 		},
 		statTemplates.achievementMul(905),
+		{
+			label:study13.rewardLabel("century",1),
+			mod:function(){return c.e2.pow(g.studyCompletions[13])},
+			func:function(prev){return (study13.rewardLevels.century>0)?prev.mul(this.mod()):prev},
+			text:function(){return "× "+this.mod().format()+" "+SSBsmall(100,g.studyCompletions[13],3)},
+			show:function(){return study13.rewardLevels.century>0}
+		},
+		// exponents
 		{
 			label:"Anti-S Axis",
 			mod:function(){return stat.antiSAxisEffect.pow(stat.realantiSAxis);},
@@ -2604,12 +3451,21 @@ miscStats.antimatterPerSec={
 		},
 		statTemplates.finalityResearch("AM",3),
 		{
+			label:"Antimatter Galaxies",
+			func:function(prev){return prev.pow(antimatterGalaxy.effect2())},
+			text:function(){return "^ "+antimatterGalaxy.effect2().noLeadFormat(4)},
+			dependencies:["realAntimatterGalaxies"],
+			show:function(){return stat.realAntimatterGalaxies.neq(c.d0)}
+		},
+		// layer functions
+		{
 			label:"Study IX reward 1",
 			func:function(prev){return (g.studyCompletions[9]===4)?prev:prev.layerf(x=>Math.max(x-studies[9].reward(1),-1))},
 			text:function(){return "log<sup>["+studies[9].reward(1).toFixed(2)+"]</sup>(<i>x</i>)"},
 			show:function(){return g.studyCompletions[9]!==4}
 		},
-		statTemplates.tickspeed()
+		// tickspeed
+		statTemplates.tickspeed(()=>g.achievement[916]?achievement(916).effect():c.d1,"Tickspeed",["realAntimatterGalaxies"])
 	]
 }
 miscStats.antiXAxisEffect={
@@ -2621,6 +3477,7 @@ miscStats.antiXAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base("5",c.d5,true),
+		// multipliers
 		{
 			label:"Anti-Z Axis",
 			mod:function(){return stat.antiZAxisEffect.pow(stat.realantiZAxis)},
@@ -2628,7 +3485,9 @@ miscStats.antiXAxisEffect={
 			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.antiZAxisEffect.noLeadFormat(2),stat.realantiZAxis.noLeadFormat(3),3)},
 			dependencies:["antiZAxisEffect","realantiZAxis"],
 			show:function(){return stat.antiZAxisEffect.neq(c.d1)&&stat.realantiZAxis.neq(c.d0)}
-		}
+		},
+		// exponents
+		statTemplates.study13MatterBoost("am",3)
 	]
 }
 miscStats.antiYAxisEffect={
@@ -2639,10 +3498,12 @@ miscStats.antiYAxisEffect={
 	precision:3,
 	modifiers:[
 		statTemplates.base("1.3",c.d1_3,true),
+		// multipliers
 		{
 			label:"Research 24-12",
 			func:function(prev){return g.research.r24_12?prev.mul(researchEffect(24,12)):prev},
-			text:function(){return "× "+researchEffect(24,12).noLeadFormat(2)},
+			text:function(){return "× "+researchEffect(24,12).noLeadFormat(3)},
+			dependencies:[...researchDependencies("r24_12")],
 			show:function(){return g.research.r24_12}
 		},
 		{
@@ -2650,7 +3511,9 @@ miscStats.antiYAxisEffect={
 			func:function(prev){return g.wormholeUpgrades[6]?prev.mul(wormholeUpgrades[6].eff()):prev},
 			text:function(){return "× "+wormholeUpgrades[6].eff().noLeadFormat(4)},
 			show:function(){return g.wormholeUpgrades[6]}
-		}
+		},
+		// exponents
+		statTemplates.study13MatterBoost("am",3)
 	]
 }
 miscStats.antiZAxisEffect={
@@ -2661,6 +3524,7 @@ miscStats.antiZAxisEffect={
 	precision:3,
 	modifiers:[
 		statTemplates.base("1.3",c.d1_3,true),
+		// multipliers
 		{
 			label:"Anti-U Axis",
 			mod:function(){return stat.antiUAxisEffect.pow(Decimal.mul(stat.realantiUAxis,stat.totalAntiAxis));},
@@ -2673,8 +3537,11 @@ miscStats.antiZAxisEffect={
 			label:"Research 27-15",
 			func:function(prev){return g.research.r27_15?prev.mul(researchEffect(27,15)):prev},
 			text:function(){return "× "+researchEffect(27,15).noLeadFormat(4)},
+			dependencies:[...researchDependencies("r27_15")],
 			show:function(){return g.research.r27_15}
 		},
+		// exponents
+		statTemplates.study13MatterBoost("am",3)
 	]
 }
 miscStats.antiWAxisEffect={
@@ -2686,11 +3553,17 @@ miscStats.antiWAxisEffect={
 	modifiers:[
 		{
 			label:"Base",
-			softcap:function(){return c.e100},
+			softcap:function(){
+				let out = c.e100
+				if (g.achievement[933]) {out = [out,N(20.21),N(4.11).pow(stat.realantiWAxis)].productDecimals()}
+				return out
+			},
 			func:function(){return Decimal.mul(g.antimatter.add(c.d10).min(this.softcap()).log10().pow(c.d0_3),g.antimatter.add(c.d10).log10().log10().pow(c.d2)).pow10()},
-			text:function(){let am=statFormat("AM",g.antimatter.format(),"_antimatter");return "10 ^ (log(min("+am+", "+this.softcap().format()+") + 10) ^ 0.3 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
+			text:function(){let am=statFormat("AM",g.antimatter.format(),"_antimatter");return "10 ^ (log(min("+am+(g.antimatter.lt(c.e17)?" + 10":"")+", "+this.softcap().format()+") + 10) ^ 0.3 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
+			dependencies:["realantiWAxis"],
 			show:function(){return true}
 		},
+		// multipliers
 		{
 			label:"Research 24-14",
 			mod:function(){return stat.antiUAxisEffect.pow([stat.realantiUAxis,stat.totalAntiAxis,researchPower(24,14)].productDecimals());},
@@ -2698,6 +3571,16 @@ miscStats.antiWAxisEffect={
 			text:function(){return "× "+this.mod().noLeadFormat(2)+" "+SSBsmall(stat.antiUAxisEffect.noLeadFormat(5),"("+[stat.realantiUAxis.noLeadFormat(2),stat.totalAntiAxis.format(0),researchPower(24,14).noLeadFormat(2)].join(" × ")+")",3);},
 			dependencies:["antiUAxisEffect","realantiUAxis","totalAntiAxis"],
 			show:function(){return g.research.r24_14&&stat.antiUAxisEffect.neq(c.d1)&&stat.realantiUAxis.neq(c.d0)&&stat.totalAntiAxis.neq(c.d0)}
+		},
+		// exponents
+		statTemplates.study13MatterBoost("am",3),
+		{
+			label:"Anti-R Axis",
+			mod:function(){return [stat.antiRAxisEffect,stat.realantiRAxis,c.d0_01].productDecimals().add(c.d1);},
+			func:function(prev){return prev.pow(this.mod());},
+			text:function(){return "^ "+this.mod().noLeadFormat(3)+" <span class=\"small\">"+unbreak("("+stat.antiRAxisEffect.div(c.e2).noLeadFormat(2)+" × "+stat.realantiRAxis.noLeadFormat(2)+" + 1)")+"</span>";},
+			dependencies:["antiRAxisEffect","realantiRAxis"],
+			show:function(){return this.mod().neq(c.d1)}
 		},
 	]
 }
@@ -2708,7 +3591,9 @@ miscStats.antiVAxisEffect={
 	category:"Axis effects",
 	precision:2,
 	modifiers:[
-		statTemplates.base("15",c.d15,true)
+		statTemplates.base("15",c.d15,true),
+		// multipliers
+		statTemplates.study13MatterBoost("am",2)
 	]
 }
 miscStats.antiUAxisEffect={
@@ -2716,9 +3601,12 @@ miscStats.antiUAxisEffect={
 	label:"Anti-U axis effect",
 	visible:function(){return antiAxisUnlocked("U")},
 	category:"Axis effects",
-	precision:5,
+	precision:3,
+	from1:true,
 	modifiers:[
-		statTemplates.base("1.0001",N(1.0001),true)
+		statTemplates.base("1.0001",N(1.0001),true),
+		// exponents
+		statTemplates.study13MatterBoost("am",3)
 	]
 }
 miscStats.antiTAxisEffect={
@@ -2729,6 +3617,7 @@ miscStats.antiTAxisEffect={
 	precision:2,
 	modifiers:[
 		statTemplates.base(()=>c.d150.format(),c.d150,true),
+		// multipliers
 		{
 			label:"Empowered Anti-V Axis",
 			mod:function(){return [stat.antiVAxisEffect,stat.empoweredAntiVAxis,c.d0_01].productDecimals().add(c.d1);},
@@ -2741,8 +3630,10 @@ miscStats.antiTAxisEffect={
 			label:"Study of Studies reward 2",
 			func:function(prev){return prev.mul(studies[10].reward(2))},
 			text:function(){return "× "+studies[10].reward(2).noLeadFormat(2)},
+			dependencies:[...bindingDependencies(265)],
 			show:function(){return g.studyCompletions[10]>1}
 		},
+		statTemplates.study13MatterBoost("am",2)
 	]
 }
 miscStats.antiSAxisEffect={
@@ -2750,23 +3641,67 @@ miscStats.antiSAxisEffect={
 	label:"Anti-S axis effect",
 	visible:function(){return antiAxisUnlocked("S")},
 	category:"Axis effects",
-	precision:2,
+	precision:3,
+	from1:true,
 	modifiers:[
 		statTemplates.base("1.015",N(1.015),true),
+		// additions
 		{
 			label:"Study XII reward 3",
 			mod:function(){return Decimal.mul(achievement(526).effect(),studies[12].reward(3))},
 			func:function(prev){return prev.add(this.mod())},
 			text:function(){return "+ "+this.mod().noLeadFormat(3)+" "+SSBsmall(achievement(526).effect().noLeadFormat(3),studies[12].reward(3).noLeadFormat(2),2)},
-			dependencies:["redLightEffect"],
+			dependencies:["redLightEffect",...bindingDependencies(245)],
 			show:function(){return this.mod().neq(c.d0)}
-		}
+		},
+		// exponents
+		statTemplates.ach912Reward
+	]
+}
+miscStats.antiRAxisEffect={
+	type:"breakdown",
+	label:"Anti-R axis effect",
+	visible:function(){return antiAxisUnlocked("R")||(study13.rewardLevels.slabdrill>0)},
+	category:"Axis effects",
+	precision:2,
+	modifiers:[
+		statTemplates.base("7.5",c.d7_5,true)
+	]
+}
+miscStats.antiQAxisEffect={
+	type:"breakdown",
+	label:"Anti-Q axis effect",
+	visible:function(){return antiAxisUnlocked("Q")||(study13.rewardLevels.slabdrill>1)},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("0.95",c.d0_95,true)
+	]
+}
+miscStats.antiPAxisEffect={
+	type:"breakdown",
+	label:"Anti-P axis effect",
+	visible:function(){return antiAxisUnlocked("P")||(study13.rewardLevels.slabdrill>2)},
+	category:"Axis effects",
+	precision:3,
+	modifiers:[
+		statTemplates.base("0.8",c.d0_8,true)
+	]
+}
+miscStats.antiOAxisEffect={
+	type:"breakdown",
+	label:"Anti-O axis effect",
+	visible:function(){return antiAxisUnlocked("O")||(study13.rewardLevels.slabdrill>3)},
+	category:"Axis effects",
+	precision:5,
+	modifiers:[
+		statTemplates.base("1.01",c.d1_01,true)
 	]
 }
 for (let i=0;i<axisCodes.length;i++) {
 	let type = axisCodes[i]
 	let out = [statTemplates.base("0",c.d0,false)]
-	// additive effects
+	// additions
 	if (i<7) out.push({
 		label:prismaticUpgradeName("prismCondenser"),
 		mod:function(){return Decimal.mul(prismaticUpgrades.prismCondenser.eff.x(),Math.max(0,Math.min(1,stat.condenserPower-i)))},
@@ -2786,6 +3721,7 @@ for (let i=0;i<axisCodes.length;i++) {
 			mod:function(){return g.antiSAxis.pow(c.d2).mul(researchEffect(26,15))},
 			func:function(prev){return g.research.r26_15?prev.add(this.mod()):prev},
 			text:function(){return "+ "+this.mod().noLeadFormat(2)+" "+SSBsmall(SSBsmall(g.antiSAxis.format(),"2",3),researchEffect(26,15).noLeadFormat(2),2)},
+			dependencies:[...researchDependencies("r26_15")],
 			show:function(){return g.research.r26_15&&g.antiSAxis.neq(c.d0)}
 		}
 	)
@@ -2795,22 +3731,46 @@ for (let i=0;i<axisCodes.length;i++) {
 			label:"Research "+researchOut(res),
 			func:function(prev){return g.research[res]?prev.add(researchEffect(researchRow(res),researchCol(res))):prev},
 			text:function(){return "+ "+researchEffect(researchRow(res),researchCol(res)).format(2)},
+			dependencies:[...researchDependencies(res)],
 			show:function(){return g.research[res]}
 		})
 	}
-	// multiplicative effects
+	// limit
+	out.push({
+		label:"Negative Space",
+		func:function(prev){return prev.max(c.d0)},
+		text:function(){return "max(<i>x</i>, 0)"},
+		show:function(prev){return prev.sign===-1},
+		color:"var(--time2)"
+	})
+	// multipliers
 	// softcap
 	out.push(statTemplates.axisSoftcap("anti"+type,"var(--antimatter)"))
 	// initialize
 	miscStats["freeanti"+type+"Axis"] = {
 		type:"breakdown",
 		label:"Free anti-"+type+" Axis",
-		visible:function(){return stat["freeanti"+type+"Axis"].neq(c.d0)},
+		visible:function(){return Decimal.neq(g["anti"+type+"Axis"],stat["realanti"+type+"Axis"])},
 		category:"Free axis",
 		newRow:i===0,
-		precision:2,
+		precision:"SO".includes(type)?3:2,
 		modifiers:out
 	}
+}
+miscStats.realAntimatterGalaxies={
+	type:"breakdown",
+	label:"Effective antimatter galaxies",
+	visible:function(){return Decimal.neq(g.antimatterGalaxies,stat.realAntimatterGalaxies)},
+	category:"Antimatter",
+	precision:3,
+	modifiers:[
+		{
+			label:"Purchased",
+			func:function(){return g.antimatterGalaxies},
+			text:function(){return g.antimatterGalaxies.format()},
+			show:function(){return true}
+		}
+	]
 }
 
 miscStats.empoweredYAxis={
@@ -2849,7 +3809,7 @@ miscStats.empoweredAntiVAxis={
 		if (g.research.r25_14) out = out.add(researchEffect(25,14))
 		return out.min(stat.realantiVAxis)
 	},
-	dependencies:["antiXAxisEffect","realantiVAxis"]
+	dependencies:[...researchDependencies("r25_14"),"realantiVAxis"]
 }
 for (let i of empowerableAntiAxis) {
 	miscStats["unempoweredAnti"+i+"Axis"]={
@@ -2869,7 +3829,8 @@ miscStats.axisScalingPower={
 		if (g.achievement[502]) out = out.mul(0.95-studies[12].reward(1));
 		if (g.achievement[717]) out = out.mul(c.d1.sub(achievement(717).effect().div(c.e2)))
 		return out
-	}
+	},
+	dependencies:[...bindingDependencies(206)]
 }
 miscStats.axisSuperscalingStart={
 	type:"combined",
@@ -2880,7 +3841,8 @@ miscStats.axisSuperscalingPower={
 	value:function(){
 		let out=luckShardEffect2()
 		return out
-	}
+	},
+	dependencies:[...bindingDependencies(265)]
 }
 miscStats.darkAxisScalingStart={
 	type:"combined",
@@ -2894,7 +3856,8 @@ miscStats.darkAxisScalingPower={
 		if (g.achievement[530]) out = out.mul(c.d0_99);
 		if (g.achievement[717]) out = out.mul(c.d1.sub(achievement(717).effect().div(c.e2)))
 		return out
-	}
+	},
+	dependencies:[...bindingDependencies(206)]
 }
 miscStats.darkAxisSuperscalingStart={
 	type:"combined",
@@ -2905,7 +3868,8 @@ miscStats.darkAxisSuperscalingPower={
 	value:function(){
 		let out=luckShardEffect2()
 		return out
-	}
+	},
+	dependencies:[...bindingDependencies(265)]
 }
 miscStats.antiAxisScalingStart={
 	type:"combined",
@@ -2918,7 +3882,7 @@ miscStats.antiAxisScalingPower={
 miscStats.antiAxisSuperscalingStart={
 	type:"combined",
 	value:function(){return c.d64.add(studies[11].reward(3))},
-	dependencies:["redLightEffect"]
+	dependencies:["redLightEffect",...bindingDependencies(245)]
 }
 miscStats.antiAxisSuperscalingPower={
 	type:"combined",
@@ -3053,7 +4017,8 @@ miscStats.stardustBoost3={
 	value:function(){
 		if (g.stardustUpgrades[2]<1) return c.d1
 		return Decimal.linearSoftcap(g.stardust.div(c.e7).add(c.d1).log10().pow(c.d0_7).div(c.d2),c.d10,c.d1).add(c.d1).pow(stardustBoostBoost(3))
-	}
+	},
+	dependencies:[...researchDependencies("r13_11")]
 }
 miscStats.stardustBoost4={
 	type:"combined",
@@ -3074,7 +4039,8 @@ miscStats.stardustBoost6={
 	value:function(){
 		if (g.stardustUpgrades[2]<4) return c.d1
 		return g.stardust.pow(c.d0_15).add(c.e10).log10().log10().pow(stardustBoostBoost(6))
-	}
+	},
+	dependencies:[...researchDependencies("r13_11")]
 }
 miscStats.stardustBoost7={
 	type:"combined",
@@ -3082,7 +4048,7 @@ miscStats.stardustBoost7={
 		if (g.stardustUpgrades[2]<5) return c.d1
 		return g.stardust.add(c.d10).log10().pow(stardustBoostBoost(7).div(c.e2))
 	},
-	dependencies:["neuralEnergyEffect"]
+	dependencies:["neuralEnergyEffect",...researchDependencies("r5_14")]
 }
 miscStats.stardustBoost8={
 	type:"combined",
@@ -3096,7 +4062,8 @@ miscStats.stardustBoost9={
 	value:function(){
 		if (g.stardustUpgrades[2]<7) return c.d1
 		return g.stardust.add(c.e100).log10().div(c.e2).pow(stardustBoostBoost(9).mul(c.d0_4))
-	}
+	},
+	dependencies:[...researchDependencies("r13_11")]
 }
 miscStats.stardustBoost10={
 	type:"combined",
@@ -3117,24 +4084,25 @@ miscStats.stardustBoost12={
 	value:function(){
 		if (g.stardustUpgrades[2]<10) return c.d0
 		return Decimal.convergentSoftcap(g.stardust.add(c.ee5).log10().log10().sub(c.d5).mul(stardustBoostBoost(12)),c.d0,c.d1)
-	}
+	},
+	dependencies:[...researchDependencies("r13_11")]
 }
-miscStats.stardustUpgrade1Cap={type:"combined",value:function(){return 4}}
+miscStats.stardustUpgrade1Cap={type:"combined",value:function(){return 4+study13.rewardLevels.slabdrill}}
 miscStats.stardustUpgrade2Cap={type:"combined",value:function(){return 5+g.stardustUpgrades[0]}}
 miscStats.stardustUpgrade3Cap={type:"combined",value:function(){return achievement.ownedInTier(5)>=11?10:6}}
 miscStats.stardustUpgrade4Cap={type:"combined",value:function(){return 5}}
 miscStats.stardustUpgrade5Cap={type:"combined",value:function(){return StudyE(3)?1:(7+studies[3].reward(1))}}
-for (let i=1;i<6;i++) miscStats["stardustUpgrade"+i+"Cost"]={type:"combined",value:function(){return stardustUpgradeCost(i)},dependencies:["stardustUpgrade"+i+"Cap"]}
+for (let i=1;i<6;i++) miscStats["stardustUpgrade"+i+"Cost"]={type:"combined",value:function(){return stardustUpgradeCost(i)},dependencies:["luckUpgLevel_quatrefolium_star","stardustUpgrade"+i+"Cap",...bindingDependencies([103,113]),"whiteLightEffect","wormholeMilestone9Effect"]}
 miscStats.stardustUpgrade2AxisRetentionFactor={
 	type:"combined",
 	value:function(){
 		let out = 0.1;
 		out += studies[1].reward(2)/100;
 		return out>0.75?(1-0.5/(out-0.5)):out;
-	}
+	},
+	dependencies:[...bindingDependencies(265)]
 }
 miscStats.unspentStars={type:"combined",value:function(){return g.stars-totalStars}}
-miscStats.realDarkStars={type:"combined",value:function(){return realDarkStars()},dependencies:["redLightEffect"]}
 miscStats.darkStarEffect3={type:"combined",value:function(){return darkStarEffect3()},dependencies:["realDarkStars"]}
 miscStats.darkStarScalingStart={
 	type:"combined",
@@ -3142,17 +4110,20 @@ miscStats.darkStarScalingStart={
 		let out = c.d48
 		if (g.achievement[527]) out = out.add(achievement(527).effect())
 		return out
-	}
+	},
+	dependencies:[...bindingDependencies(265)]
 }
 miscStats.darkStarScalingPower={type:"combined",value:function(){
 	let out = c.d1
 	if (g.achievement[813]) out = out.mul(c.d0_95)
 	return out
 }}
-miscStats.darkStarReq={type:"combined",value:function(){return darkStarReq()},dependencies:[masteryDependencies(63),"darkStarScalingStart","darkStarScalingPower","stardustBoost9","gravitationalEnergyEffect"].flat()}
+miscStats.darkStarReq={type:"combined",value:function(){return darkStarReq()},dependencies:[masteryDependencies(63),"darkStarScalingStart","darkStarScalingPower","stardustBoost9","gravitationalEnergyEffect",...researchDependencies("r6_3"),...bindingDependencies(26)].flat()}
 miscStats.maxAffordableDarkStars={type:"combined",value:function(){return maxAffordableDarkStars()},dependencies:miscStats.darkStarReq.dependencies}
 for (let i=0;i<energyTypes.length;i++) {
-	miscStats[energyTypes[i]+"EnergyPerSec"]={type:"combined",value:function(){return energyPerSec(i)},dependencies:["energyGainSpeed"]}
+	let gainDependencies = ["energyGainSpeed"]
+	if (i===5) {gainDependencies.push("redLightEffect",...bindingDependencies(245))}
+	miscStats[energyTypes[i]+"EnergyPerSec"]={type:"combined",value:function(){return energyPerSec(i)},dependencies:gainDependencies}
 	miscStats[energyTypes[i]+"EnergyEffect"]={type:"combined",value:function(){return energyEffect(i)},dependencies:["energyEffectBoost"]}
 }
 miscStats.wormholeDarkAxisReq={type:"combined",value:function(){
@@ -3161,7 +4132,12 @@ miscStats.wormholeDarkAxisReq={type:"combined",value:function(){
 }}
 miscStats.ironWill={type:"combined",value:function(){return g.StardustResets===0&&g.TotalStardustResets===0&&totalResearch.temporary===0}}
 miscStats.wormholeMilestone9Effect={type:"combined",value:function(){return wormholeMilestone9.eff()}}
-miscStats.knowledgeEffect={type:"combined",value:function(){return Decimal.convergentSoftcap(g.knowledge.add(c.d10).log10().log10().mul(c.d10),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap)},dependencies:["knowledgeEffectCap"]}
+miscStats.knowledgeEffect={type:"combined",value:function(){return Decimal.convergentSoftcap(g.knowledge.add(c.d10).log10().log10().mul(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap)},dependencies:["knowledgeEffectPower","knowledgeEffectCap"]}
+miscStats.knowledgeEffectPower={type:"combined",value:function(){
+	let out = c.d10
+	if (study13.bound(348)) {out = out.mul(study13.bindingEff(348))}
+	return out
+},dependencies:[...bindingDependencies(348)]}
 miscStats.knowledgeEffectCap={type:"combined",value:function(){return studies[8].reward(1)}}
 miscStats.extraDiscoveries_add={type:"combined",value:function(){
 	let out = c.d0
@@ -3188,7 +4164,7 @@ miscStats.spatialSynergismPower={
 		luckUpgrades.quatrefolium.synergism.eff(),
 		studies[9].reward(3).div(c.e2).add(c.d1)
 	].productDecimals()},
-	dependencies:["redLightEffect"]
+	dependencies:["redLightEffect",...bindingDependencies(245),"luckUpgLevel_quatrefolium_synergism"]
 }
 miscStats.condenserPower={
 	type:"combined",
@@ -3198,6 +4174,9 @@ miscStats.condenserPower={
 		return out
 	}
 }
+miscStats.antimatterGalaxyReq={type:"combined",value:function(){return antimatterGalaxy.req()},dependencies:[].flat()}
+miscStats.maxAffordableAntimatterGalaxies={type:"combined",value:function(){return antimatterGalaxy.affordable()},dependencies:miscStats.antimatterGalaxyReq.dependencies}
+miscStats.study13RewardWeakBindings={type:"combined",value:function(){return study13.rewards.weakenBindings.eff()}}
 
 const statGenerations = {}
 const stat = {}
@@ -3217,18 +4196,16 @@ function statGeneration(name) {
 }
 var statOrder
 function updateStat(id) {
-	try {
-		let data = miscStats[id]
-		if (data.type==="combined") {
-			stat[id] = data.value()
-		} else if (data.type==="breakdown") {
-			let value = data.modifiers[0].func()
-			for (let i of data.modifiers) value = i.func(value)
-			stat[id] = value	
-		} else {
-			error("miscStats["+id+"] has an invalid type")
-		}
-	} catch {functionError("updateStat",arguments)}
+	let data = miscStats[id]
+	if (data.type==="combined") {
+		stat[id] = data.value()
+	} else if (data.type==="breakdown") {
+		let value = data.modifiers[0].func()
+		for (let i of data.modifiers) try {value = i.func(value)} catch {console.error(id,i.label)}
+		stat[id] = value	
+	} else {
+		error("miscStats["+id+"] has an invalid type")
+	}
 }
 function updateStats() {
 	if (debugActive) {
@@ -3253,7 +4230,7 @@ function statBreakdownCategories() {
 		out[i]={contents:contents,active:contents[0]}
 	}
 	breakdownCategories = out
-	d.innerHTML("SSBnav1",categories.sort().map(x => "<button id=\"button_SSBnav1_"+x+"\" class=\"tabtier3\" style=\"filter:brightness("+(x==="Exotic Matter gain"?100:75)+"%)\" onClick=\"toggleActiveBreakdownSection('"+x+"');updateHTML()\">"+x+"</button>").join(""))
+	d.innerHTML("SSBnav1",categories.sort().map(x => "<button id=\"button_SSBnav1_"+x+"\" class=\"tabtier3 statistics\" style=\"filter:brightness("+(x==="Exotic Matter gain"?100:75)+"%)\" onClick=\"toggleActiveBreakdownSection('"+x+"');updateHTML()\">"+x+"</button>").join(" "))
 	d.innerHTML("SSBtable","<tr><th class=\"tablecell\" style=\"width:25vw\">Source</th><th class=\"tablecell\" style=\"width:45vw\">Modifier</th><th class=\"tablecell\" style=\"width:25vw\">Subtotal</th></tr>"+Array(maximumSSBModifierLength).fill(0).map((x,i)=>"<tr id=\"SSBtable_row"+i+"\"><td class=\"tablecell\" style=\"width:25vw\" id=\"SSBtable_label"+i+"\"></td><td class=\"tablecell\" style=\"width:45vw\" id=\"SSBtable_text"+i+"\"></td><td class=\"tablecell\" style=\"width:25vw\" id=\"SSBtable_total"+i+"\"></td></tr>").join(""))
 }
 var activeBreakdownSection = "Exotic Matter gain";
@@ -3266,7 +4243,7 @@ function toggleActiveBreakdownSection(x) {
 	for (let i of categories) {
 		d.element("button_SSBnav1_"+i).style.filter = "brightness("+(i===x?100:75)+"%)"
 	}
-	d.innerHTML("SSBnav2",(breakdownCategories[x].contents.length===1)?"":(breakdownCategories[x].contents.map(x => (miscStats[x].newRow?"<br class=\"SSBnav2_br\">":"")+"<button id=\"button_SSBnav2_"+x+"\" class=\"tabtier4\" style=\"filter:brightness("+(x===activeBreakdownTab?100:75)+"%);display:"+(miscStats[x].visible()?"inline-block":"none")+"\" onClick=\"toggleActiveBreakdownTab('"+x+"');updateHTML()\">"+miscStats[x].label+"</button>").join("")))
+	d.innerHTML("SSBnav2",(breakdownCategories[x].contents.length===1)?"":(breakdownCategories[x].contents.map(x => (miscStats[x].newRow?"<br class=\"SSBnav2_br\">":"")+"<button id=\"button_SSBnav2_"+x+"\" class=\"tabtier4 statistics\" style=\"filter:brightness("+(x===activeBreakdownTab?100:75)+"%);display:"+(miscStats[x].visible()?"inline-block":"none")+"\" onClick=\"toggleActiveBreakdownTab('"+x+"');updateHTML()\">"+miscStats[x].label+"</button>").join(" ")))
 	toggleActiveBreakdownTab(breakdownCategories[x].active)
 }
 function toggleActiveBreakdownTab(x){
@@ -3288,4 +4265,9 @@ function calcStatUpTo(id,label) {
 		}
 	}
 	functionError("callStatUpTo")
+}
+function calcStatWithDifferentBase(id,base) {
+	let data = miscStats[id]
+	for (let i=1;i<data.modifiers.length;i++) {base = data.modifiers[i].func(base)}
+	return base
 }
