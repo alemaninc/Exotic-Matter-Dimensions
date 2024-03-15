@@ -179,7 +179,8 @@
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_studies" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Study']()"></button>
-					<div id="studyContainer"></div>
+					<div id="studyContainerCompact"></div>
+					<div id="studyContainerDetailed"></div>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_light" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Light']()"></button>
@@ -242,17 +243,17 @@
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_study13" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Study XIII']()"></button>
-					<div class="study" id="div_study13" style="height:180px;">
+					<div class="studyDiv" id="div_study13" style="height:180px;width:1200px;">
 						<table><tr>
 							<td style="width:1080px;font-weight:700;"><span style="font-size:18px;">Study XIII</span><br><span id="span_study13Name" style="font-size:14px;"></span></td>
 							<td style="width:120px"><button id="button_study13" class="startStudy" onClick="studyButtons.click(13)"></button></td>
 						</tr></table>
 						<table style="text-align:left">
 							<colgroup><col style="width:120px"><col style="width:1080px"></colgroup>
-							<tr><td>Binding:</td><td id="span_study13Binding"></td></tr>
-							<tr><td>Goal:</td><td><span id="span_study13Goal"></span> total dark axis</td></tr>
-							<tr><td>Completions:</td><td><span id="span_study13Completions"></span>/<span id="span_study13MaxCompletions"></span></td></tr>
-							<tr><td>Reward:</td><td id="span_study13Reward"></td></tr>
+							<tr><td style="vertical-align:top;padding-bottom:8px;">Binding:</td><td id="span_study13Binding" style="vertical-align:top;padding-bottom:8px;"></td></tr>
+							<tr><td style="vertical-align:top;padding-bottom:8px;">Goal:</td><td style="vertical-align:top;padding-bottom:8px;"><span id="span_study13Goal"></span> total dark axis</td></tr>
+							<tr><td style="vertical-align:top;padding-bottom:8px;">Completions:</td><td style="vertical-align:top;padding-bottom:8px;"><span id="span_study13Completions"></span>/<span id="span_study13MaxCompletions"></span></td></tr>
+							<tr><td style="vertical-align:top;padding-bottom:8px;">Reward:</td><td id="span_study13Reward" style="vertical-align:top;padding-bottom:8px;"></td></tr>
 						</table>
 					</div>
 					<div class="navigationtier3">

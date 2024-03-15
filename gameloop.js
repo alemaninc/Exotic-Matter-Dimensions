@@ -32,7 +32,7 @@ function updateHTML() {
 			for (let subtab of subtabList[tab]) {
 				let subtabButton = "button_subtab_"+tab+"_"+subtab
 				d.display(subtabButton,subtabProperties[tab][subtab].visible()?"inline-block":"none")
-				if (subtabProperties[tab][subtab].glow()) {
+				if (subtabProperties[tab][subtab].glow()&&(subtabProperties[tab][subtab].visible()??true)) {
 					tabGlow = true
 					d.glow(subtabButton,true)
 				} else {
@@ -517,13 +517,44 @@ function updateHTML() {
 			for (let i of ["r27_8","r33_3","r33_13","r44_8"]) {if (visible.includes(i)) {d.innerHTML("button_research_"+i+"_visible",research[i].icon)}}
 		} else if (g.activeSubtabs.wormhole==="studies") {
 			let visible = visibleStudies()
-			for (let i of visible) {
-				d.innerHTML("span_study"+i+"Description",studies[i].description())
-				d.innerHTML("button_study"+i,studyButtons.text(i))
-				d.class("button_study"+i,"studyButton "+studyButtons.class(i))
-				d.innerHTML("span_study"+i+"Reward","<ol>"+studies[i].reward_desc().map(x=>"<li>"+x+"</li>").join("")+"</ol>");
+			if (!["Compact","Detailed"].includes(g.studyContainerStyle)) {g.studyContainerStyle = "Detailed"}
+			for (let i of ["Compact","Detailed"]) {d.display("studyContainer"+i,(g.studyContainerStyle===i)?"inline-block":"none")}
+			function updateStudyDiv(HTMLnum,studyNum,follow) {
+				d.class("div_study"+HTMLnum+follow,"studyDiv comp"+g.studyCompletions[studyNum])
+				d.innerHTML("span_study"+HTMLnum+"Num"+follow,studies[0].roman(studyNum))
+				d.innerHTML("span_study"+HTMLnum+"Name"+follow,(studyNum===10)?(["Stellar","Decisive","Temporal","Ontological"][studyPower(10)]+" Triad"):studies[studyNum].name)
+				d.innerHTML("button_study"+HTMLnum+follow,studyButtons.text(studyNum))
+				d.innerHTML("span_study"+HTMLnum+"Goal"+follow,(studyPower(studyNum)===studies[0].effectiveMaxCompletions[studyNum])?"Infinite":BEformat(studies[studyNum].goal()));
+				d.innerHTML("span_study"+HTMLnum+"Description"+follow,studies[studyNum].description())
+				d.innerHTML("span_study"+HTMLnum+"Completions"+follow,g.studyCompletions[studyNum]);
+				d.innerHTML("span_study"+HTMLnum+"MaxCompletions"+follow,studies[0].effectiveMaxCompletions[studyNum]);
+				d.innerHTML("span_study"+HTMLnum+"Reward"+follow,"<ol>"+studies[studyNum].reward_desc().map(x=>"<li>"+x+"</li>").join("")+"</ol>");
+				d.class("button_study"+HTMLnum+follow,"studyButton "+studyButtons.class(studyNum))
+				d.innerHTML("span_study"+HTMLnum+"Reward"+follow,"<table>"+studies[studyNum].reward_desc().map((x,i)=>"<tr><td style=\"vertical-align:top;text-align:left;width:20px;\">"+(i+1)+"</td><td style=\"vertical-align:top;text-align:left;\">"+x+"</td>").join("")+"</table>");	
 			}
-			if (visible.includes(10)) updateStudyDiv(10)
+			for (let i=1;i<13;i++) {
+				if (visible.map(x => Number(x)).includes(Number(i))) {
+					d.display("div_study"+i+g.studyContainerStyle,"inline-block");
+					if (g.studyContainerStyle==="Compact") {
+						d.element("button_study"+i+"Compact").style = ["background-color:#220000;filter:drop-shadow(0px 0px 4px #990000);","filter:drop-shadow(0px 0px 4px #990000);","background-color:#220000;","",""][studyButtons.state(i)]
+						if (i>9) {d.innerHTML("button_study"+i+"Compact",research[studies[i].research].icon)}
+						d.innerHTML("span_study"+i+"CompletionsCompact",g.studyCompletions[i]);
+					} else {
+						updateStudyDiv(i,i,"Detailed")
+					}
+				} else {
+					d.display("div_study"+i+g.studyContainerStyle,"none");
+				}
+			}
+			if (g.studyContainerStyle==="Compact") {
+				if (g.studyContainerCompactSelected===undefined) {
+					d.display("div_studyCompactView","none")
+				}
+				else {
+					d.display("div_studyCompactView","inline-block")
+					updateStudyDiv("",g.studyContainerCompactSelected,"CompactView")
+				}
+			}
 		} else if (g.activeSubtabs.wormhole==="light") {
 			d.innerHTML("span_chromaPerSec",stat.chromaPerSec.format(2))
 			d.innerHTML("span_unspentStarsLight",g.stars)

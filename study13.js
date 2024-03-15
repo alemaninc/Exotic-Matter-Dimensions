@@ -5,10 +5,10 @@ const study13 = {
 		let lvExcl25 = studyPower(13)-(g.study13Bindings[25]?56:0)
 		if (lvExcl25===0) {return g.study13Bindings[25]?"Pure Filth (56)":"The First Study (0)"}
 		if (lvExcl25===24) {return g.study13Bindings[25]?"Sullied Galaxy (80)":"Dreamers' Galaxy (24)"}
-		if (lvExcl25===56) {return g.study13Bindings[25]?"The Disgraced Mirror (112)":"The Amazing Mirror (56)"}
+		if (lvExcl25===56) {return g.study13Bindings[25]?"Disgraced Mirror (112)":"The Amazing Mirror (56)"}
 		if (lvExcl25===96) {return g.study13Bindings[25]?"Fallen Achievement 〜 Tenth Circle of Hell (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
 		if (lvExcl25===144) {return g.study13Bindings[25]?"Study of Obscenities (200)":"Study of Triads (144)"}
-		if (lvExcl25===200) {return g.study13Bindings[25]?"Entrusting the Game to Engines 〜 Development Hell (256)":"Thirteenth Hell 〜 Development Hell (200)"}
+		if (lvExcl25===200) {return g.study13Bindings[25]?"Entrusting the Game to Machines 〜 Development Hell (256)":"Thirteenth Hell 〜 Development Hell (200)"}
 		let used = []
 		function bindingRank(id) {return (id===25)?Infinity:(Math.floor(id/10)*100+Math.min(id%10,10-(id%10))*9+study13.bindings[id].lv*11+Math.sin(id))} // use this to identify the strongest bindings
 		while ((available.length>0)&&(used.length<3)) { // we will only ever use 3 so use an O(n) method instead of sorting which is O(n^2)
@@ -697,7 +697,7 @@ const study13 = {
 				323:{
 					description:function(){return study13.rewardLabel("emBoost")+" is "+percentOrDiv(study13.bindingEff(323))+" weaker"},
 					adjacent_req:[304,309,312],
-					icon:classes.binding("S")+classes.xscript(classes.binding("13")+icon.plus,icon.normalaxis),
+					icon:classes.binding("S")+classes.xscript(classes.binding("13")+icon.minus,icon.normalaxis),
 					lv:1,
 					effect:function(power){return c.d0_2.pow(power)},
 					nameMod:["Fission","Reactive","Reacted"]
@@ -705,7 +705,7 @@ const study13 = {
 				327:{
 					description:function(){return study13.rewardLabel("dmBoost")+" is "+percentOrDiv(study13.bindingEff(327))+" weaker"},
 					adjacent_req:[301,306,318],
-					icon:classes.binding("S")+classes.xscript(classes.binding("13")+icon.plus,icon.darkaxis),
+					icon:classes.binding("S")+classes.xscript(classes.binding("13")+icon.minus,icon.darkaxis),
 					lv:2,
 					effect:function(power){return c.d0_2.pow(power)},
 					nameMod:["Fusion","Unreactive","Unreacted"]

@@ -189,6 +189,8 @@ const basesave = {
 	knowledge:c.d0,
 	activeStudy:0,
 	studyCompletions:[null,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	studyContainerStyle:"Compact",
+	studyContainerCompactSelected:undefined,
 	completedStudiesShown:true,
 	restoreResearchAfterStudy:false,
 	chroma:Array(9).fill(c.d0),
@@ -1766,7 +1768,6 @@ function wormholeReset() {
 			if ((g.activeStudy===10)&&(studyPower(10)===3)) {for (let i of g.study10Options) {g.ach920Completions |= 2**(i-1)}}
 		}
 		g.activeStudy=0;
-		updateAllStudyDivs();
 		g.luckEssence=0
 		if (g.studyCompletions[7]>0) unlockFeature("Luck")
 		if (g.studyCompletions[9]>0) unlockFeature("Antimatter")
@@ -1914,7 +1915,7 @@ function visibleStudies() {
 	let out = [];
 	for (let i=1;i<13;i++) {
 		if (!g.research[(i===10)?studies[10].research[0]:studies[i].research]) {
-			if ((g.studyCompletions[i]===studies[0].effectiveMaxCompletions[i])&&(!g.completedStudiesShown)) {continue}
+			if ((g.studyCompletions[i]===studies[0].effectiveMaxCompletions[i])&&(!g.completedStudiesShown)&&(g.studyContainerStyle==="Detailed")) {continue}
 			if (!((g.studyCompletions[i]>0)||g.researchVisibility.includes(studies[i]["research"])||StudyE(i))) {continue}
 		}
 		out.push(Number(i))
@@ -1926,19 +1927,6 @@ function StudyE(x) {
 	if (g.activeStudy===x) return true;
 	return false;
 }
-function updateStudyDiv(index) {
-	if (visibleStudies().map(x => Number(x)).includes(Number(index))) {
-		d.display("div_study"+index,"inline-block");
-		d.class("div_study"+index,"study study"+g.studyCompletions[index])
-		if (index===10) {d.innerHTML("span_study10name",["Stellar","Decisive","Temporal","Ontological"][studyPower(10)]+" Triad")}
-		d.innerHTML("span_study"+index+"Goal",(studyPower(index)===studies[0].effectiveMaxCompletions[index])?"Infinite":BEformat(studies[index].goal()));
-		d.innerHTML("span_study"+index+"Completions",g.studyCompletions[index]);
-		d.innerHTML("span_study"+index+"Reward","<ol>"+studies[index].reward_desc().map(x=>"<li>"+x+"</li>").join("")+"</ol>");
-	} else {
-		d.display("div_study"+index,"none");
-	}
-}
-function updateAllStudyDivs() {for (let i=1;i<13;i++) {updateStudyDiv(i);}}
 function enterStudy(x) {
 	if ((x===10)&&(studyPower(10)===3)&&(g.study10Options.length<3)) { // pick options
 		popup({
@@ -1961,7 +1949,6 @@ function enterStudy(x) {
 		if (x===13) {
 			addAchievement(905)
 		}
-		updateAllStudyDivs();
 	}
 }
 const studyButtons = {
@@ -2759,8 +2746,9 @@ const openConfig = (()=>{
 			{text:(g.glowOptions.observe?"G":"No g")+"low if can observe",onClick:toggle("g.glowOptions.observe")},
 			{text:(g.glowOptions.buyPermanentResearch?"G":"No g")+"low if can buy permanent research",onClick:toggle("g.glowOptions.buyPermanentResearch")}
 		])},
-		"Study":function(){updateAllStudyDivs();showConfigModal("Study",[
-			{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with max completions",onClick:"toggle('completedStudiesShown')"},
+		"Study":function(){showConfigModal("Study",[
+			{text:"Study container style: "+g.studyContainerStyle,onClick:"g.studyContainerStyle=(g.studyContainerStyle==='Compact')?'Detailed':'Compact'"},
+			{text:(g.completedStudiesShown?"Show":"Hid")+"ing Studies with max completions",onClick:"toggle('completedStudiesShown')",visible:g.studyContainerStyle==="Detailed"},
 			{text:"Automatic research respec on Study completion "+(g.restoreResearchAfterStudy?"dis":"en")+"abled",onClick:"toggle('restoreResearchAfterStudy')"}
 		])},
 		"Light":function(){showConfigModal("Light",[
@@ -2976,7 +2964,7 @@ function progressBarOnClick() {
 			break;
 		}
 	}
-	if (data.type===3) notify(version.nextUpdateHint+" ["+(version.nextPercentage()*100).toFixed(0)+"%]",endgameColor(),"#ffffff")
+	if (data.type===3) notify(version.nextUpdateHint+" "+version.percentage(),endgameColor(),"#ffffff")
 }
 function importCommand(str) {
 	str = atob(str.substring(1))

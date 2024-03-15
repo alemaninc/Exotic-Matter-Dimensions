@@ -1837,7 +1837,7 @@ const research = (function(){
 			effect:function(power){return betaActive?N(37).pow(power).mul(c.d3):c.d11.pow(power)}
 		},
 		r34_4:{
-			numDesc:function(){return researchEffect(34,4).format(2)},
+			numDesc:function(){return researchEffect(34,4).format(3)},
 			formulaDesc:function(){return "log(t ÷ "+c.e7.format()+" + 1)<sup>2</sup>"+formulaFormat.mult(researchPower(34,4).mul(c.e2))},
 			description:function(){return "Gain free dark axis of the first seven types based on time in the current Wormhole reset (currently: "+numOrFormula("r34_4")+")"},
 			adjacent_req:["r32_4","r34_3"],
@@ -2396,7 +2396,6 @@ function buySingleResearch(row,col,force=false) {
 	if (g.research.r44_8) {unlockFeature("Study XIII")}
 	if (research[id].type === "study"){
 		unlockFeature("Studies");
-		updateAllStudyDivs()
 	}
 	let regenerateCanvas = false;
 	if (!g.researchVisibility.includes(id)) {

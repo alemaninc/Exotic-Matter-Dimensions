@@ -20,7 +20,7 @@ const initSteps = [
 	}},
 	{function:function(){HTMLGenerator()}},
 	{function:function(){
-		d.innerHTML("span_currentVersion",version.current)
+		d.innerHTML("span_currentVersion",version.current+(betaActive?(" "+version.percentage()):""))
 		document.title="Exotic Matter Dimensions "+version.current+" by alemaninc"
 	}},
 	{function:function(){updateYellowLightCache();},onImport:true},
@@ -45,7 +45,6 @@ const initSteps = [
 	{function:function(){updateResearchTree()},onImport:true},
 	{function:function(){for (let i of Object.keys(research)){resizeResearch(i)}}},
 	{function:function(){generateResearchCanvas();},onImport:true},
-	{function:function(){updateAllStudyDivs();},onImport:true},
 	{function:function(){study13.renderTree()}},
 	{function:function(){for (let i of study13.allBindings){study13.resizeBinding(i)}}},
 	{function:function(){study13.updateBindingTree()},onImport:true},

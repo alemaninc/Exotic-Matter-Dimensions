@@ -1036,7 +1036,7 @@ miscStats.darkmatterPerSec={
 		{
 			label:"Fortitude",
 			func:function(prev){return (StudyE(12)||study13.bound(275))?studies[12].sc(prev):prev},
-			text:function(){return g.study12.fortitude.eq(c.d0)?"min(<i>x</i>, 1)":formulaFormat.logSoftcap("<i>x</i>",c.d1,g.study12.fortitude.recip(),true)},
+			text:function(){return g.study12.fortitude.eq(c.d0)?"min(<i>x</i>, 1)":formulaFormat.logSoftcap("<i>x</i>",c.d1,g.study12.fortitude.recip(),true,true)},
 			show:function(){return StudyE(12)||study13.bound(275)},
 			dependencies:[...bindingDependencies(275)],
 			color:"var(--titanium)"
