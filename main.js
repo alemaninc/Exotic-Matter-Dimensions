@@ -732,9 +732,9 @@ function masteredRow(x) {
 	return false;
 }
 function tryToggleMastery(x) {
-	if (g.confirmations.toggleMastery&&(g.activeMasteries[row]>0)) {
+	if (g.confirmations.toggleMastery&&(g.activeMasteries[Math.floor(x/10)]>0)) {
 		popup({
-			text:"Are you sure you want to "+((x%10===0)?("unassign Row "+(x/10)+" Masteries"):("toggle Mastery "+x))+"?",
+			text:"Are you sure you want to "+((x%10===0)?("unassign Row "+Math.floor(x/10)+" Masteries"):("toggle Mastery "+x))+"?",
 			buttons:[["Confirm","toggleMastery("+x+")"],["Close",""]]
 		})
 	} else {
@@ -978,15 +978,15 @@ function showMasteryInfo(x,mode) {	/* mode 1 = text; mode 2 = button */
 			if (MasteryE(x)) {
 				out2="<button class=\"genericbutton\" onClick=\"unassignMasteryRow("+row+")\">Unassign Row "+row+" Masteries</button>"
 			} else {
-				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Activate Row "+row+" Masteries</button>"
+				out2="<button class=\"genericbutton\" onClick=\"tryToggleMastery("+x+")\">Activate Row "+row+" Masteries</button>"
 			}
 		} else {
 			if (MasteryE(x)) {
 				out2="<button class=\"genericbutton\" onClick=\"g.activeMasteries["+row+"]=0;masteryReset()\">Unassign Mastery "+x+"</button>"
 			} else if (g.activeMasteries[row]===0) {
-				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Activate Mastery "+x+"</button>"
+				out2="<button class=\"genericbutton\" onClick=\"tryToggleMastery("+x+")\">Activate Mastery "+x+"</button>"
 			} else {
-				out2="<button class=\"genericbutton\" onClick=\"toggleMastery("+x+")\">Switch from Mastery "+(row*10+g.activeMasteries[row])+" to "+x+"</button>"
+				out2="<button class=\"genericbutton\" onClick=\"tryToggleMastery("+x+")\">Switch from Mastery "+(row*10+g.activeMasteries[row])+" to "+x+"</button>"
 			}
 		}
 		d.innerHTML("button_enableShownMastery",out2)
@@ -2707,7 +2707,7 @@ const openConfig = (()=>{
 		"Mastery":function(){updateMasteryLayout();showConfigModal("Mastery",[
 			{text:"Mastery power amount shown "+(g.topResourcesShown.masteryPower?"on top of screen":"in Masteries subtab"),onClick:toggle("g.topResourcesShown.masteryPower")},
 			{text:"Mastery tab layout: "+g.masteryContainerStyle,onClick:"g.masteryContainerStyle=(g.masteryContainerStyle==='Modern'?'Legacy':'Modern')"},
-			{text:"Mastery toggle confirmation "+(g.confirmations.stardustReset?"en":"dis")+"abled",onClick:toggle("g.confirmations.toggleMastery")},
+			{text:"Mastery toggle confirmation "+(g.confirmations.toggleMastery?"en":"dis")+"abled",onClick:toggle("g.confirmations.toggleMastery")},
 			{text:(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs",onClick:"toggle('masteryIdsShown')"},
 			{text:(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages",onClick:"toggle('masteryBoostsShown')"},
 			{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"},

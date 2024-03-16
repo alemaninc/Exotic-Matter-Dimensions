@@ -619,7 +619,7 @@ function updateHTML() {
 			let tooltip = "All effects unlocked."
 			for (let i=1;i<galaxyEffects.length;i++) {
 				if (g.highestGalaxies+1<galaxyEffects[i].req) {
-					tooltip = "Next pair of effects at "+N(galaxyEffects[i].req).sub(effectiveGalaxies.add()).ceil().add(c.d1).format()+" galaxies"
+					tooltip = "Next pair of effects at "+N(galaxyEffects[i].req).sub(effectiveGalaxies.add().ceil()).add(c.d1).format()+" galaxies"
 					break
 				}
 			}

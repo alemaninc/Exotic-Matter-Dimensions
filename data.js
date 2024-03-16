@@ -148,7 +148,7 @@ const studies = [
 		reward_desc:function(){return [
 			"The effect of tickspeed on chroma gain is raised to the power of "+studyRewardHTML(6,1,4),
 			"Tickspeed<sup>"+studyRewardHTML(6,2,3)+"</sup> affects the base gain of knowledge",
-			"Research 8-2 is "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned (additive) (currently: "+percentOrMult(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))+")"
+			"Research 8-2 is additively "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned (currently: "+percentOrMult(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))+")"
 		]},
 	},
 	{

@@ -1,13 +1,13 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(b).9",
+	current:"𝕍1.5(b).10",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[
 		1, // tier 8 hell
 		[
-			158/200, // Study XIII completed
+			200/200, // Study XIII completed
 			200/200  // Study XIII implemented
 		],
 		[
@@ -444,7 +444,7 @@ const c = deepFreeze({		 // c = "constant"
 	ee16			: Decimal.FC_NN(1,2,16),
 	ee100			: Decimal.FC_NN(1,2,100),
 });
-function percentOrMult(num,precision=2,classname) {
+function percentOrMult(num,precision=2,includePlus) {
 	let number,sign
 	if (num.eq(c.d0)) {
 		number="0"
@@ -456,13 +456,12 @@ function percentOrMult(num,precision=2,classname) {
 		number=num.noLeadFormat(precision)
 		sign="×"
 	} else {
-		number=(num.gte(c.d1)?"+":"")+num.sub(c.d1).mul(c.e2).noLeadFormat(precision)
+		number=((num.gte(c.d1)&&includePlus)?"+":"")+num.sub(c.d1).mul(c.e2).noLeadFormat(precision)
 		sign="%"
 	}
-	if (typeof classname === "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
 }
-function percentOrDiv(num,precision=2,classname) { // for effects which are always negative
+function percentOrDiv(num,precision=2) { // for effects which are always negative
 	let number,sign
 	if (num.lte(c.d0_1)) {
 		number=num.max(c.minvalue).recip().noLeadFormat(precision)
@@ -471,7 +470,6 @@ function percentOrDiv(num,precision=2,classname) { // for effects which are alwa
 		number=c.d1.sub(num).mul(c.e2).noLeadFormat(precision)
 		sign="%"
 	}
-	if (typeof classname === "string") return "<span class\""+classname+"\">"+number+"</span>"+sign
 	return number+sign
 }
 function numberOfDigits(num){return num.abs().max(c.d1).log10().floor().add(c.d1)}

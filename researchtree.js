@@ -60,7 +60,7 @@ const research = (function(){
 	}
 	function studyVResearch(pos,comp,resInt,resOut,amount) {
 		return {
-			description:function(){let eff=researchEffect(researchRow(pos),researchCol(pos));return "All research is "+(eff.gt(c.d0_1)?(c.d1.sub(eff).mul(c.e2).noLeadFormat(3)+"%"):(eff.recip().noLeadFormat(2)+"×"))+" cheaper"},
+			description:function(){return "All research is "+percentOrDiv(researchEffect(researchRow(pos),researchCol(pos)))+" cheaper"},
 			adjacent_req:[],
 			condition:[studyReq(5,comp),{text:function(){return g[resInt].format()+" / "+amount.format()+" "+resOut},check:function(){return g[resInt].gte(amount)}}],
 			visibility:function(){return g.studyCompletions[5]>=comp},
@@ -72,7 +72,7 @@ const research = (function(){
 		}
 	}
 	function numOrFormula(id) {return showFormulas?formulaFormat(research[id].formulaDesc()):research[id].numDesc()}
-	function timeResearchDesc(row,col,res){return function(){let eff = researchEffect(row,col);return "+"+(eff.gte(c.d0_01)?(eff.mul(c.e2).noLeadFormat(2)+"% "+res+" per second"):("1% "+res+" per "+eff.mul(c.e2).max(c.minvalue).recip().noLeadFormat(2)+" seconds"))+" in the current Wormhole"+(g.research.r17_8?(", and this multiplier is then raised to the power of "+researchEffect(17,8).noLeadFormat(4)):"")+" (currently: "+percentOrMult(eff.mul(g.truetimeThisWormholeReset).add(c.d1).pow(g.research.r17_8?researchEffect(17,8):c.d1))+")"}}
+	function timeResearchDesc(row,col,res){return function(){let eff = researchEffect(row,col);return "+"+(eff.gte(c.d0_01)?(eff.mul(c.e2).noLeadFormat(2)+"% "+res+" per second"):("1% "+res+" per "+eff.mul(c.e2).max(c.minvalue).recip().noLeadFormat(2)+" seconds"))+" in the current Wormhole"+(g.research.r17_8?(", and this multiplier is then raised to the power of "+researchEffect(17,8).noLeadFormat(4)):"")+" (currently: "+percentOrMult(eff.mul(g.truetimeThisWormholeReset).add(c.d1).pow(g.research.r17_8?researchEffect(17,8):c.d1),2,true)+")"}}
 	function prismalResearch(num) {
 		let row = 22+Math.floor(num/3)
 		let col = [7,8,9,7,8,9,7,9,8][num]
@@ -127,7 +127,7 @@ const research = (function(){
 			if (col!==15) adjacent_req.push("r"+row+"_"+(col+1)) 
 		}
 		return {
-			description:function(){return "Anti-"+type+" dimension boost is "+percentOrMult(researchEffect(row,col))+" stronger"},
+			description:function(){return "Anti-"+type+" dimension boost is "+percentOrMult(researchEffect(row,col),false)+" stronger"},
 			adjacent_req:adjacent_req,
 			condition:particleLab2Condition(particleLab2Req),
 			visibility:function(){return study13.rewardLevels.particleLab2>=particleLab2Req},
@@ -553,7 +553,7 @@ const research = (function(){
 			effect:function(power){return power.div(c.e2);}
 		},
 		r6_8: {
-			description:function(){return "Hawking radiation gain is "+researchEffect(6,8).mul(c.e2).noLeadFormat(2)+"% higher per achievement completed, per purchased star (current total: "+percentOrMult([researchEffect(6,8),totalAchievements,g.stars].productDecimals().add(c.d1))+")";},
+			description:function(){return "Hawking radiation gain is "+researchEffect(6,8).mul(c.e2).noLeadFormat(2)+"% higher per achievement completed, per purchased star (current total: "+percentOrMult([researchEffect(6,8),totalAchievements,g.stars].productDecimals().add(c.d1),2,true)+")";},
 			adjacent_req:["r5_7","r5_9"],
 			condition:[studyReq(1,1),studyReq(2,1)],
 			visibility:function(){return g.studyCompletions[1]>=1&&g.studyCompletions[2]>=1;},
@@ -582,7 +582,7 @@ const research = (function(){
 			effect:function(power){return power.mul(c.d20);}
 		},
 		r6_11: {
-			description:function(){return "Each allocated star makes the Masteries in that row "+researchEffect(6,11).noLeadFormat(2)+"% stronger";},
+			description:function(){return "Each allocated star makes the Masteries in that row "+researchEffect(6,11).noLeadFormat(3)+"% stronger";},
 			adjacent_req:["r6_10"],
 			condition:[studyReq(2,2)],
 			visibility:function(){return g.studyCompletions[2]>=2;},
@@ -798,7 +798,7 @@ const research = (function(){
 			group:"energy"
 		},
 		r9_5:{
-			description:function(){return "Research 6-5, 6-6, 7-5 and 8-5 are "+percentOrMult(researchEffect(9,5))+" stronger per achievement, multiplicatively (current total: "+percentOrMult(researchEffect(9,5).pow(totalAchievements),2)+")"},
+			description:function(){return "Research 6-5, 6-6, 7-5 and 8-5 are "+percentOrMult(researchEffect(9,5),2,false)+" stronger per achievement (current total: "+percentOrMult(researchEffect(9,5).pow(totalAchievements),2,true)+")"},
 			adjacent_req:["r8_5"],
 			condition:[studyReq(10,1)],
 			visibility:function(){return g.studyCompletions[10]>0},
@@ -976,7 +976,7 @@ const research = (function(){
 			group:"stardust"
 		},
 		r11_5:{
-			description:function(){return "Remove the softcap of the "+achievement.label(412)+" reward and increase its base by "+percentOrMult(researchEffect(11,5))+" per achievement completed, multiplicatively (projected effect: "+arrowJoin(achievement(412).effect(false).format(2),achievement(412).effect(true).format(2))+")"},
+			description:function(){return "Remove the softcap of the "+achievement.label(412)+" reward and increase its base by "+percentOrMult(researchEffect(11,5),2,false)+" per achievement completed, multiplicatively (projected effect: "+arrowJoin(achievement(412).effect(false).format(2),achievement(412).effect(true).format(2))+")"},
 			adjacent_req:["r10_5"],
 			condition:[studyReq(10,1)],
 			visibility:function(){return g.studyCompletions[10]>0},
@@ -1078,7 +1078,7 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r14_6:{
-			numDesc:function(){return percentOrMult(researchEffect(14,6),2)},
+			numDesc:function(){return percentOrMult(researchEffect(14,6),2,true)},
 			formulaDesc:function(){
 				let out = "(log(L + 1)<sup>2</sup> ÷ 32 + 1)"+formulaFormat.exp(researchPower(14,6))
 				return researchEffect(14,6).gte(c.d10)?(out+"×"):researchPower(14,6).eq(c.d1)?"log(L + 1)<sup>2</sup> × 3.125%":("100 × ("+out+" - 1)%")
@@ -1109,7 +1109,7 @@ const research = (function(){
 		...(()=>{
 			let out = {}
 			for (let i of [5,11]) out["r15_"+i] = {
-				numDesc:function(){return percentOrMult(researchEffect(15,i))},
+				numDesc:function(){return percentOrMult(researchEffect(15,i),2,true)},
 				formulaDesc:function(){
 					if (researchPower(15,i).eq(c.d1)&&researchEffect(15,i).lt(c.d10)) return "log<sup>[2]</sup>(L + 10) × 100%"
 					let out = "(log<sup>[2]</sup>(L + 10) + 1)"+formulaFormat.exp(researchPower(15,i))
@@ -1323,7 +1323,7 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:radial-gradient(rgba(128,128,128,0.5),rgba(0,0,0,0))\"></div>"
 		},
 		r19_9:{
-			description:function(){return "The effect of Mastery 52 is raised to the power of "+researchEffect(19,9).noLeadFormat(3)},
+			description:function(){return "The effect of Mastery 52 is raised to the power of "+researchEffect(19,9).noLeadFormat(4)},
 			adjacent_req:["r19_8"],
 			condition:[],
 			visibility:function(){return true},
@@ -1334,7 +1334,7 @@ const research = (function(){
 			group:"mastery"
 		},
 		r20_7:{
-			description:function(){return "Masteries 61 and 63 are "+percentOrMult(researchEffect(20,7))+" stronger"},
+			description:function(){return "Masteries 61 and 63 are "+percentOrMult(researchEffect(20,7),2,false)+" stronger"},
 			adjacent_req:["r19_8"],
 			condition:[],
 			visibility:function(){return true},
@@ -1354,7 +1354,7 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:conic-gradient(rgba(255,0,0,0.5),rgba(0,0,0,0) 5.556%,rgba(128,128,128,0.5) 8.333%,rgba(0,0,0,0) 11.111%,rgba(255,255,0,0.5) 16.667%,rgba(0,0,0,0) 22.222%,rgba(255,255,255,0.5) 25%,rgba(0,0,0,0) 27.778%,rgba(0,255,0,0.5) 33.333%,rgba(0,0,0,0) 38.889%,rgba(255,255,255,0.5) 41.667%,rgba(0,0,0,0) 44.444%,rgba(0,255,255,0.5) 50%,rgba(0,0,0,0) 55.556%,rgba(128,128,128,0.5) 58.333%,rgba(0,0,0,0) 61.111%,rgba(0,0,255,0.5) 66.667%,rgba(0,0,0,0) 72.222%,rgba(0,0,0,0.5) 75%,rgba(0,0,0,0) 77.778%,rgba(255,0,255,0.5) 83.333%,rgba(0,0,0,0) 88.889%,rgba(0,0,0,0.5) 91.667%,rgba(0,0,0,0) 94.444%,rgba(255,0,0,0.5))\"></div>"
 		},
 		r20_9:{
-			description:function(){return "Masteries 102 and 104 are "+percentOrMult(researchEffect(20,9))+" stronger"},
+			description:function(){return "Masteries 102 and 104 are "+percentOrMult(researchEffect(20,9),2,false)+" stronger"},
 			adjacent_req:["r19_8"],
 			condition:[],
 			visibility:function(){return true},
@@ -1717,7 +1717,7 @@ const research = (function(){
 			effect:function(power){return c.d1_01.pow(power)}
 		},
 		r28_1:{
-			description:function(){return "The second reward of Study VII is "+percentOrMult(researchEffect(28,1))+" stronger"},
+			description:function(){return "The second reward of Study VII is "+percentOrMult(researchEffect(28,1),2,false)+" stronger"},
 			adjacent_req:["r27_1"],
 			condition:[],
 			visibility:function(){return g.studyCompletions[10]>0},
@@ -1849,7 +1849,7 @@ const research = (function(){
 			effect:function(power){return [g.truetimeThisWormholeReset.div(c.e7).add(c.d1).log10().pow(c.d2),c.e2,power].productDecimals()}
 		},
 		r34_12:{
-			description:function(){return "Research 32-14 is "+percentOrMult(researchEffect(34,12))+" stronger"},
+			description:function(){return "Research 32-14 is "+percentOrMult(researchEffect(34,12),2,false)+" stronger"},
 			adjacent_req:["r32_12","r34_13"],
 			condition:[studyReq(12,2)],
 			visibility:function(){return g.studyCompletions[12]>1},
@@ -1859,7 +1859,7 @@ const research = (function(){
 			effect:function(power){return c.d1_12.pow(power)}
 		},
 		r34_13:{
-			description:function(){return "Research 11-5 is "+percentOrMult(researchEffect(34,13))+" stronger"},
+			description:function(){return "Research 11-5 is "+percentOrMult(researchEffect(34,13),2,false)+" stronger"},
 			adjacent_req:["r33_13"],
 			condition:[studyReq(12,1)],
 			visibility:function(){return g.studyCompletions[12]>0},
@@ -1879,7 +1879,7 @@ const research = (function(){
 			effect:function(power){return power}
 		},
 		r36_15:{
-			description:function(){return "Research 13-8 is "+percentOrMult(researchEffect(36,15).c)+" stronger and research 13-7 and 13-9 are "+researchEffect(36,15).s.noLeadFormat(3)+"× stronger"},
+			description:function(){return "Research 13-8 is "+percentOrMult(researchEffect(36,15).c,2,false)+" stronger and research 13-7 and 13-9 are "+researchEffect(36,15).s.noLeadFormat(3)+"× stronger"},
 			adjacent_req:["r34_13"],
 			condition:[studyReq(12,1)],
 			visibility:function(){return true},
@@ -1901,7 +1901,7 @@ const research = (function(){
 			effect:function(power){return [stat.TAxisEffect.pow(stat.realTAxis).mul(c.e10).layerplus(-3),stat.darkTAxisEffect.pow(stat.realdarkTAxis).mul(c.e10).layerplus(-3),stat.antiTAxisEffect.mul(stat.realantiTAxis).add(c.d10).layerplus(-2)].productDecimals().pow(c.d2).mul(1.11).add(c.d1).pow(power)}
 		},
 		r37_15:{
-			description:function(){return "Research 14-10 is "+percentOrMult(researchEffect(37,15))+" stronger"},
+			description:function(){return "Research 14-10 is "+percentOrMult(researchEffect(37,15),2,false)+" stronger"},
 			adjacent_req:["r36_15"],
 			condition:[studyReq(12,2)],
 			visibility:function(){return g.studyCompletions[12]>1},
@@ -2092,6 +2092,8 @@ function researchPower(row,col) {
 	if (study13.bound(254)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {out = out.mul(study13.bindingEff(254))}
 	let specBinding = study13.researchBindings[id]
 	if (specBinding!==undefined) {if (study13.bound(specBinding)) {out = out.mul(study13.bindingEff(specBinding))}}
+	if (study13.rewards.particleLab3.allAffected.includes(id)) {out = out.mul(stat.study13ParticleLab3[id])}
+	// group effects
 	if (research[id].group==="spatialsynergism") {
 		out = out.mul(stat.spatialSynergismPower)
 		if ((col>8)&&study13.bound(33)) {out = out.mul(study13.bindingEff(33))}
@@ -2145,7 +2147,7 @@ function researchCost(x,owned=g.research) {
 	if ((researchRow(x)>7)&&(researchRow(x)<13)) {output = output.mul(achievement.perAchievementReward[6].currentVal)}
 	if (StudyE(5)&&(research[x].type==="normal")) {output = output.mul(studies[5].difficultyConstant())}
 	for (let i of researchList.study5) {if (owned[i]) {output = output.mul(researchEffect(1,researchCol(i)))}}
-	if ((research[x].type==="study")&&g.achievement[907]) {output = output.mul(c.d0_9)}
+	if ((research[x].type==="study")&&g.achievement[907]) {output = output.mul(achievement(907).effect())}
 	// hyper 1
 	output = output.sub(studies[5].reward(3))
 	if (research[x].group==="lightaugment"&&g.achievement[712]) output = output.sub(achievement(712).effect().mul(ownedResearchInGroup("lightaugment",owned).length))

@@ -235,6 +235,7 @@ function researchDependencies(id){
 	if ([5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {out.push(bindingDependencies(254))}
 	if (researchList.study7.includes(id)) {out.push(bindingDependencies(265))}
 	if (study13.researchBindings[id]!==undefined) {out.push(bindingDependencies(study13.researchBindings[id]))}
+	if (study13.rewards.particleLab3.allAffected.includes(id)) {out.push("study13ParticleLab3")}
 	// group effects
 	if (research[id].group==="spatialsynergism") {out.push("spatialSynergismPower",bindingDependencies([33,37]))}
 	else if ((research[id].group??"").substring(0,8)==="finality") {out.push(...bindingDependencies(415))}
@@ -246,7 +247,7 @@ function bindingDependencies(id){
 	// row-specific effects
 	if (id===192) {out.push("totalNormalAxis")}
 	// inter-row effects
-	if (Object.keys(study13.rewards.weakenBindings.eff(study13.rewards.weakenBindings.breakpoints.length)).includes(String(id))) {out.push("study13RewardWeakBindings")}
+	if (study13.rewards.weakenBindings.allAffected.includes(String(id))) {out.push("study13RewardWeakBindings")}
 	if (study13.metaBindings[id]!==undefined) {for (let i of study13.metaBindings[id]) {out.push(bindingDependencies(i))}}
 	return Array.removeDuplicates(out.flat())
 }
@@ -3312,8 +3313,8 @@ for (let type of luckRuneTypes) {for (let upg of luckUpgradeList[type]) {
 			})}
 			for (let i of [["trifolium","antiAxis",927],["quatrefolium","prismatic",928],["cinquefolium","luck","929"]]) {if ((type===i[0])&&(upg===i[1])) out.push({
 				label:achievement.label(i[2]),
-				func:function(prev){return g.achievement[i[2]]?prev.add(c.d1):prev},
-				text:function(){return "+ 1"},
+				func:function(prev){return g.achievement[i[2]]?prev.add(achievement(i[2]).effect()):prev},
+				text:function(){return "+ "+achievement(i[2]).effect().noLeadFormat(3)},
 				show:function(){return g.achievement[i[2]]}
 			})}
 			let prevType = luckRuneTypes[luckRuneTypes.indexOf(type)-1]
@@ -4177,6 +4178,7 @@ miscStats.condenserPower={
 miscStats.antimatterGalaxyReq={type:"combined",value:function(){return antimatterGalaxy.req()},dependencies:[].flat()}
 miscStats.maxAffordableAntimatterGalaxies={type:"combined",value:function(){return antimatterGalaxy.affordable()},dependencies:miscStats.antimatterGalaxyReq.dependencies}
 miscStats.study13RewardWeakBindings={type:"combined",value:function(){return study13.rewards.weakenBindings.eff()}}
+miscStats.study13ParticleLab3={type:"combined",value:function(){return study13.rewards.particleLab3.eff()}}
 
 const statGenerations = {}
 const stat = {}

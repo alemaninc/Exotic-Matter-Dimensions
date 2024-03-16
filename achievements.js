@@ -271,7 +271,7 @@ const achievementList = {
 					event:"gameloop",
 					progress:function(){return g[type+"Axis"].eq(c.d0)?achievement.percent(g.exoticmatter,c.e25,1):"Failed"},
 					prevReq:[[104,202,203,204][i]],
-					get reward(){return "+0."+(4-i)+"% stardust per "+type+" Axis (total: "+percentOrMult(Decimal.pow(Decimal.FC_NN(1,0,1.004-i/1e3),g[type+"Axis"]))+")"},
+					get reward(){return "+0."+(4-i)+"% stardust per "+type+" Axis (total: "+percentOrMult(Decimal.pow(Decimal.FC_NN(1,0,1.004-i/1e3),g[type+"Axis"]),2,true)+")"},
 					flavor:["Like all great art, it defies the tyrant Time.","Four axis good, two axis better","It seemed that this poor ignorant Monarch — as he called himself — was persuaded that the Straight Line which he called his Kingdom, and in which he passed his existence, constituted the whole of the world","That Point is a Being like ourselves, but confined to the non-dimensional Gulf. He is himself his own World, his own Universe; of any other than himself he can form no conception; he knows not Length, nor Breadth, nor Height, for he has had no experience of them; he has no cognizance even of the number Two; nor has he a thought of Plurality; for he is himself his One and All, being really Nothing."][i]
 				}
 			}
@@ -301,7 +301,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return "Not Completed!";},
 			prevReq:[104],
-			get reward(){return "All "+(unlocked("Dark Matter")?"normal axes":"axes")+" are {}% cheaper per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned (total: "+percentOrMult(this.effect().pow(stat.totalNormalAxis))+")";},
+			get reward(){return "All "+(unlocked("Dark Matter")?"normal axes":"axes")+" are {}% cheaper per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned (total: "+percentOrMult(this.effect().pow(stat.totalNormalAxis),2,true)+")";},
 			effect:function(y=this.yellowValue){
 				let out = c.d0_99.div(N(2.2).pow(y))
 				if (study13.bound(192)) {out = out.pow(study13.bindingEff(192))}
@@ -318,7 +318,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return "Not Completed!";},
 			prevReq:[207],
-			get reward(){return "Gain {}% more stardust per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned (total: "+percentOrMult(this.effect().pow(stat.totalNormalAxis))+")";},
+			get reward(){return "Gain {}% more stardust per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned (total: "+percentOrMult(this.effect().pow(stat.totalNormalAxis),2,true)+")";},
 			effect:function(y=this.yellowValue){
 				let out = (y.eq(c.d1)?c.d0_06:y.eq(c.d0)?c.em3:y.mul(c.d0_059).add(c.em3)).mul(g.achievement[913]?c.d1_1:c.d1).add(c.d1)
 				if (study13.bound(192)) {out = out.pow(study13.bindingEff(192))}
@@ -446,7 +446,7 @@ const achievementList = {
 			check:function(){return g.exoticmatter.gt(c.inf)&&this.valence();},
 			event:"gameloop",
 			progress:function(){return this.valence()?achievement.percent(g.exoticmatter,c.inf,1):"Failed";},
-			get reward(){return "+30.8% dark matter per unassigned star (total: "+percentOrMult(N(1.308).pow(unspentStars()))+")"},
+			get reward(){return "+30.8% dark matter per unassigned star (total: "+percentOrMult(N(1.308).pow(unspentStars()),2,true)+")"},
 			flavor:"I made a noble gas joke, sadly nobody reacted",
 			valence:function(){return countTo(10).map(x => [1,2,3,4].map(y => g.star[10*x+y]?1:0).sum()%4).sum()===0;}
 		},
@@ -656,7 +656,7 @@ const achievementList = {
 			check:function(){return true;},
 			event:"wormholeResetBefore",
 			progress:function(){return "Not Completed!";},
-			get reward(){return "+"+this.perSec().mul(c.e2).noLeadFormat(3)+"% to exotic matter, mastery power, stardust and dark matter gain per second spent in the current universe (current total: "+(this.effectExp().eq(c.d1)?percentOrMult(this.realEffect()):arrowJoin(percentOrMult(this.base()),percentOrMult(this.realEffect())))+")"},
+			get reward(){return "+"+this.perSec().mul(c.e2).noLeadFormat(3)+"% to exotic matter, mastery power, stardust and dark matter gain per second spent in the current universe (current total: "+(this.effectExp().eq(c.d1)?percentOrMult(this.realEffect(),2,true):arrowJoin(percentOrMult(this.base(),2,true),percentOrMult(this.realEffect(),2,true)))+")"},
 			flavor:"The urge to destroy is also a creative urge.",
 			perSec:function(){
 				let out = c.em4
@@ -778,7 +778,7 @@ const achievementList = {
 			check:function(){return g.shiningBrightTonight;},
 			event:"wormholeResetBefore",
 			progress:function(){return g.shiningBrightTonight?achievement.wormholeProgress():"Failed";},
-			get reward(){return "Dark stars are 0.25% cheaper per normal star (total: "+percentOrMult(N(0.9975**g.stars))+")"},
+			get reward(){return "Dark stars are 0.25% cheaper per normal star (total: "+percentOrDiv(N(0.9975**g.stars))+")"},
 			flavor:"Like diamonds in the sky"
 		},
 		...(()=>{
@@ -972,7 +972,7 @@ const achievementList = {
 			reward:"Gain more Hawking radiation based on exotic matter and stardust (currently: {})",
 			flavor:"Oh, how hard it is to be the only one who knows the truth!",
 			effect:function(){return [g.exoticmatter.add(c.d1).pow(c.em8).mul(c.d10).layerplus(-2),g.stardust.add(c.d1).pow(c.em5).mul(c.d10).layerplus(-2)].productDecimals().pow10()},
-			effectFormat:x=>percentOrMult(x),
+			effectFormat:x=>percentOrMult(x,2,true),
 			formulaText:function(){
 				let out = "10<sup>log<sup>[2]</sup>((EM + 1)<sup>"+c.em8.format()+"</sup> × 10) × log<sup>[2]</sup>((S + 1)<sup>"+c.em5.format()+"</sup> × 10)</sup>"
 				return this.effect().gte(c.d10)?(out+"×"):("("+out+" - 1) × 100%")
@@ -996,7 +996,7 @@ const achievementList = {
 			reward:"{} chroma gain (based on total lumens)",
 			flavor:"The soul becomes dyed with the color of its thoughts.",
 			effect:function(){return g.lumens.sumDecimals().div(c.d100).add(c.d1)},
-			effectFormat:x=>percentOrMult(x),
+			effectFormat:x=>percentOrMult(x,2,true),
 			formulaText:()=>g.lumens.sumDecimals().gte(c.d900)?"ΣL ÷ 100 + 1×":"+ΣL%"
 		},
 		604:{
@@ -1032,7 +1032,7 @@ const achievementList = {
 			reward:"{} all energy gain (based on dark energy)",
 			flavor:"Programming graphics in X is like finding the square root of π using Roman numerals",
 			effect:function(){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.d2)},
-			effectFormat:x=>percentOrMult(x),
+			effectFormat:x=>percentOrMult(x,2,true),
 			formulaText:()=>"log<sup>[3]</sup>(DE × "+c.ee10.format()+")<sup>2</sup>×"
 		},
 		607:{
@@ -1085,7 +1085,7 @@ const achievementList = {
 			event:"researchBuy",
 			progress:function(){return "Not Completed!"},
 			prevReq:[607],
-			get reward(){return "+0.25% chroma gain per dark star (total: "+percentOrMult(N(1.0025).pow(g.darkstars))+")"},
+			get reward(){return "+0.25% chroma gain per dark star (total: "+percentOrMult(N(1.0025).pow(g.darkstars),2,true)+")"},
 			flavor:"Stars, hide your fires, let not light see my black and deep desires"
 		},
 		612:{
@@ -1378,7 +1378,7 @@ const achievementList = {
 			check:function(){return g.hawkingradiation.gte(c.d2_1e67)},
 			event:"wormholeResetAfter",
 			progress:function(){return achievement.percent(g.hawkingradiation,c.d2_1e67,1)},
-			get reward(){return "+1% dark X axis effect per black hole observation (currently: "+percentOrMult(g.observations[3].div(c.e2).add(c.d1))+")"},
+			get reward(){return "Additive +1% dark X axis effect per black hole observation (currently: "+percentOrMult(g.observations[3].div(c.e2).add(c.d1),2,true)+")"},
 			flavor:"Every revolution evaporates and leaves behind only the slime of a new bureaucracy.",
 		},
 		803:{
@@ -1571,7 +1571,7 @@ const achievementList = {
 			progress:function(){return "Not Completed!"},
 			get reward(){return "Reduce the penalty of Luck and Antimatter research by {} (based on prismatic), and Quatrefolium "+luckUpgrades.quatrefolium.prismatic.name+" is 2× stronger"},
 			effect:function(y=this.yellowValue){return g.prismatic.add(c.d1).log10().div(c.e3).add(c.d1).pow(y.pow10().neg()).toNumber()},
-			effectFormat:x=>percentOrMult(N(x),4),
+			effectFormat:x=>percentOrDiv(N(x),4),
 			formulaText:function(){return "(log(P + 1) ÷ 1,000 + 1)<sup>"+this.yellowValue.pow10().noLeadFormat(4)+"</sup>÷"},
 			yellowBreakpoints:[c.d5e4,N(5e9),1],
 			flavor:"I won't look back, I won't look down, I'm going up, you better turn around",
@@ -1717,7 +1717,10 @@ const achievementList = {
 			check:function(){return g.ach907Progress>15},
 			event:"researchBuy",
 			progress:function(){return achievement.percent(N(g.ach907Progress),c.d16,0)},
-			reward:"All Study research are 10% cheaper",
+			reward:"All Study research are {}% cheaper",
+			effect:function(y=this.yellowValue){return c.d0_9.sub(c.d0_8.mul(y))},
+			effectFormat:x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3),
+			yellowBreakpoints:[N(250000),N(2.25e6),0],
 			flavor:"Never confuse education with intelligence, you can have a PhD and still be an idiot.",
 			beta:true
 		},
@@ -1869,7 +1872,7 @@ const achievementList = {
 			check:function(){return stat.realDarkStars.gte(c.d308)},
 			event:"gameloop",
 			progress:function(){return achievement.percent(stat.realDarkStars,c.d308,0)},
-			get reward(){return "+3.08% chroma per dark star (currently: "+percentOrMult(N(1.0308).pow(stat.realDarkStars))+")"},
+			get reward(){return "+3.08% chroma per dark star (currently: "+percentOrMult(N(1.0308).pow(stat.realDarkStars),2,true)+")"},
 			flavor:"The ability to destroy a planet is insignificant compared to the power of the Force.",
 			beta:true
 		},
@@ -1963,7 +1966,10 @@ const achievementList = {
 					check:function(){return Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals().gte(req)},
 					event:"buyLuckUpgrade",
 					progress:function(){return achievement.percent(Object.values(g.luckUpgrades).map(x=>Object.values(x).sumDecimals()).sumDecimals(),N(req),0)},
-					get reward(){return "Add 1 free level to "+(x=>toTitleCase(x[0])+" "+luckUpgrades[x[0]][x[1]].name)([["trifolium","antiAxis"],["quatrefolium","prismatic"],["cinquefolium","luck"]][i])},
+					get reward(){return "Add {} free level"+(achievement(927+i).effect().eq(c.d1)?"":"s")+" to "+(x=>toTitleCase(x[0])+" "+luckUpgrades[x[0]][x[1]].name)([["trifolium","antiAxis"],["quatrefolium","prismatic"],["cinquefolium","luck"]][i])},
+					effect:function(y=this.yellowValue){return y.mul(c.d6).add(c.d1)},
+					effectFormat:x=>x.noLeadFormat(3),
+					yellowBreakpoints:[N(250000*2**i),N(2.5e6*2**i),1],
 					flavor:["The key is not to prioritize what's on your schedule...","...but to schedule your priorities.","Would alemaninc's players be satisfied with how low his game is on the schedule?","TBD","TBD"][i],
 					beta:true
 				}

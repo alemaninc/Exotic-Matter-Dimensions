@@ -906,7 +906,7 @@ const study13 = {
 					if (study13.bound(323)) {out = out.mul(study13.bindingEff(323))}
 					return out.add(c.d1)
 				},
-				desc:function(curr,prev){return "The effects of the first seven normal axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3))+" stronger"},
+				desc:function(curr,prev){return "The effects of the first seven normal axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3,3,false))+" stronger"},
 			},
 			dmBoost:{
 				name:"Dark Reactor",
@@ -917,7 +917,7 @@ const study13 = {
 					if (study13.bound(327)) {out = out.mul(study13.bindingEff(327))}
 					return out.add(c.d1)
 				},
-				desc:function(curr,prev){return "The effects of the first seven dark axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3))+" stronger"},
+				desc:function(curr,prev){return "The effects of the first seven dark axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3,false))+" stronger"},
 			},
 			amBoost:{
 				name:"Anti-Reactor",
@@ -927,7 +927,7 @@ const study13 = {
 					let out = N((lv===13)?0.09:(lv/150))
 					return out.add(c.d1)
 				},
-				desc:function(curr,prev){return "The effects of the first seven anti-axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3))+" stronger"},
+				desc:function(curr,prev){return "The effects of the first seven anti-axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3,false))+" stronger"},
 			},
 			masterNumber:{
 				name:"Master's Encyclopedia of Integer Sequences®",
@@ -962,7 +962,7 @@ const study13 = {
 			weakenBindings:(()=>{
 				let out = {
 					name:"Mailbreaker",
-					breakpoints:[25,40,55,100,120,128,144,153],
+					breakpoints:[25,40,55,100,120,128,144,153,160],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.weakenBindings){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.max(l,Math.min(1,x)))}
@@ -980,12 +980,14 @@ const study13 = {
 							242:Decimal.FC_NN(1,0,(lv>4)?0.1:1),
 							248:f(1.05-lv/80,0.9),
 							304:f(1-Math.sqrt(Math.max(lv-7,0)/12),0.5),
-							306:f(Math.log(Math.max(lv-1,6)/12)/Math.log(0.5),Math.log(0.75)/Math.log(0.5))
+							306:f(Math.log(Math.max(lv-1,6)/12)/Math.log(0.5),Math.log(0.75)/Math.log(0.5)),
+							312:f((2/3)**(lv-8),0.1),
+							318:f((2/3)**(lv-8),0.1),
 						}
 					},
 					desc:function(curr,prev){
 						if (curr===0) {return "All Bindings are fully powered"}
-						return "Certain Bindings are weakened:<br>"+Object.entries(this.eff(curr)).filter(b=>b[1].neq(c.d1)).map(b=>"<div style=\"height:20px;width:180px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+b[0]+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>"-"+c.d1.sub(this.eff(x)[b[0]]).mul(c.e2).noLeadFormat(3))+"%</span></div>").join("")
+						return "Certain Bindings are weakened:<br>"+Object.entries(this.eff(curr)).filter(b=>b[1].neq(c.d1)).map(b=>"<div style=\"height:20px;width:180px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+b[0]+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrDiv(this.eff(x)[b[0]]))+"</span></div>").join("")
 					}
 				}
 				out.allAffected = Object.keys(out.eff(out.breakpoints.length)).map(x=>Number(x))
@@ -1022,7 +1024,7 @@ const study13 = {
 				breakpoints:[96,104,112,122,132,144,156,170,184,200],
 				type:"scaling",
 				eff:function(lv=study13.rewardLevels.radiance){return {mul:Decimal.FC_NN(1,0,Math.min(1+lv/6,2.5)),lim:N(1-lv/10).max(c.minvalue).recip().pow10().floor().pow10()}},
-				desc:function(curr,prev){return "Increase the effective number of black lumens by "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x).mul))+" and their effect limit is "+scaleFormat(curr,prev,x=>this.eff(x).lim.format())+"<br><br>(translated to a black lumen effect of "+scaleFormat(curr,prev,x=>percentOrMult(lightEffect[7].value(g.lumens[7],x),3).replace("-","").replace("÷","×"))+")"}
+				desc:function(curr,prev){return "Increase the effective number of black lumens by "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x).mul,false))+" and their effect limit is "+scaleFormat(curr,prev,x=>this.eff(x).lim.format())+"<br><br>(translated to a black lumen effect of "+scaleFormat(curr,prev,x=>percentOrDiv(lightEffect[7].value(g.lumens[7],x),3).replace("-","").replace("÷","×"))+")"}
 			},
 			century:{
 				name:"Centennial Festival for Celestials",
@@ -1055,7 +1057,25 @@ const study13 = {
 				type:"scaling",
 				eff:function(lv=study13.rewardLevels.forge){return {b:Decimal.fracDecibel_arithmetic(Decimal.FC_NN(1,0,70-lv/2)).pow10(),s:Decimal.FC_NN(1,0,Math.max(3360-lv*6,3350-lv*5)/3000)}},
 				desc:function(curr,prev){return "Titanium Empowerments have a base cost of "+scaleFormat(curr,prev,x=>this.eff(x).b.format())+" and cost increase of ^"+scaleFormat(curr,prev,x=>this.eff(x).s.noLeadFormat(5))}
-			}
+			},
+			particleLab3:(()=>{
+				let out = {
+					name:"Stat Mark's Game of Rising",
+					breakpoints:[],
+					type:"scaling",
+					eff:function(lv=study13.rewardLevels.particleLab3){
+						function f(x,l){return Decimal.FC_NN(1,0,Math.min(l,Math.max(1,x)))}
+						return {
+						}
+					},
+					desc:function(curr,prev){
+						if (curr===0) {return "No Research is boosted"}
+						return "Certain Research is strengthened:<br>"+Object.entries(this.eff(curr)).filter(r=>r[1].neq(c.d1)).map(r=>"<div style=\"height:20px;width:180px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+researchOut(r[0])+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x)[r[0]],2,true))+"</span></div>").join("")
+					}
+				}
+				out.allAffected = Object.keys(out.eff(out.breakpoints.length))
+				return out
+			})(),
 		}
 	})(),
 	rewardSelected:undefined,
