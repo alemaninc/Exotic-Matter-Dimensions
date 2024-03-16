@@ -857,7 +857,7 @@ const research = (function(){
 		},
 		r9_15:{
 			numDesc:function(){return researchEffect(9,15).noLeadFormat(2)},
-			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(9,15).mul(c.d0_05).noLeadFormat(3)+"</sup>"},
+			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(9,15).mul(c.d0_1).noLeadFormat(3)+"</sup>"},
 			description:function(){return "Stardust boosts chroma gain (currently: "+numOrFormula("r9_15")+"×)"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
@@ -865,7 +865,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(200),
 			icon:icon.stardust+icon.arr+icon.chroma(6),
-			effect:function(power){return [g.stardust.add(c.d10).log10().pow(0.2).sub(c.d1),c.d0_05,power].productDecimals().pow10()},
+			effect:function(power){return [g.stardust.add(c.d10).log10().pow(0.2).sub(c.d1),c.d0_1,power].productDecimals().pow10()},
 			group:"stardust"
 		},
 		r10_1: {
@@ -941,7 +941,7 @@ const research = (function(){
 		},
 		r10_13:{
 			numDesc:function(){return researchEffect(10,13).noLeadFormat(2)},
-			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(10,13).mul(c.d0_07).noLeadFormat(3)+"</sup>"},
+			formulaDesc:function(){return "10<sup>(log(S + 10)<sup>0.2</sup> - 1) × "+researchPower(10,13).mul(0.14).noLeadFormat(3)+"</sup>"},
 			description:function(){return "Stardust boosts Hawking radiation gain (currently: "+numOrFormula("r10_13")+"×)"},
 			adjacent_req:["r9_14"],
 			condition:[studyReq(4,1)],
@@ -949,7 +949,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(200),
 			icon:icon.stardust+icon.arr+icon.hr,
-			effect:function(power){return [g.stardust.add(c.d10).log10().pow(0.2).sub(c.d1),c.d0_07,power].productDecimals().pow10()},
+			effect:function(power){return [g.stardust.add(c.d10).log10().pow(0.2).sub(c.d1),N(0.14),power].productDecimals().pow10()},
 			group:"stardust"
 		},
 		r10_14:{

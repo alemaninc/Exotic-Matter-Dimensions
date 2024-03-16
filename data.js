@@ -852,7 +852,7 @@ const corruption = {
 			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
-			isCorrupted:function(type){return darkAxisCost(type).mul(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type)).gt(this.start())},
+			isCorrupted:function(type){return darkAxisCost(type,g["dark"+type+"Axis"],true).mul(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type)).gt(this.start())},
 			visible:function(){
 				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false

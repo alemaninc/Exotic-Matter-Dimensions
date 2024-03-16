@@ -1672,9 +1672,9 @@ const achievementList = {
 			progress:function(){return achievement.percent(g.stardust,c.e2e6,1);},
 			get reward(){return "Research 9-15 and 10-13 are {}× stronger (based on Hawking radiation)";},
 			flavor:"If you don't come from a rich family, a rich family must come from you.",
-			effect:function(){return g.hawkingradiation.add(c.e100).log10().log10().pow(c.d5).div(c.d32);},
+			effect:function(){return g.hawkingradiation.add(1e200).log10().log10().pow(c.d5).div(c.d64);},
 			effectFormat:x=>x.format(3),
-			formulaText:()=>"log<sup>[2]</sup>(HR + "+c.e100.format()+")<sup>5</sup> ÷ 32",
+			formulaText:()=>"log<sup>[2]</sup>(HR + "+N(1e200).format()+")<sup>5</sup> ÷ 64",
 			beta:true
 		},
 		905:{
@@ -1923,7 +1923,7 @@ const achievementList = {
 					get description(){return "Have an exotic matter count with at least 1,000,000,000 digits"+(["BE Default","Engineering","Logarithm","Mixed scientific","Scientific"].includes(g.notation)?"":(" (need "+this.req.format()+" exotic matter)"))+" in Study XIII at level "+s13req+" or higher"},
 					check:function(){return numberOfDigits(g.exoticmatter).gte(this.nextMilestone(0))&&(g.activeStudy===13)&&(studyPower(13)>=s13req)},
 					event:"gameloop",
-					progress:function(){return (g.activeStudy!==13)?"Enter Study XIII first":(studyPower(13)<s13req)?("Binding level too low ("+studyPower(13)+" / "+s13req+")"):achievement.percent(numberOfDigits(g.exoticmatter),N(this.nextMilestone(g.achievement[921+i]?this.milestones():0)),0)},
+					progress:function(){return (g.activeStudy!==13)?"Enter Study XIII first":(studyPower(13)<s13req)?("Binding level too low ("+studyPower(13)+" / "+s13req+")"):(study13.bound(236))?{percent:achievement.percent(numberOfDigits(g.exoticmatter),N(this.nextMilestone(g.achievement[921+i]?this.milestones():0)),0),text:numberOfDigits(g.exoticmatter).format()+" / "+N(this.nextMilestone(g.achievement[921+i]?this.milestones():0)).format()+"; "+timeFormat(study13.bindingEff(236)-g.timeThisWormholeReset)+" left"}:achievement.percent(numberOfDigits(g.exoticmatter),N(this.nextMilestone(g.achievement[921+i]?this.milestones():0)),0)},
 					get reward(){return (i===4)?("The "+achievement.label(921,5)+" rewards are {}% stronger"):("Research "+["13-5","13-7 and 13-9","13-8","13-11"][i]+" "+((i===1)?"are":"is")+" {}% stronger"+((achievement(921+i).milestones()===13)?"":(" (increases based on milestones of most digits of exotic matter in Study XIII level ≥ "+s13req+")")))},
 					effect:function(){
 						let out = Math.sqrt(Math.max(this.milestones()*2-1,0))/25

@@ -706,7 +706,7 @@ const masteryData = {
 	102:{icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>"},
 	103:{icon:"<span class=\"_research\">K</span><sup>+</sup>"},
 	104:{icon:"<span class=\"_stars\">L</span><sup>+</sup>",req:function(){return g.research.r10_11}},
-	105:{icon:"<span class=\"_stars\">S$</span><sup>-</sup>",req:function(){return g.achievement[711]}},
+	105:{icon:"<span class=\"_stars\">"+icon.star("")+"$</span><sup>-</sup>",req:function(){return g.achievement[711]}},
 	111:{icon:"<span class=\"_mastery\">M<sub>104</sub></span>→<span class=\"_prismatic\">P</span>",req:function(){return g.research.r23_6}},
 	112:{icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">104</sub></span>",req:function(){return g.research.r23_10}}
 }

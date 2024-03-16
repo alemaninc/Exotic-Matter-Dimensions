@@ -5,7 +5,7 @@ const study13 = {
 		let lvExcl25 = studyPower(13)-(g.study13Bindings[25]?56:0)
 		if (lvExcl25===0) {return g.study13Bindings[25]?"Pure Filth (56)":"The First Study (0)"}
 		if (lvExcl25===24) {return g.study13Bindings[25]?"Sullied Galaxy (80)":"Dreamers' Galaxy (24)"}
-		if (lvExcl25===56) {return g.study13Bindings[25]?"Disgraced Mirror (112)":"The Amazing Mirror (56)"}
+		if (lvExcl25===56) {return g.study13Bindings[25]?"Disgraced Reflections (112)":"The Amazing Mirror (56)"}
 		if (lvExcl25===96) {return g.study13Bindings[25]?"Fallen Achievement 〜 Tenth Circle of Hell (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
 		if (lvExcl25===144) {return g.study13Bindings[25]?"Study of Obscenities (200)":"Study of Triads (144)"}
 		if (lvExcl25===200) {return g.study13Bindings[25]?"Entrusting the Game to Machines 〜 Development Hell (256)":"Thirteenth Hell 〜 Development Hell (200)"}
@@ -94,13 +94,13 @@ const study13 = {
 			}
 		}
 		let researchBindings = {}
-		function researchBinding(thisID,resID,resIcon,adjacent_req,basePow,nameMod){
+		function researchBinding(thisID,resID,resIcon,adjacent_req,basePow,nameMod,lv=1){
 			researchBindings[resID] = thisID
 			return {
 				description:function(){return "Research "+researchOut(resID)+" is "+percentOrDiv(study13.bindingEff(thisID))+" weaker"},
 				adjacent_req:adjacent_req,
 				icon:icon.research+classes.xscript("-",resIcon)+"<br><span class=\"small\">"+classes.research(researchOut(resID))+"</span>",
-				lv:1,
+				lv:lv,
 				effect:function(power){return basePow.pow(power)},
 				nameMod:nameMod
 			}
@@ -745,7 +745,7 @@ const study13 = {
 					nameMod:["Shin","Kaf","Pellenic"]
 				},
 				342:metaBinding(342,[225],[331,333],2,230.4,["Dark Ages","Unchanging","Holy"]),
-				345:metaBinding(345,[333,337],[315,333,337],4,256,["Stasis","Frozen","Static"],"33x"),
+				345:metaBinding(345,[333,337],[315,333,337],2,128,["Stasis","Frozen","Static"],"33x"),
 				348:{
 					description:function(){return "The knowledge boost to all Masteries is "+percentOrDiv(study13.bindingEff(348))+" weaker (before the softcap)"},
 					adjacent_req:[337,339],
@@ -757,9 +757,9 @@ const study13 = {
 				353:metaBinding(353,[236],[342,345],2,512,["Countdown","Ticking","Race of"]),
 				357:metaBinding(357,[234],[345,348],1,512,["Pyramid","Collapsing","Building of"]),
 				371:researchBinding(371,"r15_7",icon.energy,[331,357],c.d0_9,["Dream","Unfueled","Conserved"]),
-				373:researchBinding(373,"r14_10",icon.darkYAxis,[353,348],c.d0_95,["Yearlong Darkness","Yperite","Yesternight's Garage"]),
+				373:researchBinding(373,"r14_10",icon.darkYAxis,[353,348],c.d0_95,["Yearlong Darkness","Yperite","Yesternight's Garage"],2),
 				375:metaBinding(375,[315],[345],3,512,["Netherworld","Yama's","Sinful"]),
-				377:researchBinding(377,"r26_14",classes.wormhole_noGlow("S"),[357,342],c.d0_95,["Subspace","Small","Sophisticated"]),
+				377:researchBinding(377,"r26_14",classes.wormhole_noGlow("S"),[357,342],c.d0_95,["Subspace","Small","Sophisticated"],2),
 				379:researchBinding(379,"r16_12",icon.darkstar,[339,353],c.d0_9,["Dwarfs","Elven","Garden Gnome's"]),
 				382:researchBinding(382,"r13_11",classes.stardust("B"),[371,373,375],c.d0_95,["Trinity","Three Microcosms'","Ternary"]),
 				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_95,["Pride","Accomplished","Overachieving"]),
