@@ -24,7 +24,13 @@ function updateHTML() {
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";
 	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
 	d.display("footer",showFooter()?"inline-block":"none")
-	if (showFooter()) ProgressBar()
+	if (showFooter()) {
+		if (g.achOnProgressBar!=="N") {
+			if (achievement(g.achOnProgressBar).maxMilestones===undefined) {if (g.achievement[g.achOnProgressBar]) {g.achOnProgressBar="N"}}
+			else {if (achievement(g.achOnProgressBar).milestones()===achievement(g.achOnProgressBar).maxMilestones) {g.achOnProgressBar="N"}}
+		}
+		ProgressBar()
+	}
 	for (let tab of tabList) {
 		if (tabVisibility[tab]()) {
 			d.display("button_bigtab_"+tab,"inline-block")
@@ -860,7 +866,7 @@ function tick(time) {																																		 // The game loop, which 
 			}
 		}
 	}
-	if (g.achOnProgressBar!=="N") {if (achievement(g.achOnProgressBar).maxMilestones!==undefined) {if (achievement(g.achOnProgressBar).milestones()===achievement(g.achOnProgressBar).maxMilestones) {g.achOnProgressBar="N"}}}
+	
 	
 	// Dark Matter section
 	if (StudyE(12)||study13.bound(275)) {g.study12.fortitude = studies[12].fortitude.lim(studies[12].fortitude.invlim(g.study12.fortitude,studies[12].fortitude.max()).add(studies[12].fortitude.gain().mul(time)),studies[12].fortitude.max())}

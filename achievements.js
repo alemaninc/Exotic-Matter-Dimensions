@@ -2563,7 +2563,6 @@ function addAchievement(x) {
 	if (achievement(x).beta&&(!betaActive)) return
 	if (achievement(x).check()&&(!g.achievement[x])) {
 		g.achievement[x]=true;
-		if ((g.achOnProgressBar===x)&&(achievement(x).maxMilestones===undefined)) {g.achOnProgressBar="N"}
 		let tier = achievement.tierOf(x)
 		let colors = achievement.tierColors[tier]
 		notify("Achievement Get! \""+achievement(x).name+"\" ["+x+"]",colors.primary);
