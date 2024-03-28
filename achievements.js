@@ -1162,7 +1162,7 @@ const achievementList = {
 			get reward(){return "The star cost is divided by {} per star, per star (based on time in the current Wormhole) (current total: "+this.effect().pow(g.stars**2).format(2)+")"},
 			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"https://alemaninc.github.io/Exotic-Matter-Dimensions/\" target=\"_blank\">alemaninc.github.io</a>? Try that too!",
 			effect:function(){return g.truetimeThisWormholeReset.div(c.e7).add(c.d1).pow(c.e2)},
-			effectFormat:x=>x.format(4),
+			effectFormat:x=>x.formatFrom1(3),
 			formulaText:()=>"(1 + t ÷ "+c.e7.format()+")<sup>100</sup>"
 		},
 		703:{
@@ -1234,7 +1234,7 @@ const achievementList = {
 					get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+req.format()+"×"},
 					check:function(){return achievement(501).realEffect().gte(req)},
 					event:"gameloop",
-					progress:function(){return {percent:achievement.percent(achievement(501).realEffect(),req,1),text:"Estimated real time to get: "+timeFormat(req.root(achievement(501).effectExp()).sub(c.d1).mul(achievement(501).perSec()).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))}},
+					progress:function(){return {percent:achievement.percent(achievement(501).realEffect(),req,1),text:"Estimated real time to get: "+timeFormat(req.root(achievement(501).effectExp()).sub(c.d1).div(achievement(501).perSec()).sub(g.truetimeThisWormholeReset).div(stat.tickspeed))}},
 					get reward(){return ["Masteries 101 and 103 can be activated simultaneously","The "+achievement.label(501)+" reward divides dark axis costs","Mastery 103 is 9× stronger"][i]},
 					flavor:["God is a philosophical black hole - the point where reason breaks down.","God not only plays dice, but sometimes throws them where they cannot be seen.","Auschwitz will forever remain the black hole of the entire human history"][i]
 				}
@@ -1285,7 +1285,7 @@ const achievementList = {
 			description:"Play for 122 years",
 			check:function(){return g.truetimePlayed.gt(31556926*122)},
 			event:"gameloop",
-			progress:function(){return achievement.percent(g.truetimePlayed.div(31556926),c.d122,0)+"<br>(Real time left to reach: "+timeFormat(N(31556926*122).sub(g.truetimePlayed).div(stat.tickspeed))+")"},
+			progress:function(){return {percent:achievement.percent(g.truetimePlayed.div(31556926),c.d122,0),text:"Real time left to reach: "+timeFormat(N(31556926*122).sub(g.truetimePlayed).div(stat.tickspeed))}},
 			get reward(){return "{} extra Discoveries (based on time played)"+(this.effect().gt(g.knowledge.log10().div(c.d10))?" (softcapped past "+g.knowledge.log10().div(c.d10).format()+", based on knowledge)":"")},
 			effect:function(){
 				let out = g.truetimePlayed.div(31556926)
@@ -1439,7 +1439,7 @@ const achievementList = {
 			name:"Get Lucky",
 			description:"Buy a Luck Upgrade",
 			prevReq:[807],
-			check:function(){return true}, // checked locally
+			check:function(){return Object.values(g.luckUpgrades).map(x=>Object.values(x)).flat().map(x=>x.sign).includes(1)}, // checked locally
 			event:"buyLuckUpgrade",
 			progress:function(){return "Not Completed!"},
 			reward:"Luck shard gain is multiplied by {} (based on total runes)",
@@ -1741,7 +1741,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return "Not Completed!"},
 			prevReq:[909],
-			get reward(){return "All anti-axis costs are lowered to the (1 + [total anti-axis] ÷ {})th root (currently: "+this.effect().mul(stat.totalAntiAxis).add(c.d1).noLeadFormat(3)+"th)"},
+			get reward(){return "All anti-axis costs are lowered to the (1 + [total anti-axis] ÷ {})th root (currently: "+this.effect().mul(stat.totalAntiAxis).add(c.d1).noLeadFormat(4)+"th)"},
 			effect:function(){
 				let out = c.em5
 				if (g.achievement[910]) {out = out.mul(c.d1_01)}
@@ -1914,7 +1914,7 @@ const achievementList = {
 			for (let i=0;i<5;i++) {
 				let s13req = [24,56,96,144,200][i]
 				let bms = ["Gain 1 RP per second","You can now change the Singularity faster (max, min, slider) and autobuy singularity function upgrades","<del>Forever keep the first four function upgrades free and unlock advanced autoshift (Refunding is encouraged)</del><br><ins>Unlock Autoprestiger to automatically enter challenges</ins>","<del>Automatically get Incrementy and Dark Manifolds and Upgrades without losing incrementy, (max cost of e600 Incrementy)</del><br><ins>Reward: Unlock option to automatically distribute Cardinals and buy ℵω</ins>","Unlock Baseless<sup>2</sup> Milestones (base 7)"]
-				let bmrs = ["ω<sup>ω<sup>2</sup>3</sup>","ω<sup>ω<sup>2</sup>3+ω3</sup>","<del>ω<sup>ω<sup>2</sup>4+ω3</sup>*</del> <ins>ω<sup>ω<sup>2</sup>3+ω4</sup></ins>","<del>ω<sup>ω<sup>2</sup>4+ω4</sup></del> <ins>ω<sup>ω<sup>2</sup>4</sup></ins>","ω<sup>ω<sup>3</sup></sup>"]
+				let bmrs = ["ω<sup>ω<sup>2</sup>3</sup>","ω<sup>ω<sup>2</sup>3+ω3</sup>","<del>ω<sup>ω<sup>2</sup>4+ω3</sup></del> <ins>ω<sup>ω<sup>2</sup>3+ω4</sup></ins>","<del>ω<sup>ω<sup>2</sup>4+ω4</sup></del> <ins>ω<sup>ω<sup>2</sup>4</sup></ins>","ω<sup>ω<sup>3</sup></sup>"]
 				let b2ms = ["Reward: Unlock new Singularity Functions, and raise the OP cap to e1e100, or a <b>googolplex</b>","Disable normal challenge reward scaling","Unlock new Booster Upgrades and u22 scales better <i>"+arrowJoin("(10+(boosters<sup>0.9</sup>))","(10+(boosters<sup>1.25</sup>))")+"</i>","You can complete Omega Challenges up to 3 times","Unlock Epsilon Challenges"]
 				let b2mrs = [c.inf,N("2.048e451"),N("1.152e564"),N("1.148e684"),N("4.361e809")]
 				out[921+i] = {
@@ -1927,7 +1927,7 @@ const achievementList = {
 					get reward(){return (i===4)?("The "+achievement.label(921,5)+" rewards are {}% stronger"):("Research "+["13-5","13-7 and 13-9","13-8","13-11"][i]+" "+((i===1)?"are":"is")+" {}% stronger"+((achievement(921+i).milestones()===13)?"":(" (increases based on milestones of most digits of exotic matter in Study XIII level ≥ "+s13req+")")))},
 					effect:function(){
 						let out = Math.sqrt(Math.max(this.milestones()*2-1,0))/25
-						return (i===4)?(g.achievement[925]?(1/(1-out)):(1+out)):Decimal.FC_NN(1,0,1+out*(g.achievement[925]?achievement(925).effect():1))
+						return (i===4)?Decimal.FC_NN(1,0,g.achievement[925]?(1/(1-out)):(1+out)):Decimal.FC_NN(1,0,1+out*(g.achievement[925]?achievement(925).effect():1))
 					},
 					effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(2),
 					formulaText:()=>"max(μ × 2 - 1, 0)<sup>0.5</sup> × "+N(g.achievement[925]?(achievement(925).effect()*4):4).noLeadFormat(3),
@@ -2430,7 +2430,14 @@ const secretAchievementList = {
 		flavor:"Not everytime is a consolation prize given to offer solace to the recipient. It is sometimes given to console the giver's own conscience.",
 		rarity:5
 	},
-	// skip 52 numbers for meta-achievements
+	49:{
+		name:"Turtle Master",
+		description:"Cure the news ticker",
+		check:function(){return true}, // checked locally
+		flavor:"1 water bottle, 1 nether wart, 1 turtle shell",
+		rarity:5
+	},
+	// skip 51 numbers for meta-achievements
 	...(()=>{
 		let names = ["The Giver","Secret Keeper","General Secretary of the Workers' Party","[REDACTED]","The Nameless Ones","Secrets of the Darkest Art","alemaninc"]
 		let flavors = ["I feel sorry for anyone who is in a place where he feels strange and stupid."]
@@ -2521,11 +2528,11 @@ function showAchievementInfo(id) {
 	}
 	let elemX = (rect.left+rect.right)/2
 	let elemY = (rect.top+rect.bottom)/2
-	let rightAlign = (viewportWidth<elemX*2)
-	let bottomAlign = (viewportHeight<elemY*2)
+	let rightAlign = (viewportWidth()<elemX*2)
+	let bottomAlign = (viewportHeight()<elemY*2)
 	let position = {top:"",bottom:"",left:"",right:""}
-	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth-rect.left+4):(rect.right+4))+"px"
-	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight-rect.top+4):(rect.bottom+4))+"px"
+	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth()-rect.left+4):(rect.right+4))+"px"
+	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight()-rect.top+4):(rect.bottom+4))+"px"
 	let info = d.element("achievementInfo").style
 	for (let i of Object.keys(position)) info[i] = position[i]
 	let colors = achievement.tierColors[achievement.tierOf(id)]
@@ -2599,10 +2606,10 @@ function showSecretAchievementInfo(id) {
 	let rect = d.element("div_secretAchievement"+id).getBoundingClientRect()
 	let elemX = (rect.left+rect.right)/2
 	let elemY = (rect.top+rect.bottom)/2
-	let rightAlign = (viewportWidth<elemX*2)
-	let bottomAlign = (viewportHeight<elemY*2)
-	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth-rect.left+4):(rect.right+4))+"px"
-	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight-rect.top+4):(rect.bottom+4))+"px"
+	let rightAlign = (viewportWidth()<elemX*2)
+	let bottomAlign = (viewportHeight()<elemY*2)
+	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth()-rect.left+4):(rect.right+4))+"px"
+	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight()-rect.top+4):(rect.bottom+4))+"px"
 	let info = d.element("secretAchievementInfo").style
 	for (let i of Object.keys(position)) info[i] = position[i]
 	let ach = secretAchievementList[id]

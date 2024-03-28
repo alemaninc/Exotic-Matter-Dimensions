@@ -247,7 +247,7 @@ function bindingDependencies(id){
 	// row-specific effects
 	if (id===192) {out.push("totalNormalAxis")}
 	// inter-row effects
-	if (study13.rewards.weakenBindings.allAffected.includes(String(id))) {out.push("study13RewardWeakBindings")}
+	if (study13.rewards.weakenBindings.allAffected.includes(id)) {out.push("study13RewardWeakBindings")}
 	if (study13.metaBindings[id]!==undefined) {for (let i of study13.metaBindings[id]) {out.push(bindingDependencies(i))}}
 	return Array.removeDuplicates(out.flat())
 }
@@ -599,7 +599,7 @@ miscStats.exoticmatterPerSec={
 			func:function(prev){return prev.mul(stat.stardustBoost1);},
 			text:function(){return "× "+stat.stardustBoost1.format(2);},
 			dependencies:["stardustBoost1"],
-			show:function(){return stat.stardustBoost1.neq(c.d0)}
+			show:function(){return stat.stardustBoost1.neq(c.d1)}
 		},
 		...(()=>{
 			let out = []
@@ -719,10 +719,10 @@ miscStats.pendingstardust={
 		},
 		{
 			label:"Stardust gain exponents",
-			func:function(prev){return prev.pow(stat.stardustExponent)},
+			func:function(prev){return prev.gt(c.d1)?prev.pow(stat.stardustExponent):prev},
 			text:function(){return "^ "+stat.stardustExponent.noLeadFormat(4)},
 			dependencies:["stardustExponent"],
-			show:function(){return stat.stardustExponent.neq(c.d1)}
+			show:function(prev){return prev.gt(c.d1)&&stat.stardustExponent.neq(c.d1)}
 		},
 		{
 			label:"Stardust gain dilations",
@@ -759,7 +759,7 @@ miscStats.stardustMultiplier={
 			label:achievement.label(208),
 			mod:function(){return achievement(208).effect().pow(stat.totalNormalAxis);},
 			func:function(prev){return g.achievement[208]?prev.mul(this.mod()):prev;},
-			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(achievement(208).effect().noLeadFormat(4),stat.totalNormalAxis.format(0),3);},
+			text:function(){return "× "+this.mod().format(3)+" "+SSBsmall(achievement(208).effect().formatFrom1(3),stat.totalNormalAxis.format(0),3);},
 			dependencies:["totalNormalAxis",...bindingDependencies(192)],
 			show:function(){return g.achievement[208]&&stat.totalNormalAxis.neq(c.d0)}
 		},
@@ -2212,7 +2212,7 @@ miscStats.axisCostDivisor={
 			label:achievement.label(207),
 			mod:function(){return achievement(207).effect().pow(stat.totalNormalAxis);},
 			func:function(prev){return g.achievement[207]?prev.div(this.mod()):prev;},
-			text:function(){return "÷ "+this.mod().format(2)+" "+SSBsmall(achievement(207).effect().noLeadFormat(3),stat.totalNormalAxis.format(0),3);},
+			text:function(){return "÷ "+this.mod().format(2)+" "+SSBsmall(achievement(207).effect().formatFrom1(3),stat.totalNormalAxis.format(0),3);},
 			dependencies:["totalNormalAxis",...bindingDependencies()],
 			show:function(){return g.achievement[207]&&stat.totalNormalAxis.neq(c.d0)}
 		},
@@ -2663,7 +2663,7 @@ miscStats.tickspeed={
 			label:"Study XIII Binding 242",
 			mod:function(){return study13.bindingEff(242).pow(stat.wormholeDarkAxisReq.sub(stat.totalDarkAxis).max(c.d0))},
 			func:function(prev){return study13.bound(242)?prev.div(this.mod()):prev},
-			text:function(){return "÷ "+this.mod().format(3)+" "+SSBsmall(study13.bindingEff(242).noLeadFormat(3),"("+stat.wormholeDarkAxisReq.format()+" - "+stat.totalDarkAxis.format()+")",3)},
+			text:function(){return "÷ "+this.mod().format(3)+" "+SSBsmall(study13.bindingEff(242).formatFrom1(3),"("+stat.wormholeDarkAxisReq.format()+" - "+stat.totalDarkAxis.format()+")",3)},
 			dependencies:[...bindingDependencies(242),"wormholeDarkAxisReq","totalDarkAxis"],
 			show:function(){return study13.bound(242)&&stat.wormholeDarkAxisReq.gt(stat.totalDarkAxis)},
 			color:"var(--binding)"

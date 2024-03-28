@@ -97,7 +97,7 @@ const study13 = {
 		function researchBinding(thisID,resID,resIcon,adjacent_req,basePow,nameMod,lv=1){
 			researchBindings[resID] = thisID
 			return {
-				description:function(){return "Research "+researchOut(resID)+" is "+percentOrDiv(study13.bindingEff(thisID))+" weaker"},
+				description:function(){return "Research "+researchOut(resID)+" is "+percentOrDiv(study13.bindingEff(thisID),3)+" weaker"},
 				adjacent_req:adjacent_req,
 				icon:icon.research+classes.xscript("-",resIcon)+"<br><span class=\"small\">"+classes.research(researchOut(resID))+"</span>",
 				lv:lv,
@@ -151,14 +151,7 @@ const study13 = {
 					effect:function(power){return c.d0_25.pow(power)},
 					nameMod:["Synergy","Light","Platonic"]
 				},
-				41:{
-					description:function(){return "Research 8-14 is "+percentOrDiv(study13.bindingEff(41))+" weaker"},
-					adjacent_req:[33],
-					icon:icon.research+classes.xscript("-",classes.research("8-14")),
-					lv:1,
-					effect:function(power){return c.d0_25.pow(power)},
-					nameMod:["Supernovæ","Filament","a Broken Star's"]
-				},
+				41:researchBinding(41,"r8_14",icon.star(""),[33],c.d0_25,["Supernovæ","Filament","a Broken Star's"]),
 				44:{
 					description:function(){return "Row 3 Masteries are "+percentOrDiv(study13.bindingEff(44))+" weaker"},
 					adjacent_req:[26,33],
@@ -175,14 +168,7 @@ const study13 = {
 					effect:function(power){return c.d0_5.pow(power)},
 					nameMod:["Snail","Transient","Temporal"]
 				},
-				49:{
-					description:function(){return "Research 6-5 is "+percentOrDiv(study13.bindingEff(49))+" weaker"},
-					adjacent_req:[37],
-					icon:icon.research+classes.xscript("-",classes.research("6-5")),
-					lv:1,
-					effect:function(power){return c.d0_25.pow(power)},
-					nameMod:["University","Doctoral","Unattainable"]
-				},
+				49:researchBinding(49,"r6_5",icon.masteryPower,[37],c.d0_25,["University","Doctoral","Unattainable"]),
 				52:{
 					description:function(){return "Subtract "+study13.bindingEff(52).noLeadFormat(3)+" from all energy effects"},
 					adjacent_req:[41],
@@ -246,7 +232,11 @@ const study13 = {
 					adjacent_req:[55,64,66],
 					icon:icon.exoticmatter+classes.sup("-1")+icon.arr+icon.stardust+classes.sup("-1"),
 					lv:1,
-					effect:function(power){return Decimal.sub(c.d1,g.exoticmatter.add(c.d1).log10().div(c.e7).add(c.d1).recip()).pow(power)},
+					effect:function(power){
+						let out = g.exoticmatter.alog(c.d10).div(c.e7)
+						if (out.gt(1e-10)) {out = Decimal.sub(c.d1,out.add(c.d1).recip()).pow(power)}
+						return out
+					},
 					nameMod:["Onions","Layered","Hierarchical"]
 				},
 				94:{
@@ -368,7 +358,11 @@ const study13 = {
 					adjacent_req:[124,125,126],
 					icon:icon.stardust+classes.sup("-1")+icon.arr+icon.exoticmatter+classes.sup("-1"),
 					lv:1,
-					effect:function(power){return Decimal.sub(c.d1,g.stardust.add(c.d1).log10().div(c.e3).add(c.d1).recip()).pow(power)},
+					effect:function(power){
+						let out = g.stardust.alog(c.d10).div(c.e3)
+						if (out.gt(1e-10)) {out = Decimal.sub(c.d1,out.add(c.d1).recip())}
+						return out.pow(power)
+					},
 					nameMod:["Ogres","Prestigious","Stacked"]
 				},
 				155:{
@@ -754,16 +748,16 @@ const study13 = {
 					effect:function(power){return c.d0_8.pow(power)},
 					nameMod:["Theory","Inapplicable","Useless"]
 				},
-				353:metaBinding(353,[236],[342,345],2,512,["Countdown","Ticking","Race of"]),
-				357:metaBinding(357,[234],[345,348],1,512,["Pyramid","Collapsing","Building of"]),
-				371:researchBinding(371,"r15_7",icon.energy,[331,357],c.d0_9,["Dream","Unfueled","Conserved"]),
-				373:researchBinding(373,"r14_10",icon.darkYAxis,[353,348],c.d0_95,["Yearlong Darkness","Yperite","Yesternight's Garage"],2),
-				375:metaBinding(375,[315],[345],3,512,["Netherworld","Yama's","Sinful"]),
-				377:researchBinding(377,"r26_14",classes.wormhole_noGlow("S"),[357,342],c.d0_95,["Subspace","Small","Sophisticated"],2),
-				379:researchBinding(379,"r16_12",icon.darkstar,[339,353],c.d0_9,["Dwarfs","Elven","Garden Gnome's"]),
-				382:researchBinding(382,"r13_11",classes.stardust("B"),[371,373,375],c.d0_95,["Trinity","Three Microcosms'","Ternary"]),
-				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_95,["Pride","Accomplished","Overachieving"]),
-				393:researchBinding(393,"r1_8",classes.research("1"),[379,382],c.em5,["Basics","Primary","Original"]),
+				353:metaBinding(353,[236],[342,345],2,8/7,["Countdown","Ticking","Race of"]),
+				357:metaBinding(357,[234],[345,348],1,256,["Pyramid","Collapsing","Building of"]),
+				371:researchBinding(371,"r14_6",icon.tickspeed,[331,357],c.d0_8,["Seconds","Ancient","Timeless"]),
+				373:researchBinding(373,"r6_11",icon.mastery(""),[353,348],c.d0,["Yearlong Darkness","Yperite","Yesternight's Garage"],2),
+				375:metaBinding(375,[315],[345],4,256,["Netherworld","Yama's","Sinful"]),
+				377:researchBinding(377,"r2_10",icon.stardust,[357,342],c.d0_5,["Nebula","Main Sequence of","Nebulous"],2),
+				379:researchBinding(379,"r16_12",icon.darkstar,[339,353],c.d0_6,["Dwarfs","Elven","Garden Gnome's"]),
+				382:researchBinding(382,"r13_11",classes.stardust("B"),[371,373,375],c.d0_5,["Trinity","Three Microcosms'","Ternary"]),
+				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_5,["Pride","Accomplished","Overachieving"]),
+				393:researchBinding(393,"r1_8",classes.research("1"),[379,382],c.em3,["Basics","Primary","Original"]),
 				395:{
 					description:function(){return "Gain "+percentOrDiv(study13.bindingEff(395))+" less free normal axis from dark matter"},
 					adjacent_req:[373,375,377],
@@ -772,12 +766,12 @@ const study13 = {
 					effect:function(power){return c.d0_8.pow(power)},
 					nameMod:["Dark Energy","Spectral","Massless"]
 				},
-				397:researchBinding(397,"r7_8",icon.star(""),[371,388],c.d0_98,["Constellation","Astrological","Stargazer's"]),
+				397:researchBinding(397,"r7_8",icon.star(""),[371,388],c.d0_95,["Constellation","Astrological","Stargazer's"]),
 				415:{
 					description:function(){return "Finality Research is "+percentOrDiv(study13.bindingEff(415))+" weaker"},
 					adjacent_req:[393,395,397],
 					icon:icon.research+classes.xscript("-","<span style=\"color:"+researchGroupList.finality1.color+"\">F</span>"),
-					lv:3,
+					lv:2,
 					effect:function(power){return c.d0_5.pow(power)},
 					nameMod:["Culmination","Ultimate","Final"]
 				},
@@ -962,7 +956,7 @@ const study13 = {
 			weakenBindings:(()=>{
 				let out = {
 					name:"Mailbreaker",
-					breakpoints:[25,40,55,100,120,128,144,153,160],
+					breakpoints:[25,40,55,100,120,128,144,153,160,172,180],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.weakenBindings){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.max(l,Math.min(1,x)))}
@@ -977,12 +971,16 @@ const study13 = {
 							107:f(1.18-lv*0.09,0.64),
 							155:f((76-lv)/70,33/35),
 							225:f(Math.log(0.1+lv/20)/Math.log(0.25),0.5),
+							234:(lv>9)?c.d0_99:c.d1,
+							236:N(9-lv).min(c.d0).pow10(),
 							242:Decimal.FC_NN(1,0,(lv>4)?0.1:1),
 							248:f(1.05-lv/80,0.9),
 							304:f(1-Math.sqrt(Math.max(lv-7,0)/12),0.5),
 							306:f(Math.log(Math.max(lv-1,6)/12)/Math.log(0.5),Math.log(0.75)/Math.log(0.5)),
 							312:f((2/3)**(lv-8),0.1),
 							318:f((2/3)**(lv-8),0.1),
+							373:Decimal.FC_NN(1,0,1/Math.max(lv-9,1)),
+							377:Decimal.FC_NN(1,0,1/Math.max(lv-9,1))
 						}
 					},
 					desc:function(curr,prev){
@@ -1060,12 +1058,16 @@ const study13 = {
 			},
 			particleLab3:(()=>{
 				let out = {
-					name:"Stat Mark's Game of Rising",
-					breakpoints:[],
+					name:"Stat Mark's Cellular Game of Rising",
+					breakpoints:[168,174],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.particleLab3){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.min(l,Math.max(1,x)))}
 						return {
+							r15_7:f(Math.round(100+lv*12.5-lv**2*0.25)/100,2),
+							r15_9:f(Math.round(lv*7.5+lv**2*0.25)*10,1000),
+							r19_7:f(lv*4,16),
+							r19_9:N(1+lv**(2/3)/40,Math.log(1.225)/Math.log(1.2))
 						}
 					},
 					desc:function(curr,prev){
@@ -1076,6 +1078,17 @@ const study13 = {
 				out.allAffected = Object.keys(out.eff(out.breakpoints.length))
 				return out
 			})(),
+			purifier:{
+				name:"Evil-Sealing Circle",
+				breakpoints:[176,188,200,208,216,224,232,240,248,256],
+				type:"scaling",
+				eff:function(lv=study13.rewardLevels.purifier){return {e:Decimal.FC_NN(1,0,1+lv/5-lv**2/100),d:Decimal.FC_NN(1,0,1+lv**2/100)}},
+				desc:function(curr,prev){return "Normal Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).e.noLeadFormat(2))+" later<br>Dark Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).d.noLeadFormat(2))+" later"}
+			}
+			// mailbreaker 3
+			// trinity 4
+			// stat mark 4
+			// matrix
 		}
 	})(),
 	rewardSelected:undefined,

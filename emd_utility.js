@@ -1,17 +1,17 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(c).1",
+	current:"𝕍1.5(c).2",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[
 		1, // tier 8 hell
 		[
-			167/200, // Study XIII completed
+			180/200, // Study XIII completed
 			200/200  // Study XIII implemented
 		],
 		[
-			25/33,  // achievements completed
+			26/33,  // achievements completed
 			33/33   // achievements implemented
 		]
 	],

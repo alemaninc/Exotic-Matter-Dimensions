@@ -1009,6 +1009,7 @@ var fineGrainDelta = 0
 function fineGrainTick() {
 	fineGrainDelta = Date.now()-lastFineGrainFrame
 	lastFineGrainFrame += fineGrainDelta
+	if (newsSupport.malganis) {g.newsTickerSpeed /= Math.exp(fineGrainDelta / 1e4)}
 	if (g.newsTickerActive) {
 		d.display("newsticker","inline-block")
 		d.element("newsticker").style["background-color"] = (Date.now()<newsSupport.interestingTickerActiveUntil)?("hsl("+((Date.now()*0.06)%360)+" 100% "+(Math.min(newsSupport.interestingTickerActiveUntil-Date.now(),1e4-(newsSupport.interestingTickerActiveUntil-Date.now()))/100)+"%)"):""

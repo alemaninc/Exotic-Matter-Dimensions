@@ -832,7 +832,11 @@ const corruption = {
 	list:{
 		axis:{
 			name:"Axis Corruption",
-			start:function(){return c.ee15},
+			start:function(){
+				let out = c.ee15
+				out = out.pow(study13.rewards.purifier.eff().e)
+				return out
+			},
 			power:function(){return c.d1},
 			effPower:function(){return c.d256.pow(this.power())},
 			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
@@ -846,7 +850,11 @@ const corruption = {
 		},
 		darkAxis:{
 			name:"Dark Axis Corruption",
-			start:function(){return c.ee12},
+			start:function(){
+				let out = c.ee12
+				out = out.pow(study13.rewards.purifier.eff().d)
+				return out
+			},
 			power:function(){return c.d1},
 			effPower:function(){return c.d64.pow(this.power())},
 			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",

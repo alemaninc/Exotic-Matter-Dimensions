@@ -480,7 +480,7 @@ function theme() {
 		["Dark Gray",["color:#666","background:#333"]],
 		["Black",["color:#fff","background:#000"]],
 		["Light",["color:#000","background:#fff"]],
-		["Wormhole",["color:#39f","background-image:repeating-radial-gradient(circle at "+(viewportWidth/2)+"px "+(viewportHeight/2)+"px, #190033, #330066 "+(viewportDiagonalLength/20)+"px, #190033 "+(viewportDiagonalLength/10)+"px); background-size:cover"]]
+		["Wormhole",["color:#39f","background-image:repeating-radial-gradient(circle at "+(viewportWidth()/2)+"px "+(viewportHeight()/2)+"px, #190033, #330066 "+(viewportDiagonalLength/20)+"px, #190033 "+(viewportDiagonalLength/10)+"px); background-size:cover"]]
 	])
 	document.body.style = scheme[0];
 	d.element("background").style = scheme[1];
@@ -1078,7 +1078,7 @@ function stardustBoostBoost(x) {
 		if (g.achievement[509]) out=out.mul(achievement(509).effect().div(c.e2).add(c.d1));
 		if (g.research.r5_14) out=out.mul(Decimal.pow(stat.neuralEnergyEffect,researchEffect(5,14)))
 	}
-	if (x%3===0) if (g.research.r13_11) out = out.mul(researchEffect(13,11))
+	if ((x%3)===0) if (g.research.r13_11) out = out.mul(researchEffect(13,11))
 	return out;
 }
 const stardustBoostText = [
@@ -1241,7 +1241,7 @@ function buyStar() {
 	}
 }
 function affordableStars(gal=g.galaxies) {
-	for (let i=59;i>=0;i--) if (starCost(i,gal).lt(g.stardust)) return i+1
+	for (let i=59;i>=0;i--) if (starCost(i,gal).lt(g.stardust)) {return i+1}
 	return 0
 }
 function buyStarUpgrade(x) {
@@ -1385,9 +1385,9 @@ const starIcons = (()=>{
 	for (let i=51;i<55;i++) out.push([i,icon.mastery(i-49)])
 	for (let i=61;i<65;i++) out.push([i,icon.exoticmatter+icon.arr+icon[axisCodes[i-57]+"Axis"]])
 	for (let i=71;i<75;i++) out.push([i,[icon.masteryPower,icon.exoticmatter,icon.stardust,icon.time][i-71]+icon.arr+icon.tickspeed])
-	out.push([81,icon.axiscost+icon.minus])
+	out.push([81,icon.normalaxis+classes.exoticmatter("$")+icon.minus])
 	out.push([82,icon.VAxis+icon.plus])
-	out.push([83,icon.darkaxiscost+icon.minus])
+	out.push([83,icon.darkaxis+classes.darkmatter("$")+icon.minus])
 	out.push([84,icon.darkYAxis+icon.plus])
 	for (let i=91;i<95;i++) out.push([i,icon.exoticmatter+"→"+icon.star(i-80)])
 	for (let i=101;i<105;i++) out.push([i,icon.mastery(i-95)])
@@ -2135,7 +2135,7 @@ function chromaCostFactor(x) {
 function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	let shownAchievements,out=[]
 	if (mode===0) {shownAchievements = yellowLight.currentAffected}
-	else if (mode===1) {shownAchievements = yellowLight.affected.filter(x=>achievement(x).yellowBreakpoints[0].lte(g.lumens[5]))}
+	else if (mode===1) {shownAchievements = yellowLight.affected.filter(x=>achievement(x).yellowBreakpoints[0].lt(g.lumens[5]))}
 	else {functionError("reviewYellowLight",arguments)}
 	function achPriority(ach) {return (g.achievement[ach]&&Decimal.neq(achievement(ach).effect(c.d0),achievement(ach).effect(c.d1)))?1:0} // how high up the list an achievement is shown
 	shownAchievements = shownAchievements.sort((a,b)=>achPriority(b)-achPriority(a))

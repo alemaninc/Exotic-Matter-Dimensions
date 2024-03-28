@@ -307,7 +307,77 @@ const newsSupport = {
 		if (g.achievement[413]) return 1
 		return 0
 	},
-	ord:function(level){return (level>=newsSupport.calcOMCCDVLevel())?1:0}
+	ord:function(level){return (level>=newsSupport.calcOMCCDVLevel())?1:0},
+	malganis:false,
+	/*    mode    0                   1                   2                   3                   4                   5
+		pts
+0           +0%                 ×1                  ×1                  ^10                 ^^1                 10{1}10
+10          +10%                ×1.347              ×349,508            ^10.0&nbsp;B        ^^1.00159           10{1.1020157}10
+20          +20%                ×1.807              ×37.9&nbsp;Sp       ^1.00e100           ^^1.00639           10{1.2171377}10
+30          +30%                ×2.41               ×1.44e82            ^1.00e1,000         ^^1.0145            10{1.3475313}10
+40          +40%                ×3.20               ×9.10e220           ^1.0e10,000         ^^1.0260            10{1.4958097}10
+50          +50%                ×4.23               ×1.12e530           ^1e100,000          ^^1.0413            10{1.6651441}10
+60          +60%                ×5.57               ×4.19e1,170         ^e1.000&nbsp;M      ^^1.0605            10{1.8594082}10
+70          +70%                ×7.29               ×4.79e2,425         ^e10.00&nbsp;M      ^^1.0842            10{2.083363}10
+80          +80%                ×9.50               ×3.19e4,775         ^e100.0&nbsp;M      ^^1.113             10{2.342902}10
+90          +90%                ×12.3               ×1.44e9,012         ^e1.000&nbsp;B      ^^1.147             10{2.645372}10
+100         +100%               ×15.9               ×1.9e16,410         ^e10.00&nbsp;B      ^^1.188             10{3}10
+125         +125%               ×29.7               ×1.3e64,737         ^e3.162&nbsp;T      ^^1.326             10{4.199649}10
+150         +150%               ×53.9               ×1e221,980          ^e1.000&nbsp;Qa     ^^1.542             10{6.102993}10
+175         +175%               ×95.9               ×2e683,963          ^e316.2&nbsp;Qa     ^^1.893             10{9.292957}10
+200         +200%               ×167                ×e1.936&nbsp;M      ^e100.0&nbsp;Qt     ^^2.52              10{15}10
+250         +250%               ×480                ×e12.73&nbsp;M      ^e10.00&nbsp;Sp     ^^7.36              10{49.45251}10
+300         +300%               ×1,294              ×e68.49&nbsp;M      ^e1.000&nbsp;No     ^^3,381             10{255}10
+400         +400%               ×8,018              ×e1.299&nbsp;B      ^e1.000e40          ^^E1.353#6          10{65,535}10
+500         +500%               ×41,898             ×e16.57&nbsp;B      ^e1.000e50          ^^E2.299#48         10{4.29&nbsp;B}10
+600         +600%               ×191,173            ×e159.9&nbsp;B      ^e1.000e60          ^^E9.568#4,466      10{18.4&nbsp;Qt}10
+700         +700%               ×780,763            ×e1.251&nbsp;T      ^e1.000e70          ^^E#972&nbsp;M      10{3.40e38}10
+800         +800%               ×2.91&nbsp;M        ×e8.303&nbsp;T      ^e1.000e80          ^^E#26.4&nbsp;Sp    10{1.15e77}10
+900         +900%               ×10.00&nbsp;M       ×e48.19&nbsp;T      ^e1.000e90          ^^E#3.93e82         10{1.34e154}10
+1,000       +1,000%             ×32.1&nbsp;M        ×e250.2&nbsp;T      ^e1.000e100         ^^NaN               10{1.79e308}10 */
+	ticker325games:{
+		"Antimatter Dimensions":["antimatter production",2],
+		"Universal Paperclips":["paperclip gain",1],
+		"Kittens Game":["kitten happiness",0,10],
+		"Synergism":["quark gains",0,10],
+		"Incremental Mass Rewritten":["mass gain",3,10],
+		"Cookie Clicker":["golden cookie duration bonus",0,100], // talk about balancing
+//		"Egg Inc.":["egg sell multiplier",1,3],
+		"NGU Idle":["Money Pit bonus",0,10],
+		"The Perfect Tower":["tower damage",1],
+		"Pachinkremental":["bumper point multiplier",1,10],
+		"Fundamental":["strange quarks",1,100],
+		"True Infinity":["unfunity point gain",4,1000],
+//		"Anti-Idle: The Game":["progress bar boost",0,10],
+		"Distance Incremental":["distance",2],
+		"Grass Cutting Incremental":["grass gain",2,20],
+		"The Factory of Automation":["steel generation",2,2],
+		"DodecaDragons":["holy tetrahedrons",2,10],
+		"The Prestige Tree":["point gain",2],
+		"Idle Loops":["mana gain from Smash Pots",1,20],
+		"Trimps":["breed speed",1],
+//		"Unnamed Space Idle Prototype":["shield generation speed",1],
+//		"When he jump, he go up like this":["launch velocity",1],
+//		"LORED":["malignancy generation",1],
+		"Hyper Game":["Hyper-points",4],
+//		"Incremancer":["zombie run speed",1,10],
+		"Swarm Simulator":["Ant Queen production",1,0],
+//		"Factory Idle":[],
+		"Idle Dice":["dice multiplier",1,2],
+		"Aspiring Artist":["white pixel generation",1],
+//		"Push the Button":[],
+//		"(the) Gnorp Apologue":[],
+//		"Kiwi Clicker":[],
+//		"Revolution Idle":[]
+		"Scrap Clicker 2":["scrap gain",2,10],
+		"Shark Game":["fish gain",1],
+		"Arcanum/Theory of Magic":["lore rate",1],
+		"Hollow Knight":["nail damage",1,100],
+		"Ordinal Markup":["incrementy gain",5,2],
+		"Gooboo":["global level",1,100],
+		"Evolve Idle":["plasmid gain",1,50],
+		"Antimatter Dimensions NG+++":["ghostly "]
+	}
 }
 // top
 const newsList = [
@@ -611,10 +681,10 @@ const newsList = [
 	{get text(){let f = this.features();return "alemaninc Inc.'s factories are on strike - workers are demanding to stop being paid in "+f[0]+" and start getting paid in "+f[1]+". "+countTo(7).map(()=>String.fromCharCode(ranint(97,122))).join("")+" of the "+Array.random(["Cleaning","Computational Resource","Insect","Job","Secret","Smoking"])+" Department says that \"honestly both are equally useless to us, but who doesn't love being paid for not coming in?\" The board of directors has considered replacement of its workforce with robotic workers, but there is no one left to construct such workers. Experts predict business failure within the next "+timeFormat(Decimal.FC_NN(1,1,Array.random([10,-1])*30**Math.random()))+"."},features:function(){let list = [["galaxies",unlocked("Galaxies")],["energy",unlocked("Energy")],["exotic matter",true],["mastery power",true],["stardust",unlocked("Stardust")],["dark matter",unlocked("Dark Matter")],["knowledge",unlocked("Hawking Radiation")],["Hawking radiation",unlocked("Hawking Radiation")],["antimatter",unlocked("Antimatter")],["chroma",unlocked("Light")],["luck shards",unlocked("Luck")],["prismatic",unlocked("Prismatic")],["dark axis",unlocked("Dark Matter")],["lumens",unlocked("Light")],["prismatic upgrades",unlocked("Prismatic")],["anti-axis",unlocked("Antimatter")],["stardust upgrades",unlocked("Stardust")],["stars",unlocked("Stardust")],["achievements",true]].filter(x=>x[1]).map(x=>x[0]);let nums = countTo(list.length,true).select(2).sort((a,b)=>a-b);return [list[nums[0]],list[nums[1]]]}},
 	{text:"alemaninc Inc.'s exotic matter farms are suspected of employing an undeclared child workforce. alemaninc Inc.'s Chief Agricultural Officer comments that \"these scandals are just absurd at this point - alemaninc Inc. doesn't even have farms!\""},
 	{text:"A scandal has erupted at alemaninc Inc. after the alleged creation of genetically modified exotic matter creatures which they use as security. The company's sole security employee questions the validity of these claims: \"there is no evidence which could possibly suggest that such acts have taken place. We've destroyed all the specimens by incineration where you pesky journalists will never find them!\""},
-	{text:"Snorting antimatter is slowly turning into a fad challenge amongst the most bored of teenagers. It's said that the high it gives makes them experience as if the world itself is collapsing around you, hence its naming as 'the <span class=\"_antimatter\">Explosive Challenge</span>'."+newsSupport.br(viewportWidth)+"Firefighters across the globe working overtime as people mysteriously spontaneously combust on the streets and in their homes. Trace amounts of antimatter isotopes are being found in their bodies.",get weight(){return unlocked("Antimatter")?1:0}},
+	{text:"Snorting antimatter is slowly turning into a fad challenge amongst the most bored of teenagers. It's said that the high it gives makes them experience as if the world itself is collapsing around you, hence its naming as 'the <span class=\"_antimatter\">Explosive Challenge</span>'."+newsSupport.br(viewportWidth())+"Firefighters across the globe working overtime as people mysteriously spontaneously combust on the streets and in their homes. Trace amounts of antimatter isotopes are being found in their bodies.",get weight(){return unlocked("Antimatter")?1:0}},
 	{text:"Exotic matter food products deemed unfit for human consumption due to gravity-cancelling effects."},
 	{text:"Click here to... wait, never mind. Please come back later for some actual news."},
-	{text:"<span onMouseover=\"secretAchievementList[44].clicks++;if(secretAchievementList[44].clicks<100){currentNewsOffset+=ranint(200,400)*((currentNewsOffset*2>viewportWidth)?-1:1)}\" onClick=\"addSecretAchievement(44)\">Try to click me!</span>",get weight(){return g.secretAchievement[44]?0.1:1}},
+	{text:"<span onMouseover=\"secretAchievementList[44].clicks++;if(secretAchievementList[44].clicks<100){currentNewsOffset+=ranint(200,400)*((currentNewsOffset*2>viewportWidth())?-1:1)}\" onClick=\"addSecretAchievement(44)\">Try to click me!</span>",get weight(){return g.secretAchievement[44]?0.1:1}},
 	{get text(){return "Scandal involving bizarre, gravity-defying beings found inside alemaninc Inc. supercollider №"+Math.round(10**(10**Math.random()**2-1)).toLocaleString("en-US")+" resolved: the beings were in fact a herd of wild "+Array.random(["aardvarks","bears","camels","deer","echidna","flowers","geese","kangaroos","ostriches","pigs","sheep","wolves"])+" which had entered the supercollider through a hole and ingested the exotic matter inside. The director of the supercollider has been promoted to CEO of alemaninc Inc. following the discovery of these remarkable properties."}},
 	{text:"Is our planet getting lighter? Experts examine the effects of mass production of exotic matter.",get weight(){return Math.min(g.totalexoticmatter.layer,1)}},
 	{text:"A scandal has erupted at alemaninc Inc. following the supposed sale of exotic matter cookies in which the exotic matter was actually substituted for dark energy. alemaninc Inc. has declined to comment on the matter.",get weight(){return unlocked("Energy")?1:0}},
@@ -622,10 +692,21 @@ const newsList = [
 	{text:"The exotic matter economy is now strong enough to allow for massive vaults doubling as weapons of mass destruction."},
 	{get text(){return "alemaninc has been named the world's wealthiest person following the large-scale printing of exotic matter money. \"There's no law against it,\" says the President of Galaxy "+countTo(3).map(()=>String.fromCharCode(ranint(65,90))).join("")+countTo(6).map((x,i)=>String.fromCharCode(ranint(48,57))+((i===3)?"-":"")).join("")}},
 	{get text(){return "A millennia-old "+Array.random(["bust","effigy","figure","likeness","statue","statuette"])+" has been retrieved from an abandoned "+Array.random(luckRuneTypes.filter(x=>runeTypeUnlocked(x)))+" temple sparking new research into how extensive the luck pantheon is. As thousands pray to the "+Array.random(["Bearer","Bicorn","Centaur","Dragon","Fairy","Golem","Hornet","Knight","Kobito","Leprechaun","Monster","Nymph","Serpent","Unicorn"])+" of the "+Array.random(["Blazing","Eternal","Flaming","Galactic","Holy","Frozen","Iridescent","Primordial","Pure","Radiant","Shining","Stellar","True"])+" "+Array.random(["Bow","Branch","Crown","Needle","Scepter","Staff","Sword","Torch"])+", representatives of the alemaninc Inc. company insist that they are the only true gods. In unrelated news, the alemaninc Inc. corporate headquarters have fallen victim to at least "+numword(ranint(10,1e3,true))+" acts of arson in the past week."},get weight(){return unlocked("Luck")?1:0}},
-	{text:"<span onClick=\"g.newsTickerSpeed=Math.max(1,Math.min(g.newsTickerSpeed*0.99,20))\">Click here to make the news ticker even more unbearably slow</span>",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
-	{text:"<span onClick=\"g.newsTickerSpeed=Math.max(1500,g.newsTickerSpeed+100)\">Click here to make the news ticker even more overwhelmingly fast</span>",get weight(){return (g.newsTickerSpeed>=999)?1:0}},
+	{text:"🐢<span onClick=\"g.newsTickerSpeed=Math.max(1,Math.min(g.newsTickerSpeed*0.99,20))\">Click here to make the news ticker even more unbearably slow</span>🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
+	{text:"⚡<span onClick=\"g.newsTickerSpeed=Math.max(1500,g.newsTickerSpeed+100)\">Click here to make the news ticker even more overwhelmingly fast</span>⚡",get weight(){return (g.newsTickerSpeed>=999)?1:0}},
 	{text:"Does exotic antimatter exist?"+newsSupport.br(100)+"No one knows.",get weight(){return unlocked("Antimatter")?1:0}},
-	{text:"We have a lucky reader on the line! This lucky reader, who resides in #ticker-suggestions, wants to say to you all: \"yes\". How enlightening! In response, our CEO himself, alemaninc \"\" alemaninc, says: \"This is going in the news ticker out of context now :D\"."}
+	{text:"We have a lucky reader on the line! This lucky reader, who resides in #ticker-suggestions, wants to say to you all: \"yes\". How enlightening! In response, our CEO himself, alemaninc \"\" alemaninc, says: \"This is going in the news ticker out of context now :D\"."},
+	{get text(){return "They say the "+ordinal(starCap()+1)+" star unlocks the "+(((study13.rewardLevels.slabdrill===4)||unlocked("Matrix"))?"N":"S")+" axis"},get weight(){return (((g.stardustUpgrades[0]===4)&&(study13.rewardLevels.slabdrill===0))||(study13.rewardLevels.slabdrill===4)||unlocked("Matrix"))?1:0}},
+	{text:"<span onClick=\"d.innerHTML('newsline','Darn...')\">⚡Try to click me!⚡</span>",get weight(){return (g.newsTickerSpeed>=999)?1:0}},
+	{get text(){return "⚡+"+stat.tickspeed.sub(c.d1).mul(c.e2).format()+"% movement speed!⚡"},get weight(){return ((g.newsTickerSpeed>=999)&&stat.tickspeed.gt(c.d1))?1:0}},
+	{get text(){return "⚡Progress to speed of light: "+((g.newsTickerSpeed>=1133215491240)?"<i>how the hell are you reading this</i>":(N(g.newsTickerSpeed/11332154912.4).noLeadFormat(2)+"%"))+"⚡"},get weight(){return (g.newsTickerSpeed>=999)?1:0}},
+	{get text(){return Array(1000).fill("⚡The news ticker has been instructed to wait at this message for a short time to help even out the service. We apologise for any inconvenience caused.⚡").join(newsSupport.br(g.newsTickerSpeed/1000+500))},get weight(){return (g.newsTickerSpeed>=999)?1:0}},
+	{text:"🐢Waddling my way back to the beach.🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
+	{text:"<span onClick=\"newsSupport.malganis=true\">🐢I am Mal'ganis, I am a turtle! Click here to kill the news ticker.🐢</span>",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
+	{text:"<span onClick=\"addSecretAchievement(49);newsSupport.malganis=false\">💊Click here to cure the news ticker💊</span>",get weight(){return newsSupport.malganis?1:0}},
+	{text:"🐢How did the turtle cross the road?🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
+	{get text(){return "Day "+BEformat(Math.ceil(((g.timePlayed+((g.dilatedTime>1e9)?0:g.dilatedTime))/86400)))+" of quarantine: created a universe of exotic matter, got raided by federal agents for violating "+numword(ranint(1,9,true)*10+ranint(1,9))+" international peace treaties, taken to the lunatic asylum - everything normal"}},
+	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievements are increasing "+randInc[0]+" by "+["+"+N(eff).noLeadFormat(2)+"%","×"+N(eff/10+10).dilate(c.d3).div(c.d10).formatFrom1(2),"×"+N(eff/5+1).quad_tetr(c.d1_5).sub(c.d1).pow10().formatFrom1(2),"^"+N(eff/10).layerplus(2).formatFrom1(2),"^^"+c.d10.quad_tetr(2**2**(eff**2/100000)-2).formatFrom1(2),"10{"+[c.d2,c.d2,N(eff/100)].decimalPowerTower().sub(c.d1).formatFrom1(6)+"}10"][randInc[1]]+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
 ]
 // bottom
 var newsOrder = []
@@ -637,7 +718,10 @@ var currentNewsOffset = 0
 function randomNewsItem() {
 	let index
 	while (true) {
-		if (newsOrder.length === 0) newsOrder = countTo(newsList.length,true).shuffle()
+		if (newsOrder.length === 0) {
+			let max = countTo(newsList.length,true).map(x=>newsList[x].text.length).reduce((x,y)=>Math.max(x,y),0)
+			newsOrder = countTo(newsList.length,true).map(x=>Array(Math.ceil((max/newsList[x].text.length)**0.5)).fill(x)).flat().select(1e4)
+		}
 		index = newsOrder.splice(0,1)[0]
 		if (newsWeight(newsList[index])>Math.random()) break
 	}

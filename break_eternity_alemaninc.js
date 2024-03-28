@@ -2918,10 +2918,15 @@ for (var i = 0; i < 10; ++i)
 			return N(safeguard.slog(x)).slog_coefficient(x);
 		};
 
-		Decimal.prototype.aps = function(p) {
+		Decimal.prototype.aps = function(p) { // (x + 1) ^ p - 1 that works for low values
 			if (p.eq(1)) return this
 			if (this.mul(p).lt(1e-10)) return this.mul(p)
 			return this.add(1).pow(p).sub(1)
+		}
+
+		Decimal.prototype.alog = function(base=FC_NN(1,0,10)) { // log(x + 1) that works for low values
+			if (this.div(base.ln()).lt(1e-10)) return this.div(base.ln())
+			return this.add(1).log(base)
 		}
 
 		return Decimal;

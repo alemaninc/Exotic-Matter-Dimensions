@@ -127,7 +127,7 @@ const research = (function(){
 			if (col!==15) adjacent_req.push("r"+row+"_"+(col+1)) 
 		}
 		return {
-			description:function(){return "Anti-"+type+" dimension boost is "+percentOrMult(researchEffect(row,col),false)+" stronger"},
+			description:function(){return "Anti-"+type+" dimension boost is "+percentOrMult(researchEffect(row,col),2,false)+" stronger"},
 			adjacent_req:adjacent_req,
 			condition:particleLab2Condition(particleLab2Req),
 			visibility:function(){return study13.rewardLevels.particleLab2>=particleLab2Req},
@@ -1065,8 +1065,8 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r13_11:{
-			numDesc:function(){return researchEffect(13,11).sub(c.d1).mul(c.e2).noLeadFormat(2)},
-			formulaDesc:function(){return "20 - 20 ÷ (log<sup>[2]</sup>(L + 10) × "+researchPower(13,11).mul(c.d2).noLeadFormat(3)+" + 1)"},
+			numDesc:function(){return researchEffect(13,11).sub(c.d1).mul(c.e2).noLeadFormat(3)},
+			formulaDesc:function(){return researchPower(13,11).mul(c.d20).noLeadFormat(3)+" - "+researchPower(13,11).mul(c.d20).noLeadFormat(3)+" ÷ (log<sup>[2]</sup>(L + 10) × 2 + 1)"},
 			description:function(){return "Red lumens boost Stardust Boosts divisible by 3 (currently: "+numOrFormula("r13_11")+"%)"},
 			adjacent_req:["r13_9"],
 			condition:[lightAugmentReq(0)],
@@ -1078,7 +1078,7 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r14_6:{
-			numDesc:function(){return percentOrMult(researchEffect(14,6),2,true)},
+			numDesc:function(){return percentOrMult(researchEffect(14,6),3,true)},
 			formulaDesc:function(){
 				let out = "(log(L + 1)<sup>2</sup> ÷ 32 + 1)"+formulaFormat.exp(researchPower(14,6))
 				return researchEffect(14,6).gte(c.d10)?(out+"×"):researchPower(14,6).eq(c.d1)?"log(L + 1)<sup>2</sup> × 3.125%":("100 × ("+out+" - 1)%")
@@ -1094,7 +1094,7 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r14_10:{
-			numDesc:function(){return researchEffect(14,10).format(4)},
+			numDesc:function(){return researchEffect(14,10).noLeadFormat(4)},
 			formulaDesc:function(){return "10<sup>log(L + 1)<sup>0.5</sup> × "+researchPower(14,10).div(c.d2).noLeadFormat(3)+"</sup>"},
 			description:function(){return "Magenta lumens boost dark Y axis (currently: ^"+numOrFormula("r14_10")+")"},
 			adjacent_req:["r13_9"],
@@ -1127,7 +1127,7 @@ const research = (function(){
 			return out
 		})(),
 		r15_7:{
-			numDesc:function(){return researchEffect(15,7).format(2)},
+			numDesc:function(){return researchEffect(15,7).noLeadFormat(2)},
 			formulaDesc:function(){return "10<sup>log(L + 1)<sup>0.5</sup> × "+researchPower(15,7).mul(c.d2div3).noLeadFormat(3)+"</sup>"},
 			description:function(){return "Cyan lumens boost energy gain (currently: "+numOrFormula("r15_7")+"×)"},
 			adjacent_req:["r13_7"],
@@ -1140,7 +1140,7 @@ const research = (function(){
 			group:"lightaugment"
 		},
 		r15_9:{
-			numDesc:function(){return researchEffect(15,9).format(2)},
+			numDesc:function(){return researchEffect(15,9).noLeadFormat(2)},
 			formulaDesc:function(){return "(2<sup>(L + 1)<sup>1 ÷ 3</sup></sup> - 1)"+formulaFormat.exp(researchPower(15,9))},
 			description:function(){return "Blue lumens boost Hawking radiation gain (currently: "+numOrFormula("r15_9")+"×)"},
 			adjacent_req:["r13_9"],
@@ -1266,7 +1266,7 @@ const research = (function(){
 				let a1 = axisCodes[i1]    // the axis based on which costs are reduced
 				let a2 = axisCodes[i2-1]  // the axis which has its costs reduced
 				out["r"+row+"_"+col] = {
-					description:function(){let eff=researchEffect(row,col);return "The "+(isDark?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(isDark?"dark ":"")+a1+" axis]"+formulaFormat.mult(eff)+")th root (currently: "+this.value().noLeadFormat(4)+"th)"},
+					description:function(){let eff=researchEffect(row,col);return "The "+(isDark?"dark ":"")+a2+" axis cost is lowered to the (1 + ["+(isDark?"dark ":"")+a1+" axis]"+formulaFormat.mult(eff)+")th root (currently: "+this.value().noLeadFormat(4)+(this.value().eq(c.d1)?"st":"th")+")"},
 					adjacent_req:adj.sort(),
 					condition:[],
 					visibility:function(){return true},
@@ -2034,10 +2034,6 @@ function researchPower(row,col) {
 		if (achievement.ownedInTier(5)>=24) {out = out.mul(totalAchievements/500+1)}
 	} else if (row===3) {
 		if (g.achievement[810]&&[6,10].includes(col)) {out = out.mul(achievement(810).effect())}
-	} else if (row===6) {
-		if (col===5) {
-			if (study13.bound(49)) {out = out.mul(study13.bindingEff(49))}
-		}
 	} else if (row===7) {
 		if (col===5) {
 			if (g.achievement[616]) {out = out.mul(1+totalResearch.overall()/300)}
@@ -2049,9 +2045,6 @@ function researchPower(row,col) {
 		if (col===2) {
 			if (g.achievement[605]) {out = out.mul(c.d1_1)}
 			if (g.studyCompletions[6]>0) {out = out.mul(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))}
-		}
-		if (col===14) {
-			if (study13.bound(41)) {out = out.mul(study13.bindingEff(41))}
 		}
 	} else if (row===11) {
 		if (col===5) {

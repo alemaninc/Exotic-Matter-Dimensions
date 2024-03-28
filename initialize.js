@@ -68,7 +68,7 @@ const initSteps = [
 	{function:function(){
 		openTab(g.activeTab)
 		for (let i of Object.keys(g.activeSubtabs)) openSubTab(i,g.activeSubtabs[i])
-	}},
+	},onImport:true},
 	{function:function(){
 		updateHTML();
 		fineGrainTick();
