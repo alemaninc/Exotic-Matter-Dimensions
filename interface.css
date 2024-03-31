@@ -388,12 +388,13 @@ tab {
 	height:90px;
 }
 .lockedStardustResetButton{
-	background-color:#999999;
+	background-color:#666666;
 	color:#000000;
 	font-size:15px;
 	border-radius:4px;
 	width:125px;
 	height:90px;
+	border-color:#333333;
 }
 .masterybuttonLegacy {
 	height:125px;

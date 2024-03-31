@@ -1246,7 +1246,7 @@ const achievementList = {
 			description:"Generate 1 chroma per second with 40 stars or less",
 			check:function(){return g.ach711Progress<41},
 			event:"gameloop",
-			progress:function(){return (g.ach711Progress===61)?("1 chroma per second has "+(unlocked("Matrix")?"not been reached in the current Matrix":"never been reached")):(g.stars>=(39-this.milestones()))?{percent:achievement.percent(stat.chromaPerSec,c.d1,0),text:g.stars+" / "+(39-this.milestones())+" stars"}:"Failed"},
+			progress:function(){return (g.ach711Progress===61)?("1 chroma per second has "+(unlocked("Matrix")?"not been reached in the current Matrix":"never been reached")):(g.stars<=(39-this.milestones()))?{percent:achievement.percent(stat.chromaPerSec,c.d1,0),text:g.stars+" / "+(39-this.milestones())+" stars"}:"Failed"},
 			get reward(){return "Unlock Mastery 105, and Mastery 105 works with {}% efficiency"+((g.ach711Progress===0)?"":(" (based on least number of stars that 1 chroma per second was generated with. Next milestone at "+Math.min(g.ach711Progress-1,39)+")"))},
 			flavor:"I only know two pieces; one is 'Clair de lune' and the other isn't",
 			milestones:function(){return 40-g.ach711Progress},

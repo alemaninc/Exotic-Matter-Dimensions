@@ -63,6 +63,7 @@ const subtabProperties = {
 		darkMatter:{
 			visible:function(){return unlocked("Dark Matter")},
 			glow:function(){
+				if (g.stardustUpgrades[4]===0) {return false}
 				if ((autobuyerMeta.interval("darkAxis")>0.1)||(!g.darkAxisAutobuyerOn)) {
 					if (g.glowOptions.buyDarkAxis) {for (let i=0;i<4+g.stardustUpgrades[0];i++) {if (g.darkmatter.gt(darkAxisCost(axisCodes[i]))) {return true}}};
 					if (g.glowOptions.gainDarkStar&&stat.totalDarkAxis.gte(stat.darkStarReq)) {return true};

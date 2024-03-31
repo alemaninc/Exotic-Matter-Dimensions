@@ -18,7 +18,7 @@ function updateHTML() {
 	d.innerHTML("span_pendingstardust",stat.pendingstardust.sub(g.stardust).max(c.d0).floor().format());
 	d.class("span_pendingstardust",stat.pendingstardust.gt(g.stardust)?"big _stardust":"big _stardust_dark");
 	d.innerHTML("span_stardustExoticMatterReq",stardustExoticMatterReqText());
-	d.class("button_stardustReset",stat.pendingstardust.gt(g.stardust)?"stardustResetButton":"lockedStardustResetButton");
+	d.class("button_stardustReset",(stat.pendingstardust.gt(g.stardust)&&(!StudyE(12)))?"stardustResetButton":"lockedStardustResetButton");
 	d.element("button_stardustReset").style.visibility=(masteryData[42].req()?"visible":"hidden");
 	d.class("button_wormholeReset",stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"wormholeResetButton":"lockedStardustResetButton");
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";

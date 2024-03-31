@@ -346,7 +346,7 @@ const newsSupport = {
 		"NGU Idle":["Money Pit bonus",0,10],
 		"The Perfect Tower":["tower damage",1],
 		"Pachinkremental":["bumper point multiplier",1,10],
-		"Fundamental":["strange quarks",1,100],
+		"Fundamental":["strange quarks",0,100],
 		"True Infinity":["unfunity point gain",4,1000],
 //		"Anti-Idle: The Game":["progress bar boost",0,10],
 		"Distance Incremental":["distance",2],
@@ -706,7 +706,7 @@ const newsList = [
 	{text:"<span onClick=\"addSecretAchievement(49);newsSupport.malganis=false\">💊Click here to cure the news ticker💊</span>",get weight(){return newsSupport.malganis?1:0}},
 	{text:"🐢How did the turtle cross the road?🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
 	{get text(){return "Day "+BEformat(Math.ceil(((g.timePlayed+((g.dilatedTime>1e9)?0:g.dilatedTime))/86400)))+" of quarantine: created a universe of exotic matter, got raided by federal agents for violating "+numword(ranint(1,9,true)*10+ranint(1,9))+" international peace treaties, taken to the lunatic asylum - everything normal"}},
-	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievements are increasing "+randInc[0]+" by "+["+"+N(eff).noLeadFormat(2)+"%","×"+N(eff/10+10).dilate(c.d3).div(c.d10).formatFrom1(2),"×"+N(eff/5+1).quad_tetr(c.d1_5).sub(c.d1).pow10().formatFrom1(2),"^"+N(eff/10).layerplus(2).formatFrom1(2),"^^"+c.d10.quad_tetr(2**2**(eff**2/100000)-2).formatFrom1(2),"10{"+[c.d2,c.d2,N(eff/100)].decimalPowerTower().sub(c.d1).formatFrom1(6)+"}10"][randInc[1]]+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
+	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievement points are increasing "+randInc[0]+" by "+["+"+N(eff).noLeadFormat(2)+"%","×"+N(eff/10+10).dilate(c.d3).div(c.d10).formatFrom1(2),"×"+N(eff/5+1).quad_tetr(c.d1_5).sub(c.d1).pow10().formatFrom1(2),"^"+N(eff/10).layerplus(2).formatFrom1(2),"^^"+c.d10.quad_tetr(2**2**(eff**2/100000)-2).formatFrom1(2),"10{"+[c.d2,c.d2,N(eff/100)].decimalPowerTower().sub(c.d1).formatFrom1(6)+"}10"][randInc[1]]+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
 ]
 // bottom
 var currentNewsItem

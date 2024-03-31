@@ -414,7 +414,6 @@ function unlockFeature(x) {
 	if (!g.featuresUnlocked.includes(x)) {
 		g.featuresUnlocked.push(x);
 		openStory(x);
-		g.speedrunMilestones.push([x,g.timePlayed])
 	}
 }
 function unlocked(x) {
@@ -946,6 +945,10 @@ function attemptStardustReset(showPopups=false) {
 		notify("Stardust reset is disabled in Study XII","#990000","#ffffff")
 	} else if (stat.pendingstardust.gt(g.stardust)) {
 		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
+			let willReset = [
+				["exotic matter",()=>true],
+				[(unlocked("Dark Matter")?"normal ":"")+" axis"+((g.stardustUpgrades[1]===0)?"":(", except "+N(stat.stardustUpgrade2AxisRetentionFactor*100).noLeadFormat(3)+"% of the first "+numword(g.stardustUpgrades[0]))),()=>true]
+			]
 			popup({
 				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?",
 				buttons:[["Confirm","if (stat.pendingstardust.gt(g.stardust)) {stardustReset()} else {notify('Insufficient exotic matter to stardust reset!','#ff9900','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
@@ -1698,7 +1701,7 @@ function incrementHR(x) {
 	for (let i of HRVariables) o.add(i,x)
 }
 function attemptWormholeReset(showPopups=false) {
-	if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)||(g.activeStudy!==0)) {
+	if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {
 		if (!unlocked("Hawking Radiation")) {
 			wormholeAnimation()
 		} else if (g.confirmations.wormholeReset&&showPopups&&(g.activeStudy===0)) {
@@ -1710,7 +1713,7 @@ function attemptWormholeReset(showPopups=false) {
 			wormholeReset()
 		}
 	} else {
-		if (showPopups) notify("You must be able to gain Hawking radiation in order to reset!","#000099","#ffffff")
+		if (showPopups) notify((g.activeStudy===0)?"You must be able to gain Hawking radiation in order to reset!":"You must reach the goal of the Study in order to reset!<br>If you are stuck, abort the Study from the Studies tab.","#000099","#ffffff")
 	}
 }
 function wormholeReset() {
