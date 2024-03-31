@@ -2022,7 +2022,8 @@ function researchPower(row,col) {
 	let id = "r"+row+"_"+col
 	let out = c.d1;
 	// disablings
-	if ((g.activeStudy===10)&&(studyPower(10)===2)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) return c.d0
+	if (StudyE(3)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {return c.d1}
+	if ((g.activeStudy===10)&&(studyPower(10)===2)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {return c.d0}
 	// row by row effects
 	if (row===1) { 
 		if ([3,8,13].includes(col)) { // prevent targeting study V research
@@ -2282,7 +2283,7 @@ function showResearchInfo(row,col) {
 		out1.push("<span style=\"font-size:10px;color:#cc0000\">Study "+researchName+"<br>Purchasing this will unlock a Study. If you can do a Wormhole reset under special restrictions, you will gain a permanent reward.</span>");
 	}
 	out1.push(((res.type==="study")&&(res.description===undefined))?fullStudyNames[studies.map(x=>x.research).indexOf(id)]:res.description());
-	if (researchPower(row,col).neq(c.d1)) {out2.push("<span style=\"font-size:10px;color:"+((res.group===undefined)?"#00cccc":researchGroupList[res.group].color)+"\">("+researchPower(row,col).mul(c.e2).noLeadFormat(3)+"% Powered)</span>")}
+	if ((researchPower(row,col).neq(c.d1))&&(res.type==="normal")) {out2.push("<span style=\"font-size:10px;color:"+((res.group===undefined)?"#00cccc":researchGroupList[res.group].color)+"\">("+researchPower(row,col).mul(c.e2).noLeadFormat(3)+"% Powered)</span>")}
 	if (res.type === "permanent") {out2.push("Need "+researchCost(id).format()+" total Discover"+(researchCost(id).eq(c.d1)?"y":"ies"))}
 	else {out2.push("Cost: "+researchCost(id).format()+" Discover"+(researchCost(id).eq(c.d1)?"y":"ies"))}
 	if (res.condition.length>0) {

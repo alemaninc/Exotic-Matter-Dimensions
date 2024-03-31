@@ -578,7 +578,7 @@ const study13 = {
 				},
 				246:{
 					numDesc:function(){return study13.bindingEff(246).noLeadFormat(3)},
-					formulaDesc:function(){return "(6 ÷ (log<sup>[3]</sup>(S + "+c.e10.format()+") + 1)<sup>2</sup> + 1)"+formulaFormat.exp(study13.bindingEff(246))},
+					formulaDesc:function(){return "(6 ÷ (log<sup>[3]</sup>(S + "+c.e10.format()+") + 1)<sup>2</sup> + 1)"+formulaFormat.exp(study13.bindingPower(246))},
 					description:function(){return "Reduce the effective level of all Luck Upgrades by "+numOrFormula(246)+"× (decreases with stardust)"},
 					adjacent_req:[236],
 					icon:studyIcon(7),
@@ -751,9 +751,9 @@ const study13 = {
 				353:metaBinding(353,[236],[342,345],2,8/7,["Countdown","Ticking","Race of"]),
 				357:metaBinding(357,[234],[345,348],1,256,["Pyramid","Collapsing","Building of"]),
 				371:researchBinding(371,"r14_6",icon.tickspeed,[331,357],c.d0_8,["Seconds","Ancient","Timeless"]),
-				373:researchBinding(373,"r6_11",icon.mastery(""),[353,348],c.d0,["Yearlong Darkness","Yperite","Yesternight's Garage"],2),
+				373:researchBinding(373,"r14_10",icon.darkYAxis,[353,348],c.d0_6,["Yearlong Darkness","Yperite","Yesternight's Garage"],2),
 				375:metaBinding(375,[315],[345],4,256,["Netherworld","Yama's","Sinful"]),
-				377:researchBinding(377,"r2_10",icon.stardust,[357,342],c.d0_5,["Nebula","Main Sequence of","Nebulous"],2),
+				377:researchBinding(377,"r2_10",icon.stardust,[357,342],c.d0_25,["Nebula","Main Sequence of","Nebulous"],2),
 				379:researchBinding(379,"r16_12",icon.darkstar,[339,353],c.d0_6,["Dwarfs","Elven","Garden Gnome's"]),
 				382:researchBinding(382,"r13_11",classes.stardust("B"),[371,373,375],c.d0_5,["Trinity","Three Microcosms'","Ternary"]),
 				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_5,["Pride","Accomplished","Overachieving"]),
@@ -763,7 +763,7 @@ const study13 = {
 					adjacent_req:[373,375,377],
 					icon:"("+icon.darkaxis+icon.arr+icon.normalaxis+")"+icon.inv,
 					lv:2,
-					effect:function(power){return c.d0_8.pow(power)},
+					effect:function(power){return c.d0_5.pow(power)},
 					nameMod:["Dark Energy","Spectral","Massless"]
 				},
 				397:researchBinding(397,"r7_8",icon.star(""),[371,388],c.d0_95,["Constellation","Astrological","Stargazer's"]),
@@ -969,7 +969,7 @@ const study13 = {
 							58:f(1-Math.floor(lv/2)/15,2/3),
 							103:f(1.18-lv*0.09,Math.log(40/3)/Math.log(50)),
 							107:f(1.18-lv*0.09,0.64),
-							155:f((76-lv)/70,33/35),
+							155:f((76-lv)/70,32/35),
 							225:f(Math.log(0.1+lv/20)/Math.log(0.25),0.5),
 							234:(lv>9)?c.d0_99:c.d1,
 							236:N(9-lv).min(c.d0).pow10(),
@@ -979,13 +979,13 @@ const study13 = {
 							306:f(Math.log(Math.max(lv-1,6)/12)/Math.log(0.5),Math.log(0.75)/Math.log(0.5)),
 							312:f((2/3)**(lv-8),0.1),
 							318:f((2/3)**(lv-8),0.1),
-							373:Decimal.FC_NN(1,0,1/Math.max(lv-9,1)),
-							377:Decimal.FC_NN(1,0,1/Math.max(lv-9,1))
+							373:Decimal.FC_NN(1,0,Math.log(1-0.4/Math.min(2,Math.max(1,lv-9)**0.5))/Math.log(0.6)),
+							377:Decimal.FC_NN(1,0,1/Math.max(1,lv-9))
 						}
 					},
 					desc:function(curr,prev){
 						if (curr===0) {return "All Bindings are fully powered"}
-						return "Certain Bindings are weakened:<br>"+Object.entries(this.eff(curr)).filter(b=>b[1].neq(c.d1)).map(b=>"<div style=\"height:20px;width:180px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+b[0]+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrDiv(this.eff(x)[b[0]]))+"</span></div>").join("")
+						return "Certain Bindings are weakened:<br>"+Object.entries(this.eff(curr)).filter(b=>b[1].neq(c.d1)).map(b=>"<div style=\"height:20px;width:225px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+b[0]+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrDiv(this.eff(x)[b[0]]))+"</span></div>").join("")
 					}
 				}
 				out.allAffected = Object.keys(out.eff(out.breakpoints.length)).map(x=>Number(x))
@@ -1059,20 +1059,27 @@ const study13 = {
 			particleLab3:(()=>{
 				let out = {
 					name:"Stat Mark's Cellular Game of Rising",
-					breakpoints:[168,174],
+					breakpoints:[168,174,182],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.particleLab3){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.min(l,Math.max(1,x)))}
+						let finality12Boost = f(lv/2,12)
 						return {
 							r15_7:f(Math.round(100+lv*12.5-lv**2*0.25)/100,2),
 							r15_9:f(Math.round(lv*7.5+lv**2*0.25)*10,1000),
 							r19_7:f(lv*4,16),
-							r19_9:N(1+lv**(2/3)/40,Math.log(1.225)/Math.log(1.2))
+							r19_9:N(1+lv**(2/3)/40,Math.log(1.225)/Math.log(1.2)),
+							r41_6:finality12Boost,
+							r41_10:finality12Boost,
+							r44_4:finality12Boost,
+							r44_12:finality12Boost,
+							r47_6:finality12Boost,
+							r47_10:finality12Boost
 						}
 					},
 					desc:function(curr,prev){
 						if (curr===0) {return "No Research is boosted"}
-						return "Certain Research is strengthened:<br>"+Object.entries(this.eff(curr)).filter(r=>r[1].neq(c.d1)).map(r=>"<div style=\"height:20px;width:180px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+researchOut(r[0])+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x)[r[0]],2,true))+"</span></div>").join("")
+						return "Certain Research is strengthened:<br>"+Object.entries(this.eff(curr)).filter(r=>r[1].neq(c.d1)).map(r=>"<div style=\"height:20px;width:225px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+researchOut(r[0])+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x)[r[0]],2,true))+"</span></div>").join("")
 					}
 				}
 				out.allAffected = Object.keys(out.eff(out.breakpoints.length))

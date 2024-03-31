@@ -17,344 +17,348 @@ const energyHyper = [3,3,3,2,3,3,3,3,3,2];
 
 const studies = [
 	{    // 0 is used for utilities
-		exactFrames:" All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time.",
+		exactFrames:["All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time.",()=>true],
 		effectiveMaxCompletions:{},
 		roman:function(x){return (x===10)?"of Studies":roman(x)}
-	},
-	{
-		name:"Autonomy",
-		unlockReq:function(){return c.e3.mul(studyPower(1)+1)},
-		description:function() {return "You can't enter the Stardust or Automation tabs, or any subtabs in Main except Offline Time. However, everything inside these tabs still works normally. Also, all hotkeys are disabled."},
-		research:"r5_7",
-		goal:function(comp=studyPower(1)) {return [N(1000),N(2000),N(3000),N(4000)][comp]},
-		reward:function(num,comp=g.studyCompletions[1]) {
-			if (num===1) return [c.d0,c.d0_2,c.d0_33,c.d0_42,c.d0_5][comp];
-			if (num===2) {
-				if (comp===0) return 0
-				let achievementFactor = Math.log2((totalAchievements>80)?(totalAchievements/64):(1+totalAchievements**5/1.31072e10))+1
-				return 10*(comp-countTo(comp).map(x=>achievementFactor**(x-5)).sum())*studyRewardBoost(1,2).toNumber()
-			}
-			if (num===3) return [c.d1,c.d4,c.d20,c.d125,c.e3][comp].pow(studyRewardBoost(1,3));
-			functionError("studies[1].reward",arguments)
-		},
-		reward_desc:function() {return [
-			"Empower "+studyRewardHTML(1,1,1)+"% of your Y axis",
-		 	"Increase the effect of stardust upgrade #2 by "+studyRewardHTML(1,2,2)+" percentage points (based on achievements)",
-			"Multiply Hawking radiation gain by "+studyRewardHTML(1,3,2)
-		]},
-		rewardFormulas:{
-			2:(comp=g.studyCompletions[1],ach=totalAchievements)=>studyRewardBoost(1,2).mul(c.d10).noLeadFormat(3)+" × Σ<span class=\"xscript\"><sup>"+comp+"</sup><sub>1</sub></span>(1 - ("+(ach>=80?"A ÷ 64":("1 + A<sup>5</sup> ÷ "+BEformat(1.31072e10)))+")<sup>n-5</sup>)"
+	}
+]
+studies[1] = {
+	name:"Autonomy",
+	unlockReq:function(){return c.e3.mul(studyPower(1)+1)},
+	description:function() {return ["You can't enter the Stardust or Automation tabs, or any subtabs in Main except Offline Time. However, everything inside these tabs still works normally.","All hotkeys are disabled."]},
+	research:"r5_7",
+	goal:function(comp=studyPower(1)) {return [N(1000),N(2000),N(3000),N(4000)][comp]},
+	reward:function(num,comp=g.studyCompletions[1]) {
+		if (num===1) return [c.d0,c.d0_2,c.d0_33,c.d0_42,c.d0_5][comp];
+		if (num===2) {
+			if (comp===0) return 0
+			let achievementFactor = Math.log2((totalAchievements>80)?(totalAchievements/64):(1+totalAchievements**5/1.31072e10))+1
+			return 10*(comp-countTo(comp).map(x=>achievementFactor**(x-5)).sum())*studyRewardBoost(1,2).toNumber()
 		}
+		if (num===3) return [c.d1,c.d4,c.d20,c.d125,c.e3][comp].pow(studyRewardBoost(1,3));
+		functionError("studies[1].reward",arguments)
 	},
-	{
-		name:"Big Bang Theory",
-		unlockReq:function(){return N(["e7e3","e1e4","e12500","e4e4"][studyPower(2)])},
-		description:function() {return "Star costs increase much faster and stars must be purchased in a different order, but each unspent star acts as a free dark star.";},
-		research:"r5_9",
-		goal:function(comp=studyPower(2)) {return [c.d800,c.d950,c.d1100,N(2100)][comp];},
-		reward:function(num,comp=g.studyCompletions[2]) {
-			if (num===1) return [c.d0,c.d9,c.d16,c.d21,c.d25][comp];
-			if (num===2) return [c.d0,c.d0_07,c.d0_12,c.d0_16,c.d0_2][comp].mul(studyRewardBoost(2,2)).add(c.d1);
-			if (num===3) return [c.d0,c.d0_25,c.d0_45,c.d0_6,c.d0_75][comp].mul(studyRewardBoost(2,3)).mul(c.d0_5);
-			functionError("studies[2].reward",arguments)
-		},
-		reward_desc:function() {return [
-			"The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
-			"Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,4),
-			"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as "+((g.highestGalaxies>=galaxyEffects[5].req)?(galaxyEffects[5].boost.value().mul(c.e2).format()+"%"):"half")+" of this value. Does not work in Study II."
-		]}
+	reward_desc:function() {return [
+		"Empower "+studyRewardHTML(1,1,1)+"% of your Y axis",
+		"Increase the effect of stardust upgrade #2 by "+studyRewardHTML(1,2,2)+" percentage points (based on achievements)",
+		"Multiply Hawking radiation gain by "+studyRewardHTML(1,3,2)
+	]},
+	rewardFormulas:{
+		2:(comp=g.studyCompletions[1],ach=totalAchievements)=>studyRewardBoost(1,2).mul(c.d10).noLeadFormat(3)+" × Σ<span class=\"xscript\"><sup>"+comp+"</sup><sub>1</sub></span>(1 - ("+(ach>=80?"A ÷ 64":("1 + A<sup>5</sup> ÷ "+BEformat(1.31072e10)))+")<sup>n-5</sup>)"
+	}
+},
+studies[2] = {
+	name:"Big Bang Theory",
+	unlockReq:function(){return N(["e7e3","e1e4","e12500","e4e4"][studyPower(2)])},
+	description:function() {return ["Star costs increase much faster.","Stars must be purchased in a different order.<br><table style=\"font-size:60%\"><tr><td style=\"text-align:left;vertical-align:top;\" rowspan=\""+((g.studyContainerStyle==="Detailed")?"4":"2")+"\">Normal:</td>"+countTo(40,false).map(x=>"<td style=\"width:15px;\">"+starRow(x,false)+"</td>"+(((g.studyContainerStyle==="Detailed")?[10,20,30]:[20]).includes(x)?"</tr><tr>":"")).join("")+"</tr><tr><td style=\"text-align:left;vertical-align:top;\" rowspan=\""+((g.studyContainerStyle==="Detailed")?"4":"2")+"\">Bound:</td>"+countTo(40,false).map(x=>"<td>"+starRow(x,true)+"</td>"+(((g.studyContainerStyle==="Detailed")?[10,20,30]:[20]).includes(x)?"</tr><tr>":"")).join("")+"</tr></table>","Each unspent star acts as a free dark star."]},
+	research:"r5_9",
+	goal:function(comp=studyPower(2)) {return [c.d800,c.d950,c.d1100,N(2100)][comp];},
+	reward:function(num,comp=g.studyCompletions[2]) {
+		if (num===1) return [c.d0,c.d9,c.d16,c.d21,c.d25][comp];
+		if (num===2) return [c.d0,c.d0_07,c.d0_12,c.d0_16,c.d0_2][comp].mul(studyRewardBoost(2,2)).add(c.d1);
+		if (num===3) return [c.d0,c.d0_25,c.d0_45,c.d0_6,c.d0_75][comp].mul(studyRewardBoost(2,3)).mul(c.d0_5);
+		functionError("studies[2].reward",arguments)
 	},
-	{
-		name:"Analgesia",
-		unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e1e12")][studyPower(3)]},
-		energyGainConstant:function(){return [N(1000),N(2000),N(3000),N(4000)][studyPower(3)]},
-		energyPowerConstant:function(){return [c.dm1,c.dm2,c.dm5,N(-20)][studyPower(3)]},
-		description:function(){return "Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled. Energies severely reduce production instead of boosting it (x<sup>"+this.energyPowerConstant().format()+"</sup>), and you start with all Energies unlocked."+studies[0].exactFrames},
-		research:"r9_2",
-		goal:function(comp=studyPower(3)){return [c.d2e3,N(2200),N(2400),N(2700)][comp];},
-		reward:function(num,comp=g.studyCompletions[3]){
-			if (num===1) return comp
-			if (num===2) return [c.d0,c.d0_2,c.d0_35,c.d0_45,c.d0_5][comp].mul(studyRewardBoost(3,2))
-			if (num===3) {
-				let out = c.d1
-				for (let i=0;i<comp;i++) out = out.add(g.truetimeThisWormholeReset.div(c.d10.pow(i)).pow(i===0?0.5:i))
-				return out.pow(studyRewardBoost(3,3))
-			}
-			functionError("studies[3].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"Increase the cap of Stardust Upgrade #5 by "+studyRewardHTML(3,1,0),
-			"Keep ^"+studyRewardHTML(3,2,3)+" of each of the first six Energies on Stardust reset",
-			"Meta energy increases "+studyRewardHTML(3,3,2)+"× faster (based on game-time in this Wormhole)"
-		]},
-		rewardFormulas:{
-			3:function(comp=g.studyCompletions[3]){
-				let out = "1 + Σ<span class=\"xscript\"><sup>"+(comp-1)+"</sup><sub>0</sub></span>(t ÷ 10<sup>n</sup>)<sup>max(n, 0.5)</sup>"
-				if (studyRewardBoost(3,3).eq(c.d1)) return out
-				return "("+out+")<sup>"+studyRewardBoost(3,3).noLeadFormat(3)+"</sup>"
- 			}
+	reward_desc:function() {return [
+		"The post-25 star cost scaling is "+studyRewardHTML(2,1,0)+"% weaker",
+		"Row 9 star effects are raised to the power of "+studyRewardHTML(2,2,4),
+		"Each unspent star acts as "+studyRewardHTML(2,3,2)+" free dark stars. Allocated stars count as "+((g.highestGalaxies>=galaxyEffects[5].req)?(galaxyEffects[5].boost.value().mul(c.e2).format()+"%"):"half")+" of this value. Does not work in Study II."
+	]}
+},
+studies[3] = {
+	name:"Analgesia",
+	unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e1e12")][studyPower(3)]},
+	energyGainConstant:function(){return [N(1000),N(2000),N(3000),N(4000)][studyPower(3)]},
+	energyPowerConstant:function(){return [c.dm1,c.dm2,c.dm5,N(-20)][studyPower(3)]},
+	description:function(){return ["Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled.","Energies severely reduce production instead of boosting it (x<sup>"+this.energyPowerConstant().format()+"</sup>).","You start with all Energies unlocked."]},
+	disclaimers:[
+		studies[0].exactFrames,
+		["Remember that all Energy speed multipliers are disabled. Row 4 research and the like can't hurt you.",()=>true],
+		["Row 5 and 6 Energy research are always 100% powered, unaffected by any boosts or nerfs.",()=>unlocked("Study XIII")]
+	],
+	research:"r9_2",
+	goal:function(comp=studyPower(3)){return [c.d2e3,N(2200),N(2400),N(2700)][comp];},
+	reward:function(num,comp=g.studyCompletions[3]){
+		if (num===1) return comp
+		if (num===2) return [c.d0,c.d0_2,c.d0_35,c.d0_45,c.d0_5][comp].mul(studyRewardBoost(3,2))
+		if (num===3) {
+			let out = c.d1
+			for (let i=0;i<comp;i++) out = out.add(g.truetimeThisWormholeReset.div(c.d10.pow(i)).pow(i===0?0.5:i))
+			return out.pow(studyRewardBoost(3,3))
 		}
+		functionError("studies[3].reward",arguments)
 	},
-	{
-		name:"Vacuum Decay",
-		unlockReq:function() {return [N(1e144),c.inf,N("4.44e444"),c.inf.pow(c.d2)][studyPower(4)]},
-		description:function(){return "Every Stardust reset you do raises stardust gain to the power of 0.5 for the rest of the Study."},
-		research:"r9_14",
-		goal:function(comp=studyPower(4)){return [N(3000),N(3700),N(4500),N(5400)][comp]},
-		reward:function(num,comp=g.studyCompletions[4]){
-			if (num===1) return N([0.5,0.514,0.527,0.539,0.55][comp])
-			if (num===2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
-			if (num===3) return [c.d1,c.d2_5,c.d5,c.d10,c.d20][comp].pow(studyRewardBoost(4,3).mul(c.d0_3))
-			functionError("studies[4].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"Base stardust gain formula exponent is "+studyRewardHTML(4,1,2),
-			"The effect of Mastery 42 is "+studyRewardHTML(4,2,2)+"× stronger",
-			"The first effect of dark stars is "+studyRewardHTML(4,3,2)+"× stronger"
-		]}
-	},
-	{
-		name:"Scientific Illiteracy",
-		unlockReq:function(){return [N("e4000"),N("e5880"),N("e30825"),N("e282624")][studyPower(5)]},
-		difficultyConstant:function(){return [c.d32,N(64),N(256),c.e4][studyPower(5)]},
-		description:function(){return "Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."},
-		research:"r2_8",
-		goal:function(comp=studyPower(5)){return [N(4000),N(4000),N(7000),N(10800)][comp]},
-		reward:function(num,comp=g.studyCompletions[5]){
-			if (num===1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
-			if (num===2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(5,2)))
-			if (num===3) return [c.d0,c.d2_5,c.d10,c.d30,c.d60][comp].mul(studyRewardBoost(5,3))
-			functionError("studies[5].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"Research unlocked by Study V works at "+studyRewardHTML(5,1,0)+"% efficiency",
-			"Observation costs are raised to the power of "+studyRewardHTML(5,2,4),
-			"Subtract "+studyRewardHTML(5,3,2)+" from the cost of all research (cannot go below 0)"
-		]}
-	},
-	{
-		name:"Event Horizon",
-		unlockReq:function(){return [N(500),N(1000),N(4000),N(11111)][studyPower(6)]},
-		effect:function(p=stat.totalDarkAxis.div(stat.wormholeDarkAxisReq).min(c.d1)){return (((g.activeStudy===10)&&(studyPower(10)===2))?N(936).log10():[c.d27,c.d30,N(1.11e111).log10(),c.e3][studyPower(6)]).pow(c.d1.sub(p)).pow10()},
-		description:function(){return "The game runs "+this.effect(c.d0).format()+"× slower. However, as you get closer to the goal of the Study this penalty gradually reduces up to a minimum of 10×."},
-		research:"r16_8",
-		goal:function(comp=studyPower(6)){return [N(4500),N(4800),N(9999),N(22222)][comp]},
-		reward:function(num,comp=g.studyCompletions[6]){
-			if (num===1) return [c.d1,c.d1_25,c.d1_5,c.d2,c.d4][comp]
-			if (num===2) return studyRewardBoost(6,2).mul(comp/20)
-			if (num===3) return studyRewardBoost(6,3).mul(0.0075*comp)
-			functionError("studies[6].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"The effect of tickspeed on chroma gain is raised to the power of "+studyRewardHTML(6,1,4),
-			"Tickspeed<sup>"+studyRewardHTML(6,2,3)+"</sup> affects the base gain of knowledge",
-			"Research 8-2 is additively "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned (currently: "+percentOrMult(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))+")"
-		]},
-	},
-	{
-		name:"Luck Be In The Air Tonight",
-		unlockReq:function(){return [N("6.66e666666666"),N("8.88e888888888"),N("e1.5e9"),N("6.66e2666666666")][studyPower(7)]},
-		description:function(){return "Each stardust reset gives luck essence based on the amount of stardust gained. The gain of exotic matter, mastery power, stardust and dark matter is raised to a power between "+N(1-studies[7].luckMaxReduction()).noLeadFormat(3)+" and 1 based on how close luck essence is to a multiple of 1,000."},
-		luckEssenceGain:function(x=stat.pendingstardust.sub(g.stardust)){return (x.lt(c.d1)?c.d0:x.log10().log10().mul([444444,555555,666666,777777][studyPower(7)]).floor()).add(g.luckEssence).min(c.e15).sub(g.luckEssence).toNumber()},
-		luckMaxReduction:function(){return 1},
-		luckEffect:function(x=g.luckEssence){
-			if (x===1e15) return N(1 - this.luckMaxReduction())   // to avoid randomness at high values always give the maximum penalty at 1e15 :D
-			return N(1 - ((1-Math.cos(x*Math.PI/500))/2) * this.luckMaxReduction())
-		},
-		research:"r23_5",
-		goal:function(comp=studyPower(7)){return [N(6666),N(8888),N(11111),N(14777)][comp]},
-		reward:function(num,comp=g.studyCompletions[7]){
-			if (num===1) return [c.d0,N(50),N(75),N(90),N(100)][comp]
-			if (num===2) return [c.d0,c.d75,c.d90,N(98),c.d100][comp].mul(studyRewardBoost(7,2))
-			if (num===3) return [g.hawkingradiation.add(c.e10).log10().log10().pow(comp).sub(c.d1),c.em3,studyRewardBoost(7,3)].productDecimals().pow10().sub(c.d1)
-			functionError("studies[7].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"Empower "+studyRewardHTML(7,1,3)+"% of your dark W axis",
-			"Research unlocked by Study VII works at "+studyRewardHTML(7,2,3)+"% efficiency",
-			unlocked("Luck")?("Gain "+studyRewardHTML(7,3,2)+" luck shards per second (based on Hawking radiation)"):"? ? ? (Complete to reveal)"
-		]},
-		rewardFormulas:{
-			3:(comp=g.studyCompletions[7])=>"10<sup>(log<sup>[2]</sup>(HR + "+c.e10.format()+")"+formulaFormat.exp(N(comp))+" - 1)"+formulaFormat.mult(studyRewardBoost(7,3).div(c.e3))+"</sup> - 1"
+	reward_desc:function(){return [
+		"Increase the cap of Stardust Upgrade #5 by "+studyRewardHTML(3,1,0),
+		"Keep ^"+studyRewardHTML(3,2,3)+" of each of the first six Energies on Stardust reset",
+		"Meta energy increases "+studyRewardHTML(3,3,2)+"× faster (based on game-time in this Wormhole)"
+	]},
+	rewardFormulas:{
+		3:function(comp=g.studyCompletions[3]){
+			let out = "1 + Σ<span class=\"xscript\"><sup>"+(comp-1)+"</sup><sub>0</sub></span>(t ÷ 10<sup>n</sup>)<sup>max(n, 0.5)</sup>"
+			if (studyRewardBoost(3,3).eq(c.d1)) return out
+			return "("+out+")<sup>"+studyRewardBoost(3,3).noLeadFormat(3)+"</sup>"
 		}
+	}
+},
+studies[4] = {
+	name:"Vacuum Decay",
+	unlockReq:function() {return [N(1e144),c.inf,N("4.44e444"),c.inf.pow(c.d2)][studyPower(4)]},
+	description:function(){return ["Every Stardust reset you do raises stardust gain to the power of 0.5 for the rest of the Study."]},
+	research:"r9_14",
+	goal:function(comp=studyPower(4)){return [N(3000),N(3700),N(4500),N(5400)][comp]},
+	reward:function(num,comp=g.studyCompletions[4]){
+		if (num===1) return N([0.5,0.514,0.527,0.539,0.55][comp])
+		if (num===2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
+		if (num===3) return [c.d1,c.d2_5,c.d5,c.d10,c.d20][comp].pow(studyRewardBoost(4,3).mul(c.d0_3))
+		functionError("studies[4].reward",arguments)
 	},
-	{
-		name:"Masterful",
-		unlockReq:function(){return [N("3.33e333"),N("6.66e666"),N("e2500"),N("e5000")][studyPower(8)]},
-		darkAxisMaxCost:function(){return g.masteryPower.pow(88)},
-		darkAxisMaxCostFormula:function(){return "(mastery power)<sup>88</sup>"},
-		description:function(){return "All effects which allow you to activate more than 1 Mastery from each row are disabled. Dark axis cannot be purchased if their cost is greater than "+this.darkAxisMaxCostFormula()},
-		research:"r18_8",
-		goal:function(comp=studyPower(8)){return [N(5888),N(7040),N(14080),N(16555)][comp]},
-		reward:function(num,comp=g.studyCompletions[8]) {
-			if (num===1) return [c.d50,N(52.5),N(55),N(57.5),N(60)][comp]
-			if (num===2) return [c.d0,c.d9,c.d16,c.d21,c.d24][comp].mul(studyRewardBoost(8,2))
-			if (num===3) {return (comp>0)?[N(3240),N(8100),N(16200),N(25920)][comp-1].mul(studyRewardBoost(8,3)):g.achievement[310]?c.d900:c.d0}
-			functionError("studies[8].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"Increase the knowledge effect limit to "+studyRewardHTML(8,1,2)+"%",
-			"Mastery 85 is "+studyRewardHTML(8,2,2)+"% stronger per Tier 8 achievement (additive) (currently: "+studies[8].reward(2).mul(achievement.ownedInTier(8)).noLeadFormat(2)+"%)",
-			"Add "+studyRewardHTML(8,3,x=>timeFormat(x))+" of real time to the mastery power gain timer"
-		]}
+	reward_desc:function(){return [
+		"Base stardust gain formula exponent is "+studyRewardHTML(4,1,2),
+		"The effect of Mastery 42 is "+studyRewardHTML(4,2,2)+"× stronger",
+		"The first effect of dark stars is "+studyRewardHTML(4,3,2)+"× stronger"
+	]}
+},
+studies[5] = {
+	name:"Scientific Illiteracy",
+	unlockReq:function(){return [N("e4000"),N("e5880"),N("e30825"),N("e282624")][studyPower(5)]},
+	difficultyConstant:function(){return [c.d32,N(64),N(256),c.e4][studyPower(5)]},
+	description:function(){return ["Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."]},
+	research:"r2_8",
+	goal:function(comp=studyPower(5)){return [N(4000),N(4000),N(7000),N(10800)][comp]},
+	reward:function(num,comp=g.studyCompletions[5]){
+		if (num===1) return [c.d0,c.d80,c.d90,N(96),c.e2][comp]
+		if (num===2) return c.d1.sub([c.d0,c.d0_01,N(29/1500),N(41/1500),N(1/30)][comp].mul(studyRewardBoost(5,2)))
+		if (num===3) return [c.d0,c.d2_5,c.d10,c.d30,c.d60][comp].mul(studyRewardBoost(5,3))
+		functionError("studies[5].reward",arguments)
 	},
-	{
-		name:"Scientia est Experientia",
-		unlockReq:function(){return [N(9.99e149),N(9.99e189),N("9.99e469"),N("5.67e1234")][studyPower(9)]},
-		description:function(){return "Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>. If not finished within 9 seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars. Depending on how much experientia you have, the penalty of this Study is either increased or mitigated. "+studies[0].exactFrames},
-		research:"r23_11",
-		goal:function(){return N(999)},
-		reward:function(num,comp=g.studyCompletions[9]){
-			if (num===1) return [Infinity,0.09,0.06,0.03,0][comp]
-			if (num===2) return c.d0_5.pow(N(comp/3).mul(studyRewardBoost(9,2)))
-			if (num===3) return [c.d0,c.d1,N(1.9),N(2.6),c.d3][comp].mul(studyRewardBoost(9,3))
-			functionError("studies[9].reward",arguments)
-		},
-		reward_desc:function(){return [
-			unlocked("Antimatter")?("Antimatter gain is reduced to log<sup>["+studyRewardHTML(9,1,x=>(x===Infinity)?"Infinity":N(x).noLeadFormat(3))+"]</sup>(gain)"):"? ? ? (Complete to reveal)",
-			"Galaxy Penalty 3 is "+studyRewardHTML(9,2,x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3))+"% weaker",
-			"All Spatial Synergism research is "+studyRewardHTML(9,3,2)+"% more effective"
-		]},
-		experientiaEffect:function(x=g.study9.xp,pow=studyPower(9)){
-			let base = N((15-pow)/30)
-			let exp = x.gt(c.d0)?x.div([c.e2,c.e2,c.d200,c.e3][pow]).add(c.d1).recip():c.d1.sub(x.div(c.e2))
-			return base.pow(exp)
-		},
-		timeLeft:function(){return 9-g.timeThisWormholeReset},
-		deltaXP:function(x=g.darkstars,comp=studyPower(9)){
-			if ((g.activeStudy===10)&&(studyPower(10)===2)) x = x.mul(c.d1_0369)
-			let out = x.sub(g.study9.xp.div(c.d10).add([111,111,125,140][comp]+g.study9.resets))
-			if (out.sign===-1) out = out.mul(c.d10)
-			return out.floor()
-		},
-		formatChange:function(x=this.deltaXP()){return ["","±","+"][this.deltaXP().sign+1]+this.deltaXP().format()},
-		reset:function(){
-			notify("Study IX has reset! "+this.formatChange()+" experientia","var(--exp)","#000000")
-			let xp = g.study9.xp.add(this.deltaXP())
-			let resets = g.study9.resets+1
-			if ((g.activeStudy===0)||Decimal.gt(stat.totalDarkAxis,stat.wormholeDarkAxisReq)) {wormholeReset()} else {enterStudy(g.activeStudy)} // Study X proofing
-			g.study9.xp = xp
-			g.study9.resets = resets
-		}
+	reward_desc:function(){return [
+		"Research unlocked by Study V works at "+studyRewardHTML(5,1,0)+"% efficiency",
+		"Observation costs are raised to the power of "+studyRewardHTML(5,2,4),
+		"Subtract "+studyRewardHTML(5,3,2)+" from the cost of all research (cannot go below 0)"
+	]}
+},
+studies[6] = {
+	name:"Event Horizon",
+	unlockReq:function(){return [N(500),N(1000),N(4000),N(11111)][studyPower(6)]},
+	effect:function(p=stat.totalDarkAxis.div(stat.wormholeDarkAxisReq).min(c.d1)){return (((g.activeStudy===10)&&(studyPower(10)===2))?N(936).log10():[c.d27,c.d30,N(1.11e111).log10(),c.e3][studyPower(6)]).pow(c.d1.sub(p)).pow10()},
+	description:function(){return ["The game runs "+this.effect(c.d0).format()+"× slower. However, as you get closer to the goal of the Study this penalty gradually reduces up to a minimum of 10×."]},
+	research:"r16_8",
+	goal:function(comp=studyPower(6)){return [N(4500),N(4800),N(9999),N(22222)][comp]},
+	reward:function(num,comp=g.studyCompletions[6]){
+		if (num===1) return [c.d1,c.d1_25,c.d1_5,c.d2,c.d4][comp]
+		if (num===2) return studyRewardBoost(6,2).mul(comp/20)
+		if (num===3) return studyRewardBoost(6,3).mul(0.0075*comp)
+		functionError("studies[6].reward",arguments)
 	},
-	{
-		name:"Study of Studies",
-		// no unlock requirement property due to 4 separate research
-		description:function(){
-			let showDiffDisclaimer = false
-			for (let i of [[1,4,7],[2,5,8],[3,6,9],countTo(9)][studyPower(10)]) if (g.studyCompletions[i]<3) showDiffDisclaimer = true
-			let out = "The Bindings of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously."
-			if (studyPower(10)===2) out += " However, Row 5 and 6 energy research have no effect, the Study VI effect base is reduced to 936× and you gain 3.69% more experientia."
-			if (showDiffDisclaimer) out += "<br><span style=\"color:var(--time2)\">(note: Study of Studies penalties are always applied at level 4)</span>"
-			if (studyPower(10)<Math.min(g.studyCompletions[10],studies[0].effectiveMaxCompletions[10])-1) out += "<br><span style=\"color:var(--time2)\">(note: you are repeating a Triad which is already completed. Buy research "+researchOut(this.researchList[g.studyCompletions[10]])+" to access the next level)</span>"
+	reward_desc:function(){return [
+		"The effect of tickspeed on chroma gain is raised to the power of "+studyRewardHTML(6,1,4),
+		"Tickspeed<sup>"+studyRewardHTML(6,2,3)+"</sup> affects the base gain of knowledge",
+		"Research 8-2 is additively "+studyRewardHTML(6,3,2)+"% stronger per dark axis owned (currently: "+percentOrMult(studies[6].reward(3).mul(stat.totalDarkAxis).div(c.e2).add(c.d1))+")"
+	]},
+},
+studies[7] = {
+	name:"Luck Be In The Air Tonight",
+	unlockReq:function(){return [N("6.66e666666666"),N("8.88e888888888"),N("e1.5e9"),N("6.66e2666666666")][studyPower(7)]},
+	description:function(){return ["Each stardust reset gives luck essence based on the amount of stardust gained. The gain of exotic matter, mastery power, stardust and dark matter is raised to a power between "+N(1-studies[7].luckMaxReduction()).noLeadFormat(3)+" and 1 based on how close luck essence is to a multiple of 1,000."]},
+	luckEssenceGain:function(x=stat.pendingstardust.sub(g.stardust)){return (x.lt(c.d1)?c.d0:x.log10().log10().mul([444444,555555,666666,777777][studyPower(7)]).floor()).add(g.luckEssence).min(c.e15).sub(g.luckEssence).toNumber()},
+	luckMaxReduction:function(){return 1},
+	luckEffect:function(x=g.luckEssence){
+		if (x===1e15) return N(1 - this.luckMaxReduction())   // to avoid randomness at high values always give the maximum penalty at 1e15 :D
+		return N(1 - ((1-Math.cos(x*Math.PI/500))/2) * this.luckMaxReduction())
+	},
+	research:"r23_5",
+	goal:function(comp=studyPower(7)){return [N(6666),N(8888),N(11111),N(14777)][comp]},
+	reward:function(num,comp=g.studyCompletions[7]){
+		if (num===1) return [c.d0,N(50),N(75),N(90),N(100)][comp]
+		if (num===2) return [c.d0,c.d75,c.d90,N(98),c.d100][comp].mul(studyRewardBoost(7,2))
+		if (num===3) return [g.hawkingradiation.add(c.e10).log10().log10().pow(comp).sub(c.d1),c.em3,studyRewardBoost(7,3)].productDecimals().pow10().sub(c.d1)
+		functionError("studies[7].reward",arguments)
+	},
+	reward_desc:function(){return [
+		"Empower "+studyRewardHTML(7,1,3)+"% of your dark W axis",
+		"Research unlocked by Study VII works at "+studyRewardHTML(7,2,3)+"% efficiency",
+		unlocked("Luck")?("Gain "+studyRewardHTML(7,3,2)+" luck shards per second (based on Hawking radiation)"):"? ? ? (Complete to reveal)"
+	]},
+	rewardFormulas:{
+		3:(comp=g.studyCompletions[7])=>"10<sup>(log<sup>[2]</sup>(HR + "+c.e10.format()+")"+formulaFormat.exp(N(comp))+" - 1)"+formulaFormat.mult(studyRewardBoost(7,3).div(c.e3))+"</sup> - 1"
+	}
+},
+studies[8] = {
+	name:"Masterful",
+	unlockReq:function(){return [N("3.33e333"),N("6.66e666"),N("e2500"),N("e5000")][studyPower(8)]},
+	darkAxisMaxCost:function(){return g.masteryPower.pow(88)},
+	darkAxisMaxCostFormula:function(){return "(mastery power)<sup>88</sup>"},
+	description:function(){return ["All effects which allow you to activate more than 1 Mastery from each row are disabled.","Dark axis cannot be purchased if their cost is greater than "+this.darkAxisMaxCostFormula()]},
+	research:"r18_8",
+	goal:function(comp=studyPower(8)){return [N(5888),N(7040),N(14080),N(16555)][comp]},
+	reward:function(num,comp=g.studyCompletions[8]) {
+		if (num===1) return [c.d50,N(52.5),N(55),N(57.5),N(60)][comp]
+		if (num===2) return [c.d0,c.d9,c.d16,c.d21,c.d24][comp].mul(studyRewardBoost(8,2))
+		if (num===3) {return (comp>0)?[N(3240),N(8100),N(16200),N(25920)][comp-1].mul(studyRewardBoost(8,3)):g.achievement[310]?c.d900:c.d0}
+		functionError("studies[8].reward",arguments)
+	},
+	reward_desc:function(){return [
+		"Increase the knowledge effect limit to "+studyRewardHTML(8,1,2)+"%",
+		"Mastery 85 is "+studyRewardHTML(8,2,2)+"% stronger per Tier 8 achievement (additive) (currently: "+studies[8].reward(2).mul(achievement.ownedInTier(8)).noLeadFormat(2)+"%)",
+		"Add "+studyRewardHTML(8,3,x=>timeFormat(x))+" of real time to the mastery power gain timer"
+	]}
+},
+studies[9] = {
+	name:"Scientia est Experientia",
+	unlockReq:function(){return [N(9.99e149),N(9.99e189),N("9.99e469"),N("5.67e1234")][studyPower(9)]},
+	description:function(){return ["Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>. If not finished within 9 seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars. Depending on how much experientia you have, the penalty of this Study is either increased or mitigated."]},
+	disclaimers:[
+		studies[0].exactFrames
+	],
+	research:"r23_11",
+	goal:function(){return N(999)},
+	reward:function(num,comp=g.studyCompletions[9]){
+		if (num===1) return [Infinity,0.09,0.06,0.03,0][comp]
+		if (num===2) return c.d0_5.pow(N(comp/3).mul(studyRewardBoost(9,2)))
+		if (num===3) return [c.d0,c.d1,N(1.9),N(2.6),c.d3][comp].mul(studyRewardBoost(9,3))
+		functionError("studies[9].reward",arguments)
+	},
+	reward_desc:function(){return [
+		unlocked("Antimatter")?("Antimatter gain is reduced to log<sup>["+studyRewardHTML(9,1,x=>(x===Infinity)?"Infinity":N(x).noLeadFormat(3))+"]</sup>(gain)"):"? ? ? (Complete to reveal)",
+		"Galaxy Penalty 3 is "+studyRewardHTML(9,2,x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3))+"% weaker",
+		"All Spatial Synergism research is "+studyRewardHTML(9,3,2)+"% more effective"
+	]},
+	experientiaEffect:function(x=g.study9.xp,pow=studyPower(9)){
+		let base = N((15-pow)/30)
+		let exp = x.gt(c.d0)?x.div([c.e2,c.e2,c.d200,c.e3][pow]).add(c.d1).recip():c.d1.sub(x.div(c.e2))
+		return base.pow(exp)
+	},
+	timeLeft:function(){return 9-g.timeThisWormholeReset},
+	deltaXP:function(x=g.darkstars,comp=studyPower(9)){
+		if ((g.activeStudy===10)&&(studyPower(10)===2)) x = x.mul(c.d1_0369)
+		let out = x.sub(g.study9.xp.div(c.d10).add([111,111,125,140][comp]+g.study9.resets))
+		if (out.sign===-1) out = out.mul(c.d10)
+		return out.floor()
+	},
+	formatChange:function(x=this.deltaXP()){return ["","±","+"][this.deltaXP().sign+1]+this.deltaXP().format()},
+	reset:function(){
+		notify("Study IX has reset! "+this.formatChange()+" experientia","var(--exp)","#000000")
+		let xp = g.study9.xp.add(this.deltaXP())
+		let resets = g.study9.resets+1
+		if ((g.activeStudy===0)||Decimal.gt(stat.totalDarkAxis,stat.wormholeDarkAxisReq)) {wormholeReset()} else {enterStudy(g.activeStudy)} // Study X proofing
+		g.study9.xp = xp
+		g.study9.resets = resets
+	}
+},
+studies[10] = {
+	name:"Study of Studies",
+	// no unlock requirement property due to 4 separate research
+	description:function(){return ["The Bindings of "+["Studies I, IV and VII","Studies II, V and VIII","Studies III, VI and IX","any three previous Studies of your choice"][studyPower(10)]+" are all applied simultaneously.",...((studyPower(10)===2)?["Row 5 and 6 energy research have no effect, the Study VI effect base is reduced to 936× and you gain 3.69% more experientia."]:[])]},
+	disclaimers:[
+		["Study of Studies penalties are always applied at level 4",()=>{for (let i of [[1,4,7],[2,5,8],[3,6,9],countTo(9)][studyPower(10)]) {if (g.studyCompletions[i]<3) {return true}}; return false}],
+		{get 0(){return "You are repeating a Triad which is already completed. Buy research "+researchOut(this.researchList[g.studyCompletions[10]])+" to access the next level"},1:()=>(studyPower(10)<Math.min(g.studyCompletions[10],studies[0].effectiveMaxCompletions[10])-1)}
+	],
+	researchList:["r26_5","r25_8","r26_11","r27_8"],
+	get research(){return studies[10].researchList[studyPower(10)]},
+	goal:function(comp=studyPower(10)){return [N(17444),N(7258),N(936),betaActive?N(36000):c.e100][comp]},
+	rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
+	reward:function(num,comp=g.studyCompletions[10]){
+		let step = this.rewardStep(num,comp)
+		if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,betaActive?N(1.25e-4):c.em4,N(2e-4)][step]).add(c.d1)
+		if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([betaActive?c.d2:c.d1,c.d3][step-1]).div([betaActive?N(6250):c.d80,N(4e5)][step-1]).max(c.d1).pow(studyRewardBoost(10,2))
+		if (num===3) return [g.antimatter.add(c.e10).layerplus(-3),[c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][step],studyRewardBoost(10,3)].productDecimals()
+		if (num===4) return betaActive?[c.d1,N(1.12),N(1.21),N(1.28),c.d4div3][comp]:[c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
+		functionError("studies[10].reward",arguments)
+	},
+	reward_desc:function(){return [
+		"Multiply the U axis effect by "+studyRewardHTML(10,1,x=>x.formatFrom1(3))+" per achievement, based on luck shards (currently: "+studies[10].reward(1).pow(totalAchievements).noLeadFormat(3)+"× total)",
+		"Anti-T axis is "+studyRewardHTML(10,2,x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3))+"% stronger (based on stars and galaxies)",
+		"Tickspeed-to-energy conversion exponent is increased by "+studyRewardHTML(10,3,3)+" (based on antimatter)",
+		"The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3))+"% more effective"
+	]},
+	rewardFormulas:{
+		1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001"+(betaActive?"25":""),"0.0002"][studies[10].rewardStep(1,comp)]+" + 1"},
+		2:function(comp=g.studyCompletions[10]){let step = studies[10].rewardStep(2,comp);return (step===0)?"0":("max((★ + G × 6)"+formulaFormat.exp(((step===2)?c.d3:betaActive?c.d2:c.d1).mul(studyRewardBoost(10,2)))+formulaFormat.mult(c.e2.div([betaActive?N(6250):c.d80,N(4e5)][step-1].pow(studyRewardBoost(10,2))))+" - 100, 0)")},
+		3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+") "+formulaFormat.mult([c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
+	},
+},
+studies[11] = {
+	name:"Lunar Clock",
+	unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,betaActive?N(126196):c.e100,betaActive?N(141421):c.e100][studyPower(11)]},
+	active:function(){
+		let num = Math.floor(g.timeThisWormholeReset/0.75)%12
+		return (num<8)?axisCodes[num]:["R","Q","P","O"][num-8]
+	},
+	lunarMinutes:function(){return Math.floor((g.timeThisWormholeReset*80)%60)},
+	description:function(){return ["Only one type of axis is active at a time, starting at X and changing every 750 milliseconds.","Row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter are capped at 1."]},
+	research:"r33_3",
+	goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12496):c.e100,betaActive?N(13456):c.e100,betaActive?N(14142):c.e100][comp]},
+	reward:function(num,comp=g.studyCompletions[11]){
+		if (num===1) return [c.d256,N(270),N(282),N(292),c.d300][comp]
+		if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),c.d8][comp].pow(studyRewardBoost(11,2))
+		if (num===3) return [c.d0,c.d2,N(3.2),c.d4,N(4.8)][comp].mul(studyRewardBoost(11,3))
+		functionError("studies[11].reward",arguments)
+	},
+	reward_desc:function(){return [
+		"Normal axis cost superscaling starts at "+studyRewardHTML(11,1,0),
+		"The effective amount of luck shards for their second effect is raised to the power of "+studyRewardHTML(11,2,4),
+		"Anti-axis cost superscaling starts "+studyRewardHTML(11,3,3)+" later (normally at 64)"
+	]}
+}
+studies[12] = {
+	name:"Titanium Will",
+	unlockReq:function(){return [147,152,157,162][studyPower(12)]},
+	description:function(){return ["Non-permanent research have no effect.","Stardust resets are disabled.","All dark axis cost divisors are disabled.","Dark matter gain is capped at 1, but gain access to Titanium Empowerments in the Dark Matter tab which weaken this cap to a softcap."]},
+	research:"r33_13",
+	goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.e2,c.d150][comp]},
+	sc:function(x=calcStatUpTo("darkmatterPerSec","Fortitude"),p=g.study12.fortitude){
+		return p.eq(c.d0)?x.min(c.d1):Decimal.logarithmicSoftcap(x,c.d1,p.recip())
+	},
+	empowerment:{
+		base:function(){
+			let out = study13.rewards.forge.eff().b
 			return out
 		},
-		researchList:["r26_5","r25_8","r26_11","r27_8"],
-		get research(){return studies[10].researchList[studyPower(10)]},
-		goal:function(comp=studyPower(10)){return [N(17444),N(7258),N(936),betaActive?N(36000):c.e100][comp]},
-		rewardStep:function(x,comp=g.studyCompletions[10]){return (comp===4)?2:(comp>=x)?1:0},
-		reward:function(num,comp=g.studyCompletions[10]){
-			let step = this.rewardStep(num,comp)
-			if (num===1) return g.luckShards.add(c.d1).log10().mul([c.d0,betaActive?N(1.25e-4):c.em4,N(2e-4)][step]).add(c.d1)
-			if (num===2) return (step===0)?c.d1:N(g.stars+g.galaxies*6).pow([betaActive?c.d2:c.d1,c.d3][step-1]).div([betaActive?N(6250):c.d80,N(4e5)][step-1]).max(c.d1).pow(studyRewardBoost(10,2))
-			if (num===3) return [g.antimatter.add(c.e10).layerplus(-3),[c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][step],studyRewardBoost(10,3)].productDecimals()
-			if (num===4) return betaActive?[c.d1,N(1.12),N(1.21),N(1.28),c.d4div3][comp]:[c.d1,N(1.09),N(1.16),N(1.21),c.d1_25][comp]
-			functionError("studies[10].reward",arguments)
+		scale:function(){
+			let out = study13.rewards.forge.eff().s
+			return out
 		},
-		reward_desc:function(){return [
-			"Multiply the U axis effect by "+studyRewardHTML(10,1,x=>x.formatFrom1(3))+" per achievement, based on luck shards (currently: "+studies[10].reward(1).pow(totalAchievements).noLeadFormat(3)+"× total)",
-			"Anti-T axis is "+studyRewardHTML(10,2,x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3))+"% stronger (based on stars and galaxies)",
-			"Tickspeed-to-energy conversion exponent is increased by "+studyRewardHTML(10,3,3)+" (based on antimatter)",
-			"The second reward of every other Study is "+studyRewardHTML(10,4,x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3))+"% more effective"
-		]},
-		rewardFormulas:{
-			1:function(comp=g.studyCompletions[10]){return "log(S + 1) × "+["0","0.0001"+(betaActive?"25":""),"0.0002"][studies[10].rewardStep(1,comp)]+" + 1"},
-			2:function(comp=g.studyCompletions[10]){let step = studies[10].rewardStep(2,comp);return (step===0)?"0":("max((★ + G × 6)"+formulaFormat.exp(((step===2)?c.d3:betaActive?c.d2:c.d1).mul(studyRewardBoost(10,2)))+formulaFormat.mult(c.e2.div([betaActive?N(6250):c.d80,N(4e5)][step-1].pow(studyRewardBoost(10,2))))+" - 100, 0)")},
-			3:function(comp=g.studyCompletions[10]){return "log<sup>[3]</sup>(AM + "+c.e10.format()+") "+formulaFormat.mult([c.d0,betaActive?c.d0_3:c.d0_25,c.d0_4][studies[10].rewardStep(3,comp)].mul(studyRewardBoost(10,3)))}
-		},
+		req:function(x=g.study12.empowerments){return [this.base(),this.scale(),x].decimalPowerTower()},
+		affordable:function(x=g.exoticmatter){return x.lt(this.base())?g.study12.empowerments:x.log(this.base()).log(this.scale()).floor().add(c.d1)},
+		gain:function(){g.study12.empowerments = this.affordable()}
 	},
-	{
-		name:"Lunar Clock",
-		unlockReq:function(){return [N(98765),betaActive?N(112345):c.e100,betaActive?N(126196):c.e100,betaActive?N(141421):c.e100][studyPower(11)]},
-		active:function(){
-			let num = Math.floor(g.timeThisWormholeReset/0.75)%12
-			return (num<8)?axisCodes[num]:["R","Q","P","O"][num-8]
+	fortitude:{
+		max:function(x=g.study12.empowerments){
+			let out = x
+			if ((!StudyE(12))&&study13.bound(275)) {out = out.mul(study13.bindingEff(275))}
+			return out
 		},
-		lunarMinutes:function(){return Math.floor((g.timeThisWormholeReset*80)%60)},
-		description:function(){return "Only one type of axis is active at a time, starting at X and changing every 750 milliseconds. Additionally, row 1 Masteries, row 1 stars and Stardust Boosts 1 and 4 are disabled and the base gain of dark matter is capped at 1."},
-		research:"r33_3",
-		goal:function(comp=studyPower(11)){return [N(11611),betaActive?N(12496):c.e100,betaActive?N(13456):c.e100,betaActive?N(14142):c.e100][comp]},
-		reward:function(num,comp=g.studyCompletions[11]){
-			if (num===1) return [c.d256,N(270),N(282),N(292),c.d300][comp]
-			if (num===2) return [c.d1,c.d2,N(3.5),N(5.5),c.d8][comp].pow(studyRewardBoost(11,2))
-			if (num===3) return [c.d0,c.d2,N(3.2),c.d4,N(4.8)][comp].mul(studyRewardBoost(11,3))
-			functionError("studies[11].reward",arguments)
+		gain:function(x=g.study12.empowerments){
+			let out = [x,c.em4,stat.tickspeed].productDecimals()
+			if ((!StudyE(12))&&study13.bound(275)) {out = out.mul(study13.bindingEff(275))}
+			return out
 		},
-		reward_desc:function(){return [
-			"Normal axis cost superscaling starts at "+studyRewardHTML(11,1,0),
-			"The effective amount of luck shards for their second effect is raised to the power of "+studyRewardHTML(11,2,4),
-			"Anti-axis cost superscaling starts "+studyRewardHTML(11,3,3)+" later (normally at 64)"
-		]}
+		lim:function(x,max=this.max()){
+			if (max.eq(c.d0)) {return c.d0}
+			return Decimal.pow(max.add(c.d1),Decimal.sub(c.d1,Decimal.log(x.add(c.d1),max.add(c.d1)).add(c.d1).recip())).sub(c.d1)
+		},
+		invlim:function(x,max=this.max()){
+			if (x.gte(max)) {return c.maxvalue}
+			return Decimal.pow(max.add(c.d1),Decimal.sub(c.d1,Decimal.log(x.add(c.d1),max.add(c.d1))).recip().sub(c.d1)).sub(c.d1)
+		}
 	},
-	{
-		name:"Titanium Will",
-		unlockReq:function(){return [147,152,157,162][studyPower(12)]},
-		description:function(){return "Non-permanent research have no effect; stardust resets are disabled; dark matter gain is capped at 1; all dark axis cost divisors are disabled. Unlock Titanium Empowerments in the Dark Matter tab which weaken the dark matter cap to a softcap."},
-		research:"r33_13",
-		goal:function(comp=studyPower(12)){return [c.d40,c.d50,c.e2,c.d150][comp]},
-		sc:function(x=calcStatUpTo("darkmatterPerSec","Fortitude"),p=g.study12.fortitude){
-			return p.eq(c.d0)?x.min(c.d1):Decimal.logarithmicSoftcap(x,c.d1,p.recip())
-		},
-		empowerment:{
-			base:function(){
-				let out = study13.rewards.forge.eff().b
-				return out
-			},
-			scale:function(){
-				let out = study13.rewards.forge.eff().s
-				return out
-			},
-			req:function(x=g.study12.empowerments){return [this.base(),this.scale(),x].decimalPowerTower()},
-			affordable:function(x=g.exoticmatter){return x.lt(this.base())?g.study12.empowerments:x.log(this.base()).log(this.scale()).floor().add(c.d1)},
-			gain:function(){g.study12.empowerments = this.affordable()}
-		},
-		fortitude:{
-			max:function(x=g.study12.empowerments){
-				let out = x
-				if ((!StudyE(12))&&study13.bound(275)) {out = out.mul(study13.bindingEff(275))}
-				return out
-			},
-			gain:function(x=g.study12.empowerments){
-				let out = [x,c.em4,stat.tickspeed].productDecimals()
-				if ((!StudyE(12))&&study13.bound(275)) {out = out.mul(study13.bindingEff(275))}
-				return out
-			},
-			lim:function(x,max=this.max()){
-				if (max.eq(c.d0)) {return c.d0}
-				return Decimal.pow(max.add(c.d1),Decimal.sub(c.d1,Decimal.log(x.add(c.d1),max.add(c.d1)).add(c.d1).recip())).sub(c.d1)
-			},
-			invlim:function(x,max=this.max()){
-				if (x.gte(max)) {return c.maxvalue}
-				return Decimal.pow(max.add(c.d1),Decimal.sub(c.d1,Decimal.log(x.add(c.d1),max.add(c.d1))).recip().sub(c.d1)).sub(c.d1)
-			}
-		},
-		reward:function(num,comp=g.studyCompletions[12]){
-			if (num===1) return comp/400
-			if (num===2) return [c.d0,c.d16,c.d24,c.d28,c.d32][comp].mul(studyRewardBoost(12,2))
-			if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mul(studyRewardBoost(12,3))
-			functionError("studies[12].reward",arguments)
-		},
-		reward_desc:function(){return [
-			"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s")+" each",
-			"Up to "+studyRewardHTML(12,2,3)+" extra free dark stars from "+achievement.label(527)+" (based on yellow lumens)",
-			achievement.label(526)+" reward is "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% stronger and affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
-		]}
+	reward:function(num,comp=g.studyCompletions[12]){
+		if (num===1) return comp/400
+		if (num===2) return [c.d0,c.d16,c.d24,c.d28,c.d32][comp].mul(studyRewardBoost(12,2))
+		if (num===3) return [c.d0,N(0.09),N(0.17),c.d0_24,c.d0_3][comp].mul(studyRewardBoost(12,3))
+		functionError("studies[12].reward",arguments)
 	},
-	{ // we store only 'research' for ach604 and 'goal' for stat.wormholeDarkAxisReq, everything else is in study13.js
-		research:"r44_8",
-		goal:function(){return achievement.perAchievementReward[9].currentVal}
-	}
-];
+	reward_desc:function(){return [
+		"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s")+" each",
+		"Up to "+studyRewardHTML(12,2,3)+" extra free dark stars from "+achievement.label(527)+" (based on yellow lumens)",
+		achievement.label(526)+" reward is "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% stronger and affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
+	]}
+}
+studies[13] = { // we store only 'research' for ach604 and 'goal' for stat.wormholeDarkAxisReq, everything else is in study13.js
+	research:"r44_8",
+	goal:function(){return achievement.perAchievementReward[9].currentVal}
+}
 const fullStudyNames = [null,...countTo(12).map(x=>(x===10)?studies[x].name:("Study "+roman(x)+": "+studies[x].name))]
 
 const lightNames = ["red","green","blue","cyan","magenta","yellow","white","black","gray"]

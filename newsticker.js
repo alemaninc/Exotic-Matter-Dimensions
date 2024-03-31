@@ -1,6 +1,6 @@
 const newsSupport = {
 	br:function(x){return "<span style=\"padding-left:"+x+"px\"></span>"},
-	randomVisible:function(){return Array.random(newsList.filter(x=>newsWeight(x)>Math.random()))},
+	randomVisible:function(){return Array.random(newsList.filter(x=>(x.weight??1)>Math.random()))},
 	redacted:"<span style=\"color:hsl(270 50% 50%);opacity:0.5;\">[REDACTED]</span>",
 	redactedFormat:function(x){return "<span style=\"color:hsl(270 50% 50%);opacity:0.5;\">"+x+"</span>"},
 	error:"This news message has appeared in error. Please tell alemaninc to investigate.",
@@ -95,7 +95,7 @@ const newsSupport = {
 		for (let i of props) out.push(Object.getOwnPropertyDescriptor(item,i).value===undefined?Object.getOwnPropertyDescriptor(item,i).get.toString():(i+":\""+Object.getOwnPropertyDescriptor(item,i).value+"\""))
 		return "{"+out.join(",")+"}"
 	},
-	secretAchievementHelp:function(){notify("Here is the name of a random Secret Achievement: "+secretAchievementList[Object.keys(secretAchievementList).filter(x=>!g.secretAchievement[x]).random()].name+".");currentNewsOffset=1e4},
+	secretAchievementHelp:function(){notify("Here is the name of a random Secret Achievement: "+secretAchievementList[Object.keys(secretAchievementList).filter(x=>!g.secretAchievement[x]).random()].name+".");nextNewsItem()},
 	easterTime:function() {let Y = new Date().getUTCFullYear();let C = Math.floor(Y/100);let N = Y - 19*Math.floor(Y/19);let K = Math.floor((C - 17)/25);let I = C - Math.floor(C/4) - Math.floor((C - K)/3) + 19*N + 15;I = I - 30*Math.floor((I/30));I = I - Math.floor(I/28)*(1 - Math.floor(I/28)*Math.floor(29/(I + 1))*Math.floor((21 - N)/11));let J = Y + Math.floor(Y/4) + I + 2 - C + Math.floor(C/4);J = J - 7*Math.floor(J/7);let L = I - J;let M = 3 + Math.floor((L + 40)/44);let D = L + 28 - 31*Math.floor(M/4);return Math.abs((M*30+D)-((new Date().getUTCMonth()+1)*30+new Date().getUTCDate()))<7},
 	EMDevelopmentVariables:function(){return [g.exoticmatter,N(totalAchievements),g.truetimePlayed,g.masteryPower,g.stardust,g.darkmatter,g.hawkingradiation]},
 	EMDevelopmentIndex:function(){return newsSupport.EMDevelopmentVariables().map(x=>x.add(c.d10).quad_slog()).sumDecimals().mul(c.e2)},
@@ -307,7 +307,7 @@ const newsSupport = {
 		if (g.achievement[413]) return 1
 		return 0
 	},
-	ord:function(level){return (level>=newsSupport.calcOMCCDVLevel())?1:0},
+	ord:function(level){return (newsSupport.calcOMCCDVLevel()>=level)?1:0},
 	malganis:false,
 	/*    mode    0                   1                   2                   3                   4                   5
 		pts
@@ -533,7 +533,7 @@ const newsList = [
 	{text:"You can waste up to H<sub>ω<sup>2</sup></sub>[10] years here if you want"},
 	{text:"Don't mind me, I'm just another random news message."},
 	{text:"Refreshing cures Light mode.",get weight(){return ((new Date().getUTCMonth()===3) && (new Date().getUTCDate()===1))?1:0}},
-	{get text(){return "Thank you for playing Exotic Matter Dimensions Version "+this.version()+"!"},version:function(){if(version.current.substring(2).split(".").map(x=>Number(x)).includes(NaN)){return false};let out = version.current.split(".");out[Math.min(out.length-1,2)]++;return out.slice(0,3).join(".")},get weight(){return this.version()===false?0:1}},
+	{get text(){return "Thank you for playing Exotic Matter Dimensions Version "+this.version()+"!"},version:function(){if(version.current.substring(2).split(".").map(x=>Number(x)).includes(NaN)){return false};let out = version.current.split(".");out[Math.min(out.length-1,2)]++;return out.slice(0,3).join(".")},get weight(){return (this.version()===false)?0:1}},
 	{get text(){return "If I have bad $, I'll study $ until I have good $.".replaceAll("$",Array.random(["HTML","CSS","JavaScript"]))}},
 	{get text(){return "\"Because of this game I can now use the word '"+Array.random(["Stardust",...(unlocked("Hawking Radiation")?["Wormhole"]:[])])+"' as a verb\""},get weight(){return unlocked("Stardust")?1:0}},
 	{text:Array(33).join("A")+"lemaninc made Exotic Matter Dimensions. Therefore, "+Array(33).join("E")+"xotic Matter Dimensions was made by alemaninc."},
@@ -556,7 +556,7 @@ const newsList = [
 	{text:"<span id=\"news_DiscoTime\" onClick=\"d.innerHTML('news_DiscoTime','Disco Time!');d.element('news_DiscoTime').style = 'color:hsl('+ranint(0,359)+' 90% 60%);animation-name:text-grow;animation-duration:0.5s;animation-iteration-count:infinite;'\">Disco Time! (click me!)</span>"},
 	{text:"The real update is the friends we made along the way."},
 	{get text(){return "<span onClick=\"newsSupport.addZP()\">You have <span id=\"news_zipPoints\">"+newsSupport.formatZP()+"</span>. Click this news message to get some!</span>"}},
-	{get text(){return "<span onClick=\"currentNewsOffset=1e6;newsSupport.cashInZP()\">You have accumulated enough Zip Points to cash them in for a prize! Click this news message to claim your prize.</span>"},get weight(){return g.zipPoints>=1e3?1:0}},
+	{get text(){return "<span onClick=\"nextNewsItem();newsSupport.cashInZP()\">You have accumulated enough Zip Points to cash them in for a prize! Click this news message to claim your prize.</span>"},get weight(){return g.zipPoints>=1e3?1:0}},
 	{get text(){return "Hello, this is "+countTo(7).map(x=>String.fromCharCode(ranint(97,122))).join("")+" with this century's weather forecast for your galaxy. We'll be hitting temperatures in the region of "+BEformat(N(ranint(1e6,1e10,true)))+", and by the end of the "+(ranint(6,9)*10)+"s, it'll be cloudy with a chance of exotic matter."}},
 	{text:"<span onClick=\"error('I told you so')\">Click here to break the game</span>"},
 	{get text(){return "There is a "+(100/newsList.length).toFixed(2)+"% chance that the next message is \""+newsSupport.randomVisible().text+"\""}},
@@ -598,7 +598,7 @@ const newsList = [
 	{text:"But if all the stars generate gray light, why are the buttons colored? No one will ever know.",get weight(){return unlocked("Light")?1:0}},
 	{text:"Some say exotic matter cookies are real, others say they are fake. I just say they are delicious."},
 	{text:"You have observed this news message.",get weight(){return unlocked("Hawking Radiation")?1:0}},
-	{get text(){return "There are "+(newsList.length-newsList.map(x=>Math.random()<newsWeight(x)?1:0).sum())+" news items which you can't see."}},
+	{get text(){return "There are "+(newsList.length-newsList.map(x=>Math.random()<(x.weight??1)?1:0).sum())+" news items which you can't see."}},
 	{text:"\"b0128m fafs: 1[victim1] 2[victim2] etc	Makes [victim1], [victim2], [victim3] etc attract each other at a speed of 150,000,000m per second	Until they colide\" - Stat Mark after a long night of "+newsSupport.redacted},
 	{text:"alemaninc forgot to update the game again. I guess you can say he has exotic matter dementia."},
 	{text:"Once upon a time, xhwzwka said, \"alemaninc, the plural is 'axes', not 'axis'!\" But, alemaninc did not care one bit."},
@@ -633,7 +633,7 @@ const newsList = [
 	{text:"Now for sale at your local alemaninc Inc: exotic clocks! We're all familiar with matter clocks with clockwise-turning hands, and antimatter clocks with anticlockwise-turning hands. On our cutting-edge exotic matter clocks, however, the hands turn at a right angle to the clock face! Besides it being much easier to tell the time without annoying hour markers in the way, the hands jutting out of the clock make them perfect for a variety of everyday household chores, like picking locks, dislodging spiders and disciplining unruly children! Estimated delivery in: 5 hours."},
 	{get text(){return "There was an old man of Dunrose; A parrot seized hold of his nose. When he grew melancholy, they said, \"His name's Polly,\" Which soothed that old man of Dunrose. Thank you for your donation!"+newsSupport.br(150)+"You have donated a total of $"+(g.timePlayed>1e6?N(g.timePlayed/1e3).format(5):Math.sqrt(g.timePlayed).toFixed(2))+" to alemaninc's aviary."},get weight(){return g.achievement[106]?1:0}},
 	{get text(){return "You just made your "+g.totalexoticmatter.format()+"th exotic matter! This one tastes like <span style=\"color:#0000ff\">Lua error: Lua error Pou7: <i>Exotic Matter Dimensions</i> does not have a Pou notation! THATS IT, I DONT LIKE IT ANYMORE, AS PUNISHMENT I DELETED YOUR SHEETS]</span>. Ah yes, it tastes like potatoes! Thanks, Stat Mark!"},get weight(){return g.totalexoticmatter.gt(c.e6)?1:0}},
-	{get text(){return "You have "+timeFormat(g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)))+" of dilated exotic matter. <span onClick=\"newsSupport.dilationPenaltyReductions++;currentNewsOffset=1e5;newsOrder[0]=252;addSecretAchievement(29)\">Click here to weaken the dilation penalty.</span>"},get weight(){return Decimal.mul(g.exoticmatter.add(c.d1).log10(),N(Math.log10(g.dilatedTime+1))).gt(c.d60)?1:0}},
+	{get text(){return "You have "+timeFormat(g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)))+" of dilated exotic matter. <span onClick=\"newsSupport.dilationPenaltyReductions++;currentNewsOffset=0;addSecretAchievement(29)\">Click here to weaken the dilation penalty.</span>"},get weight(){return Decimal.mul(g.exoticmatter.add(c.d1).log10(),N(Math.log10(g.dilatedTime+1))).gt(c.d60)?1:0}},
 	{get text(){return "So when are you going to complete Study "+(this.studyNum()===0?newsSupport.redactedFormat("[ERROR]"):roman(this.studyNum()))+"? It's at position "+Math.min(Math.ceil(researchRowsUnlocked()*(Math.random()+1)),researchRows+1)+"-8 on the research tree."},studyNum:function(){return visibleStudies().reduce((x,y)=>Math.max(x,y),0)+1},get weight(){return unlocked("Studies")}},
 	{get text(){return Array(secretAchievementPoints).fill("1").join("+")+" secret achievement points! Impressive. Well, what if I told you the maximum is "+Array(Object.values(secretAchievementList).map(x=>x.rarity).sum()).fill("1").join("+")+"?"},get weight(){return secretAchievementPoints>14?1:0}},
 	{text:"This is the 256th news message. The news message after this should be the 257th, but xhwzwka thought it's a good idea to use 8-bit values to save space so it's actually the 1st again."},
@@ -709,28 +709,22 @@ const newsList = [
 	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievements are increasing "+randInc[0]+" by "+["+"+N(eff).noLeadFormat(2)+"%","×"+N(eff/10+10).dilate(c.d3).div(c.d10).formatFrom1(2),"×"+N(eff/5+1).quad_tetr(c.d1_5).sub(c.d1).pow10().formatFrom1(2),"^"+N(eff/10).layerplus(2).formatFrom1(2),"^^"+c.d10.quad_tetr(2**2**(eff**2/100000)-2).formatFrom1(2),"10{"+[c.d2,c.d2,N(eff/100)].decimalPowerTower().sub(c.d1).formatFrom1(6)+"}10"][randInc[1]]+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
 ]
 // bottom
-var newsOrder = []
-function newsWeight(item) {
-	return (item.weight===undefined)?1:item.weight
-}
 var currentNewsItem
 var currentNewsOffset = 0
+var recentlyUsedNews = []
 function randomNewsItem() {
-	let index
 	while (true) {
-		if (newsOrder.length === 0) {
-			let max = countTo(newsList.length,true).map(x=>newsList[x].text.length).reduce((x,y)=>Math.max(x,y),0)
-			newsOrder = countTo(newsList.length,true).map(x=>Array(Math.ceil((max/newsList[x].text.length)**0.5)).fill(x)).flat().select(1e4)
-		}
-		index = newsOrder.splice(0,1)[0]
-		if (newsWeight(newsList[index])>Math.random()) break
+		let next = Array.weightedRandom(countTo(newsList.length,true).map(x=>[x,newsList[x].frequency]))
+		if (recentlyUsedNews.includes(next)||(Math.random()>(newsList[next].weight??1))) {continue}
+		if (recentlyUsedNews.length===Math.floor(newsList.length*0.75)) {recentlyUsedNews.shift()}
+		recentlyUsedNews.push(next)
+		return next
 	}
-	if (newsList[index].text === undefined) error("News item #"+index+" is undefined.")
-	return index
 }
+function initialNewsOffset() {return (currentNewsOffset<0)?(viewportWidth()+d.element("newsline").offsetWidth):0}
 function nextNewsItem(back=false) {
 	currentNewsItem = randomNewsItem()
 	d.innerHTML("newsline",newsList[currentNewsItem].text)
-	currentNewsOffset = back?(window.innerWidth+d.element("newsline").offsetWidth):0
+	currentNewsOffset = initialNewsOffset()
 	d.element("newsline").style.left = "calc(100vw - "+currentNewsOffset+"px)"
 }

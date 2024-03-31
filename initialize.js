@@ -70,6 +70,11 @@ const initSteps = [
 		for (let i of Object.keys(g.activeSubtabs)) openSubTab(i,g.activeSubtabs[i])
 	},onImport:true},
 	{function:function(){
+		for (let i=0;i<newsList.length;i++) {
+			d.innerHTML("newsline",newsList[i].text)
+			newsList[i].frequency = 1/(viewportWidth()+d.element("newsline").offsetWidth)}
+	}},
+	{function:function(){
 		updateHTML();
 		fineGrainTick();
 		if (gameHalted) return

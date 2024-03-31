@@ -1,4 +1,5 @@
 "use strict";
+// Constants
 const basesave = {
 	exoticmatter:c.d0,
 	exoticmatterThisStardustReset:c.d0,
@@ -281,10 +282,50 @@ var deltatime = 0;
 var lagAchievementTicks = 0;
 var fpsAchievementTicks = 0;
 var themeAchievementCount = 0;
-
 function gameClick() {
 	g.clickedInStudy1=true
 }
+
+// Options & Display
+function availableThemes() {
+	let out = ["Default","Red","Green","Blue","Cyan","Magenta","Yellow","Light Gray","Dark Gray","Black","Light"];
+	if (g.secretAchievement[16]) out.push("Wormhole");
+	return out;
+}
+function selectOption(variable,values,flavor="mode",variableCallback=x=>x) {
+	popup({
+		text:"We're sorry to hear that you hate "+variableCallback(g[variable])+". Which "+flavor+" do you want to try on next?",
+		buttons:values.map(x => [variableCallback(x),"g."+variable+"="+((typeof x==="string")?("'"+x+"'"):x)])
+	})
+}
+function changeTheme() {
+	popup({
+		text:"We're sorry to hear that you hate "+g.colortheme+". Which theme do you want to try on next?",
+		buttons:availableThemes().map(x => [x,"g.colortheme='"+x+"';theme()"])
+	})
+}
+function theme() {
+	let scheme = dictionary(g.colortheme,[
+		["Default",["color:#39f","background:#190033"]],
+		["Red",["color:#f00","background:#300"]],
+		["Green",["color:#0f0","background:#030"]],
+		["Blue",["color:#00f","background:#003"]],
+		["Cyan",["color:#0ff","background:#033"]],
+		["Magenta",["color:#f0f","background:#303"]],
+		["Yellow",["color:#ff0","background:#330"]],
+		["Light Gray",["color:#ccc","background:#666"]],
+		["Dark Gray",["color:#666","background:#333"]],
+		["Black",["color:#fff","background:#000"]],
+		["Light",["color:#000","background:#fff"]],
+		["Wormhole",["color:#39f","background-image:repeating-radial-gradient(circle at "+(viewportWidth()/2)+"px "+(viewportHeight()/2)+"px, #190033, #330066 "+(viewportDiagonalLength/20)+"px, #190033 "+(viewportDiagonalLength/10)+"px); background-size:cover"]]
+	])
+	document.body.style = scheme[0];
+	d.element("background").style = scheme[1];
+	themeAchievementCount++;
+	addSecretAchievement(16);
+}
+
+// Offline Time
 var timeState = 0 // 0 = normal, 1 = overclock, 2 = frozen, 3 = equalized
 const dilationUpgrades = [
 	null,
@@ -367,132 +408,8 @@ function wormholeAmplificationMultiplier() {
 function wormholeAmplificationCost() {
 	return g.timeThisWormholeReset*(wormholeAmplificationMultiplier()-1)
 }
-const stardustUpgradeTooltip = [
-	null,
-	function(x=g.stardustUpgrades[0]) {
-		return "Unlock a new Axis"
-	},
-	function(x=g.stardustUpgrades[1]) {
-		return (x===0)?"Unlock axis autobuyer":("Keep "+(stat.stardustUpgrade2AxisRetentionFactor*100).toFixed(2)+"% of the "+axisCodes[x-1]+" Axis on Stardust reset")
-	},
-	function(x=g.stardustUpgrades[2]) {
-		return "Unlock a new Stardust Boost"
-	},
-	function(x=g.stardustUpgrades[3]) {
-		return (x===0)?"You can activate both first row Masteries simultaneously":(x===4)?"Unlock 2 new rows of Masteries":"Unlock a new row of Masteries"
-	},
-	function(x=g.stardustUpgrades[4]) {
-		return (x===0)?"Unlock Dark Matter":("Unlock "+toTitleCase(energyTypes[x-1])+" Energy")
-	}
-]
-const stardustUpgradeNames = [null,"Dimensional","Retention","Boost","Mastery","Progression"]
-const baseStardustUpgradeCosts = [
-	[c.d1_5e6,c.d4_5e10,c.e14,c.e20,c.ee10,N("e5e11"),N("e2e13"),c.maxvalue],
-	[c.d50,c.e2,c.e4,c.e6,c.e8,c.e12,c.e16,c.e24,c.e100,N("ee11"),N("ee13"),N("ee15"),N("ee17")],
-	[c.d3_3333e9,c.d1_5e16,c.e43,c.e75,c.e140,c.inf,c.ee4,c.ee5,c.ee6,N("6.66e6666666")],
-	[c.d125,c.d2e7,c.d5e18,c.d1_5e61,c.e115],
-	[c.d5e11,c.e60,c.e96,c.e175,c.d2_2222e222,c.e270,c.inf,c.ee5,c.e2e5,c.e5e5,c.e1_5e6]
-]
-function stardustUpgradeCost(x,y=g.stardustUpgrades[x-1]) {
-	if (y>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
-	let cost = baseStardustUpgradeCosts[x-1][y];
-	// hyper-3.5
-	if (achievement.ownedInTier(5) >= 9) {cost = cost.dilate(stat.wormholeMilestone9Effect);}
-	// hyper-3
-	if (g.achievement[602]&&x===3) {cost = cost.pow(c.d0_9)}
-	if (g.achievement[520]&&y===0) {cost = cost.root(achievement(520).effect());}
-	if (g.achievement[612]) {cost = cost.pow(achievement(612).effect()**g.stars)}
-	for (let i of [103,113]) {if (study13.bound(i)) {cost = cost.pow(study13.bindingEff(i))}}
-	cost = [cost,stat.whiteLightEffect,study13.rewards.wildfire.eff()].decimalPowerTower()
-	if (g.wormholeUpgrades[8]>0) {cost = [cost,wormholeUpgrades[8].eff(),stat.luckUpgLevel_quatrefolium_star].decimalPowerTower()}
-	// hyper-2
-	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stars));
-	if (g.achievement[915]) cost = cost.div(achievement(915).effect().pow(g.stardustUpgrades.sum()))
-	return cost;
-}
-function effectiveStardustUpgrades() {      // for Study IV and certain achievements
-	return g.stardustUpgrades.map((x,i)=>Math.max(x,[0,1,0,5,0][i])).sum()
-}
-function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.studyCompletions[studyNum]) {
-	if (showFormulas) if (studies[studyNum].rewardFormulas!==undefined) if (studies[studyNum].rewardFormulas[rewardNum]!==undefined) return formulaFormat(studies[studyNum].rewardFormulas[rewardNum](completions))
-	function format(n) {return (typeof precisionOrCallback==="number")?n.noLeadFormat(precisionOrCallback):precisionOrCallback(n)}
-	let curr = N(studies[studyNum].reward(rewardNum,completions))
-	let next = N(studies[studyNum].reward(rewardNum,Math.min(completions+1,4)))
-	if ((completions === studies[0].effectiveMaxCompletions[studyNum]) || Decimal.eq(curr,next)) return "<b>"+format(curr)+"</b>";
-	return "<b>"+arrowJoin(format(curr),format(next))+"</b>";
-}
-function studyPower(x){
-	if (x===13) {return study13.allBindings.map(x=>g.study13Bindings[x]?study13.bindings[x].lv:0).sum() /* placeholder */ }
-	if ((x<10)&&(g.activeStudy===10)) {return 3} // no exploits :D
-	if (x===10) {for (let i=3;i>=0;i--) {if (g.research[studies[10].researchList[i]]) {return i}}} // allow retrying previous triads
-	return Math.min(g.studyCompletions[x],3)
-}
-function studyRewardBoost(studyNum,rewardNum) {
-	if (rewardNum===2) {
-		let out = (studyNum===10)?c.d1:studies[10].reward(4)
-		if ((studyNum===7)&&g.research.r28_1) out = out.mul(researchEffect(28,1))
-		if (study13.bound(265)) {out = out.mul(study13.bindingEff(265))}
-		return out
-	}
-	if (rewardNum===3) {
-		let out = stat.redLightEffect
-		if (studyNum===10) {
-			if (g.achievement[920]) {out = out.mul(achievement(920).effect())}
-		} else {
-			let studyAchievements = [null,608,609,705,715,812,814,902,908,914,null,926,932]
-			if (typeof studyAchievements[studyNum] === "number") if (g.achievement[studyAchievements[studyNum]]) {out = out.div(c.d0_9)}
-		}
-		if ((studyNum===7)&&g.research.r25_1) {out = out.mul(researchEffect(25,1))}
-		if ((studyNum===1)&&g.achievement[919]) {out = out.mul(autobuyerMeta.totalLevels()/100+1)}
-		if (study13.bound(245)) {out = out.mul(study13.bindingEff(245))}
-		return out
-	}
-	functionError("studyRewardBoost",arguments)
-}
 
-function availableThemes() {
-	let out = ["Default","Red","Green","Blue","Cyan","Magenta","Yellow","Light Gray","Dark Gray","Black","Light"];
-	if (g.secretAchievement[16]) out.push("Wormhole");
-	return out;
-}
-function selectOption(variable,values,flavor="mode",variableCallback=x=>x) {
-	popup({
-		text:"We're sorry to hear that you hate "+variableCallback(g[variable])+". Which "+flavor+" do you want to try on next?",
-		buttons:values.map(x => [variableCallback(x),"g."+variable+"="+((typeof x==="string")?("'"+x+"'"):x)])
-	})
-}
-function changeTheme() {
-	popup({
-		text:"We're sorry to hear that you hate "+g.colortheme+". Which theme do you want to try on next?",
-		buttons:availableThemes().map(x => [x,"g.colortheme='"+x+"';theme()"])
-	})
-}
-function theme() {
-	let scheme = dictionary(g.colortheme,[
-		["Default",["color:#39f","background:#190033"]],
-		["Red",["color:#f00","background:#300"]],
-		["Green",["color:#0f0","background:#030"]],
-		["Blue",["color:#00f","background:#003"]],
-		["Cyan",["color:#0ff","background:#033"]],
-		["Magenta",["color:#f0f","background:#303"]],
-		["Yellow",["color:#ff0","background:#330"]],
-		["Light Gray",["color:#ccc","background:#666"]],
-		["Dark Gray",["color:#666","background:#333"]],
-		["Black",["color:#fff","background:#000"]],
-		["Light",["color:#000","background:#fff"]],
-		["Wormhole",["color:#39f","background-image:repeating-radial-gradient(circle at "+(viewportWidth()/2)+"px "+(viewportHeight()/2)+"px, #190033, #330066 "+(viewportDiagonalLength/20)+"px, #190033 "+(viewportDiagonalLength/10)+"px); background-size:cover"]]
-	])
-	document.body.style = scheme[0];
-	d.element("background").style = scheme[1];
-	themeAchievementCount++;
-	addSecretAchievement(16);
-}
-
-const exoticmatterVariables = ["exoticmatter","totalexoticmatter","exoticmatterThisStardustReset","exoticmatterThisWormholeReset","exoticmatterThisSpacetimeReset"]
-function incrementExoticMatter(x) {
-	x=x.fix(0);
-	for (let i of exoticmatterVariables) o.add(i,x)
-}
+// Story & Features
 function unlockFeature(x) {
 	if (!g.featuresUnlocked.includes(x)) {
 		g.featuresUnlocked.push(x);
@@ -504,25 +421,26 @@ function unlocked(x) {
 	return g.featuresUnlocked.includes(x);
 }
 const storyEntries = {
-	get ["Stardust"](){return "<p>The universe has collapsed due to negative mass, yielding "+BEformat(Decimal.add(g.stardust,stat.pendingstardust))+" atoms of <span class=\"_stardust\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b class=\"blue\">Note that Masteries persist on all resets. Story entries which you have already seen can be accessed again in Options > Hotkeys.</b></p>"},
-	"Dark Matter":"<p>You have just condensed 500 billion Stardust atoms into a <span class=\"_darkmatter\">particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>",
-	get ["Energy"](){return "<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log10().div(c.d80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class=\"_energy\">Energy</span>!</p><p>You managed to shape the stardust into a sort of breeder reactor which produces an exponentially growing supply of dark energy - unfortunately, the sprawling sixteen-dimensional space you find yourself in must be filled with exorbitant amounts of it before it can help you in any way."},
-	"Black hole":"<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"_research\">science</span>'.</p>",
-	"Hawking Radiation":"<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"_wormhole\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"_research\">research</span>?</p>",
-	get ["Studies"](){return "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"with very limited star formation":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you <span style=\"color:#cc0000\">enlightenment</span>.</p>"},
-	get ["Light"](){return "<p>Having traversed "+BEformat(N(g.TotalWormholeResets))+" universes, it's easy to feel as if you've \"seen it all\". You take a moment to appreciate the simple things in your existence, like the color of exotic matter... and you realise that it doesn't seem to have one. Everything is illuminated by the same constant gray light!</p><p>Surely there is a way to create <span style=\"background:-webkit-linear-gradient(0deg,#ff0000,#00ff00,#0000ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;\">color</span> in this place?</p>"},
-	get ["Galaxies"](){return "<p>The dark matter has made your stars unstable, and now if you have more than 60 in close proximity to each other they'll all collapse.</p><p>You'll need to practice working with stronger, smaller <span class=\"_galaxies\">galaxies</span> to succeed.</p>"},
-	get ["Luck"](){return "<p>In the beginning it was so easy to create <span class=\"_exoticmatter\">space</span>, to form <span class=\"_stars\">stars</span> and <span class=\"_research\">discover</span> the universe.</p><p>What has happened now? What was once enough exotic matter to create "+g.totalexoticmatter.mul(realAxisCostDivisor("X")).root(realAxisCostExponent("X")).div(c.d5).log(c.d6).floor().add(c.d1).format()+" metres of X axis now only provides "+maxAffordableAxis("X").format()+"; new observations come rarely, if at all. A galaxy of 61 stars will now never come to be, no matter how long you wait.</p><p>It's almost as if an <span class=\"blue\">invisible blue hand</span> is putting 'diminishing returns for balance' in your way to annoy you. But perhaps, if <span class=\"_luck\">luck</span> is not on your side, you can create your own?</p>"},
-	get ["Prismatic"](){function c(x){return "<span class=\""+x+"\">"+x+"</span>"};return "<p>The exotic matter is now "+c("green")+"; Hawking radiation is "+c("blue")+"; the stars are "+c("white")+" specks in the distance surrounded by nebulae of "+c("cyan")+" research papers. At the far end of the universe are dark "+c("red")+" rifts to the "+numword(visibleStudies().length)+" Study dimensions you've discovered, all against a backdrop of "+c("magenta")+" and "+c("yellow")+" crafted from the essence of pure achievement.</p><p>This is such an eyesore! It looks almost like something out of a coloring book... you feel determined to blend the <span class=\"_prismatic\">colors</span> together to create a beautiful universe, though you don't see how that will help you.</p>"},
-	get ["Antimatter"](){return "<p>The universe is perfectly balanced, the exotic matter pulling everything apart and the dark matter holding it together.</p><p>How long has it been this way? A year? Ten years? "+timeFormat(g.truetimePlayed)+"?</p><p>For as long as you remember, you've been drifting through this void of sixteen dimensions, creating space and filling it with stars and galaxies... but what is it all for? Is there something watching you? Are you a part of some callous celestial experiment?</p><p>Surely that can't be true... either way, you resolve to tear your way out of this place and you won't let anything stop you. Perhaps disrupting the balance with a <span class=\"_antimatter\">new substance</span> is a good start?</p>"},
-	get ["Corruption"](){let corrupt = corruption.list.axis.visible()?axisCodes.filter(x=>corruption.list.axis.isCorrupted(x))[0]:corruption.list.darkAxis.visible()?("dark "+axisCodes.filter(x=>corruption.list.darkAxis.isCorrupted(x))[0]):corruption.list.antiAxis.visible()?("anti-"+axisCodes.filter(x=>corruption.list.antiAxis.isCorrupted(x))[0]):"<span style=\"color:#ff0000\">error</span>";return "<p>What's this? Some sort of wall? It's almost as if the "+corrupt+" axis is actively resisting expansion...</p><p>Something is clearly trying to stop you now.</p>"},
-	get ["Study XIII"](){return "<p>A new <span style=\"color:#cc0000\">Study</span> subverse flickers into existence, but this one seems different...</p><p>All the ones before this one were already filled with bindings and knowledge to be harnessed, named and protected by a barrier. This one, however, seems to have neither a name nor any bindings, there are no visible paradigms to be salvaged from within and the barrier which must normally be weakened with resources to enter seems to be broken.</p><p>It's almost as if you've stumbled upon a blank universe... did you just create this yourself? Perhaps you can create your own bindings and rewards as well...</p>"}
+	"Stardust":{dt:2700,text:function(){return "<p>The universe has collapsed due to negative mass, yielding "+BEformat(Decimal.add(g.stardust,stat.pendingstardust))+" atoms of <span class=\"_stardust\">Stardust</span>. This powerful resource will allow your exotic matter to increase faster than before - however, its creation has consumed all of your exotic matter and Stardust.</p><p>Due to radioactive decay, all your Stardust is destroyed each time you create more. As a result, you need more exotic matter to gain Stardust each time.</p><p><b class=\"blue\">Note that Masteries persist on all resets. Story entries which you have already seen can be accessed again in Options > Hotkeys.</b></p>"}},
+	"Dark Matter":{dt:1800,text:function(){return "<p>You have just condensed 500 billion Stardust atoms into a <span class=\"_darkmatter\">particle with positive mass</span>.</p><p>It seems useless at first glance, but like your sprawling galaxies of fundamentally inert exotic matter, it can probably be formed into an Axis.</p>"}},
+	"Energy":{dt:2400,text:function(){return "<p>Well, you have a universe<sup>"+BEformat(g.totalexoticmatter.log10().div(c.d80).floor())+"</sup> filled with exotic matter. But, you realise that all those particles have virtually no <span class=\"_energy\">Energy</span>!</p><p>You managed to shape the stardust into a sort of breeder reactor which produces an exponentially growing supply of dark energy - unfortunately, the sprawling sixteen-dimensional space you find yourself in must be filled with exorbitant amounts of it before it can help you in any way."}},
+	"Black hole":{dt:300,text:function(){return "<p>The large quantities of dark matter in your universe have resulted in the formation of a black hole.</p><p>At its current size it is of no use to you... but what if you add some dark matter to it? You feel tempted to try it 'in the name of <span class=\"_research\">science</span>'.</p>"}},
+	"Hawking Radiation":{dt:14400,text:function(){return "<p>Perhaps you acted too soon. The black hole grew in size until it consumed all the particles in your universe.</p><p>As the black hole evaporated, it created a wave of <span class=\"_wormhole\">Hawking radiation</span>.</p><p>For the first time since you started, you have no idea why you need this new resource. Perhaps it is time to conduct some <span class=\"_research\">research</span>?</p>"}},
+	"Studies":{dt:3600,text:function(){return "<p>You decide that, for some Wormhole soon, you'll create a universe "+(visibleStudies().includes(1)?"and not interfere with it at all":visibleStudies().includes(2)?"with very limited star formation":"<span style=\"color:#ff0000\">error</span>")+". In theory this is a harmful idea, but you feel like doing this will give you <span style=\"color:#cc0000\">enlightenment</span>.</p>"}},
+	"Light":{dt:5400,text:function(){return "<p>Having traversed "+BEformat(N(g.TotalWormholeResets))+" universes, it's easy to feel as if you've \"seen it all\". You take a moment to appreciate the simple things in your existence, like the color of exotic matter... and you realise that it doesn't seem to have one. Everything is illuminated by the same constant gray light!</p><p>Surely there is a way to create "+gradientText("color","-webkit-linear-gradient(0deg,#ff0000,#00ff00,#0000ff)")+" in this place?</p>"}},
+	"Galaxies":{dt:7200,text:function(){return "<p>The dark matter has made your stars unstable, and now if you have more than 60 in close proximity to each other they'll all collapse.</p><p>You'll need to practice working with stronger, smaller <span class=\"_galaxies\">galaxies</span> to succeed.</p>"}},
+	"Luck":{dt:6300,text:function(){return "<p>In the beginning it was so easy to create <span class=\"_exoticmatter\">space</span>, to form <span class=\"_stars\">stars</span> and <span class=\"_research\">discover</span> the universe.</p><p>What has happened now? What was once enough exotic matter to create "+g.totalexoticmatter.mul(realAxisCostDivisor("X")).root(realAxisCostExponent("X")).div(c.d5).log(c.d6).floor().add(c.d1).format()+" metres of X axis now only provides "+maxAffordableAxis("X").format()+"; new observations come rarely, if at all. A galaxy of 61 stars will now never come to be, no matter how long you wait.</p><p>It's almost as if an <span class=\"blue\">invisible blue hand</span> is putting 'diminishing returns for balance' in your way to annoy you. But perhaps, if <span class=\"_luck\">luck</span> is not on your side, you can create your own?</p>"}},
+	"Prismatic":{dt:7200,text:function(){function c(x){return "<span class=\""+x+"\">"+x+"</span>"};return "<p>The exotic matter is now "+c("green")+"; Hawking radiation is "+c("blue")+"; the stars are "+c("white")+" specks in the distance surrounded by nebulae of "+c("cyan")+" research papers. At the far end of the universe are dark "+c("red")+" rifts to the "+numword(visibleStudies().length)+" Study dimensions you've discovered, all against a backdrop of "+c("magenta")+" and "+c("yellow")+" crafted from the essence of pure achievement.</p><p>This is such an eyesore! It looks almost like something out of a coloring book... you feel determined to blend the <span class=\"_prismatic\">colors</span> together to create a beautiful universe, though you don't see how that will help you.</p>"}},
+	"Antimatter":{dt:8100,text:function(){return "<p>The universe is perfectly balanced, the exotic matter pulling everything apart and the dark matter holding it together.</p><p>How long has it been this way? A year? Ten years? "+timeFormat(g.truetimePlayed)+"?</p><p>For as long as you remember, you've been drifting through this void of sixteen dimensions, creating space and filling it with stars and galaxies... but what is it all for? Is there something watching you? Are you a part of some callous celestial experiment?</p><p>Surely that can't be true... either way, you resolve to tear your way out of this place and you won't let anything stop you. Perhaps disrupting the balance with a <span class=\"_antimatter\">new substance</span> is a good start?</p>"}},
+	"Corruption":{dt:2700,text:function(){let corrupt = corruption.list.axis.visible()?axisCodes.filter(x=>corruption.list.axis.isCorrupted(x))[0]:corruption.list.darkAxis.visible()?("dark "+axisCodes.filter(x=>corruption.list.darkAxis.isCorrupted(x))[0]):corruption.list.antiAxis.visible()?("anti-"+axisCodes.filter(x=>corruption.list.antiAxis.isCorrupted(x))[0]):"<span style=\"color:#ff0000\">error</span>";return "<p>What's this? Some sort of wall? It's almost as if the "+corrupt+" axis is actively resisting expansion...</p><p>Something is clearly trying to stop you now.</p>"}},
+	"Study XIII":{dt:23400,text:function(){return "<p>A new <span style=\"color:#cc0000\">Study</span> subverse flickers into existence, but this one seems different...</p><p>All the ones before this one were already filled with bindings and knowledge to be harnessed, named and protected by a barrier. This one, however, seems to have neither a name nor any bindings, there are no visible paradigms to be salvaged from within and the barrier which must normally be weakened with resources to enter seems to be broken.</p><p>It's almost as if you've stumbled upon a blank universe... did you just create this yourself? Perhaps you can create your own bindings and rewards as well...</p>"}},
+	"":{dt:900,text:function(){return }}
 }
 function openStory(x) {
 	if (storyEntries[x]!==undefined) {
 		timeState = 0
 		if (!g.storySnippets.includes(x)) g.storySnippets.push(x);
-		popup({text:"<h1 id=\"storyTitle\">"+x+"</h1>"+storyEntries[x],buttons:[["Close",""]]})
+		popup({text:"<h1 id=\"storyTitle\">"+x+"</h1>"+storyEntries[x].text(),buttons:[["Close",""]]})
 	}
 }
 function showPreviousStory() {
@@ -531,6 +449,14 @@ function showPreviousStory() {
 		buttons:g.storySnippets.map(x=>[x,"openStory('"+x+"')"])
 	})
 }
+
+// Exotic Matter
+const exoticmatterVariables = ["exoticmatter","totalexoticmatter","exoticmatterThisStardustReset","exoticmatterThisWormholeReset","exoticmatterThisSpacetimeReset"]
+function incrementExoticMatter(x) {
+	x=x.fix(0);
+	for (let i of exoticmatterVariables) o.add(i,x)
+}
+
 const axisEffectHTML = {
 	X:"Exotic matter gain is multiplied by {e}",
 	darkX:"Dark matter gain is multiplied by {e}",
@@ -678,6 +604,8 @@ function buyEmpoweredAxis() {
 	empoweredAxisBought++;
 	for (let i=18;i<23;i++) addSecretAchievement(i);
 }
+
+// Masteries
 const masteryData = {
 	11:{icon:"<span class=\"_exoticmatter\">EM</span><sup>+</sup>"},
 	12:{icon:"<span class=\"_exoticmatter\">A$</span><sup>-</sup>"},
@@ -1007,6 +935,7 @@ function stardustExoticMatterReqText() {
 	return "";
 }
 
+// Stardust Reset
 const stardustVariables = ["stardust","stardustThisWormholeReset","stardustThisSpacetimeReset","totalstardust"]
 function incrementStardust(x) {
 	x=x.fix(c.d0);
@@ -1065,6 +994,8 @@ function stardustReset() {
 	for (let i of energyTypes.slice(0,6)) g[i+"Energy"] = StudyE(3)?c.d1:g[i+"Energy"].pow(studies[3].reward(2))
 	for (let i of secretAchievementEvents.stardustReset) addSecretAchievement(i)
 }
+
+// Stardust Boosts
 function stardustBoostBoost(x) {
 	let out = c.d1;
 	if (x===1) {
@@ -1122,6 +1053,8 @@ function stardustBoost7Exp(x) {
 function stardustBoost7IsSoftcapped(){
 	return g.truetimeThisStardustReset.gt(c.e6)
 }
+
+// Stardust Upgrades
 function buyStardustUpgrade(x) {
 	if (g.stardust.gte(stat["stardustUpgrade"+x+"Cost"])&&(g.stardustUpgrades[x-1]<stat["stardustUpgrade"+x+"Cap"])) {
 		if (stat["stardustUpgrade"+x+"Cost"].lt(c.inf.recip())) addAchievement(716)
@@ -1133,6 +1066,54 @@ function buyStardustUpgrade(x) {
 	}
 	for (let i of achievementEvents.stardustUpgrade) addAchievement(i);
 }
+const stardustUpgradeTooltip = [
+	null,
+	function(x=g.stardustUpgrades[0]) {
+		return "Unlock a new Axis"
+	},
+	function(x=g.stardustUpgrades[1]) {
+		return (x===0)?"Unlock axis autobuyer":("Keep "+(stat.stardustUpgrade2AxisRetentionFactor*100).toFixed(2)+"% of the "+axisCodes[x-1]+" Axis on Stardust reset")
+	},
+	function(x=g.stardustUpgrades[2]) {
+		return "Unlock a new Stardust Boost"
+	},
+	function(x=g.stardustUpgrades[3]) {
+		return (x===0)?"You can activate both first row Masteries simultaneously":(x===4)?"Unlock 2 new rows of Masteries":"Unlock a new row of Masteries"
+	},
+	function(x=g.stardustUpgrades[4]) {
+		return (x===0)?"Unlock Dark Matter":("Unlock "+toTitleCase(energyTypes[x-1])+" Energy")
+	}
+]
+const stardustUpgradeNames = [null,"Dimensional","Retention","Boost","Mastery","Progression"]
+const baseStardustUpgradeCosts = [
+	[c.d1_5e6,c.d4_5e10,c.e14,c.e20,c.ee10,N("e5e11"),N("e2e13"),c.maxvalue],
+	[c.d50,c.e2,c.e4,c.e6,c.e8,c.e12,c.e16,c.e24,c.e100,N("ee11"),N("ee13"),N("ee15"),N("ee17")],
+	[c.d3_3333e9,c.d1_5e16,c.e43,c.e75,c.e140,c.inf,c.ee4,c.ee5,c.ee6,N("6.66e6666666")],
+	[c.d125,c.d2e7,c.d5e18,c.d1_5e61,c.e115],
+	[c.d5e11,c.e60,c.e96,c.e175,c.d2_2222e222,c.e270,c.inf,c.ee5,c.e2e5,c.e5e5,c.e1_5e6]
+]
+function stardustUpgradeCost(x,y=g.stardustUpgrades[x-1]) {
+	if (y>=stat["stardustUpgrade"+x+"Cap"]) return c.maxvalue
+	let cost = baseStardustUpgradeCosts[x-1][y];
+	// hyper-3.5
+	if (achievement.ownedInTier(5) >= 9) {cost = cost.dilate(stat.wormholeMilestone9Effect);}
+	// hyper-3
+	if (g.achievement[602]&&x===3) {cost = cost.pow(c.d0_9)}
+	if (g.achievement[520]&&y===0) {cost = cost.root(achievement(520).effect());}
+	if (g.achievement[612]) {cost = cost.pow(achievement(612).effect()**g.stars)}
+	for (let i of [103,113]) {if (study13.bound(i)) {cost = cost.pow(study13.bindingEff(i))}}
+	cost = [cost,stat.whiteLightEffect,study13.rewards.wildfire.eff()].decimalPowerTower()
+	if (g.wormholeUpgrades[8]>0) {cost = [cost,wormholeUpgrades[8].eff(),stat.luckUpgLevel_quatrefolium_star].decimalPowerTower()}
+	// hyper-2
+	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stars));
+	if (g.achievement[915]) cost = cost.div(achievement(915).effect().pow(g.stardustUpgrades.sum()))
+	return cost;
+}
+function effectiveStardustUpgrades() {      // for Study IV and certain achievements
+	return g.stardustUpgrades.map((x,i)=>Math.max(x,[0,1,0,5,0][i])).sum()
+}
+
+// Automation
 const autobuyers = {
 	axis:{baseInterval:5,baseCost:c.e25,costGrowth:c.d1_05,resource:"exoticmatter",extRes:"exotic matter",unlockReq:function(){return g.stardustUpgrades[1]>0;}},
 	darkAxis:{baseInterval:5,baseCost:c.e25,costGrowth:c.d1_05,resource:"darkmatter",extRes:"dark matter",unlockReq:function(){return achievement.ownedInTier(5)>=1;}},
@@ -1188,6 +1169,8 @@ function exportStarAllocatorBuild() {
 		buttons:[["Close",""]]
 	})
 }
+
+// Stars
 function starCost(x=g.stars,gal=g.galaxies,cap=starCap()) {
 	if (x>=cap) return c.maxvalue
 	x=N(x)
@@ -1415,12 +1398,14 @@ function starRowsShown() {
 	return Array.removeDuplicates(countTo(40).map(x=>starRow(x))).slice(0,Array.removeDuplicates(countTo(Math.min(g.stars,40)).map(x=>starRow(x))).length+1).sort((a,b)=>a-b)
 };
 function unspentStars() {return g.stars-totalStars}
-function starRow(index) {
-	if (!StudyE(2)) return [1,1,2,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8,9,10,8,9,10,9,10,10][index-1];
-	if (studyPower(2)===0) return [1,1,2,1,1,2,3,2,2,3,4,3,3,4,5,4,4,5,6,5,5,6,7,6,6,7,8,7,7,8,9,8,8,9,10,9,9,10,10,10][index-1];
-	if (studyPower(2)===1) return [1,1,1,2,1,2,2,3,2,3,3,4,3,4,4,5,4,5,5,6,5,6,6,7,6,7,7,8,7,8,8,9,8,9,9,10,9,10,10,10][index-1];
-	if (studyPower(2)===2) return Math.floor(index/4+0.75);
-	return [3,3,9,3,9,2,3,9,2,4,9,2,4,5,2,4,5,6,4,5,6,7,5,6,7,8,6,7,8,1,7,8,1,10,8,1,10,1,10,10][index-1];
+function starRow(index,s2=StudyE(2)) {
+	if (s2) {
+		if (studyPower(2)===0) return [1,1,2,1,1,2,3,2,2,3,4,3,3,4,5,4,4,5,6,5,5,6,7,6,6,7,8,7,7,8,9,8,8,9,10,9,9,10,10,10][index-1];
+		if (studyPower(2)===1) return [1,1,1,2,1,2,2,3,2,3,3,4,3,4,4,5,4,5,5,6,5,6,6,7,6,7,7,8,7,8,8,9,8,9,9,10,9,10,10,10][index-1];
+		if (studyPower(2)===2) return Math.floor(index/4+0.75);
+		return [3,3,9,3,9,2,3,9,2,4,9,2,4,5,2,4,5,6,4,5,6,7,5,6,7,8,6,7,8,1,7,8,1,10,8,1,10,1,10,10][index-1];
+	}
+	return [1,1,2,1,2,3,1,2,3,4,2,3,4,5,3,4,5,6,4,5,6,7,5,6,7,8,6,7,8,9,7,8,9,10,8,9,10,9,10,10][index-1];
 }
 function maxStars(row) {
 	let output=0;
@@ -1432,6 +1417,7 @@ function availableStarRow(row) {
 }
 function starCap(){return 60}
 
+// Dark Matter
 function buyDarkAxis(x) {
 	if (g.darkmatter.gt(darkAxisCost(x))&&(4+g.stardustUpgrades[0]>axisCodes.indexOf(x))) {
 		if (darkAxisCost(x).gt(c.d1)) {g.ach908possible = false}
@@ -1475,7 +1461,7 @@ function darkStarEffectHTML() {
 	let eff3inc = darkStarEffect3SoftcapInc()
 	if (showFormulas&&v2.gte(c.e2)) eff3text = formulaFormat(formulaFormat.convSoftcap("100 + ln(★ ÷ "+eff3inc.noLeadFormat(3)+" - 9) × "+eff3inc.noLeadFormat(3),c.d150,c.d200,darkStarEffect3().gt(c.d150))) 
 	return [
-		"The base gain of dark matter will become "+arrowJoin(darkStarEffect1(v1).sub(c.d1).mul(c.e2).noLeadFormat(2),darkStarEffect1(v2).sub(c.d1).mul(c.e2).noLeadFormat(2))+"% stronger",
+		"The base gain of dark matter will become "+(showFormulas?formulaFormat("★"+formulaFormat.mult(studies[4].reward(3).mul(c.d5))):(arrowJoin(darkStarEffect1(v1).sub(c.d1).mul(c.e2).noLeadFormat(2),darkStarEffect1(v2).sub(c.d1).mul(c.e2).noLeadFormat(2))))+"% stronger",
 		(eff2.length===(8+study13.rewardLevels.slabdrill)?"All dark":(eff2.length===0)?"No dark":("Dark "+eff2.joinWithAnd()))+" axis will become stronger",
 		"You will gain "+eff3text+"% more free axis from dark matter"
 	].join("<br>");
@@ -1615,10 +1601,11 @@ function darkStarEffect2Level(axis,x) {
 function darkStarEffect2LevelFormula(axis) {
 	let axisNum = axisCodes.indexOf(axis)
 	let out = (axisNum>7)?("floor(★ ÷ 32) + max(0, min((★ ÷ 8) mod 4"+formulaFormat.add(N(8-axisNum))+", 1))"):("floor(★ ÷ 8) + max(0, min(★ mod 8"+formulaFormat.add(N(-axisNum))+", 1))")
-	if (stat.realDarkStars.gte((axisNum>7)?c.d640:c.d80)) {
+	if (darkStarEffect2Level(axis).gte(["W","S","O"].includes(axis)?c.d10:c.d40)) {
 		if (axis==="W") {out = formulaFormat.linSoftcap("<br>"+out+"<br>",c.d10,c.d3,true)}
-		if (axis==="S") {out = formulaFormat.logSoftcap("<br>"+out+"<br>",c.d10,c.d9,true)}
-		if (axis==="O") {out = "log("+formulaFormat.logSoftcap("<br>10<sup>"+out+"</sup><br>",c.d20,c.d1,true)+")"}
+		else if (axis==="S") {out = formulaFormat.logSoftcap("<br>"+out+"<br>",c.d10,c.d9,true)}
+		else if (axis==="O") {out = "log("+formulaFormat.logSoftcap("<br>10<sup>"+out+"</sup><br>",c.d20,c.d1,true)+")"}
+		else {out = formulaFormat.logSoftcap("<br>"+out+"<br>",c.d40,c.d1,true)}
 	}
 	return formulaFormat(formulaFormat.bracketize(out)+" × "+((axisNum>7)?"5":"10")+"%")
 }
@@ -1653,6 +1640,8 @@ function gainDarkStar(cap) {
 	addAchievement(528);
 	addAchievement(813);
 }
+
+// Energy
 function energyTypesUnlocked() {
 	if (StudyE(3)) return 6+studies[3].reward(1)
 	return Math.max(0,g.stardustUpgrades[4]-1);
@@ -1700,9 +1689,9 @@ function energyPerSec(x) {
 	let mult = energySpeedMult(x)
 	return resource.add(c.d10).dilate(c.d0_9).pow(mult.div(divisor));
 }
-function wormholeAnimation() {
-	wormholeAnimationActive=true;wormholeAnimationStart=Date.now();
-}
+
+// Wormhole Reset
+function wormholeAnimation() {wormholeAnimationActive=true;wormholeAnimationStart=Date.now();}
 const HRVariables = ["hawkingradiation","hawkingradiationThisSpacetimeReset","totalhawkingradiation"]
 function incrementHR(x) {
 	x=x.fix(c.d0);
@@ -1715,7 +1704,7 @@ function attemptWormholeReset(showPopups=false) {
 		} else if (g.confirmations.wormholeReset&&showPopups&&(g.activeStudy===0)) {
 			popup({
 				text:"Are you sure you want to Wormhole reset?",
-				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset()} else {notify('Insufficient dark axis to stardust reset!','#000066','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
+				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset()} else {notify('Insufficient dark axis to stardust reset!','#000066','#ffffff')}"],["Cancel",""]]     /* stardust reset check must be done again because of autobuyers */
 			})
 		} else {
 			wormholeReset()
@@ -1848,6 +1837,7 @@ function wormholeResetButtonText() {
 	return out;
 }
 
+// Wormhole Milestones
 const wormholeMilestoneList = {
 	1:{text:"Unlock dark axis autobuyer",notification:"You have unlocked the dark axis autobuyer"},
 	2:{text:"Unlock dark star autobuyer",notification:"You have unlocked the dark star autobuyer"},
@@ -1911,6 +1901,8 @@ function wormholeMilestoneText(x) {
 	if (x===27) return "Row 10 Masteries are stronger based on your Hawking radiation"
 	return wormholeMilestoneList[wormholeMilestoneList.map(x => x[0]).indexOf(x)][1]
 }
+
+// Studies
 function visibleStudies() {
 	let out = [];
 	for (let i=1;i<13;i++) {
@@ -1968,6 +1960,67 @@ const studyButtons = {
 	},
 	class:function(x) {return ["enabled","enabled","enabled","disabled","disabled"][studyButtons.state(x)]}
 }
+function updateStudyDiv(HTMLnum,studyNum,follow) {
+	d.class("div_study"+HTMLnum+follow,"studyDiv comp"+g.studyCompletions[studyNum])
+	d.innerHTML("span_study"+HTMLnum+"Num"+follow,studies[0].roman(studyNum))
+	d.innerHTML("span_study"+HTMLnum+"Name"+follow,(studyNum===10)?(["Stellar","Decisive","Temporal","Ontological"][studyPower(10)]+" Triad"):studies[studyNum].name)
+	d.innerHTML("button_study"+HTMLnum+follow,studyButtons.text(studyNum))
+	d.innerHTML("span_study"+HTMLnum+"Goal"+follow,(studyPower(studyNum)===studies[0].effectiveMaxCompletions[studyNum])?"Infinite":BEformat(studies[studyNum].goal()));
+	d.innerHTML("span_study"+HTMLnum+"Description"+follow,(studies[studyNum].description().length===1)?studies[studyNum].description()[0]:("<table>"+studies[studyNum].description().map((x,i)=>"<tr><td style=\"vertical-align:top;text-align:left;width:20px;\">"+(i+1)+"</td><td style=\"vertical-align:top;text-align:left;\">"+x+"</td>").join("")+"</table>"))
+	if (studies[studyNum].disclaimers===undefined) {
+		d.tr("span_study"+HTMLnum+"Disclaimers"+follow,false)
+	} else {
+		let disclaimers = studies[studyNum].disclaimers.filter(x=>x[1]()).map(x=>x[0])
+		if (disclaimers.length===0) {
+			d.tr("span_study"+HTMLnum+"Disclaimers"+follow,false)
+		} else {
+			d.tr("span_study"+HTMLnum+"Disclaimers"+follow,true)
+			d.innerHTML("span_study"+HTMLnum+"Disclaimers"+follow,"<i>"+disclaimers.map(x=>"NB: "+x).join("<br>")+"</i>")
+		}
+	}
+	d.innerHTML("span_study"+HTMLnum+"Completions"+follow,g.studyCompletions[studyNum]);
+	d.innerHTML("span_study"+HTMLnum+"MaxCompletions"+follow,studies[0].effectiveMaxCompletions[studyNum]);
+	d.innerHTML("span_study"+HTMLnum+"Reward"+follow,"<table>"+studies[studyNum].reward_desc().map((x,i)=>"<tr><td style=\"vertical-align:top;text-align:left;width:20px;\">"+(i+1)+"</td><td style=\"vertical-align:top;text-align:left;\">"+x+"</td>").join("")+"</table>");	
+	d.class("button_study"+HTMLnum+follow,"studyButton "+studyButtons.class(studyNum))
+}
+function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.studyCompletions[studyNum]) {
+	if (showFormulas) if (studies[studyNum].rewardFormulas!==undefined) if (studies[studyNum].rewardFormulas[rewardNum]!==undefined) return formulaFormat(studies[studyNum].rewardFormulas[rewardNum](completions))
+	function format(n) {return (typeof precisionOrCallback==="number")?n.noLeadFormat(precisionOrCallback):precisionOrCallback(n)}
+	let curr = N(studies[studyNum].reward(rewardNum,completions))
+	let next = N(studies[studyNum].reward(rewardNum,Math.min(completions+1,4)))
+	if ((completions === studies[0].effectiveMaxCompletions[studyNum]) || Decimal.eq(curr,next)) return "<b>"+format(curr)+"</b>";
+	return "<b>"+arrowJoin(format(curr),format(next))+"</b>";
+}
+function studyPower(x){
+	if (x===13) {return study13.allBindings.map(x=>g.study13Bindings[x]?study13.bindings[x].lv:0).sum() /* placeholder */ }
+	if ((x<10)&&(g.activeStudy===10)) {return 3} // no exploits :D
+	if (x===10) {for (let i=3;i>=0;i--) {if (g.research[studies[10].researchList[i]]) {return i}}} // allow retrying previous triads
+	return Math.min(g.studyCompletions[x],3)
+}
+function studyRewardBoost(studyNum,rewardNum) {
+	if (rewardNum===2) {
+		let out = (studyNum===10)?c.d1:studies[10].reward(4)
+		if ((studyNum===7)&&g.research.r28_1) out = out.mul(researchEffect(28,1))
+		if (study13.bound(265)) {out = out.mul(study13.bindingEff(265))}
+		return out
+	}
+	if (rewardNum===3) {
+		let out = stat.redLightEffect
+		if (studyNum===10) {
+			if (g.achievement[920]) {out = out.mul(achievement(920).effect())}
+		} else {
+			let studyAchievements = [null,608,609,705,715,812,814,902,908,914,null,926,932]
+			if (typeof studyAchievements[studyNum] === "number") if (g.achievement[studyAchievements[studyNum]]) {out = out.div(c.d0_9)}
+		}
+		if ((studyNum===7)&&g.research.r25_1) {out = out.mul(researchEffect(25,1))}
+		if ((studyNum===1)&&g.achievement[919]) {out = out.mul(autobuyerMeta.totalLevels()/100+1)}
+		if (study13.bound(245)) {out = out.mul(study13.bindingEff(245))}
+		return out
+	}
+	functionError("studyRewardBoost",arguments)
+}
+
+// Light
 function generateChroma(x,amount) {
 	let typesUnlocked = [0,3,6,8,9][lightTiersUnlocked()]
 	if (g.achievement[718]) for (let j=0;j<typesUnlocked;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
@@ -2148,6 +2201,8 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 		buttons:[["Close",""]]
 	})
 }
+
+// Galaxies
 function effectiveGalaxies(effNum,isBoost,gal=g.galaxies) {
 	gal = N(gal).add(effectiveGalaxies.add(isBoost))
 	return (gal.gte(galaxyEffects[effNum].req-1))?N(gal.sub(galaxyEffects[effNum].req-1)):c.d0
@@ -2288,6 +2343,7 @@ function formatGalaxyEffect(num,type,gal=g.galaxies) {
 	return textFormat(galaxyEffects[num][type].format(galaxyEffects[num][type].value(gal)),"_galaxies")
 }
 
+// Luck
 function runeTypeNum(type) {return ["mono","duo","tri","quatre","cinque"].indexOf(type.substring(0,type.length-6))+1}
 function runeTypeUnlocked(type) {
 	if (["unifolium","duofolium"].includes(type)) {return g.studyCompletions[13]>23}
@@ -2362,6 +2418,7 @@ function luckShardEffect2Formula(x=g.luckShards) {
 	return "log<sup>[2]</sup>("+ls+" + 10)"
 }
 
+// Prismatic
 function affordablePrismaticUpgrades(upg) {
 	let data = prismaticUpgrades[upg]
 	let owned = g.prismaticUpgrades[upg]
@@ -2448,6 +2505,7 @@ function prismaticUpgradeUnlocked(upg) {
 	return (func===undefined)?true:func()
 }
 
+// Antimatter
 function antiAxisActive(type) {
 	if (g.studyCompletions[9]===0) return false
 	if (["R","Q","P","O"].includes(type)&&(!betaActive)) return
@@ -2597,6 +2655,8 @@ const antimatterGalaxy = {
 		if (gain.gt(g.antimatterGalaxies)) {g.antimatterGalaxies=gain}
 	}
 }
+
+// Wormhole Upgrades
 function buyWormholeUpg(x) {
 	if ((g.wormholeUpgrades[x]<wormholeUpgrades[x].max)&&g.hawkingradiation.gte(wormholeUpgrades[x].cost)) {
 		o.sub("hawkingradiation",wormholeUpgrades[x].cost)
@@ -2606,6 +2666,7 @@ function buyWormholeUpg(x) {
 function wormholeUpgName(x) {return "Wormhole Upgrade "+x+" \""+wormholeUpgrades[x].name+"\""}
 function repeatableWormholeUpgradeCost(baseExp,maxExp,max,owned){return [Decimal.decibel(owned),baseExp,Decimal.pow(maxExp.div(Decimal.decibel(max-1).mul(baseExp)),N(Math.max(1.25*owned/(max-1)-0.25,0)**3))].productDecimals().pow10()}
 
+// Extra
 function showFooter(){return (g.footerDisplay==="All tabs")?true:(g.footerDisplay==="Only Axis tab")?(g.activeTab==="main"&&g.activeSubtabs.main==="axis"):(g.footerDisplay==="None")?false:undefined}
 const topResources = [
 	{
@@ -3077,6 +3138,7 @@ const promoCodeList = (()=>{
 		condition:()=>!g.secretAchievement[x]
 	}}
 	return {    // key = code, value = function
+		"zrgEvOA5LEStClbc":{action:()=>{betaActive=true;updateResearchTree()},condition:()=>!betaActive},
 		"XNu35M0qc7KzBcgW":sach(7),
 		"RsNU8rznMqhPdFjg":sach(8),
 		"GEtJEyjWuFB1oNSA":sach(30),
@@ -3101,11 +3163,15 @@ function inputPromo() {
 }
 function processPromo(str) {
 	let hash = alemanicHash(str,16)
-	if (promoCodeList[hash] !== undefined) if (promoCodeList[hash].condition()) {
-		promoCodeList[hash].action()
-		return
+	if (promoCodeList[hash] !== undefined) {
+		if (promoCodeList[hash].condition()) {
+			promoCodeList[hash].action()
+		} else {
+			notify("Code has already been used. Try again!","#0000cc")
+		}
+	} else {
+		notify("Invalid code. Try again!","#990000")
 	}
-	notify("Your code was either invalid or already used. Try again!","#ff0000")
 }
 function exportSave() {
 	openExport(btoa(localStorage.getItem("save")));

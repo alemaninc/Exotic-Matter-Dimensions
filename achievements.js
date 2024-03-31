@@ -301,7 +301,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return "Not Completed!";},
 			prevReq:[104],
-			get reward(){return "All "+(unlocked("Dark Matter")?"normal axes":"axes")+" are {}% cheaper per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned (total: "+percentOrMult(this.effect().pow(stat.totalNormalAxis),2,true)+")";},
+			get reward(){return "All "+(unlocked("Dark Matter")?"normal axes":"axes")+" are {}% cheaper per "+(unlocked("Dark Matter")?"normal axis":"axis")+" owned (total: "+percentOrDiv(this.effect().pow(stat.totalNormalAxis),2,true)+")";},
 			effect:function(y=this.yellowValue){
 				let out = c.d0_99.div(N(2.2).pow(y))
 				if (study13.bound(192)) {out = out.pow(study13.bindingEff(192))}

@@ -2351,7 +2351,7 @@ miscStats.darkAxisCostExponent={
 			label:"Dark P Axis",
 			mod:function(){return stat.darkPAxisEffect.pow(stat.realdarkPAxis)},
 			func:function(prev){return prev.mul(this.mod())},
-			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.darkPAxisEffect.noLeadFormat(3),stat.darkPAxis.noLeadFormat(3),3)},
+			text:function(){return "× "+this.mod().noLeadFormat(3)+" "+SSBsmall(stat.darkPAxisEffect.noLeadFormat(3),stat.realdarkPAxis.noLeadFormat(3),3)},
 			dependencies:["darkPAxisEffect","realdarkPAxis"],
 			show:function(){return this.mod().neq(c.d1)}
 		},

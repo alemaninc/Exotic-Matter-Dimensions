@@ -525,19 +525,6 @@ function updateHTML() {
 			let visible = visibleStudies()
 			if (!["Compact","Detailed"].includes(g.studyContainerStyle)) {g.studyContainerStyle = "Detailed"}
 			for (let i of ["Compact","Detailed"]) {d.display("studyContainer"+i,(g.studyContainerStyle===i)?"inline-block":"none")}
-			function updateStudyDiv(HTMLnum,studyNum,follow) {
-				d.class("div_study"+HTMLnum+follow,"studyDiv comp"+g.studyCompletions[studyNum])
-				d.innerHTML("span_study"+HTMLnum+"Num"+follow,studies[0].roman(studyNum))
-				d.innerHTML("span_study"+HTMLnum+"Name"+follow,(studyNum===10)?(["Stellar","Decisive","Temporal","Ontological"][studyPower(10)]+" Triad"):studies[studyNum].name)
-				d.innerHTML("button_study"+HTMLnum+follow,studyButtons.text(studyNum))
-				d.innerHTML("span_study"+HTMLnum+"Goal"+follow,(studyPower(studyNum)===studies[0].effectiveMaxCompletions[studyNum])?"Infinite":BEformat(studies[studyNum].goal()));
-				d.innerHTML("span_study"+HTMLnum+"Description"+follow,studies[studyNum].description())
-				d.innerHTML("span_study"+HTMLnum+"Completions"+follow,g.studyCompletions[studyNum]);
-				d.innerHTML("span_study"+HTMLnum+"MaxCompletions"+follow,studies[0].effectiveMaxCompletions[studyNum]);
-				d.innerHTML("span_study"+HTMLnum+"Reward"+follow,"<ol>"+studies[studyNum].reward_desc().map(x=>"<li>"+x+"</li>").join("")+"</ol>");
-				d.class("button_study"+HTMLnum+follow,"studyButton "+studyButtons.class(studyNum))
-				d.innerHTML("span_study"+HTMLnum+"Reward"+follow,"<table>"+studies[studyNum].reward_desc().map((x,i)=>"<tr><td style=\"vertical-align:top;text-align:left;width:20px;\">"+(i+1)+"</td><td style=\"vertical-align:top;text-align:left;\">"+x+"</td>").join("")+"</table>");	
-			}
 			for (let i=1;i<13;i++) {
 				if (visible.map(x => Number(x)).includes(Number(i))) {
 					d.display("div_study"+i+g.studyContainerStyle,"inline-block");
@@ -1016,7 +1003,7 @@ function fineGrainTick() {
 		d.element("newsline").style["color"] = (Date.now()<newsSupport.interestingTickerActiveUntil)?("hsl("+((Date.now()*0.06+180)%360)+" 100% 50%)"):""
 		let transitionProgress = currentNewsOffset/(window.innerWidth+d.element("newsline").offsetWidth)
 		if ((transitionProgress > 1)||(transitionProgress < 0)) {
-			nextNewsItem(transitionProgress<0)
+			nextNewsItem()
 		} else {
 			currentNewsOffset += g.newsTickerSpeed*fineGrainDelta*0.001*((Date.now()<newsSupport.interestingTickerActiveUntil)?Math.max((3*Math.sin(Date.now()/500)-1)*Math.tan(Date.now()/3000),-2):1)*(overclockSpeedupFactor**g.newsTickerDilation)
 			d.element("newsline").style.left = (currentNewsOffset<0)?"100vw":("calc(100vw - "+currentNewsOffset+"px)")
