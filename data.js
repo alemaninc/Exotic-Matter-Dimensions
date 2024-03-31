@@ -1,7 +1,7 @@
 "use strict";
 var debugActive
 try{debugActive=alemanicHash(window.location.href.substring(0,23),16)==="9N6fJbOtGsMg5k65"}catch{debugActive=false}
-var betaActive=debugActive
+var betaActive=debugActive||g.alwaysBeta
 /*
 Everything that is represented in "g" as an object generated from a list of keys is stored here and executed directly before main.js.
 */

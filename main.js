@@ -29,7 +29,6 @@ const basesave = {
 	timePlayed:0,
 	truetimePlayed:c.d0,
 	featuresUnlocked:[],
-	speedrunMilestones:[],
 	colortheme:"Default",
 	footerDisplay:"All tabs",
 	achOnProgressBar:"N", // "N" = none, can't use undefined or null due to issues
@@ -57,6 +56,7 @@ const basesave = {
 	zipPoints:0,
 	zipPointMulti:1,
 	version:null,
+	alwaysBeta:false,
 	topResourcesShown:{
 		exoticmatter:true,
 		masteryPower:false,
@@ -3138,7 +3138,8 @@ const promoCodeList = (()=>{
 		condition:()=>!g.secretAchievement[x]
 	}}
 	return {    // key = code, value = function
-		"zrgEvOA5LEStClbc":{action:()=>{betaActive=true;updateResearchTree()},condition:()=>!betaActive},
+		"zrgEvOA5LEStClbc":{action:()=>{g.alwaysBeta=true;notify("Beta enabled! Reload to enable beta: use the code \"close beta\" to disable")},condition:()=>!betaActive},
+		"uCluJfrsi91dfktG":{action:()=>{g.alwaysBeta=false},condition:()=>g.alwaysBeta},
 		"XNu35M0qc7KzBcgW":sach(7),
 		"RsNU8rznMqhPdFjg":sach(8),
 		"GEtJEyjWuFB1oNSA":sach(30),
