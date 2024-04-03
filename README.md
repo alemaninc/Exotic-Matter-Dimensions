@@ -1,5 +1,5 @@
 # Exotic Matter Dimensions
-*Exotic Matter Dimensions* is an incremental game loosely inspired by titles including *Antimatter Dimensions*, *Synergism* and .
+*Exotic Matter Dimensions* is an incremental game loosely inspired by titles including *Antimatter Dimensions*, *Synergism* and *Incremental Mass Rewritten*.
 ## The Changelog of the Future
 ##### Content
 * [#tier10] Something which makes energy not affect things below 1

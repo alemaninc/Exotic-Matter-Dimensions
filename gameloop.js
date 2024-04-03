@@ -15,8 +15,8 @@ function updateHTML() {
 		}
 	}
 	updateTopResourceModal();
-	d.innerHTML("span_pendingstardust",stat.pendingstardust.sub(g.stardust).max(c.d0).floor().format());
-	d.class("span_pendingstardust",stat.pendingstardust.gt(g.stardust)?"big _stardust":"big _stardust_dark");
+	d.innerHTML("span_pendingstardust",stat.pendingstardust.sub(g.stardust).max(c.d0).format());
+	d.class("span_pendingstardust",(stat.pendingstardust.gt(g.stardust)&&(!StudyE(12)))?"big _stardust":"big _stardust_dark");
 	d.innerHTML("span_stardustExoticMatterReq",stardustExoticMatterReqText());
 	d.class("button_stardustReset",(stat.pendingstardust.gt(g.stardust)&&(!StudyE(12)))?"stardustResetButton":"lockedStardustResetButton");
 	d.element("button_stardustReset").style.visibility=(masteryData[42].req()?"visible":"hidden");
@@ -612,7 +612,7 @@ function updateHTML() {
 			let tooltip = "All effects unlocked."
 			for (let i=1;i<galaxyEffects.length;i++) {
 				if (g.highestGalaxies+1<galaxyEffects[i].req) {
-					tooltip = "Next pair of effects at "+N(galaxyEffects[i].req).sub(effectiveGalaxies.add().ceil()).add(c.d1).format()+" galaxies"
+					tooltip = "Next pair of effects at "+N(galaxyEffects[i].req).sub(Decimal.max(effectiveGalaxies.add(false),effectiveGalaxies.add(true)).ceil()).sub(c.d1).format()+" galaxies"
 					break
 				}
 			}
@@ -663,7 +663,7 @@ function updateHTML() {
 					let owned = g.prismaticUpgrades[upg]
 					let unlimited = ((typeof data.max) === "undefined")
 					d.innerHTML("span_prismaticUpgrade_"+upg+"_Purchased",(owned.format()+(unlimited?"":(" / "+data.max.format())))+"<br>(+"+affordable.max(c.d1).format()+")")
-					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost","Cost: "+(showFormulas?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format()))
+					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost",Decimal.eq(owned,data.max??c.maxvalue)?"Maxed":("Cost: "+((showFormulas&&(data.max??c.maxvalue).gt(c.d1))?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format())))
 					let maxed = unlimited?false:Decimal.eq(owned,data.max)
 					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,(showFormulas&&(typeof data.formula[i]==="function"))?formulaFormat(data.formula[i]()):(maxed||(typeof data.formula[i]!=="function"))?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length===1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
 					let classList = ["prismaticUpgrade"]

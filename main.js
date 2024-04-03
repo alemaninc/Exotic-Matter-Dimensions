@@ -947,7 +947,9 @@ function attemptStardustReset(showPopups=false) {
 		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
 			let willReset = [
 				["exotic matter",()=>true],
-				[(unlocked("Dark Matter")?"normal ":"")+" axis"+((g.stardustUpgrades[1]===0)?"":(", except "+N(stat.stardustUpgrade2AxisRetentionFactor*100).noLeadFormat(3)+"% of the first "+numword(g.stardustUpgrades[0]))),()=>true]
+				[(unlocked("Dark Matter")?"normal ":"")+" axis"+((g.stardustUpgrades[1]===0)?"":(", except "+N(stat.stardustUpgrade2AxisRetentionFactor*100).noLeadFormat(3)+"% of the first "+numword(g.stardustUpgrades[0])+" (rounded down)")),()=>true],
+				["mastery power",()=>true],
+				["the mastery timer",()=>true]
 			]
 			popup({
 				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?",
@@ -2211,6 +2213,7 @@ function effectiveGalaxies(effNum,isBoost,gal=g.galaxies) {
 	return (gal.gte(galaxyEffects[effNum].req-1))?N(gal.sub(galaxyEffects[effNum].req-1)):c.d0
 }
 effectiveGalaxies.add = function(isBoost){
+	if (![0,1,true,false].includes(isBoost)) {functionError("effectiveGalaxies.add",arguments)}
 	let out = c.d0
 	if ((!isBoost)&&study13.bound(315)) {out = out.add(study13.bindingEff(315))}
 	return out
@@ -2321,7 +2324,8 @@ const galaxyEffects = [
 			format:function(e){return e.format()},
 			formula:function(){return "dB("+effectiveGalaxyFormulaText(5,0)+" × "+effectiveGalaxyFormulaText(5,0,{add:5})+" ÷ 2)"}
 		}
-	}
+	},
+	{req:20}
 ]
 function gainGalaxy() {
 	if (g.stars===starCap()) {
@@ -2434,7 +2438,7 @@ function affordablePrismaticUpgrades(upg) {
 		if (singlePrismaticUpgradeCost(upg).gt(g.prismatic)) return c.d0 // avoid laggy binary search
 		// binary search to find the highest buyable level
 		let lower = c.d0
-		let upper = data.max.sub(c.d1)
+		let upper = data.max
 		let middle
 		do {
 			middle = lower.add(upper).div(c.d2).ceil()
@@ -2446,12 +2450,12 @@ function affordablePrismaticUpgrades(upg) {
 			let spent = c.d0
 			for (let i=levels.toNumber()-1;i>=owned.toNumber();i--) {
 				let diff = data.cost(N(i))
-				if (spent.div(diff).gt(c.d16)) break
+				if (spent.div(diff).gt(c.e16)) {break}
 				spent = spent.add(diff)
 			}
 			return available.gte(spent)
 		}
-		while (!canAfford(middle)) middle = middle.sub(c.d1)
+		while (middle.gt(owned)&&(!canAfford(middle))) {middle = middle.sub(c.d1)}
 		return middle.sub(owned)
 	}
 }
@@ -2701,7 +2705,7 @@ const topResources = [
 		text:function(){return "<span class=\"_time\">"+timeFormat(g.dilatedTime)+"</span> dilated time "+["","<span class=\"_time2\">("+N(stat.baseOverclockSpeedup).noLeadFormat(3)+"× Overclock)</span>","<span class=\"blue\">(Frozen)</span>","<span class=\"yellow\">(Equalized)</span>"][timeState];},
 	},
 	{
-		text:function(){return "<span class=\"_time\">"+stat.tickspeed.format(3)+"×</span> tickspeed";},
+		text:function(){let t = stat.tickspeed, out = (t.eq(c.d0)||t.gt(c.d1))?[t,"×"]:[t.recip(),"÷"];return "<span class=\"_time\">"+out[0].noLeadFormat(3)+"</span>"+out[1]+" tickspeed";},
 		condition:function(){return stat.tickspeed.neq(c.d1);}
 	},
 	{

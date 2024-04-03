@@ -543,7 +543,7 @@ const study13 = {
 					nameMod:["Mastery","Eighth","Skilled"]
 				},
 				236:{
-					description:function(){return "You must complete the Study within "+timeFormat(study13.bindingEff(236))+" before you are forcibly removed.<br><br>"+studies[0].exactFrames},
+					description:function(){return "You must complete the Study within "+timeFormat(study13.bindingEff(236))+" before you are forcibly removed.<br><br>"+studies[0].exactFrames[0]},
 					adjacent_req:[225],
 					get icon(){return studyIcon(11)},
 					lv:5,
@@ -753,17 +753,17 @@ const study13 = {
 				371:researchBinding(371,"r14_6",icon.tickspeed,[331,357],c.d0_8,["Seconds","Ancient","Timeless"]),
 				373:researchBinding(373,"r14_10",icon.darkYAxis,[353,348],c.d0_6,["Yearlong Darkness","Yperite","Yesternight's Garage"],2),
 				375:metaBinding(375,[315],[345],4,256,["Netherworld","Yama's","Sinful"]),
-				377:researchBinding(377,"r2_10",icon.stardust,[357,342],c.d0_25,["Nebula","Main Sequence of","Nebulous"],2),
+				377:researchBinding(377,"r2_10",icon.stardust,[357,342],c.d0_6,["Nebula","Main Sequence of","Nebulous"],2),
 				379:researchBinding(379,"r16_12",icon.darkstar,[339,353],c.d0_6,["Dwarfs","Elven","Garden Gnome's"]),
 				382:researchBinding(382,"r13_11",classes.stardust("B"),[371,373,375],c.d0_5,["Trinity","Three Microcosms'","Ternary"]),
 				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_5,["Pride","Accomplished","Overachieving"]),
-				393:researchBinding(393,"r1_8",classes.research("1"),[379,382],c.em3,["Basics","Primary","Original"]),
+				393:researchBinding(393,"r1_8",icon.normalaxis,[379,382],c.em3,["Basics","Primary","Original"]),
 				395:{
 					description:function(){return "Gain "+percentOrDiv(study13.bindingEff(395))+" less free normal axis from dark matter"},
 					adjacent_req:[373,375,377],
 					icon:"("+icon.darkaxis+icon.arr+icon.normalaxis+")"+icon.inv,
 					lv:2,
-					effect:function(power){return c.d0_5.pow(power)},
+					effect:function(power){return c.d0_1.pow(power)},
 					nameMod:["Dark Energy","Spectral","Massless"]
 				},
 				397:researchBinding(397,"r7_8",icon.star(""),[371,388],c.d0_95,["Constellation","Astrological","Stargazer's"]),
@@ -829,8 +829,10 @@ const study13 = {
 	},
 	bindingPower:function(id){
 		let out = c.d1
-		if (study13.rewards.weakenBindings.allAffected.includes(id)) {out = out.mul(stat.study13RewardWeakBindings[id])}
-		if ((study13.rewardLevels.signed8bit>0)&&[2,8].includes(id%10)) {
+		// row-by-row effects
+		// non-row-by-row effects
+		if (study13.rewards.weakenBindings.allAffected.includes(id)) {out = out.mul(stat.study13RewardWeakBindings[id])} // Mailbreaker
+		if ((study13.rewardLevels.signed8bit>0)&&[2,8].includes(id%10)) { // Mailbreaker II
 			let complement = 10*Math.floor(id/10)+10-(id%10)
 			if (g.study13Bindings[id]&&g.study13Bindings[complement]) {out = out.mul(c.d0_9)}
 		}
@@ -956,7 +958,7 @@ const study13 = {
 			weakenBindings:(()=>{
 				let out = {
 					name:"Mailbreaker",
-					breakpoints:[25,40,55,100,120,128,144,153,160,172,180],
+					breakpoints:[25,40,55,100,120,128,144,153,160,172,180,188],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.weakenBindings){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.max(l,Math.min(1,x)))}
@@ -977,10 +979,10 @@ const study13 = {
 							248:f(1.05-lv/80,0.9),
 							304:f(1-Math.sqrt(Math.max(lv-7,0)/12),0.5),
 							306:f(Math.log(Math.max(lv-1,6)/12)/Math.log(0.5),Math.log(0.75)/Math.log(0.5)),
-							312:f((2/3)**(lv-8),0.1),
-							318:f((2/3)**(lv-8),0.1),
+							312:f((2/3)**(lv-8),(Math.log(0.9)*10)/(Math.log(0.5)*9)),
+							318:f((2/3)**(lv-8),Math.log10(3)/3),
 							373:Decimal.FC_NN(1,0,Math.log(1-0.4/Math.min(2,Math.max(1,lv-9)**0.5))/Math.log(0.6)),
-							377:Decimal.FC_NN(1,0,1/Math.max(1,lv-9))
+							377:Decimal.FC_NN(1,0,Math.log(1-0.4/Math.min(2,Math.max(1,lv-9)**0.5))/Math.log(0.6)),
 						}
 					},
 					desc:function(curr,prev){

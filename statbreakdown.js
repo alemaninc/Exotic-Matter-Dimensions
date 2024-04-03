@@ -94,27 +94,27 @@ const hiddenStatistics = [
 		condition:function(){return unlocked("Dark Matter");}
 	},{
 		name:"Normal Axis Scaling",
-		value:function(){return "start "+stat.axisScalingStart.noLeadFormat(2)+", power "+stat.axisScalingPower.mul(c.e2).noLeadFormat(4)+"%"},
+		value:function(){return "start "+stat.axisScalingStart.noLeadFormat(3)+", power "+stat.axisScalingPower.mul(c.e2).noLeadFormat(4)+"%"},
 		condition:function(){return axisCodes.map(x=>g[x+"Axis"]).reduce((x,y)=>x.max(y)).gt(stat.axisScalingStart)}
 	},{
 		name:"Normal Axis Superscaling",
-		value:function(){return "start "+stat.axisSuperscalingStart.noLeadFormat(2)+", power "+stat.axisSuperscalingPower.mul(c.e2).noLeadFormat(4)+"%"},
+		value:function(){return "start "+stat.axisSuperscalingStart.noLeadFormat(3)+", power "+stat.axisSuperscalingPower.mul(c.e2).noLeadFormat(4)+"%"},
 		condition:function(){return axisCodes.map(x=>g[x+"Axis"]).reduce((x,y)=>x.max(y)).gt(stat.axisSuperscalingStart)}
 	},{
 		name:"Dark Axis Scaling",
-		value:function(){return "start "+stat.darkAxisScalingStart.noLeadFormat(2)+", power "+stat.darkAxisScalingPower.mul(c.e2).noLeadFormat(4)+"%"},
+		value:function(){return "start "+stat.darkAxisScalingStart.noLeadFormat(3)+", power "+stat.darkAxisScalingPower.mul(c.e2).noLeadFormat(4)+"%"},
 		condition:function(){return axisCodes.map(x=>g["dark"+x+"Axis"]).reduce((x,y)=>x.max(y)).gt(stat.darkAxisScalingStart)}
 	},{
 		name:"Dark Axis Superscaling",
-		value:function(){return "start "+stat.darkAxisSuperscalingStart.noLeadFormat(2)+", power "+stat.darkAxisSuperscalingPower.mul(c.e2).noLeadFormat(4)+"%"},
+		value:function(){return "start "+stat.darkAxisSuperscalingStart.noLeadFormat(3)+", power "+stat.darkAxisSuperscalingPower.mul(c.e2).noLeadFormat(4)+"%"},
 		condition:function(){return axisCodes.map(x=>g["dark"+x+"Axis"]).reduce((x,y)=>x.max(y)).gt(stat.darkAxisSuperscalingStart)}
 	},{
 		name:"Anti-Axis Scaling",
-		value:function(){return "start "+stat.antiAxisScalingStart.noLeadFormat(2)+", power "+stat.antiAxisScalingPower.mul(c.e2).noLeadFormat(4)+"%"},
+		value:function(){return "start "+stat.antiAxisScalingStart.noLeadFormat(3)+", power "+stat.antiAxisScalingPower.mul(c.e2).noLeadFormat(4)+"%"},
 		condition:function(){return axisCodes.map(x=>g["anti"+x+"Axis"]).reduce((x,y)=>x.max(y)).gt(stat.antiAxisScalingStart)}
 	},{
 		name:"Anti-Axis Superscaling",
-		value:function(){return "start "+stat.antiAxisSuperscalingStart.noLeadFormat(2)+", power "+stat.antiAxisSuperscalingPower.mul(c.e2).noLeadFormat(4)+"%"},
+		value:function(){return "start "+stat.antiAxisSuperscalingStart.noLeadFormat(3)+", power "+stat.antiAxisSuperscalingPower.mul(c.e2).noLeadFormat(4)+"%"},
 		condition:function(){return axisCodes.map(x=>g["anti"+x+"Axis"]).reduce((x,y)=>x.max(y)).gt(stat.antiAxisSuperscalingStart)}
 	},{
 		name:"Free Axis Softcap Boundaries",
@@ -259,6 +259,12 @@ const statTemplates = {
 			text:function(){return halfFunction(text);},
 			show:function(){return halfFunction(show);}
 		};
+	},
+	floor:{
+		label:"Floor",
+		func:function(prev){return prev.floor()},
+		text:function(){return "floor(<i>x</i>)"},
+		show:function(){return false}
 	},
 	masteryAdd:function(id){
 		return {
@@ -730,7 +736,8 @@ miscStats.pendingstardust={
 			text:function(){return "10 ^ log(<i>x</i>) ^ "+stat.stardustDilation.noLeadFormat(4)},
 			dependencies:["stardustDilation"],
 			show:function(prev){return prev.gt(c.d10)&&stat.stardustDilation.neq(c.d1)}
-		}
+		},
+		statTemplates.floor
 	],
 };
 miscStats.stardustMultiplier={
@@ -2730,6 +2737,7 @@ miscStats.pendinghr={
 			dependencies:["HRExponent"],
 			show:function(){return stat.HRExponent.neq(c.d1)}
 		},
+		statTemplates.floor
 	],
 };
 miscStats.HRBaseApexExp={

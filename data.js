@@ -720,9 +720,21 @@ const prismaticUpgrades = {
 		costFormula:()=>"Ξ<sup>[2]</sup>(λ ÷ 50 + max(λ - 49, 0)<sup>2</sup> ÷ 1,250)",
 		max:c.e2,
 		refundable:true,
-		loseLevelGlow:function(){return false},
+		loseLevelGlow:function(){return g.prismaticUpgrades.masterSpark.mod(c.d100).neq(c.d0)},
 		unlockReq:function(){return g.studyCompletions[13]>23}
-	}
+	},
+/*	mailbreaker:{
+		name:"Polychromatic Star for Melting a Binding",
+		desc:"Study XIII Binding 377 are {x}% weaker",
+		eff:(x=g.prismaticUpgrades.mailbreaker)=>[c.d1,N(0.5),N(0.84),N(0.81),N(0.8)][x.toNumber()],
+		format:{x:(x=prismaticUpgrades.mailbreaker.eff())=>c.d1.sub(x).mul(c.e2).format()},
+		formula:{x:()=>"λ × (9 - λ) ÷ 2"},
+		variables:"x",
+		cost:(x=g.prismaticUpgrades.mailbreaker)=>Decimal.FC_NN(1,1,10*Math.floor(2000*3**(x-3))),
+		costFormula:()=>"10<sup>10 × floor(2,000 × 3<sup>λ - 3</sup>)</sup>",
+		max:c.d4,
+		unlockReq:function(){return g.achievement[918]}
+	}, */
 }
 const prismaticUpgradeList = Object.keys(prismaticUpgrades)
 const nonRefundablePrismaticUpgrades = prismaticUpgradeList.filter(upg=>!prismaticUpgrades[upg].refundable)
