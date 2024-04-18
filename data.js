@@ -17,7 +17,7 @@ const energyHyper = [3,3,3,2,3,3,3,3,3,2];
 
 const studies = [
 	{    // 0 is used for utilities
-		exactFrames:["All frames are exactly 50 milliseconds long, and any excess time is converted to dilated time.",()=>true],
+		exactFrames:["All frames are exactly 50ms long in this Study; any excess time is converted to dilated time.",()=>true],
 		effectiveMaxCompletions:{},
 		roman:function(x){return (x===10)?"of Studies":roman(x)}
 	}
@@ -50,7 +50,17 @@ studies[1] = {
 studies[2] = {
 	name:"Big Bang Theory",
 	unlockReq:function(){return N(["e7e3","e1e4","e12500","e4e4"][studyPower(2)])},
-	description:function() {return ["Star costs increase much faster.","Stars must be purchased in a different order.<br><table style=\"font-size:60%\"><tr><td style=\"text-align:left;vertical-align:top;\" rowspan=\""+((g.studyContainerStyle==="Detailed")?"4":"2")+"\">Normal:</td>"+countTo(40,false).map(x=>"<td style=\"width:15px;\">"+starRow(x,false)+"</td>"+(((g.studyContainerStyle==="Detailed")?[10,20,30]:[20]).includes(x)?"</tr><tr>":"")).join("")+"</tr><tr><td style=\"text-align:left;vertical-align:top;\" rowspan=\""+((g.studyContainerStyle==="Detailed")?"4":"2")+"\">Bound:</td>"+countTo(40,false).map(x=>"<td>"+starRow(x,true)+"</td>"+(((g.studyContainerStyle==="Detailed")?[10,20,30]:[20]).includes(x)?"</tr><tr>":"")).join("")+"</tr></table>","Each unspent star acts as a free dark star."]},
+	binding2Info:function(){
+		let normal = Object.fromEntries(countTo(10).map(x=>[x,[]]))
+		let bound = Object.fromEntries(countTo(10).map(x=>[x,[]]))
+		for (let i=1;i<41;i++) {normal[starRow(i,false)].push(i);bound[starRow(i,true)].push(i)}
+		function table(obj,heading) {
+			let out = "<table><tr><th colspan=\"6\">"+heading+":</th></tr><tr><td rowspan=\"2\" colspan=\"2\"></td><td colspan=\"4\">Stars needed to afford <i>X</i> from this row:</td></tr><tr>"+countTo(4).map(x=>"<td>"+x+"</td>").join("")+"</tr>"+countTo(10).map(x=>"<tr>"+((x===1)?"<td rowspan=\"10\">Row</td>":"")+"<td>"+x+"</td>"+countTo(4,true).map(y=>"<td>"+obj[x][y]+"</td>").join("")+"</tr>").join("")+"</table>"
+			return out.replaceAll("<th","<th class=\"tablecell\"").replaceAll("<td","<td class=\"tablecell\"")
+		}
+		popup({text:table(normal,"Normal")+table(bound,"In Study"),buttons:[["Close",""]]})
+	},
+	description:function() {return ["Star costs increase much faster.","Stars must be purchased in a different order.<button class=\"information\" style=\"border-color:inherit;color:inherit;\" onClick=\"studies[2].binding2Info()\">?</button>","Each unspent star acts as a free dark star."]},
 	research:"r5_9",
 	goal:function(comp=studyPower(2)) {return [c.d800,c.d950,c.d1100,N(2100)][comp];},
 	reward:function(num,comp=g.studyCompletions[2]) {
@@ -67,17 +77,17 @@ studies[2] = {
 },
 studies[3] = {
 	name:"Analgesia",
-	unlockReq:function(){return [c.ee8,c.ee9,N("e5e9"),N("e1e12")][studyPower(3)]},
+	unlockReq:function(){return [betaActive?N("e7.5e7"):c.ee8,betaActive?c.ee10:c.ee9,betaActive?N("ee11"):N("e5e9"),N("e1e12")][studyPower(3)]},
 	energyGainConstant:function(){return [N(1000),N(2000),N(3000),N(4000)][studyPower(3)]},
 	energyPowerConstant:function(){return [c.dm1,c.dm2,c.dm5,N(-20)][studyPower(3)]},
 	description:function(){return ["Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled.","Energies severely reduce production instead of boosting it (x<sup>"+this.energyPowerConstant().format()+"</sup>).","You start with all Energies unlocked."]},
 	disclaimers:[
 		studies[0].exactFrames,
-		["Remember that all Energy speed multipliers are disabled. Row 4 research and the like can't hurt you.",()=>true],
+		["Remember that all Energy speed multipliers are disabled. This includes <span style=\"text-decoration:underline;\">everything</span>, including tickspeed.",()=>true],
 		["Row 5 and 6 Energy research are always 100% powered, unaffected by any boosts or nerfs.",()=>unlocked("Study XIII")]
 	],
 	research:"r9_2",
-	goal:function(comp=studyPower(3)){return [c.d2e3,N(2200),N(2400),N(2700)][comp];},
+	goal:function(comp=studyPower(3)){return [c.d2e3,N(betaActive?2222:2200),N(betaActive?2500:2400),N(betaActive?2666:2700)][comp];},
 	reward:function(num,comp=g.studyCompletions[3]){
 		if (num===1) return comp
 		if (num===2) return [c.d0,c.d0_2,c.d0_35,c.d0_45,c.d0_5][comp].mul(studyRewardBoost(3,2))
@@ -103,10 +113,10 @@ studies[3] = {
 },
 studies[4] = {
 	name:"Vacuum Decay",
-	unlockReq:function() {return [N(1e144),c.inf,N("4.44e444"),c.inf.pow(c.d2)][studyPower(4)]},
+	unlockReq:function() {return betaActive?Decimal.FC_NN(1,1,Math.log10(2)*(studyPower(4)+1)*512):[N(1e144),c.inf,N("4.44e444"),c.inf.pow(c.d2)][studyPower(4)]},
 	description:function(){return ["Every Stardust reset you do raises stardust gain to the power of 0.5 for the rest of the Study."]},
 	research:"r9_14",
-	goal:function(comp=studyPower(4)){return [N(3000),N(3700),N(4500),N(5400)][comp]},
+	goal:function(comp=studyPower(4)){return [N(betaActive?3200:3000),N(betaActive?3600:3700),N(betaActive?4250:4500),N(betaActive?5200:5400)][comp]},
 	reward:function(num,comp=g.studyCompletions[4]){
 		if (num===1) return N([0.5,0.514,0.527,0.539,0.55][comp])
 		if (num===2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
@@ -207,7 +217,7 @@ studies[8] = {
 studies[9] = {
 	name:"Scientia est Experientia",
 	unlockReq:function(){return [N(9.99e149),N(9.99e189),N("9.99e469"),N("5.67e1234")][studyPower(9)]},
-	description:function(){return ["Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>. If not finished within 9 seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars. Depending on how much experientia you have, the penalty of this Study is either increased or mitigated."]},
+	description:function(){return ["Exotic matter gain, dark matter gain and all global divisors to normal and dark axis costs are reduced to 10<sup>log(base gain)<sup>"+this.experientiaEffect(c.d0).noLeadFormat(3)+"</sup></sup>.","If not finished within 9 seconds, the Study will reset itself, and you will gain or lose experientia based on your number of dark stars, mitigating or enhancing the previous Binding."]},
 	disclaimers:[
 		studies[0].exactFrames
 	],
@@ -804,7 +814,7 @@ const wormholeUpgrades = {
 	9:{
 		name:"More Capitalism",
 		text:function(){return "Autobuyer interval caps are halved"},
-		cost:Decimal.FC_NN(1,1,1e5)
+		cost:Decimal.FC_NN(1,1,Math.log10(1.23)+45678)
 	},
 	10:{
 		name:"More Space",

@@ -77,7 +77,7 @@
 				<div class="subtab main" id="subtab_main_corruption" style="display:none"></div>
 			</div>
 			<div class="tab" id="bigtab_stardust" style="display:none">
-				<p id="div_stardust_disabledTop">You have <span id="span_stardust_disabledTop" class="big _stardust"></span> stardust</p>
+				<p id="div_stardust_disabledTop">You have <span id="span_stardust_disabledTop" class="big _stardust"></span> stardust</p><br id="br_stardust_disabledTop">
 				<div class="stardustNavigation globalnavigation">
 					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','stardustBoosts')" id="button_subtab_stardust_stardustBoosts">Stardust Boosts</button>
 					<button class="tabtier2 tier2stardust" onClick="openSubTab('stardust','stars')" id="button_subtab_stardust_stars" style="filter:brightness(60%)">Stars</button>
@@ -139,7 +139,7 @@
 				</div>
 			</div>
 			<div class="tab" id="bigtab_wormhole" style="display:none">
-				<p id="div_hr_disabledTop">You have <span id="span_hr_disabledTop" class="big _wormhole"></span> Hawking radiation</p>
+				<p id="div_hr_disabledTop">You have <span id="span_hr_disabledTop" class="big _wormhole"></span> Hawking radiation</p><br id="br_hr_disabledTop">
 				<div class="wormholeNavigation globalnavigation">
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','research');updateResearchTree()" id="button_subtab_wormhole_research">Research</button>
 					<button class="tabtier2 tier2wormhole" onClick="openSubTab('wormhole','studies')" id="button_subtab_wormhole_studies" style="display:none;filter:brightness(60%)">Studies</button>
@@ -160,7 +160,7 @@
 					<div id="discoveryPanel" class="panel">
 						<p style="column-count:2">You have <span id="span_knowledge" class="big _research"></span> knowledge, giving a <span id="span_knowledgeEffect" class="big _research"></span>% boost to all Masteries.<br>
 						You are gaining <span id="span_knowledgePerSec" class="big _research"></span> knowledge per second (based on mastery power and observations)<br>
-						You have <span id="span_discoveryDisplay" class="big _research"></span> Discoveries <button id="button_projectedResearchCost" onClick="projectedResearchCost()">i</button><br>
+						You have <span id="span_discoveryDisplay" class="big _research"></span> Discoveries <button id="button_projectedResearchCost" class="information" style="border-color:var(--research);color:var(--research)" onClick="projectedResearchCost()">i</button><br>
 						Next at <span id="span_discoveryKnowledgeReq" class="big _research"></span> knowledge</p>
 						<button class="observation" id="button_observation0" onClick="buyMaxObservations(0)">Observe exotic matter<br>(Need <span id="span_observeCost0"></span> exotic matter)</button>
 						<button class="observation" id="button_observation1" onClick="buyMaxObservations(1)">Observe nebulae<br>(Need <span id="span_observeCost1"></span> stardust)</button>
@@ -195,7 +195,7 @@
 					The <span id="span_galaxyFinalStarOrdinal"></span> star currently costs <span class="big _galaxies" id="span_currentGalaxyStarCost"></span> stardust, and will cost <span class="big _galaxies" id="span_nextGalaxyStarCost"></span> in the next galaxy.<br>
 					At your current amount of stardust you can afford <span class="big _galaxies" id="span_currentGalaxyAffordableStars"></span> stars, and will be able to afford <span class="big _galaxies" id="span_nextGalaxyAffordableStars"></span> in the next galaxy.<br>
 					Gaining or losing galaxies forces a Wormhole reset.</p>
-					<button onClick="gainGalaxy()" id="button_gainGalaxy">Gain a galaxy (requires <span id="span_galaxyStarRequirement"></span> stars)</button>
+					<button onClick="gainGalaxy()" id="button_gainGalaxy">Create a galaxy (requires <span id="span_galaxyStarRequirement"></span> stars)</button>
 					<button onClick="loseGalaxy()" id="button_destroyGalaxies">Destroy a galaxy</button><br>
 					<div id="div_galaxyEffects">
 						<h4 style="text-decoration:underline;color:rgba(255,255,0,0.9);">Galaxy Effects</h4>

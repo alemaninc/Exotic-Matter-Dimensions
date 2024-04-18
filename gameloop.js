@@ -343,6 +343,7 @@ function updateHTML() {
 	if (g.activeTab==="stardust") {
 		if (StudyE(1)) openTab("wormhole");
 		d.display("div_stardust_disabledTop",g.topResourcesShown.stardust?"none":"inline-block")
+		d.display("br_stardust_disabledTop",g.topResourcesShown.stardust?"none":"inline-block")
 		if (!g.topResourcesShown.stardust) d.innerHTML("span_stardust_disabledTop",g.stardust.format())
 		if (g.activeSubtabs.stardust==="stardustBoosts") {
 			for (let i=1;i<3+g.stardustUpgrades[2];i++) d.innerHTML("span_stardustBoost"+i+"Value",showFormulas?showStardustBoostFormula[i]():formatStardustBoost(i))
@@ -501,9 +502,10 @@ function updateHTML() {
 	}
 	if (g.activeTab==="wormhole") {
 		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
+		d.display("br_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
 		if (g.activeSubtabs.wormhole==="research") {
-			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format()+" / "+g.totalDiscoveries.format());
+			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format(0,3)+" / "+g.totalDiscoveries.format(0,3));
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10)"+formulaFormat.mult(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
@@ -751,7 +753,7 @@ function updateHTML() {
 			d.element("div_study13").style["color"] = colors[2]
 			d.innerHTML("button_study13",studyButtons.text(13))
 			d.class("button_study13","studyButton "+studyButtons.class(13))
-			d.innerHTML("span_study13Binding","Select Bindings from the tree below. Each Binding adds additional conditions to Study XIII, but increases your binding level.<br>This Study can be bulk-completed, and upon completion your completions will increase to your total binding level."+(((g.studyCompletions[13]>199)||unlocked("Matrix"))?"<br>Upon reaching the dark axis goal with 256 binding levels, your completions will instantly increase to 256 without needing to exit the Study.":""))
+			d.innerHTML("span_study13Binding","Select Bindings from the tree below. Each Binding adds additional conditions to Study XIII, but increases your binding level.<br>This Study can be bulk-completed, and upon completion your completions will increase to your total binding level.")
 			d.innerHTML("span_study13Name",study13.name())
 			d.innerHTML("span_study13Goal",achievement.perAchievementReward[9].currentVal.format())
 			d.innerHTML("span_study13Completions",g.studyCompletions[13])
@@ -791,7 +793,7 @@ function tick(time) {																																		 // The game loop, which 
 	if (time<0) {
 		error("An error has occurred which would have caused time to reverse by "+timeFormat(time)+"")
 		return
-	} else if (time===0) {return} // not an error but no point causing lag
+	}
 	if ((timeState===0)&&timeAlwaysEqualized()) {timeState = 3} // time is always equalized in Studies 3 and 9 unless Overclock is active
 	if (timeState===3) {
 		let diff = time-0.05
@@ -831,18 +833,8 @@ function tick(time) {																																		 // The game loop, which 
 	fpsAchievementTicks = ((deltatime===0.05)&&(!StudyE(3)))?(fpsAchievementTicks+1):0;
 	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
 	if (stat.chromaPerSec.gte(c.d1)) g.ach711Progress = Math.min(g.ach711Progress,g.stars)
-	if (g.ach825possible) {for (let i of axisCodes) {
-		if (Decimal.lt(stat["free"+i+"Axis"],g[i+"Axis"].mul(c.d2))) g.ach825possible = false
-		if (Decimal.lt(stat["freedark"+i+"Axis"],g["dark"+i+"Axis"].mul(c.d2))) g.ach825possible = false
-	}}
+	achievement(825).update()
 	o.add("ach901Int",[g.exoticmatter.add(c.d1).log10().pow(c.d10),stat.tickspeed,time].productDecimals())
-
-	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
-		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
-			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onClick=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
-			newsSupport.newsletter.spamStart=Date.now()+3000
-		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
-	}
 	if (Decimal.gt(stat.tickspeed,g.bestTickspeedThisMatrix)) {g.bestTickspeedThisMatrix = stat.tickspeed}
 	if (Decimal.gt(stat.tickspeed,g.bestTickspeed)) {g.bestTickspeed = stat.tickspeed}
 	if (g.baselessMilestones[4]!==13) {
@@ -852,6 +844,13 @@ function tick(time) {																																		 // The game loop, which 
 				if (Decimal.gte(numberOfDigits(g.exoticmatter),achievement(921+i).nextMilestone(g.baselessMilestones[i]))) {g.baselessMilestones[i]++} else {continue milestoneLoop}
 			}
 		}
+	}
+
+	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
+		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
+			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onClick=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
+			newsSupport.newsletter.spamStart=Date.now()+3000
+		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
 	}
 	
 	

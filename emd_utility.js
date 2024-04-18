@@ -1,20 +1,10 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(c).6",
+	current:"𝕍1.5(c).7",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
-	nextProgress:[
-		1, // tier 8 hell
-		[
-			189/200, // Study XIII completed
-			200/200  // Study XIII implemented
-		],
-		[
-			26/33,  // achievements completed
-			33/33   // achievements implemented
-		]
-	],
+	nextProgress:[0.98],
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -94,7 +84,7 @@ function hidePopup() {
 function popupInput() {return d.element("span_fancyPopupInput").value}
 function functionError(functionName,argumentList) {error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")}
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
-function BEformat(value,precision=0) {return gformat(value,precision,g.notation).replaceAll(" ","&nbsp;");}
+function BEformat(value,precision=0,highPrecision=2) {return gformat(value,precision,g.notation,g.notation,highPrecision).replaceAll(" ","&nbsp;");}
 function timeFormat(x) {
 	x = N(x);
 	if (x.eq(constant.d0)) return "0 seconds";
@@ -107,7 +97,7 @@ function timeFormat(x) {
 		let unit = ["milli","micro","nano","pico","femto","atto","zepto","yocto","ronto","quecto"][exp.toNumber()-1]+"second"+((num==="1")?"":"s");
 		return num+" "+unit;
 	}
-	if (x.lt(constant.d60)) return x.noLeadFormat(2)+" seconds";
+	if (x.lt(constant.d60)) return x.noLeadFormat(2)+" second"+(x.eq(c.d1)?"":"s");
 	if (x.lt(constant.d3600)) return x.div(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
 	if (x.lt(constant.d86400)) return x.div(constant.d3600).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
 	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gte(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
@@ -123,8 +113,8 @@ function rateFormat(x) {
 	if (x.lt(constant.d1)) return "1 per "+timeFormat(x.recip())
 	throw "Cannot access rateFormat("+x+")"
 }
-Decimal.prototype.format = function(precision) {
-	return BEformat(this,precision);
+Decimal.prototype.format = function(precision,highPrecision) {
+	return BEformat(this,precision,highPrecision);
 };
 Decimal.prototype.noLeadFormat = function(precision,tolerance=1e-7) {
 	if (this.layer !== 0) return BEformat(this)

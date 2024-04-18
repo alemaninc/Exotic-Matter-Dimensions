@@ -30,7 +30,7 @@ const study13 = {
 			function basename(ids){
 				if (Math.sqrt(ids.sum())%1<0.1) {return study13.bindings[used[0]].nameMod[0]+" 〜"}
 				const names = [
-					["Bindings",["in","of"]],
+					[ids.length+" Bindings",["in","of"]],
 					["Challenge",["in","of"]],
 					["Dimension",["〜","beyond","of"]],
 					["Dreams",["in","of"]],
@@ -285,7 +285,7 @@ const study13 = {
 					icon:gradientText("T","-webkit-linear-gradient(90deg,var(--exoticmatter),var(--darkmatter))")+icon.minus,
 					lv:1,
 					effect:function(power){return c.d0_5.pow(power)},
-					nameMod:["Tetra-time","Tau","Twenty-First"]
+					nameMod:["Tetra-time","Tau","Twenty-first"]
 				},
 				107:{
 					description:function(){return "Lose "+study13.bindingEff(107).noLeadFormat(3)+" free dark stars"},
@@ -293,7 +293,7 @@ const study13 = {
 					icon:icon.darkstar+icon.minus,
 					lv:4,
 					effect:function(power){return power.mul(c.d50)},
-					nameMod:["Night","Shining","Bright"]
+					nameMod:["Night Shining Bright","Shine Bright,","Bright"]
 				},
 				113:{
 					description:function(){return "Stardust upgrade costs are raised to the power of "+study13.bindingEff(113).noLeadFormat(3)},
@@ -526,7 +526,7 @@ const study13 = {
 				225:{
 					numDesc:function(){return study13.bindingEff(225).noLeadFormat(3)},
 					formulaDesc:function(){return "min(log<sub>"+this.discoveryReq(study13.bindingPower(225)).noLeadFormat(3)+"</sub>(υD ÷ "+g.totalDiscoveries.format()+"), 1)"},
-					description:function(){return "You can only spend a maximum of "+this.discoveryReq(study13.bindingPower(225)).mul(c.e2).noLeadFormat(2)+"% of your Discoveries ("+g.spentDiscoveries.format()+" / "+this.discoveryReq(study13.bindingPower(225)).mul(g.totalDiscoveries).ceil().format()+").<br><br>If you spend more than this, exotic matter, stardust, dark matter and mastery power gain are significantly reduced (currently: "+arrowJoin("x","10<sup>log(x)<sup>"+numOrFormula(225)+"</sup></sup>")+")"},
+					description:function(){return "You can only spend a maximum of "+this.discoveryReq(study13.bindingPower(225)).mul(c.e2).noLeadFormat(3)+"% of your Discoveries ("+g.spentDiscoveries.format(0,3)+" / "+this.discoveryReq(study13.bindingPower(225)).mul(g.totalDiscoveries).ceil().format(0,3)+").<br><br>If you spend more than this, exotic matter, stardust, dark matter and mastery power gain are significantly reduced (currently: "+arrowJoin("x","10<sup>log(x)<sup>"+numOrFormula(225)+"</sup></sup>")+")"},
 					adjacent_req:[192,198,204,206],
 					icon:studyIcon(5),
 					lv:4,
@@ -756,7 +756,7 @@ const study13 = {
 				377:researchBinding(377,"r2_10",icon.stardust,[357,342],c.d0_6,["Nebula","Main Sequence of","Nebulous"],2),
 				379:researchBinding(379,"r16_12",icon.darkstar,[339,353],c.d0_6,["Dwarfs","Elven","Garden Gnome's"]),
 				382:researchBinding(382,"r13_11",classes.stardust("B"),[371,373,375],c.d0_5,["Trinity","Three Microcosms'","Ternary"]),
-				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_5,["Pride","Accomplished","Overachieving"]),
+				388:researchBinding(388,"r9_5",icon.achievements,[375,377,379],c.d0_25,["Pride","Accomplished","Overachieving"]),
 				393:researchBinding(393,"r1_8",icon.normalaxis,[379,382],c.em3,["Basics","Primary","Original"]),
 				395:{
 					description:function(){return "Gain "+percentOrDiv(study13.bindingEff(395))+" less free normal axis from dark matter"},
@@ -766,18 +766,18 @@ const study13 = {
 					effect:function(power){return c.d0_1.pow(power)},
 					nameMod:["Dark Energy","Spectral","Massless"]
 				},
-				397:researchBinding(397,"r7_8",icon.star(""),[371,388],c.d0_95,["Constellation","Astrological","Stargazer's"]),
+				397:researchBinding(397,"r7_8",icon.star(""),[371,388],c.d0_75,["Constellation","Astronomical","Stargazer's"]),
 				415:{
 					description:function(){return "Finality Research is "+percentOrDiv(study13.bindingEff(415))+" weaker"},
 					adjacent_req:[393,395,397],
 					icon:icon.research+classes.xscript("-","<span style=\"color:"+researchGroupList.finality1.color+"\">F</span>"),
 					lv:2,
-					effect:function(power){return c.d0_5.pow(power)},
+					effect:function(power){return c.d0_2.pow(power)},
 					nameMod:["Culmination","Ultimate","Final"]
 				},
-				442:metaBinding(442,[371,373,377,379,382,388,393,397],[415],3,2560,["Gap God","Weakest Links'","Ignorant"],icon.research),
-				445:metaBinding(445,[85,103,104,125,135,242,333,337],[415],2,2560,["Beginning","Gateway to","Eight Tests'"],"-1"),
-				448:metaBinding(448,[164,168,174,178,184,188,194,198],[415],3,2560,["Progress","High Attainment","Venerable"],icon.achievements)
+				442:metaBinding(442,[371,373,377,379,382,388,393,397],[415],3,1024,["Gap God","","Ignorant"],icon.research),
+				445:metaBinding(445,[85,103,104,125,135,242,333,337],[415],2,1024,["Beginning","Gateway to","Eight Tests'"],"-1"),
+				448:metaBinding(448,[164,168,174,178,184,188,194,198],[415],3,1024,["Progress","Develop Nobly,","Venerable"],gradientText("A","linear-gradient(180deg,var(--exoticmatter) 25%,var(--achievements) 41.67% 58.33%,var(--darkmatter) 75%)"))
 			}
 		}
 	})(),
@@ -828,7 +828,7 @@ const study13 = {
 		return out
 	},
 	bindingPower:function(id){
-		let out = c.d1
+		let out = c.d1, row = Math.floor(id/10)
 		// row-by-row effects
 		// non-row-by-row effects
 		if (study13.rewards.weakenBindings.allAffected.includes(id)) {out = out.mul(stat.study13RewardWeakBindings[id])} // Mailbreaker
@@ -836,6 +836,7 @@ const study13 = {
 			let complement = 10*Math.floor(id/10)+10-(id%10)
 			if (g.study13Bindings[id]&&g.study13Bindings[complement]) {out = out.mul(c.d0_9)}
 		}
+		if (achievement(919).rewardAffects.includes(id)&&g.achievement[919]) {out = out.mul(achievement(919).effect())}
 		// these directly affect other bindings so we apply them even outside study XIII for clarity
 		if (study13.metaBindings[id]!==undefined) {for (let i of study13.metaBindings[id]) {if (g.study13Bindings[i]) {out = out.mul(study13.bindingEff(i).mul(studyPower(13)).add(c.d1))}}}
 		return out
@@ -958,7 +959,7 @@ const study13 = {
 			weakenBindings:(()=>{
 				let out = {
 					name:"Mailbreaker",
-					breakpoints:[25,40,55,100,120,128,144,153,160,172,180,188],
+					breakpoints:[25,40,55,100,120,128,144,153,160,172,180,188,200],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.weakenBindings){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.max(l,Math.min(1,x)))}
@@ -1061,7 +1062,7 @@ const study13 = {
 			particleLab3:(()=>{
 				let out = {
 					name:"Stat Mark's Cellular Game of Rising",
-					breakpoints:[168,174,182],
+					breakpoints:[168,174,182,192,200],
 					type:"scaling",
 					eff:function(lv=study13.rewardLevels.particleLab3){
 						function f(x,l){return Decimal.FC_NN(1,0,Math.min(l,Math.max(1,x)))}
@@ -1071,6 +1072,10 @@ const study13 = {
 							r15_9:f(Math.round(lv*7.5+lv**2*0.25)*10,1000),
 							r19_7:f(lv*4,16),
 							r19_9:N(1+lv**(2/3)/40,Math.log(1.225)/Math.log(1.2)),
+							r22_6:Decimal.FC_NN(1,0,2.05625-(Math.max(-6.5,Math.min(lv-9.5,-1.5)))**2/40),
+							r22_10:Decimal.FC_NN(1,0,0.94375+(Math.max(1.5,Math.min(lv-1.5,6.5)))**2/40),
+							r25_1:Decimal.FC_NN(1,0,(lv>=4)?(Math.log(7.7)/Math.log(7)):1),
+							r25_15:(lv>=4)?c.d9:c.d1,
 							r41_6:finality12Boost,
 							r41_10:finality12Boost,
 							r44_4:finality12Boost,

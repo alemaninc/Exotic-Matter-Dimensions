@@ -779,16 +779,14 @@ tab {
 	background:linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
 	padding:5px;
 }
-#button_projectedResearchCost {
+.information {
 	height:16px;
 	width:16px;
 	font-size:12px;
 	font-family: 'Courier New', Courier, monospace;
 	border-style:solid;
 	border-radius:8px;
-	border-color:var(--research);
 	border-width:1px;
-	color:var(--research);
 	background:rgba(0,0,0,0);
 }
 .observation {

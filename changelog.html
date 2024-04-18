@@ -74,18 +74,34 @@ const logEntries = [
 	/*
 	next major:
 	{num:"𝕍1ω",date:"",name:"Stellar Sect of Mathematical Wisdom 〜 Blobular Fusion",changes:[
-		["BALANCE","Achievement 712 \"Rewind\" now requires 3600 yellow lumens to be boosted (from 3500), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
+		["BALANCE","Research 9-2 now initially costs 360 Discoveries (previously 400), and the requirement is lower"],
+		["BALANCE","Row 9 Chromatic research are stronger (about 2× more chroma each)"],
+		["BALANCE","Achievement 607 \"There are Four Lights\" has a base reward of 2.75× (from 2.8×). Value once yellow light takes effect is unchanged."],
+		["BALANCE","Study IV has higher goals and unlock requirements"],
+		["BALANCE","Added a link to research 13-8 from 10-5 and 10-11"],
+		["BALANCE","Research 12-8 now has a base requirement of "+format(4800)+" Discoveries (from "+format(5250)+")"],
+		["BALANCE","Achievement 712 \"Rewind\" now requires "+format(3600)+" yellow lumens to be boosted (from "+format(3500)+"), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
 		["BALANCE","Study of Studies rewards are significantly stronger"],
 		["BALANCE","Research 34-3 is stronger"],
 		["BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
 		["BUGFIX","Achievement 613 \"Antimatter Academia\" is now properly affected by yellow light and no longer affects 9-7, 9-8 or 9-9"],
-		["CONTENT","105 new research going up to row 47"]
+		["CONTENT","117 new research going up to row 47"],
 	]}
 	blank entry:
 	{num:"",date:"",changes:[
 
 	]},
 	*/
+	{num:"𝕍1.5(c).7",date:"2024-04-18",changes:[
+		["BALANCE","Row 10 Chromatic research now require "+format("e8")+" of the relevant chroma (from "+format("e9")+"), and their formulas are stronger"],
+		["BUGFIX","Game doing strange things when frozen"],
+		["INTERFACE","Tetration notation now uses quadratic base 10 approximation rather than linear base 10, and Standard notation is less excessively precise"],
+		["QOL","Hotkey-triggered resets now correctly show confirmation popups if enabled"],
+		["TEXTFIX","Additional research from the 15-achievement Wormhole Milestone not appearing without reload"],
+		["TEXTFIX","Achievement 526 \"Big Crunch\" shows its progress correctly"],
+		["TEXTFIX","Review of yellow light effects in 'Light' tab works properly now"],
+		["TEXTFIX","Removed all erroneous references to \"axes\". The rules of English do not apply in <i>Exotic Matter Dimensions</i> so the plural is \"axis\"."]
+	]},
 	{num:"𝕍1.5(c).6",date:"2024-04-03",changes:[
 		["BUGFIX","Game actually no longer crashes when viewing Achievement 505 \"Iron Will IV\" when it is fully completed under Iron Will conditions"],
 		["TEXTFIX","Galaxy effect unlock requirements no longer show as 2 higher than they should be"],
