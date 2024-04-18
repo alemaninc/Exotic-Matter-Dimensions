@@ -70,7 +70,7 @@ const research = (function(){
 			basecost:c.d0,
 			icon:icon[resInt]+icon.arr+classes.research("R$"),
 			effect:function(power){return c.d1.sub(studies[5].reward(1).div(c.e3)).pow(power)},
-			group:betaActive?"study5a":""
+			group:betaActive?"study5a":undefined
 		}
 	}
 	function numOrFormula(id) {return showFormulas?formulaFormat(research[id].formulaDesc()):research[id].numDesc()}
