@@ -3051,10 +3051,10 @@ const notations = {
 		if (leadingEs===0) {x=x.mul(1.0000001);return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(constant.d3).floor().mul(constant.d3).toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Engineering"](x.layerplus(-leadingEs),sub,p+1)
 	},
-	"Hyper-E":function(x,sub="Hyper-E"){
+	"Hyper-E":function(x,sub="Hyper-E",p=3){
 		let height = Math.floor(x.slog().toNumber())
 		if (height>1e6) {return "E#"+notations[sub](N(height),sub)}
-		return "E"+((x.mag>=1e10)?Math.log10(Math.log10(x.mag)):Math.log10(x.mag)).toFixed(3)+"#"+height.toLocaleString("en-US")
+		return "E"+((x.mag>=1e10)?Math.log10(Math.log10(x.mag)):Math.log10(x.mag)).toFixed(p)+"#"+height.toLocaleString("en-US")
 	},
 	"Infinity":function(x,sub="Infinity"){
 		if (x.gte("eeeee6")) {return (Math.log2(x.quad_slog(constant.d10).toNumber())/1024).toFixed(6)+"Ω"}
@@ -3078,11 +3078,12 @@ const notations = {
 		return Array(leadingEs+1).join("e")+notations["Mixed scientific"](x.layerplus(-leadingEs),sub,p+1)
 	},
 	"Scientific":function(x,sub="Scientific",p=2){
-		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub)
-		let leadingEs = notationSupport.leadingEs(x)
-		if (x.layerplus(-leadingEs).gte(constant.ee4)) {p--}
-		if (x.layerplus(-leadingEs).gte(constant.ee5)) {p--}
-		if (leadingEs===0) {x=x.mul(1.0000001);return x.log10().mod(constant.d1).pow10().mul(10**p).floor().div(10**p).toFixed(p)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")}
+		if (x.gte("eeeee6")) return notations["Hyper-E"](x,sub);
+		let leadingEs = notationSupport.leadingEs(x);
+		let effp = p
+		if (x.layerplus(-leadingEs).gte(constant.ee4)) {effp--;}
+		if (x.layerplus(-leadingEs).gte(constant.ee5)) {effp--;}
+		if (leadingEs===0) {x=x.mul(1.0000001);return x.log10().mod(constant.d1).pow10().mul(10**effp).floor().div(10**effp).toFixed(effp)+"e"+x.log10().floor().toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Scientific"](x.layerplus(-leadingEs),sub,p+1)
 	},
 	"Standard":function(x,sub="Standard",p=2){
@@ -3092,7 +3093,6 @@ const notations = {
 			if (x.lt(constant.e33)) {return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+["M","B","T","Qa","Qt","Sx","Sp","Oc","No"][Math.floor(x.log10().toNumber()/3-2)];}
 			let height = x.log10().div(constant.d3).sub(constant.d1).floor().toNumber()
 			let e3vals = [10,9,8,7,6,5,4,3,2,1,0].map(x=>Math.floor((height/1e3**x)%1e3))
-			let firste3 = e3vals.map(x=>x>0).indexOf(true)
 			let out = []
 			let hp = p+2
 			let sequence = notationSupport.standard.sequence(Math.floor(Math.log10(height)),hp)

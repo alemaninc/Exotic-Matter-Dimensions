@@ -123,7 +123,7 @@ const subtabProperties = {
 		antimatter:{
 			visible:function(){return unlocked("Antimatter")},
 			glow:function(){
-				if (g.glowOptions.buyDarkAxis) {for (let i of axisCodes.filter(x=>antiAxisUnlocked(x))) {if (g.antimatter.gt(antiAxisCost(i))) {return true}}};
+				if (g.glowOptions.buyAntiAxis) {for (let i of axisCodes.filter(x=>antiAxisUnlocked(x))) {if (g.antimatter.gt(antiAxisCost(i))) {return true}}};
 				return false
 			}
 		},
