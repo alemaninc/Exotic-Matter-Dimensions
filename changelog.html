@@ -75,12 +75,19 @@ const logEntries = [
 	next major:
 	{num:"𝕍1ω",date:"",name:"Stellar Sect of Mathematical Wisdom 〜 Blobular Fusion",changes:[
 		["BALANCE","Research 9-2 now initially costs 360 Discoveries (previously 400), and the requirement is lower"],
+		["BALANCE","Study III goals are changed ()"],
 		["BALANCE","Row 9 Chromatic research are stronger (about 2× more chroma each)"],
 		["BALANCE","Achievement 607 \"There are Four Lights\" has a base reward of 2.75× (from 2.8×). Value once yellow light takes effect is unchanged."],
 		["BALANCE","Study IV has higher goals and unlock requirements"],
 		["BALANCE","Added a link to research 13-8 from 10-5 and 10-11"],
 		["BALANCE","Research 12-8 now has a base requirement of "+format(4800)+" Discoveries (from "+format(5250)+")"],
+		["BALANCE","Research 16-8 now costs "+format(1440)+" Discoveries (from "+format(1550)+")"],
+		["BALANCE","Study VI reward 1 is stronger at 2 and 3 completions"],
+		["BALANCE","Achievement 709 \"Mind-bending Curvature II\" requirement reduced to "+format("3.33e833")+" (from "+format("8.88e888")+"), and Achievement 710 \"Mind-bending Curvature III\" requirement reduced to "+format("8.88e888")+" (from "+format("9.99e999")+")"],
 		["BALANCE","Achievement 712 \"Rewind\" now requires "+format(3600)+" yellow lumens to be boosted (from "+format(3500)+"), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
+		["BALANCE","Research 16-6 and 16-10 are 24× stronger"],
+		["BALANCE","Achievement 801 \"The Explorer\" reward is stronger"],
+		["BALANCE","Achievement 813 \"Hidden Stars in Zero Dimensions\" requirement is now 208 (from 210)"],
 		["BALANCE","Study of Studies rewards are significantly stronger"],
 		["BALANCE","Research 34-3 is stronger"],
 		["BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
@@ -92,6 +99,15 @@ const logEntries = [
 
 	]},
 	*/
+	{num:"𝕍1.5(c).9",date:"2024-04-28",name:"Remission of a Save-Killing Disease",changes:[
+		["BUGFIX","Projected research cost now includes unowned Study V research"],
+		["BUGFIX","Achievement 718 \"Softcap-colored Lights\" can no longer be abused in conjunction with Prismatic Upgrade R1 \"Chromatic Overdrive\""],
+		["INTERFACE","Achievement tooltips are now cleaner"],
+		["INTERFACE","Showing complex achievements on the progress bar now shows more information"],
+		["INTERFACE","Galaxy effects no longer jitter when showing formulas"],
+		["INTERFACE","Tier 7 achievements use darker colors"],
+		["QOL","Added an option to reverse the order in which Achievement tiers display"]
+	]},
 	{num:"𝕍1.5(c).8",date:"2024-04-20",changes:[
 		["BUGFIX","Game crashing sporadically when Scientific notation is enabled"],
 		["TEXTFIX","\"Glow when anti-axis can be bought\" checking if this is enabled for dark axis"]

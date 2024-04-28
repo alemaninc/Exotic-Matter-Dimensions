@@ -99,6 +99,7 @@ const basesave = {
 	secretAchievement:Object.fromEntries(Object.keys(secretAchievementList).map(x=>[x,false])),
 	achievementIDShown:true,
 	completedAchievementTiersShown:true,
+	achievementTiersReversed:false,
 	clickedInStudy1:false,
 	StardustResets:0,
 	TotalStardustResets:0,
@@ -799,8 +800,9 @@ function masteryBoost(x) {
 	return b.fix(c.d0);
 }
 const percentableMasteries = [41,43,61,72,91,92] // masteries with effects that can be formatted as a percentage
-function masteryEffFormat(x) {
-	let precision = [52,62,85,101,105].includes(x)?3:2
+function masteryEffFormat(x,getPrec=false) {
+	let precision = [101].includes(x)?4:[52,62,85,105].includes(x)?3:2
+	if (getPrec) {return precision;}
 	let percentable = percentableMasteries.includes(x)
 	let func = [].includes(x)?"noLeadFormat":"format"
 	let eff = masteryEffect(x)
@@ -2033,7 +2035,10 @@ function studyRewardBoost(studyNum,rewardNum) {
 // Light
 function generateChroma(x,amount) {
 	let typesUnlocked = [0,3,6,8,9][lightTiersUnlocked()]
-	if (g.achievement[718]) for (let j=0;j<typesUnlocked;j++) g.chroma[j] = g.chroma[j].add(amount.div(c.e15)).max(c.d0) // prevent lag
+	if (g.achievement[718]) {
+		let val718 = [amount,c.d1.sub(stat.chromaCostMultiplier).max(c.d0),c.em15].productDecimals()
+		for (let j=0;j<typesUnlocked;j++) g.chroma[j] = g.chroma[j].add(val718).max(c.d0) // prevent lag
+	}
 	for (let i=0;i<100;i++) { // prevent infinite loop
 		let lowestChroma = g.chroma.reduce((x,y)=>x.min(y))
 		if (amount.lt(lowestChroma.max(stat.chromaPerSec).div(c.e15))) break
@@ -2204,7 +2209,7 @@ function reviewYellowLight(mode){    // 0 = next, 1 = all effects
 	shownAchievements = shownAchievements.sort((a,b)=>achPriority(b)-achPriority(a))
 	for (let x of shownAchievements) {
 		let colors = achievement.tierColors[achievement.tierOf(x)]
-		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:60px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+((achPriority(x)===0)?";filter:opacity(33%)":"")+"\">"+(achievement.visible(x)?("<table><tr><td style=\"width:300px;height:60px;\">"+x+"<br>"+achievement(x).name+"</td><td style=\"width:calc(60vw - 316px);height:60px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode===1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode===1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table>"):("<table><tr><td style=\"height:60px\">[This achievement has not yet been revealed]</td></tr></table>"))+"</div>")
+		out.push("<div style=\"background-color:"+colors.primary+";color:"+colors.secondary+";height:60px;width:calc(60vw - 16px);border-style:solid;border-color:"+colors.secondary+";border-width:2px;border-radius:10px;margin:4px"+((achPriority(x)===0)?";filter:opacity(33%)":"")+"\">"+(achievement.visible(x)?("<table><tr><td style=\"width:225px;height:60px;\">"+x+"<br>"+achievement(x).name+"</td><td style=\"width:calc(60vw - 241px);height:60px;\">"+achievement(x).reward.replaceAll("{}",yellowLight.effectHTML(x,(mode===1||g.showLightEffectsFrom0)?c.d0:achievement(x).yellowValue,(mode===1||g.showLightEffectsFrom0)?achievement(x).yellowValue:achievement(x).nextYellowValue))+"</td></tr></table>"):("<table><tr><td style=\"height:60px\">[This achievement has not yet been revealed]</td></tr></table>"))+"</div>")
 	}
 	popup({
 		text:out.join(""),
@@ -2721,7 +2726,7 @@ const topResources = [
 		condition:function(){return StudyE(4);}
 	},
 	{
-		text:function(){return studies[6].name+" divisor: <span class=\"red\">"+studies[6].effect().noLeadFormat(3)+"</span>"},
+		text:function(){return studies[6].name+": ÷<span class=\"red\">"+studies[6].effect().noLeadFormat(3)+"</span>"},
 		condition:function(){return StudyE(6);}
 	},
 	{
@@ -2791,6 +2796,7 @@ const openConfig = (()=>{
 		"Achievement":function(){updateAchievementsTab();showConfigModal("Achievement",[
 			{text:"Achievement ID "+(g.achievementIDShown?"":"not ")+" shown",onClick:"toggle('achievementIDShown');for (let i of achievement.all){d.display('span_ach'+i+'ID',g.achievementIDShown?'inline-block':'none')}"},
 			{text:(g.completedAchievementTiersShown?"Show":"Hid")+"ing completed achievement tiers",onClick:"toggle('completedAchievementTiersShown')"},
+			{text:"Order of Achievement tiers "+(g.achievementTiersReversed?"":"not ")+"reversed",onClick:"toggle('achievementTiersReversed');d.innerHTML('achievementContainer',achievementContainer());"}
 		])},
 		"Stardust Boost":function(){showConfigModal("Stardust Boost",[
 			{text:"Stardust amount shown "+(g.topResourcesShown.stardust?"on top of screen":"in Stardust tab"),onClick:toggle("g.topResourcesShown.stardust")},
@@ -2860,7 +2866,7 @@ const progressMilestones = [
 		type:1,
 		get label(){return achievement.label(g.achOnProgressBar)+(g.achievement[g.achOnProgressBar]?(" milestone "+(achievement(g.achOnProgressBar).milestones()+1)):"")},
 		percent:function(){let p = achievement(g.achOnProgressBar).progress();return Array.isArray(p)?(p[0]/100):((typeof p)==="object")?((((typeof p.percent)==="number")?p.percent:p.percent[0])/100):undefined},
-		req:function(){let p = achievement(g.achOnProgressBar).progress();return ((typeof p)==="string")?p:Array.isArray(p)?(p[1].noLeadFormat(3)+" / "+p[2].noLeadFormat(3)):((typeof p)==="object")?p.text:""},
+		req:function(){let p = achievement(g.achOnProgressBar).progress();return ((typeof p)==="string")?p:Array.isArray(p)?(p[1].noLeadFormat(3)+" / "+p[2].noLeadFormat(3)):((typeof p)==="object")?(p.percent[1].noLeadFormat(2)+" / "+p.percent[2].noLeadFormat(2)+"; "+p.text):""},
 		get color(){return g.achievement[g.achOnProgressBar]?"#00cccc":"var(--achievements)"},
 		condition:function(){return g.achOnProgressBar==="N"}
 	},

@@ -1,10 +1,10 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(c).8",
+	current:"𝕍1.5(c).9",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
-	nextProgress:[0.98],
+	nextProgress:[0.99],
 	nextUpdateHint:"Cursed research of the N axis",
 }
 /*
@@ -162,6 +162,7 @@ const c = deepFreeze({		 // c = "constant"
 	eme5			: Decimal.FC_NN(1,1,-1e5),
 	em40			: Decimal.FC_NN(1,1,-40),
 	em16			: Decimal.FC_NN(1,1,-16),
+	em15			: Decimal.FC_NN(1,0,1e-15),
 	em12			: Decimal.FC_NN(1,0,1e-12),
 	em8				: Decimal.FC_NN(1,0,1e-8),
 	em4				: Decimal.FC_NN(1,0,1e-4),

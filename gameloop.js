@@ -893,7 +893,7 @@ function tick(time) {																																		 // The game loop, which 
 		o.add("baseMasteryPowerGain",stat.deltaMasteryTimer.mul(time));
 		o.add("masteryPower",stat.masteryPowerPerSec.mul(time));
 	}
-	if (achievement.ownedInTier(5)===30&&g.activeStudy===0) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
+	if ((achievement.ownedInTier(5)===30)&&(g.activeStudy===0)) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
 	incrementStardust(stat.stardustPerSec.mul(time));
 	if (g.stardustUpgrades[4]>0) o.add("darkmatter",stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));

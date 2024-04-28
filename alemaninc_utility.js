@@ -320,3 +320,4 @@ const wordShift = {
   }
 }
 function gradientText(text,gradient) {return "<span style=\"background:"+gradient+";-webkit-background-clip:text;-webkit-text-fill-color:transparent;\">"+text+"</span>"}
+function reverseChildren(parent){parent.append(...Array.from(parent.childNodes).reverse())}

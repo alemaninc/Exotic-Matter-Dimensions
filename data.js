@@ -116,7 +116,7 @@ studies[4] = {
 	unlockReq:function() {return betaActive?Decimal.FC_NN(1,1,Math.log10(2)*(studyPower(4)+1)*512):[N(1e144),c.inf,N("4.44e444"),c.inf.pow(c.d2)][studyPower(4)]},
 	description:function(){return ["Every Stardust reset you do raises stardust gain to the power of 0.5 for the rest of the Study."]},
 	research:"r9_14",
-	goal:function(comp=studyPower(4)){return [N(betaActive?3200:3000),N(betaActive?3600:3700),N(betaActive?4250:4500),N(betaActive?5200:5400)][comp]},
+	goal:function(comp=studyPower(4)){return [N(betaActive?3200:3000),N(betaActive?3600:3700),N(betaActive?4250:4500),N(5400)][comp]},
 	reward:function(num,comp=g.studyCompletions[4]){
 		if (num===1) return N([0.5,0.514,0.527,0.539,0.55][comp])
 		if (num===2) return N([1,1.6,2.3,3.1,4][comp]).pow(studyRewardBoost(4,2))
@@ -131,7 +131,7 @@ studies[4] = {
 },
 studies[5] = {
 	name:"Scientific Illiteracy",
-	unlockReq:function(){return [N("e4000"),N("e5880"),N("e30825"),N("e282624")][studyPower(5)]},
+	unlockReq:function(){return [N(betaActive?"e5000":"e4000"),N("e5880"),N("e30825"),N("e282624")][studyPower(5)]},
 	difficultyConstant:function(){return [c.d32,N(64),N(256),c.e4][studyPower(5)]},
 	description:function(){return ["Entering this Study will immediately respec your Research, and all research costs will be multiplied by "+studies[5].difficultyConstant().format()+"."]},
 	research:"r2_8",
@@ -143,7 +143,7 @@ studies[5] = {
 		functionError("studies[5].reward",arguments)
 	},
 	reward_desc:function(){return [
-		"Research unlocked by Study V works at "+studyRewardHTML(5,1,0)+"% efficiency",
+		(betaActive?(researchGroupList.study5a.label+" and "+researchGroupList.study5b.label+" Research"):"Research unlocked by Study V")+" work at "+studyRewardHTML(5,1,0)+"% efficiency",
 		"Observation costs are raised to the power of "+studyRewardHTML(5,2,4),
 		"Subtract "+studyRewardHTML(5,3,2)+" from the cost of all research (cannot go below 0)"
 	]}
@@ -156,7 +156,7 @@ studies[6] = {
 	research:"r16_8",
 	goal:function(comp=studyPower(6)){return [N(4500),N(4800),N(9999),N(22222)][comp]},
 	reward:function(num,comp=g.studyCompletions[6]){
-		if (num===1) return [c.d1,c.d1_25,c.d1_5,c.d2,c.d4][comp]
+		if (num===1) return [c.d1,c.d1_25,betaActive?N(1.75):c.d1_5,betaActive?N(2.5):c.d2,c.d4][comp]
 		if (num===2) return studyRewardBoost(6,2).mul(comp/20)
 		if (num===3) return studyRewardBoost(6,3).mul(0.0075*comp)
 		functionError("studies[6].reward",arguments)

@@ -244,8 +244,13 @@ function researchDependencies(id){
 	if (study13.researchBindings[id]!==undefined) {out.push(bindingDependencies(study13.researchBindings[id]))}
 	if (study13.rewards.particleLab3.allAffected.includes(id)) {out.push("study13ParticleLab3")}
 	// group effects
-	if (research[id].group==="spatialsynergism") {out.push("spatialSynergismPower",bindingDependencies([33,37]))}
-	else if ((research[id].group??"").substring(0,8)==="finality") {out.push(...bindingDependencies(415))}
+	if (research[id].group==="study5b") {
+		if (id!=="r5_8") {out.push(...researchDependencies("r5_8"))}
+	} else if (research[id].group==="spatialsynergism") {
+		out.push("spatialSynergismPower",bindingDependencies([33,37]))
+	} else if ((research[id].group??"").substring(0,8)==="finality") {
+		out.push(...bindingDependencies(415))
+	}
 	return Array.removeDuplicates(out.flat())
 }
 function bindingDependencies(id){
@@ -277,7 +282,7 @@ const statTemplates = {
 		return {
 			label:"Mastery "+id,
 			func:function(prev){return MasteryE(id)?prev.add(masteryEffect(id)):prev;},
-			text:function(){return "+ "+masteryEffect(id).format(2);},
+			text:function(){return "+ "+masteryEffect(id).format(masteryEffFormat(id,true));},
 			dependencies:masteryDependencies(id),
 			show:function(){return MasteryE(id)}
 		};
@@ -286,7 +291,7 @@ const statTemplates = {
 		return {
 			label:"Mastery "+id,
 			func:function(prev){return MasteryE(id)?prev.mul(masteryEffect(id)):prev;},
-			text:function(){return "× "+masteryEffect(id).format(2);},
+			text:function(){return "× "+masteryEffect(id).format(masteryEffFormat(id,true));},
 			dependencies:masteryDependencies(id),
 			show:function(){return MasteryE(id)}
 		};
@@ -295,7 +300,7 @@ const statTemplates = {
 		return {
 			label:"Mastery "+id,
 			func:function(prev){return MasteryE(id)?prev.pow(masteryEffect(id)):prev},
-			text:function(){return "^ "+masteryEffect(id).format(3);},
+			text:function(){return "^ "+masteryEffect(id).format(masteryEffFormat(id,true));},
 			dependencies:masteryDependencies(id),
 			show:function(){return MasteryE(id)}
 		};
@@ -2590,7 +2595,7 @@ miscStats.tickspeed={
 		{
 			label:"Study VI",
 			func:function(prev){return StudyE(6)?prev.div(studies[6].effect()):prev},
-			text:function(){return "÷ "+studies[6].effect().format()},
+			text:function(){return "÷ "+studies[6].effect().noLeadFormat(3)},
 			show:function(){return StudyE(6)},
 			color:"#cc0000"
 		},
@@ -2746,6 +2751,7 @@ miscStats.HRMultiplier={
 	modifiers:[
 		statTemplates.base("1",c.d1,false),
 		statTemplates.masteryMul(102),
+		statTemplates.researchMul("r4_9"),
 		{
 			label:"Research 6-8",
 			mod:function(){return [researchEffect(6,8),totalAchievements,g.stars].productDecimals().add(c.d1);},
@@ -2784,9 +2790,9 @@ miscStats.HRMultiplier={
 		statTemplates.timeResearch(16,7),
 		{
 			label:achievement.label(801),
-			func:function(prev){return g.achievement[801]?Decimal.FC_NN(1,0,achievement.ownedInTier(8)).mul(prev):prev},
-			text:function(){return "× "+achievement.ownedInTier(8)},
-			show:function(){return g.achievement[801]&&(achievement.ownedInTier(8)>1)}
+			func:function(prev){return g.achievement[801]?Decimal.FC_NN(1,0,achievement(801).effect()).mul(prev):prev},
+			text:function(){return "× "+Decimal.FC_NN(1,0,achievement(801).effect()).noLeadFormat(2)},
+			show:function(){return g.achievement[801]}
 		},
 		{
 			label:"Cinquefolium "+luckUpgrades.cinquefolium.radiation.name,
@@ -2984,6 +2990,7 @@ miscStats.knowledgePerSec={
 			color:"var(--research)"
 		},
 		// multipliers
+		statTemplates.researchMul("r3_8"),
 		{
 			label:"Research 7-5",
 			mod:function(){return researchEffect(7,5).mul(totalAchievements).add(c.d1)},
@@ -3067,7 +3074,7 @@ miscStats.chromaPerSec={
 			show:function(){return true}
 		},
 		// multipliers
-		...["r9_7","r9_8","r9_9","r9_15","r10_7","r10_8","r10_9","r13_8"].map(x=>statTemplates.researchMul(x)),
+		...["r4_7","r9_7","r9_8","r9_9","r9_15","r10_7","r10_8","r10_9","r13_8"].map(x=>statTemplates.researchMul(x)),
 		statTemplates.achievementMul(603),
 		{
 			label:achievement.label(611),
