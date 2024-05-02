@@ -879,7 +879,7 @@ function masteryBaseText(x) {
 	if (x===72) return "Energy effects are {} stronger";
 	if ([81,82,83,84].includes(x)) return "Multiply mastery power gain by {} (based on "+["X axis","exotic matter","dark matter","stardust"][x-81]+")";
 	if (x===85) return "Add {} to the base mastery power gain exponent<br><span class=\"small\">(currently a "+stat.masteryTimer.pow(masteryEffect(85)).format(2)+"× multiplier)</span>";
-	if ([91,92].includes(x)) return "Row 8 masteries are {} stronger ("+["in","de"][x-91]+"creases over time)";
+	if ([91,92].includes(x)) return "Row 8 masteries are {} stronger ("+["in","de"][x-91]+"creases over time in this Stardust reset)";
 	if (x===101) return "The "+achievement.label(501)+" reward is raised to the power of {}"+(achievement(501).effectExp(false).eq(c.d1)?"":("<br><span class=\"small\">(if inactive: "+achievement(501).effectExp(false).format(3)+")</span>"));
 	if (x===102) return "Multiply Hawking radiation gain by {}";
 	if (x===103) return "Multiply knowledge gain by {}";
@@ -3143,10 +3143,8 @@ function processImport(string) {
 	if (string.substring(0,34)==="AntimatterDimensionsSavefileFormat"&&string.substring(string.length-13)==="EndOfSavefile") {
 		addSecretAchievement(34)
 	} else {
-		try {
-			load(JSON.parse(atob(string)))
-			for (let i=0;i<initSteps.length;i++) if (initSteps[i].onImport??false) initSteps[i].function()
-		} catch {error("Invalid import")}
+		load(JSON.parse(atob(string)))
+		for (let i=0;i<initSteps.length;i++) if (initSteps[i].onImport??false) initSteps[i].function()
 	}
 }
 const promoCodeList = (()=>{

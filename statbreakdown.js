@@ -3004,7 +3004,7 @@ miscStats.knowledgePerSec={
 		{
 			label:achievement.label(719),
 			func:function(prev){return g.achievement[719]?prev.mul(achievement(719).effect()):prev},
-			text:function(){return "× "+achievement(719).effect().format(2)+" "+SSBsmall("(1.202 + 0.0816 × "+N(g.galaxies).format()+")",g.observations.sumDecimals().format(),3)},
+			text:function(){return "× "+achievement(719).effect().format(2)+" "+SSBsmall("("+(betaActive?"21.2 + 8.16":"1.202 + 0.0816")+" × "+N(g.galaxies).format()+")",g.observations.sumDecimals().format(),3)},
 			show:function(){return g.achievement[719]&&g.observations.sumDecimals().gt(c.d0)}
 		},
 		// exponents

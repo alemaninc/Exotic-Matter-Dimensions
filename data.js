@@ -169,7 +169,7 @@ studies[6] = {
 },
 studies[7] = {
 	name:"Luck Be In The Air Tonight",
-	unlockReq:function(){return [N("6.66e666666666"),N("8.88e888888888"),N("e1.5e9"),N("6.66e2666666666")][studyPower(7)]},
+	unlockReq:function(){return [N(betaActive?"5.55e577777777":"6.66e666666666"),N("8.88e888888888"),N("e1.5e9"),N("6.66e2666666666")][studyPower(7)]},
 	description:function(){return ["Each stardust reset gives luck essence based on the amount of stardust gained. The gain of exotic matter, mastery power, stardust and dark matter is raised to a power between "+N(1-studies[7].luckMaxReduction()).noLeadFormat(3)+" and 1 based on how close luck essence is to a multiple of 1,000."]},
 	luckEssenceGain:function(x=stat.pendingstardust.sub(g.stardust)){return (x.lt(c.d1)?c.d0:x.log10().log10().mul([444444,555555,666666,777777][studyPower(7)]).floor()).add(g.luckEssence).min(c.e15).sub(g.luckEssence).toNumber()},
 	luckMaxReduction:function(){return 1},
@@ -178,7 +178,7 @@ studies[7] = {
 		return N(1 - ((1-Math.cos(x*Math.PI/500))/2) * this.luckMaxReduction())
 	},
 	research:"r23_5",
-	goal:function(comp=studyPower(7)){return [N(6666),N(8888),N(11111),N(14777)][comp]},
+	goal:function(comp=studyPower(7)){return [N(betaActive?6227:6666),N(8888),N(11111),N(14777)][comp]},
 	reward:function(num,comp=g.studyCompletions[7]){
 		if (num===1) return [c.d0,N(50),N(75),N(90),N(100)][comp]
 		if (num===2) return [c.d0,c.d75,c.d90,N(98),c.d100][comp].mul(studyRewardBoost(7,2))
@@ -210,7 +210,7 @@ studies[8] = {
 	},
 	reward_desc:function(){return [
 		"Increase the knowledge effect limit to "+studyRewardHTML(8,1,2)+"%",
-		"Mastery 85 is "+studyRewardHTML(8,2,2)+"% stronger per Tier 8 achievement (additive) (currently: "+studies[8].reward(2).mul(achievement.ownedInTier(8)).noLeadFormat(2)+"%)",
+		"Mastery 85 is "+studyRewardHTML(8,2,2)+"% stronger per Tier 8 achievement (additive; currently: "+studies[8].reward(2).mul(achievement.ownedInTier(8)).noLeadFormat(2)+"%)",
 		"Add "+studyRewardHTML(8,3,x=>timeFormat(x))+" of real time to the mastery power gain timer"
 	]}
 },

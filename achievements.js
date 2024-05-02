@@ -175,7 +175,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return achievement.percent(stat.WAxisEffect,c.d4,1)},
 			prevReq:[104],
-			get reward(){return "Add 30 seconds to the W Axis timer per W Axis"+(g.lumens[5].lt(c.d360)?"":"<sup>{}</sup>")+(Decimal.eq(g.WAxis,stat.realWAxis)?"":" (including free)")},
+			get reward(){return "Add 30 seconds to the W Axis timer per W Axis"+(g.lumens[5].lt(c.d360)?"":"<sup>{}</sup>")+(Decimal.eq(g.WAxis,stat.realWAxis)?"":" (including free; currently: "+timeFormat(stat.realWAxis.pow(achievement(109).effect()).mul(c.d30))+")")},
 			effect:function(y=this.yellowValue){return y.add(c.d1)},
 			effectFormat:x=>x.noLeadFormat(4),
 			yellowBreakpoints:[c.d360,N(3.6e5),1],
@@ -527,7 +527,7 @@ const achievementList = {
 			check:function(){return masteryBoost(11).gte(c.d15);},
 			event:"gameloop",
 			progress:function(){return achievement.percent(masteryBoost(11).mul(c.e2),c.d1500,0);},
-			get reward(){return "Add 15"+(stat.tickspeed.eq(c.d1)?"":" real life")+" minutes to the Mastery timer"+(g.studyCompletions[8]===0?"":" (this is now useless due to Study VIII! :D)")},
+			get reward(){return "Add 15"+(stat.tickspeed.eq(c.d1)?"":" real")+" minutes to the Mastery timer"+(g.studyCompletions[8]===0?"":" (this is now useless due to Study VIII! :D)")},
 			flavor:"Mastery-Man, Mastery-Man<br>does whatever a master can"
 		},
 		311:{
@@ -1378,9 +1378,9 @@ const achievementList = {
 			check:function(){return stat.totalAxis.gte(this.req)},
 			event:"axisBuy",
 			progress:function(){return achievement.percent(stat.totalAxis,this.req,0)},
-			get reward(){return "Each observation increases knowledge gain by (20.20 + 8.16 × [number of galaxies])%, compounding with itself (currently: "+this.effect().format()+"×)"},
+			get reward(){return "Each observation increases knowledge gain by ("+(betaActive?"2,020 + 816":"20.20 + 8.16")+" × [number of galaxies])%, compounding with itself (currently: "+this.effect().format()+"×)"},
 			flavor:"\"This is a house, Do you want to live here?\" - Stat Mark, 2020",
-			effect:function(){return c.d0_0816.mul(g.galaxies).add(c.d1_202).pow(g.observations.sumDecimals())}
+			effect:function(){return (betaActive?N(8.16):c.d0_0816).mul(g.galaxies).add(betaActive?N(21.2):c.d1_202).pow(g.observations.sumDecimals())}
 		}
 	},
 	8:{

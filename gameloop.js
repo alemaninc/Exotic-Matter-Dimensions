@@ -623,7 +623,7 @@ function updateHTML() {
 			d.innerHTML("span_luckShards",g.luckShards.format(2))
 			d.innerHTML("span_luckShardsPerSec",stat.luckShardsPerSec.format(2))
 			d.innerHTML("span_luckShardEff1",showFormulas?formulaFormat(luckShardEffect1Formula()):luckShardEffect1().format(2))
-			d.innerHTML("span_luckShardEff2",showFormulas?formulaFormat(luckShardEffect2Formula()):luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).format(3):luckShardEffect2().format(4))
+			d.innerHTML("span_luckShardEff2",showFormulas?formulaFormat(luckShardEffect2Formula()):luckShardEffect2().gt(c.d0_1)?c.d1.sub(luckShardEffect2()).mul(c.e2).toFixed(3):luckShardEffect2().format(4))
 			d.innerHTML("span_luckShardEff2Sign",luckShardEffect2().gt(c.d0_1)?"%":"×")
 			for (let type of luckRuneTypes) {
 				if (runeTypeUnlocked(type)) {
@@ -639,7 +639,7 @@ function updateHTML() {
 							let eff = stat["luckUpgLevel_"+type+"_"+upg]
 							d.innerHTML("span_luckUpg_"+type+upg+"_Purchased",(Decimal.eq(bought,eff)?bought.format():arrowJoin(bought.format(),eff.noLeadFormat(3)))+"<br>(+"+affordable.format()+")")
 							d.innerHTML("span_luckUpg_"+type+upg+"_Cost",luckUpgradeCost(type,upg,affordable).format())
-							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin(luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff()),luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(calcStatWithDifferentBase("luckUpgLevel_"+type+"_"+upg,g.luckUpgrades[type][upg].add(c.d1))))))
+							d.innerHTML("span_luckUpg_"+type+upg+"_Effect",showFormulas?formulaFormat(luckUpgrades[type][upg].formula()):arrowJoin("<b>"+luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff())+"</b>","<b>"+luckUpgrades[type][upg].format(luckUpgrades[type][upg].eff(calcStatWithDifferentBase("luckUpgLevel_"+type+"_"+upg,g.luckUpgrades[type][upg].add(c.d1))))+"</b>"))
 						} else {
 							d.display("button_"+type+upg,"none")
 						}
@@ -660,7 +660,7 @@ function updateHTML() {
 			for (let upg of prismaticUpgradeList) {
 				let data = prismaticUpgrades[upg]
 				if (prismaticUpgradeUnlocked(upg)) {
-					d.display("button_prismaticUpgrade_"+upg,"inline-block")
+					d.display("div_prismaticUpgrade_"+upg,"inline-block")
 					let affordable = affordablePrismaticUpgrades(upg)
 					let owned = g.prismaticUpgrades[upg]
 					let unlimited = ((typeof data.max) === "undefined")
@@ -677,7 +677,7 @@ function updateHTML() {
 					if (maxed) {classList.push("maxed","unlocked")} else if (affordable.eq(c.d0)) {classList.push("locked")} else {classList.push("unlocked")}
 					d.class("button_prismaticUpgrade_"+upg,classList.join(" "))
 				} else {
-					d.display("button_prismaticUpgrade_"+upg,"none")
+					d.display("div_prismaticUpgrade_"+upg,"none")
 				}
 			}
 			for (let p of [0,1,10,25,50,100]) d.class("button_prismaticPercentageOption"+p,"prismaticPercentageOption "+(g.prismaticSpendFactor.mul(c.e2).eq(p)?"":"in")+"active")

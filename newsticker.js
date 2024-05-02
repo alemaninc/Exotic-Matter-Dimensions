@@ -338,9 +338,9 @@ const newsSupport = {
 		1,000       +1,000%             ×32.1&nbsp;M        ×e250.2&nbsp;T      ^e1.000e100         ^^NaN               10{1.79e308}10 */
 	ticker325games:{
 //		"Anti-Idle: The Game":["progress bar boost",0,10],
-		"Antimatter Dimensions":["antimatter production",2],
-		"Antimatter Dimensions NG+++":["all meta dimension multipliers",2,10],
-		"Arcanum/Theory of Magic":["lore rate",1],
+		"Antimatter Dimensions":["antimatter production",x=>"×"+N(x*0.015).layerplus(2).sub(c.d9).format(1)],
+		"Antimatter Dimensions NG+++":["all meta dimension multipliers",x=>"×"+N(x/200).layerplus(2).sub(c.d9).format(1)],
+		"Arcanum/Theory of Magic":["lore rate",x=>"+"+Math.min(x/10,10+x/100)],
 		"Array Game":["separators",1],
 		"Aspiring Artist":["white pixel generation",1],
 		"Ballad of Heroes":["Boon of Olympus",0],

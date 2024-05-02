@@ -5,6 +5,7 @@ var savePreLoad
 /* This is necessary for the loading animation to update.*/
 const initSteps = [
 	{function:function(){savePreLoad = btoa(localStorage.getItem("save"))}},
+	{function:function(){d.element("loadScreenExport").innerText = savePreLoad;console.log("done")}},
 	{function:function(){if(debugActive){
 		for(let id of Object.keys(research)){validateResearch(id)}
 		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type==="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
@@ -102,4 +103,4 @@ function initp() {
 	d.innerHTML("span_loadPercentage",(loadProgress/initSteps.length*100).toFixed(1));
 	d.element("loadprogress").style.background = "linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,0) "+(loadProgress/initSteps.length*100)+"%,rgba(102,102,102,0.9) "+(loadProgress/initSteps.length*100)+"%,rgba(102,102,102,0.9)),rgba(0,255,0,1)";
 }
-for (let i=0;i<initSteps.length;i++) {initSteps[i].function()}
+for (let i=0;i<initSteps.length;i++) {initSteps[i].function();loadProgress++;initp()}

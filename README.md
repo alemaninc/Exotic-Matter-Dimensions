@@ -6,6 +6,7 @@
 * Go from galaxy 0 to X without assigning stars
 #### Lifeblood
 * Energy not affect things below 1
+* Automatic research respec and rebuy if reduction possible
 * SAP => ZP
 * History of the Wormholes
 	*
