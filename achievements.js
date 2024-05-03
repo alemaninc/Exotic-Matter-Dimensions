@@ -510,7 +510,7 @@ const achievementList = {
 			get reward(){return "Multiply exotic matter gain by mastery power<sup>{}</sup>, based on dark matter (current effect: ×"+g.masteryPower.add(c.d1).pow(this.effect()).format(2)+")";},
 			flavor:"Only one who devotes himself to a cause with his whole strength and soul can be a true grandmaster. For this reason grandmastery demands all of a person.",
 			effect:function(y=this.yellowValue){
-				let out = g.darkmatter.add(c.d1).log10().pow(c.d0_5).div(c.e2)
+				let out = g.darkmatter.alog(c.d10).pow(c.d0_5).div(c.e2)
 				return (y.eq(c.d0)?Decimal.convergentSoftcap(out,c.d0_5,c.d1):Decimal.logarithmicSoftcap(out,c.d1,c.d1)).fix(c.d0)
 			},
 			effectFormat:x=>x.format(3),
@@ -843,7 +843,7 @@ const achievementList = {
 			prevReq:[412],
 			event:"starBuy",
 			progress:function(){return g.ach519possible?achievement.percent(N(g.stars),c.d40,0):"Failed";},
-			get reward(){return "Stars are {}× cheaper per Stardust Upgrade owned (total: "+this.effect().pow(g.stardustUpgrades.sum()).noLeadFormat(2)+"×).<br>Stardust Upgrades are {}× cheaper per star owned (total: "+this.effect().pow(g.stars).noLeadFormat(2)+"×)."},
+			get reward(){return "Stars are {}× cheaper per Stardust Upgrade owned, and vice versa (total: "+this.effect().pow(g.stardustUpgrades.sum()).noLeadFormat(2)+"× stars, "+this.effect().pow(g.stars).noLeadFormat(2)+"× Stardust Upgrades)"},
 			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.inf:y.eq(c.d0)?c.d2:[c.d2,c.d1024,y].decimalPowerTower()},
 			effectFormat:x=>x.noLeadFormat(2),
 			yellowBreakpoints:[c.d10,c.e10,2],
@@ -1107,7 +1107,7 @@ const achievementList = {
 			check:function(){return g.stars===60},
 			event:"starBuy",
 			progress:function(){return achievement.percent(N(g.stars),c.d60,0)},
-			get reward(){return "Stardust Upgrade costs ^{} per star owned (total: ^"+N(this.effect()**g.stars).noLeadFormat(3)+").<br>Star costs ^{} per Stardust Upgrade owned. (total: ^"+N(this.effect()**g.stardustUpgrades.sum()).noLeadFormat(3)+")."},
+			get reward(){return "Stardust Upgrade costs ^{} per star owned, and vice versa (total: ^"+N(this.effect()**g.stars).noLeadFormat(3)+" stars, ^"+N(this.effect()**g.stardustUpgrades.sum()).noLeadFormat(3)+" Stardust Upgrades)"},
 			effect:function(y=this.yellowValue){return 0.999-0.009*y.toNumber()},
 			effectFormat:x=>N(x).noLeadFormat(5),
 			yellowBreakpoints:[N(480),N(750),0],
@@ -1133,7 +1133,7 @@ const achievementList = {
 			check:function(){return (g.previousWormholeRuns.last10.length===10)&&(!g.previousWormholeRuns.last10.map(x=>x.time<1).includes(false))},
 			prevReq:[510],
 			event:"wormholeResetAfter",
-			progress:function(){return (g.previousWormholeRuns.last10.length===10)?{percent:Math.min(99.9,100/this.time()),text:"Slowest run is "+timeFormat(this.time())}:("Do 10 Wormhole resets first (currently: "+g.previousWormholeRuns.last10.length+")")},
+			progress:function(){return (g.previousWormholeRuns.last10.length===10)?{percent:achievement.percent(N(this.time()),c.d1,x=>x.recip()),text:"Slowest run is "+timeFormat(this.time())}:("Do 10 Wormhole resets first (currently: "+g.previousWormholeRuns.last10.length+")")},
 			time:function(){return g.previousWormholeRuns.last10.map(x=>x.time).reduce((x,y)=>Math.max(x,y))},
 			get reward(){return "+1% tickspeed per number of digits in the time in seconds spent in the current Wormhole (currently: "+this.effect().format()+"%, next increase in "+timeFormat(this.effect().pow10().sub(g.truetimeThisWormholeReset))+")"},
 			effect:function(){return g.truetimeThisWormholeReset.gte(c.d10)?g.truetimeThisWormholeReset.log10().floor().add(c.d1):c.d1},
@@ -1308,13 +1308,13 @@ const achievementList = {
 			prevReq:[106],
 			event:"gameloop",
 			progress:function(){return {percent:achievement.percent(g.truetimePlayed.div(31556926),c.d122,0),text:"Real time left to reach: "+timeFormat(N(31556926*122).sub(g.truetimePlayed).div(stat.tickspeed))}},
-			get reward(){return "{} extra Discoveries (based on time played)"+(this.effect().gt(g.knowledge.log10().div(c.d10))?" (softcapped past "+g.knowledge.add(c.d1).log10().pow(c.d0_9).format()+", based on knowledge)":"")},
+			get reward(){return "{} extra Discoveries (based on time played)"+(this.effect().gt(g.knowledge.alog(c.d10).div(c.d10))?" (softcapped past "+g.knowledge.alog(c.d10).pow(c.d0_9).format()+", based on knowledge)":"")},
 			effect:function(){
 				let out = g.truetimePlayed.div(31556926)
-				return Decimal.logarithmicSoftcap(out,g.knowledge.add(c.d1).log10().pow(c.d0_9),c.d1)
+				return Decimal.logarithmicSoftcap(out,g.knowledge.alog(c.d10).pow(c.d0_9),c.d1)
 			},
 			effectFormat:x=>x.format(3),
-			formulaText:function(){return formulaFormat.logSoftcap("t ÷ 31,556,926",g.knowledge.add(c.d1).log10().div(c.d0_9),c.d1,this.effect().gt(g.knowledge.add(c.d1).log10().div(c.d0_9)))},
+			formulaText:function(){return formulaFormat.logSoftcap("t ÷ 31,556,926",g.knowledge.alog(c.d10).div(c.d0_9),c.d1,this.effect().gt(g.knowledge.alog(c.d10).div(c.d0_9)))},
 			flavor:"As soon as you feel too old to do a thing, do it."
 		},
 		715:{

@@ -2954,7 +2954,7 @@ miscStats.knowledgePerSec={
 	modifiers:[
 		{
 			label:"Base",
-			func:function(){return g.masteryPower.add(c.d1).log(c.inf);},
+			func:function(){return g.masteryPower.alog(c.inf);},
 			text:function(){return unbreak("log("+statFormat("MP",g.masteryPower.format(2),"_mastery")+" + 1)")+" ÷ log("+c.inf.format(0)+")";},
 			show:function(){return true}
 		},

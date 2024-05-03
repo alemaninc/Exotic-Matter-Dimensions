@@ -834,7 +834,7 @@ function tick(time) {																																		 // The game loop, which 
 	if (stat.ironWill) g.ach505Progress = g.ach505Progress.max(stat.totalDarkAxis);
 	if (stat.chromaPerSec.gte(c.d1)) g.ach711Progress = Math.min(g.ach711Progress,g.stars)
 	achievement(825).update()
-	o.add("ach901Int",[g.exoticmatter.add(c.d1).log10().pow(c.d10),stat.tickspeed,time].productDecimals())
+	o.add("ach901Int",[g.exoticmatter.alog(c.d10).pow(c.d10),stat.tickspeed,time].productDecimals())
 	if (Decimal.gt(stat.tickspeed,g.bestTickspeedThisMatrix)) {g.bestTickspeedThisMatrix = stat.tickspeed}
 	if (Decimal.gt(stat.tickspeed,g.bestTickspeed)) {g.bestTickspeed = stat.tickspeed}
 	if (g.baselessMilestones[4]!==13) {

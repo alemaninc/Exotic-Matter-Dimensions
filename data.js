@@ -188,7 +188,7 @@ studies[7] = {
 	reward_desc:function(){return [
 		"Empower "+studyRewardHTML(7,1,3)+"% of your dark W axis",
 		"Research unlocked by Study VII works at "+studyRewardHTML(7,2,3)+"% efficiency",
-		unlocked("Luck")?("Gain "+studyRewardHTML(7,3,2)+" luck shards per second (based on Hawking radiation)"):"? ? ? (Complete to reveal)"
+		(unlocked("Luck")||unlocked("Matrix"))?("Gain "+studyRewardHTML(7,3,2)+" luck shards per second (based on Hawking radiation)"):"? ? ? (Complete to reveal)"
 	]},
 	rewardFormulas:{
 		3:(comp=g.studyCompletions[7])=>"10<sup>(log<sup>[2]</sup>(HR + "+c.e10.format()+")"+formulaFormat.exp(N(comp))+" - 1)"+formulaFormat.mult(studyRewardBoost(7,3).div(c.e3))+"</sup> - 1"
@@ -230,7 +230,7 @@ studies[9] = {
 		functionError("studies[9].reward",arguments)
 	},
 	reward_desc:function(){return [
-		unlocked("Antimatter")?("Antimatter gain is reduced to log<sup>["+studyRewardHTML(9,1,x=>(x===Infinity)?"Infinity":N(x).noLeadFormat(3))+"]</sup>(gain)"):"? ? ? (Complete to reveal)",
+		(unlocked("Antimatter")||unlocked("Matrix"))?("Antimatter gain is reduced to log<sup>["+studyRewardHTML(9,1,x=>(x===Infinity)?"Infinity":N(x).noLeadFormat(3))+"]</sup>(gain)"):"? ? ? (Complete to reveal)",
 		"Galaxy Penalty 3 is "+studyRewardHTML(9,2,x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3))+"% weaker",
 		"All Spatial Synergism research is "+studyRewardHTML(9,3,2)+"% more effective"
 	]},
@@ -242,7 +242,7 @@ studies[9] = {
 	timeLeft:function(){return 9-g.timeThisWormholeReset},
 	deltaXP:function(x=g.darkstars,comp=studyPower(9)){
 		if ((g.activeStudy===10)&&(studyPower(10)===2)) x = x.mul(c.d1_0369)
-		let out = x.sub(g.study9.xp.div(c.d10).add([111,111,125,140][comp]+g.study9.resets))
+		let out = x.sub(g.study9.xp.div(c.d10).add([betaActive?111:111,111,125,140][comp]+g.study9.resets))
 		if (out.sign===-1) out = out.mul(c.d10)
 		return out.floor()
 	},
@@ -389,7 +389,7 @@ const luckUpgrades = {
 			name:"Cascade",
 			desc:"Each (effective) Luck Upgrade level adds {} levels to the two directly below",
 			eff:function(x=stat.luckUpgLevel_unifolium_cascade){
-				let out = x.add(c.d1).log(c.d2).div(c.e2)
+				let out = x.alog(c.d2).div(c.e2)
 				if (out.gt(c.d0_5)) {out = out.mul(2e10).log10().log10().div(c.d2)}
 				return out
 			},

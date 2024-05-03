@@ -701,7 +701,7 @@ function masteryEffect(x) {
 	}
 	if (x===61) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d10).log10().pow(c.d0_1).sub(c.d1),c.d9,c.d2).mul(masteryBoost(61)).add(c.d1);
 	if (x===62) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d10).log10().pow(c.d0_04),c.d2,c.d1).pow(masteryBoost(62).neg());
-	if (x===63) return g.masteryPower.add(c.d1).log10().pow(c.d0_8).mul(masteryBoost(63));
+	if (x===63) return g.masteryPower.alog(c.d10).pow(c.d0_8).mul(masteryBoost(63));
 	if (x===71) return g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().pow(masteryBoost(71));
 	if (x===72) return Decimal.logarithmicSoftcap(g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().pow(c.d0_5).sub(c.d1),c.d1,c.d5).mul(masteryBoost(72)).add(c.d1);
 	if ([81,82,83,84].includes(x)) {
@@ -1322,7 +1322,7 @@ function starEffect(x) {
 		if (x===71) ef = g.masteryPower.pow(c.sqrt0_1).add(c.d10).log10().log10().mul(c.d22_5);
 		else if (x===72) ef = g.exoticmatter.fix(c.d0).add(c.d10).log10().log10().pow(c.d2).mul(c.d1_5);
 		else if (x===73) ef = g.stardust.add(c.d10).log10().log10().mul(c.d8);
-		else if (x===74) ef = g.truetimeThisStardustReset.add(c.d1).log10().mul(c.d7_5);
+		else if (x===74) ef = g.truetimeThisStardustReset.alog(c.d10).mul(c.d7_5);
 		ef=ef.mul(starBoosts[7].mult())
 		let lim = starBoosts[7].cap()
 		return Decimal.convergentSoftcap(ef,lim.mul(c.d0_75),lim);
@@ -1459,7 +1459,7 @@ function darkStarEffect1(x=stat.realDarkStars) {
 }
 function darkStarEffect3SoftcapInc() {	
 	let out = c.d10
-	if (g.achievement[803]) out = out.mul(c.d1_03)
+	if (g.achievement[803]) out = out.div(c.d0_97)
 	return out
 }
 function darkStarEffect3(x) {
@@ -1895,7 +1895,7 @@ const wormholeMilestone18 = {
 		let out = c.d3155692599 // 100 years
 		return out
 	},
-	eff:function(x=g.hawkingradiation){return Decimal.convergentSoftcap(x.add(c.d1).log10().pow(c.d1_5).mul(this.mult()),this.scstart(),this.sclim(),1);},
+	eff:function(x=g.hawkingradiation){return Decimal.convergentSoftcap(x.alog(c.d10).pow(c.d1_5).mul(this.mult()),this.scstart(),this.sclim(),1);},
 	formula:function(){
 		let out = "log(HR + 1)<sup>1.5</sup>"+formulaFormat.mult(this.mult())
 		return Decimal.gte(this.eff(),this.scstart())?("10<sup>log("+formulaFormat.convSoftcap(out,this.scstart().log10(),this.sclim().log10(),true)+")"):out

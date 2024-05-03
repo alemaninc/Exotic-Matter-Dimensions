@@ -224,7 +224,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(555555),
 			icon:icon.discovery+icon.arr+icon.normalaxis+icon.arrl+icon.darkaxis,
-			effect:function(power){return [g.totalDiscoveries.add(c.d1).log10(),researchPower(2,6),c.d5em3].productDecimals().add(c.d1)}
+			effect:function(power){return [g.totalDiscoveries.alog(c.d10),researchPower(2,6),c.d5em3].productDecimals().add(c.d1)}
 		},
 		r2_7:{
 			description:function(){return "Increase the X Axis effect by "+researchEffect(2,7).noLeadFormat(2)+"% per OoM of spatial energy (current total: "+researchEffect(2,7).mul(g.spatialEnergy.log10()).noLeadFormat(2)+"%)";},
@@ -424,7 +424,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(500),
 			icon:icon.discovery+icon.arr+icon.hr,
-			effect:function(power){return [g.totalDiscoveries.add(c.d1).log10().pow(5.555),N(0.0005555),power].productDecimals().pow10()},
+			effect:function(power){return [g.totalDiscoveries.alog(c.d10).pow(5.555),N(0.0005555),power].productDecimals().pow10()},
 			group:"study5b"
 		},
 		r4_10:{
@@ -1928,7 +1928,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(111111),
 			icon:icon.time+icon.arr+icon.darkaxis,
-			effect:function(power){return [g.truetimeThisWormholeReset.div(c.e7).add(c.d1).log10().pow(c.d2),c.e2,power].productDecimals()}
+			effect:function(power){return [g.truetimeThisWormholeReset.div(c.e7).alog(c.d10).pow(c.d2),c.e2,power].productDecimals()}
 		},
 		r34_12:{
 			description:function(){return "Research 32-14 is "+percentOrMult(researchEffect(34,12),2,false)+" stronger"},
