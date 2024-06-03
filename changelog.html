@@ -69,7 +69,7 @@
 const save = JSON.parse(localStorage.getItem("save"))
 const notation = (save===null)?"Mixed scientific":save.notation
 function format(x,p=0){return gformat(N(x),p,notation)}
-const highestTierUnlocked = (save===null)?Infinity:Array.removeDuplicates(Object.entries(save.achievement).filter(x=>x[1]).map(x=>x[0].substring(0,x[0].length-2))).length
+const highestTierUnlocked = (save===null)?Infinity:Math.max(Array.removeDuplicates(Object.entries(save.achievement).filter(x=>x[1]).map(x=>x[0].substring(0,x[0].length-2))).length,1)
 const contributors = {
 	"Hedrauta":"#00cc00",
 	"IRAD":"#ff9933",
@@ -115,13 +115,19 @@ const logEntries = [
 
 	]},
 	*/
+	{num:"𝕍1.5(c).12.1",date:"2024-06-03",name:" 'No changes?' ",changes:[
+		[1,"META","A minor bug where no changes showed at all if 0 achievement tiers were unlocked (due to having opened the game but not unlocked a single achievement) is fixed."],
+		[1,"META","Comments related to spoilered changes no longer display out of context"],
+		[1,"WHAT","Added the missing BUGFIX to the 𝕍1.5(c).12 changelog"]
+	]},
 	{num:"𝕍1.5(c).12",date:"2024-06-03",name:"𝕍1ω Beta, Anniversary of Beta",changes:[
 		[5,"BALANCE?","Achievement 526 \"Big Crunch\" no longer adds to the normal and dark S axis effects directly, but instead boosts the Achievement 525 \"You didn't need it anyway\" reward. The end result is the same if you have both achievements."],
 		[5,"BALANCE","Added 10 new Wormhole Milestones at the positions which previously didn't have any, which give minor knowledge boosts"],
 		[5,"BALANCE","Empowered Y Axis still add to the X axis effect as well as multiplying it"],
 		[8,"BALANCE","Cinquefolium Chroma uses a different formula for levels between 0 and 1"],
 		[8,"BALANCE","In a similar manner to Achievements 807 \"Get Lucky\" and 809 \"False Deity Destroyer\", Achievement 808 \"Octarine-colored Magic\" is now awarded for buying a Prismatic Upgrade rather than merely unlocking Prismatic"],
-		"Keep in mind these are only the balancing changes which I'm too incompetent to keep under wraps until 𝕍1ω. There are almost 100 balancing changes in the upcoming version.",
+		[5,"Keep in mind these are only the balancing changes which I'm too incompetent to keep under wraps until 𝕍1ω. There are almost 100 balancing changes in the upcoming version."],
+		[1,"BUGFIX","Game crashing if a complex achievement is moused over, and no longer loading if a complex achievement is viewed on the progress bar"],
 		[2,"BUGFIX","All autobuyer intervals being 1% lower than they should be resulting in some weird initial numbering"],
 		[6,"BUGFIX","Achievement 613 \"Antimatter Academia\" yellow lumen effect not working"],
 		[8,"BUGFIX","Study VII not affecting stardust gain as strongly as it should, and even boosting it at bad luck if the exponent is below 1. The end result is the same at optimal luck."],
@@ -174,7 +180,7 @@ const logEntries = [
 	]},
 	{num:"𝕍1.5(c).7.1",date:"2024-04-18",changes:[
 		[1,"BUGFIX","Game not loading due to a bug alemaninc knew would happen, but implemented anyway"],
-		"You ever wonder why so many people actually play this for fun?"
+		[1,"You ever wonder why so many people actually play this for fun?"]
 	]},
 	{num:"𝕍1.5(c).7",date:"2024-04-18",changes:[
 		[6,"BALANCE","Row 10 Chromatic research now require "+format("e8")+" of the relevant chroma (from "+format("e9")+"), and their formulas are stronger"],
@@ -251,7 +257,7 @@ const logEntries = [
 		[2,"INTERFACE","Input fields in the Automation tab are smaller"],
 		[5,"INTERFACE","Effective dark stars and luck upgrade levels are now shown in the Stat Breakdown"],
 		[[1,4],"INTERFACE","Numbers which are very close to 1"+((highestTierUnlocked>=4)?" (such as energy gain at very low tickspeeds)":"")+" now display with more precision"],
-		"The above interface changes have all happened for a reason. Use this information as you will.",
+		[1,"The above interface changes have all happened for a reason. Use this information as you will."],
 		[1,"INTERFACE","Changelog row text is now top-aligned rather than center-aligned"],
 		[1,"INTERFACE","\"Overclock costs are much higher above <i>N</i>×\" text is no longer obscured by the Overclock buttons"],
 		[5,"INTERFACE","Push notifications no longer go under Research buttons"],
@@ -290,7 +296,7 @@ const logEntries = [
 		[1,"QOL","'Set Overclock to softcap start' no longer puts you very slightly (∼0.04%) below the softcap start"]
 	]},
 	{num:"𝕍1.5(b).4",date:"2024-01-27",name:"Hello World",changes:[
-		"Only beta testers know."
+		[1,"Only beta testers know."]
 	]},
 	{num:"𝕍1.5(b).3",date:"2024-01-22",name:"Imperishable Error's End",changes:[
 		[3,"BUGFIX","Game no longer crashes if formulas are shown in the Dark Matter tab"],
@@ -853,7 +859,7 @@ const logEntries = [
 		[6,"BUGFIX","Study V showing when it's not supposed to"]
 	]},
 	{num:"𝕍1.2",date:"2023-15-06",name:"In Light of all the bugs...",changes:[
-		"...your saves are gone again. (ok, I didn't <i>actually</i> wipe them, but you might want to replay the tier you're in again anyway.)",
+		[1,"...your saves are gone again. (ok, I didn't <i>actually</i> wipe them, but you might want to replay the tier you're in again anyway.)"],
 		[1,"BALANCE","Demoted the secret achievements 'Epsilon Time' and 'I am speed' from the Common tier to the Super Easy tier"],
 		[2,"BALANCE","Stardust Upgrade 1 now affects dark axis"+((highestTierUnlocked>=5)?" (I am SO sorry for everyone in the Iron Will V run)":"")],
 		[4,"BALANCE","Axis cost exponent now applies before axis cost divisor, but stars 82 and 84 nerfed from 4× to 3×"],
@@ -873,8 +879,8 @@ const logEntries = [
 		[5,"BUGFIX","'Big Bang' now accurately shows the amount of axis that can be purchased"],
 		[5,"BUGFIX","Research 8-5 no longer works if it's not purchased"],
 		[5,"BUGFIX","Research 2-2 is no longer 100× stronger than displayed"],
-		"(The full list of bugs can be found <a target=\"_blank\" href=\"https://libraryofbabel.info/random.cgi\" style=\"color:inherit\">here</a>.)",
-		"Do you still have faith in this developer to make ten more content updates?",
+		[1,"(The full list of bugs can be found <a target=\"_blank\" href=\"https://libraryofbabel.info/random.cgi\" style=\"color:inherit\">here</a>.)"],
+		[1,"Do you still have faith in this developer to make ten more content updates?"],
 		[5,"CONTENT","Research was expanded to 12 rows and 5 Studies"],
 		[5,"CONTENT","Tier 6 achievements"],
 		[5,"CONTENT","Light"],
@@ -1222,7 +1228,7 @@ const logEntries = [
 		[3,"QOL","Gaining dark stars (formerly Axioms) now bulk-buys as many dark stars as possible (can be disabled in Options)"],
 		[2,"STORY","Renamed nearly everything in the Tribute layer (including the layer name itself)"],
 		[2,"STORY","Added a story"],
-		"Current endgame: "+format("e2.5e5")+" exotic matter"
+		[1,"Current endgame: "+format("e2.5e5")+" exotic matter"]
 	]},
 	{num:"v1α.3",date:"2022-03-07",name:"Smaller Adjustments",changes:[
 		[1,"QOL","Engineering notation more readable (dynamic floating point)","Hedrauta"],
@@ -1256,25 +1262,27 @@ const logEntries = [
 		[2,"BUGFIX","Fixed exotic matter not resetting properly on tribute reset"]
 	]},
 	{num:"v0.2",date:"2022-01-29",changes:[
-		"- Added Dark Matter",
-		"- Added Axioms",
-		"- Finished Tribute Upgrades",
-		"Current endgame: "+format("e65")+" tributes"
+		[1,"- Added Dark Matter"],
+		[1,"- Added Axioms"],
+		[1,"- Finished Tribute Upgrades"],
+		[1,"Current endgame: "+format("e65")+" tributes"]
 	]},
 	{num:"v0.1.1",date:"2022-01-11",changes:[
-		"- Added a code snippet that automatically fixes the game if for some reason your exotic matter becomes 'NaN'."
+		[1,"- Added a code snippet that automatically fixes the game if for some reason your exotic matter becomes 'NaN'."]
 	]},
 	{num:"v0.1",date:"2022-01-11",changes:[
-		"- Added Tribute Upgrades",
-		"- Added Enhancers",
-		"- Added V, U, T, S Axis",
-		"- Added automation",
-		"- Added more statistics",
-		"- Added offline progress",
-		"- Made W Axis effect slightly stronger (added 15 minutes to the timer)",
-		"Unfortunately, saves did not transfer to this version and caused a 'NaN' error."
+		[1,"- Added Tribute Upgrades"],
+		[1,"- Added Enhancers"],
+		[1,"- Added V, U, T, S Axis"],
+		[1,"- Added automation"],
+		[1,"- Added more statistics"],
+		[1,"- Added offline progress"],
+		[1,"- Made W Axis effect slightly stronger (added 15 minutes to the timer)"],
+		[1,"Unfortunately, saves did not transfer to this version and caused a 'NaN' error."]
 	]},
-	{num:"v0",date:"2022-01-05",changes:["Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts"]}
+	{num:"v0",date:"2022-01-05",changes:[
+		[1,"Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts"]
+	]}
 ]
 
 d.innerHTML("tierText",(highestTierUnlocked===Infinity)?"A savefile could not be retrieved, so all entries are shown. You may see spoilers if you proceed.":("You have unlocked "+highestTierUnlocked+" tier"+((highestTierUnlocked===1)?"":"s")+" of achievements according to the savefile retrieved."))
@@ -1284,9 +1292,9 @@ const depthChars = ".αβΩω".split("")
 for (let i of logEntries) {
 	let depth = depthChars.map(x=>i.num.length-i.num.replaceAll(x,"").length).sum()
 	let changes = i.changes
-	let displayed = changes.filter(x=>Array.isArray(x)?(highestTierUnlocked>=(Array.isArray(x[0])?x[0][0]:x[0])):true)
-	let tierForNext = changes.filter(x=>Array.isArray(x)?(highestTierUnlocked<(Array.isArray(x[0])?x[0][0]:x[0])):false).map(x=>x[0]).flat().filter(x=>x>=highestTierUnlocked).reduce((x,y)=>Math.min(x,y),Infinity)
-	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (typeof x === "object")?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((highestTierUnlocked<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>highestTierUnlocked)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Unlock "+tierForNext+" tiers of achievements to see more.</td></tr>"))+"</table></div>"
+	let displayed = changes.filter(x=>highestTierUnlocked>=(Array.isArray(x[0])?x[0][0]:x[0]))
+	let tierForNext = changes.filter(x=>(highestTierUnlocked<(Array.isArray(x[0])?x[0][0]:x[0]))).map(x=>x[0]).flat().filter(x=>x>=highestTierUnlocked).reduce((x,y)=>Math.min(x,y),Infinity)
+	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (x.length > 2)?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((highestTierUnlocked<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>highestTierUnlocked)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x[1]+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Unlock "+tierForNext+" tiers of achievements to see more.</td></tr>"))+"</table></div>"
 }
 var acc = document.getElementsByClassName("accordion");
 
