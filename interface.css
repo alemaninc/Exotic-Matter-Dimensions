@@ -129,34 +129,44 @@ input {font-size:12px;}
 	text-align:center;
 }
 .maxaxisbutton {
-	background-color:rgba(0,153,153,0.9);
-	color:#ffffff;
 	padding:10px;
 	border-radius:10px;
 	width:250px;
 	height:50px;
+	border-width:2px;
+	border-style:solid;
+}
+#button_maxAxis {
+	background-color:rgba(0,153,0,0.9);
+	border-color:rgba(0,102,0,0.9);
+	color:#ffffff;
 }
 .axisbutton {
 	padding:10px;
+	border-style:solid;
 	border-radius:10px;
 	width:200px;
 	height:125px;
 	margin:4px
 }
 .axisbutton.available {
-	background-color:rgba(0,153,153,0.9);
+	background-color:rgba(0,153,0,0.9);
+	border-color:rgba(0,102,0,0.9);
 	color:#ffffff;
 }
 .axisbutton.locked {
 	background-color:rgba(153,153,153,0.9);
+	border-color:rgba(102,102,102,0.9);
 	color:#000000;
 }
 .axisbutton.empowered {
 	background-color:var(--axis_empowerment);
+	border-color:rgba(76,0,153,0.9);
 	color:#ffffff;
 }
 .axisbutton.corrupted {
 	background-color:rgba(153,128,153,0.9);
+	border-color:rgba(102,77,102,0.9);
 	color:#000000;
 }
 .tablecell {
@@ -186,6 +196,8 @@ input {font-size:12px;}
 }
 .optionsbutton {
 	background-color:#cccccc;
+	border-style:solid;
+	border-color:#999999;
 	color:#000000;
 	padding:10px;
 	border-radius:15px;
@@ -197,6 +209,8 @@ input {font-size:12px;}
 .hotkey {
 	background-color:#666666;
 	color:#cccccc;
+	border-style:solid;
+	border-color:#333333;
 	height:30px;
 	width:500px;
 	font-size:15px;
@@ -338,7 +352,7 @@ tab {
 	background-color:rgba(0,0,0,0);
 	color:inherit;
 	border-style:solid;
-	border-color:rgba(51,153,255,0.5);
+	border-color:rgba(51,153,255,0.6);
 	border-width:1px;
 	border-radius:50vh;
 }
@@ -382,7 +396,9 @@ tab {
 	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ffffff;
+	border-color:rgba(255,153,0,0.5);
 	font-size:15px;
+	border-style:solid;
 	border-radius:4px;
 	width:125px;
 	height:90px;
@@ -396,19 +412,37 @@ tab {
 	height:90px;
 	border-color:#333333;
 }
-.masterybuttonLegacy {
+.masteryButtonLegacy {
 	height:125px;
 	width:175px;
 	font-size:13px;
+	border-style:solid;
 	border-radius:10px;
 	margin:4px;
 }
-.masterybuttonModern {
+.masteryButtonLegacy.active {
+	background-color:var(--mastery);
+	border-color:color-mix(in srgb, var(--mastery), #000000);
+}
+.masteryButtonLegacy.inactive {
+	background-color:#b2b2b2;
+	border-color:#808080;
+}
+.masteryButtonModern {
 	height:50px;
 	width:60px;
+	border-style:solid;
 	border-radius:8px;
 	color:inherit;
 	margin:4px;
+}
+.masteryButtonModern.active {
+	background-color:rgba(255,0,153,0.3);
+	border-color:rgba(255,0,153,0.6);
+}
+.masteryButtonModern.inactive {
+	background-color:rgba(128,128,128,0.2);
+	border-color:rgba(128,128,128,0.45);
 }
 .panel {
 	position:fixed;
@@ -428,6 +462,15 @@ tab {
 }
 .glownotify{
 	box-shadow:0px 0px 20px 0px #ff0
+}
+.mainStat {
+	height:110px;
+	width:220px;
+	padding:5px;
+	margin:5px;
+	border-radius:20px;
+	border-style:solid;
+	border-width:2px;
 }
 .largeNumberVisualization {
 	width:40vw;
@@ -469,6 +512,7 @@ tab {
 	background-image:url("img/stardustbackground.png");
 	background-size:cover;
 	color:#ffffff;
+	border-color:rgba(255,255,0,0.5);
 }
 .axisbutton.stardustupgrade.maxed {
 	filter:brightness(50%)
@@ -481,76 +525,80 @@ tab {
 	border-radius:60px;
 	margin:8px;
 	position:relative;
+	border-style:solid;
 	color: inherit;
-}
-.availablestarbutton.legacy {
-	background-color: #ffffff;
 	color:#000000;
 }
-.lockedstarbutton.legacy {
-	background-color:#999999;
-	color:#000000;
-}
-.ownedstarbutton1.legacy {
+.starbutton.row1.legacy {
 	background-color:#ff6600;
-	color:#000000;
+	border-color:#ff8533;
 }
-.ownedstarbutton2.legacy {
+.starbutton.row2.legacy {
 	background-color:#ff9900;
-	color:#000000;
+	border-color:#ffad33;
 }
-.ownedstarbutton3.legacy {
+.starbutton.row3.legacy {
 	background-color:#ffcc00;
-	color:#000000;
+	border-color:#ffd633;
 }
-.ownedstarbutton4.legacy {
+.starbutton.row4.legacy {
 	background-color:#ffff00;
-	color:#000000;
+	border-color:#ffff33;
 }
-.ownedstarbutton5.legacy {
+.starbutton.row5.legacy {
 	background-color:#ccff33;
-	color:#000000;
+	border-color:#d6ff5c;
 }
-.ownedstarbutton6.legacy {
+.starbutton.row6.legacy {
 	background-color:#99ff66;
-	color:#000000;
+	border-color:#adff85;
 }
-.ownedstarbutton7.legacy {
+.starbutton.row7.legacy {
 	background-color:#66ff99;
+	border-color:#85ffad;
 	color:#000000;
 }
-.ownedstarbutton8.legacy {
+.starbutton.row8.legacy {
 	background-color:#33ffcc;
-	color:#000000;
+	border-color:#5cffd6;
 }
-.ownedstarbutton9.legacy {
+.starbutton.row9.legacy {
 	background-color:#00ffff;
-	color:#000000;
+	border-color:#33ffff;
 }
-.ownedstarbutton10.legacy {
+.starbutton.row10.legacy:not(.available) {
 	background-image:radial-gradient(#ffffff, #000000);
-	color:#000000;
+	border-color:#333333;
+}
+.starbutton.available.legacy {
+	background-color:#ffffff;
+	border-color:#cccccc;
+	filter:brightness(80%);
+}
+.starbutton.locked.legacy {
+	filter:brightness(30%) grayscale(80%);
 }
 .starbutton.modern {
 	width:80px;
 	height:80px;
 	border-radius:40px;
 	margin:8px;
+	border-style:solid;
 	position:relative;
 	color:inherit;
 }
-.availablestarbutton.modern {background-color: rgba(255,255,255,0.3);}
-.lockedstarbutton.modern {background-color: rgba(102,102,102,0.3);}
-.ownedstarbutton1.modern {background-color:rgba(255,102,0,0.3);}
-.ownedstarbutton2.modern {background-color:rgba(255,153,0,0.3);}
-.ownedstarbutton3.modern {background-color:rgba(255,204,0,0.3);}
-.ownedstarbutton4.modern {background-color:rgba(255,255,0,0.3);}
-.ownedstarbutton5.modern {background-color:rgba(204,255,51,0.3);}
-.ownedstarbutton6.modern {background-color:rgba(153,255,102,0.3);}
-.ownedstarbutton7.modern {background-color:rgba(102,255,153,0.3);}
-.ownedstarbutton8.modern {background-color:rgba(51,255,204,0.3);}
-.ownedstarbutton9.modern {background-color:rgba(0,255,255,0.3);}
-.ownedstarbutton10.modern {background:radial-gradient(rgba(255,255,255,0.3),rgba(0,0,0,0.3));}
+.starbutton.row1.modern {background-color:rgba(255,102,0,0.3);border-color:rgba(255,102,0,0.6);}
+.starbutton.row2.modern {background-color:rgba(255,153,0,0.3);border-color:rgba(255,153,0,0.6);}
+.starbutton.row3.modern {background-color:rgba(255,204,0,0.3);border-color:rgba(255,204,0,0.6);}
+.starbutton.row4.modern {background-color:rgba(255,255,0,0.3);border-color:rgba(255,255,0,0.6);}
+.starbutton.row5.modern {background-color:rgba(204,255,51,0.3);border-color:rgba(204,255,51,0.6);}
+.starbutton.row6.modern {background-color:rgba(153,255,102,0.3);border-color:rgba(153,255,102,0.6);}
+.starbutton.row7.modern {background-color:rgba(102,255,153,0.3);border-color:rgba(102,255,153,0.6);}
+.starbutton.row8.modern {background-color:rgba(51,255,204,0.3);border-color:rgba(51,255,204,0.6);}
+.starbutton.row9.modern {background-color:rgba(0,255,255,0.3);border-color:rgba(0,255,255,0.6);}
+.starbutton.row10.modern {background:radial-gradient(rgba(255,255,255,0.3),rgba(0,0,0,0.3));border-color:rgba(51,51,51,0.6);}
+.starbutton.available.modern {background-color: rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.6);}
+.starbutton.locked.modern {filter:brightness(50%);}
 #starPanel {
 	min-height:75px;
 	font-size:16px;
@@ -558,8 +606,11 @@ tab {
 	padding:5px;
 }
 .starbuybutton {
-	background-color:#cccccc;
-	color:#000000;
+	background-image:url("img/stardustbackground.png");
+	background-size:cover;
+	color:#ffffff;
+	border-style:solid;
+	border-color:rgba(255,255,0,0.5);
 	padding:0px;
 	border-radius:20px;
 	width:200px;
@@ -568,12 +619,34 @@ tab {
 }
 .genericbutton {
 	background-color:#cccccc;
+	border-color:#666666;
 	color:#000000;
 	padding:0px;
-	border-radius:20px;
-	width:140px;
-	height:30px;
+	border-radius:25px;
+	border-style:solid;
+	border-width:2px;
 	margin:2px;
+}
+.genericbutton.size1 {
+	width:200px;
+	height:140px;
+	margin:2px;
+}
+.genericbutton.size2 {
+	width:200px;
+	height:50px;
+	margin:2px;
+}
+.genericbutton.size3 {
+	width:140px;
+	height:35px;
+	margin:2px;
+}
+.genericbutton.size4 {
+	width:80px;
+	height:20px;
+	margin:2px;
+	border-radius:10px;
 }
 .narrowbutton {
 	height:20px;
@@ -581,6 +654,8 @@ tab {
 	border-radius:10px;
 	background-color:#cccccc;
 	color:#000000;
+	border-style:solid;
+	border-color:#999999;
 }
 .automatordiv {
 	background-color:#999999;
@@ -602,29 +677,39 @@ tab {
 	color:rgba(0,0,0,0.5);
 	font-size:11px;
 }
-.automatortoggleon {
+.automatortoggle {
+	border-radius:50%;
+	width:24px;
+	height:24px;
+	font-size:8px;
+	border-style:solid;
+}
+.automatortoggle.on {
 	background-color:#00ff00;
 	color:#009900;
-	border-radius:50%;
-	width:24px;
-	height:24px;
-	font-size:8px;
+	border-color:#00cc00;
 }
-.automatortoggleoff {
-	background-color:#ff6600;
-	color:#930;
-	border-radius:50%;
-	width:24px;
-	height:24px;
-	font-size:8px;
+.automatortoggle.off {
+	background-color:#ff0000;
+	color:#660000;
+	border-color:#cc0000;
 }
 .autobuyerupgrade {
 	color:#000000;
+	border-style:solid;
 	font-size:12px;
 	padding:2px;
 	border-radius:10px;
 	height:50px;
 	width:180px;
+}
+.autobuyerupgrade.unlocked {
+	background-color:#cccccc;
+	border-color:#666666;
+}
+.autobuyerupgrade.locked {
+	background-color:#999999;
+	border-color:#666666;
 }
 .texttoggle {
 	background-color:rgba(204,204,204,0.9);
@@ -637,39 +722,49 @@ tab {
 }
 #button_maxDarkAxis {
 	background-color:var(--darkmatter);
+	border-color:rgba(102,0,102,0.9);
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:250px;
-	height:50px;
 }
 .axisbutton.dark {
 	background-color:var(--darkmatter);
+	border-style:solid;
+	border-color:rgba(102,0,102,0.9);
 	color:#ffffff;
 }
 #button_darkstar {
 	padding:4px;
 	border-radius:16px;
+	border-style:solid;
 	width:400px;
 	height:200px;
 }
 #button_darkstar.unlocked {
 	background-color:var(--darkmatter);
+	border-color:rgba(102,0,102,0.9);
 	color:#ffffff;
 }
 #button_darkstar.locked {
 	background-color:#999999;
+	border-color:#666666;
 	color:#000000;
 }
 .energydivision {
 	height:115px;
 	width:calc(50vw - 50px);
-	margin:15px;
+	margin:10px;
+	background-color:rgba(0,255,255,0.2);
+	border-color:rgba(0,255,255,0.4);
+	color:#00cccc;
+	border-style:solid;
+	border-radius:20px;
+	border-width:2px;
 }
 .wormholeResetButton{
 	background-image:repeating-radial-gradient(circle,#090019,#190033 10%,#090019 20%);
 	background-size:cover;
 	color:#ffffff;
+	border-color:rgba(0,0,255,0.5);
+	border-style:solid;
 	font-size:15px;
 	border-radius:4px;
 	width:125px;
@@ -794,8 +889,14 @@ tab {
 	height:45px;
 	margin:2px;
 	border-radius:12px;
-	background-color:rgba(179,204,255,0.75);
 	font-size:11px;
+	border-style:solid;
+	background-color:rgba(179,204,255,0.75);
+	border-color:rgba(128,153,204,0.75);
+}
+.observation.locked {
+	background-color:rgba(128,153,204,0.75);
+	border-color:rgba(76,102,153,0.75);
 }
 .studyDiv {
 	height:400px;
@@ -1106,11 +1207,18 @@ tab {
 	height:60px;
 	width:240px;
 	border-radius:30px;
+	border-style:solid;
 	margin:6px;
 	color:#000000;
 }
-.galaxyButton.active {background-color:rgba(153,153,0,0.9);}
-.galaxyButton.locked {background-color:rgba(153,153,153,0.9);}
+.galaxyButton.active {
+	background-color:rgba(153,153,0,0.9);
+	border-color:rgba(102,102,0,0.9);
+}
+.galaxyButton.locked {
+	background-color:rgba(153,153,153,0.9);
+	border-color:rgba(102,102,102,0.9);
+}
 #div_galaxyEffects {
 	min-height:80px;
 	width:calc(100vw - 150px);
@@ -1125,32 +1233,44 @@ tab {
 .luckPercentageOption, .prismaticPercentageOption {
 	width:50px;
 	border-radius:5px;
-}
-.luckPercentageOption.inactive, .prismaticPercentageOption {
-	background-color:#cccccc;
-	border-color:#999999;
+	border-style:solid;
+	border-width:2px;
 }
 .luckPercentageOption.active {
 	background-color:var(--luck);
-	border-color:#063;
+	border-color:#006633;
+}
+.luckPercentageOption.inactive {
+	background-color:color-mix(in srgb,var(--luck) 50%,#ffffff 50%);
+	border-color:#339966;
 }
 .prismaticPercentageOption.active {
 	background:var(--prismatic);
 	border-color:#333;
 }
+.prismaticPercentageOption.inactive {
+	background:#999999;
+	border-color:#666666;
+}
 .buyLuckRunes {
 	height:50px;
 	width:200px;
 	border-radius:20px;
-	background-color:#132;
+	border-style:solid;
+	background-color:#113322;
+	border-color:#226644;
 	color:var(--luck);
 }
 .luckUpgrade {
 	height:125px;
 	width:175px;
 	border-radius:12px;
-	background-color:#132;
+}
+.luckUpgrade, #button_respecLuckUpgrades {
+	background-color:#113322;
 	color:var(--luck);
+	border-color:#226644;
+	border-style:solid;
 	margin:2px;
 }
 #button_maxPrismaticUpgrades {
@@ -1158,6 +1278,8 @@ tab {
 	color:#000000;
 	padding:10px;
 	border-radius:10px;
+	border-style:solid;
+	border-color:#808080;
 	width:250px;
 	height:50px;
 }
@@ -1166,10 +1288,17 @@ tab {
 	width:200px;
 	border-radius:12px;
 	color:#000000;
+	border-style:solid;
 	margin:2px;
 }
-.prismaticUpgrade.locked {background-color: #999999;}
-.prismaticUpgrade.unlocked {background:var(--prismatic);}
+.prismaticUpgrade.locked, .refundPrismaticUpgrade.glow {
+	background-color: #999999;
+	border-color:#666666;
+}
+.prismaticUpgrade.unlocked, .refundPrismaticUpgrade.noglow {
+	background:var(--prismatic);
+	border-color:#808080;
+}
 .prismaticUpgrade.refundable {height:200px;}
 .prismaticUpgrade.maxed {filter:brightness(50%)}
 .refundPrismaticUpgrade {
@@ -1178,19 +1307,16 @@ tab {
 	border-radius:12px;
 	color:#000000;
 }
-.refundPrismaticUpgrade.glow {background-color:#999999;}
-.refundPrismaticUpgrade.noglow {background:var(--prismatic)}
 #button_maxAntiAxis {
 	background-color:var(--antimatter);
 	color:#ffffff;
-	padding:10px;
-	border-radius:10px;
-	width:250px;
-	height:50px;
+	border-color:#660000;
 }
 .axisbutton.anti {
 	background-color:var(--antimatter);
 	color:#ffffff;
+	border-style:solid;
+	border-color:#660000;
 }
 #button_titaniumEmpowerment {
 	color:#000000;
@@ -1201,9 +1327,12 @@ tab {
 }
 #button_titaniumEmpowerment.unlocked {
 	background-color:var(--titanium);
+	border-style:solid;
+	border-color:#334455;
 }
 #button_titaniumEmpowerment.locked {
 	background-color:#999999;
+	border-color:#666666;
 }
 .wormholeUpgrade {
 	height:110px;

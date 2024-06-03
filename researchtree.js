@@ -34,6 +34,7 @@ const researchGroupList = {
 	study5b:{label:"Practical",get description(){return "Having more "+researchGroupList.study5b.label+" research ("+ownedResearchInGroup("study5b").length+") than "+researchGroupList.study5a.label+" ("+ownedResearchInGroup("study5a").length+") research massively increases their costs"},color:"#006666",icon:"P"},
 	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:"var(--time)",icon:"t"},
 	spatialsynergism:{label:"Spatial Synergism",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:"var(--wormhole_text)",icon:"SS"},
+	study7:{label:"Crystal",color:"#009900",icon:"S"},
 	mastery:{label:"Mastery",get description(){return "Having more Mastery research than your Study VIII completions ("+g.studyCompletions[8]+") will weaken all Masteries by 33% per excess research"},color:"var(--mastery)",icon:"M"},
 	prismal:{label:"Prismal",get description(){return "You can buy a maximum of "+prismaticUpgrades.prismLab.eff()+" Prismal research"},color:"#00ff99",icon:"P"},
 	luck:{label:"Luck",get description(){return "Each Luck research makes all other Luck research "+(g.achievement[819]?c.d7.mul(achievement(819).effect()).noLeadFormat(3):"7")+"% less effective"},color:"var(--luck)",icon:"L"},
@@ -70,7 +71,7 @@ const research = (function(){
 			basecost:c.d0,
 			icon:icon[resInt]+icon.arr+classes.research("R$"),
 			effect:function(power){return power.lt(c.d1)?c.d1.sub(power.div(c.d10)):c.d0_9.pow(power)},
-			group:betaActive?"study5a":undefined
+			group:"study5a"
 		}
 	}
 	function numOrFormula(id) {return showFormulas?formulaFormat(research[id].formulaDesc()):research[id].numDesc()}
@@ -224,7 +225,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(555555),
 			icon:icon.discovery+icon.arr+icon.normalaxis+icon.arrl+icon.darkaxis,
-			effect:function(power){return [g.totalDiscoveries.alog(c.d10),researchPower(2,6),c.d5em3].productDecimals().add(c.d1)}
+			effect:function(power){return [g.totalDiscoveries.add1Log(c.d10),researchPower(2,6),c.d5em3].productDecimals().add(c.d1)}
 		},
 		r2_7:{
 			description:function(){return "Increase the X Axis effect by "+researchEffect(2,7).noLeadFormat(2)+"% per OoM of spatial energy (current total: "+researchEffect(2,7).mul(g.spatialEnergy.log10()).noLeadFormat(2)+"%)";},
@@ -424,7 +425,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(500),
 			icon:icon.discovery+icon.arr+icon.hr,
-			effect:function(power){return [g.totalDiscoveries.alog(c.d10).pow(5.555),N(0.0005555),power].productDecimals().pow10()},
+			effect:function(power){return [g.totalDiscoveries.add1Log(c.d10).pow(5.555),N(0.0005555),power].productDecimals().pow10()},
 			group:"study5b"
 		},
 		r4_10:{
@@ -981,7 +982,7 @@ const research = (function(){
 				icon:icon.chroma(i+3)+icon.arr+icon.chroma(6),
 				effect:function(power){
 					let out = Decimal.div(g.chroma[i+3].add(c.d1).log10().pow(c.d3),g.chroma[i+3].add(c.d1).log(lightData[i].baseScale).add(c.d1).pow(c.d2)).mul(c.d2).add(c.d1).pow(c.d2)
-					if (g.achievement[613]) out = out.add(betaActive?achievement(613).effect():c.d3)
+					if (g.achievement[613]) out = out.add(achievement(613).effect())
 					return out.pow(power)
 				},
 				group:"light"
@@ -1532,7 +1533,8 @@ const research = (function(){
 			type:"normal",
 			basecost:N(7777),
 			icon:icon.darkmatter+icon.arr+icon.luckShard,
-			effect:function(power){return g.darkmatter.add(c.d1).log10().div(c.e6).add(c.d1).pow(power.mul(c.d2))}
+			effect:function(power){return g.darkmatter.add(c.d1).log10().div(c.e6).add(c.d1).pow(power.mul(c.d2))},
+			group:"study7"
 		},
 		r24_3:{
 			description:function(){return "Unlock 3 more Luck Upgrades"},
@@ -1553,7 +1555,8 @@ const research = (function(){
 			type:"normal",
 			basecost:N(7777),
 			icon:icon.stardust+icon.arr+icon.luckShard,
-			effect:function(power){return g.stardust.add(c.d1).log10().div(c.e5).add(c.d1).pow(power.mul(c.d2))}
+			effect:function(power){return g.stardust.add(c.d1).log10().div(c.e5).add(c.d1).pow(power.mul(c.d2))},
+			group:"study7"
 		},
 		r24_5:{
 			description:function(){return "Unlock Luck Upgrades"},
@@ -1634,7 +1637,8 @@ const research = (function(){
 			type:"normal",
 			basecost:N(7777),
 			icon:icon.masteryPower+icon.arr+icon.luckShard,
-			effect:function(power){return g.masteryPower.add(c.d1).log10().div(c.e4).add(c.d1).pow(power.mul(c.d3))}
+			effect:function(power){return g.masteryPower.add(c.d1).log10().div(c.e4).add(c.d1).pow(power.mul(c.d3))},
+			group:"study7"
 		},
 		r25_3:{
 			description:function(){return "Unlock 4 more Luck Upgrades"},
@@ -1665,7 +1669,7 @@ const research = (function(){
 		},
 		r25_14:{
 			numDesc:function(){return researchEffect(25,14).noLeadFormat(3)},
-			formulaDesc:function(){return "max(log<sup>[2]</sup>(X), 0)<sup>2</sup>"+formulaFormat.mult(researchPower(25,14).mul(c.d5))},
+			formulaDesc:function(){return "max(log<sup>[2]</sup>(X), 0)"+formulaFormat.mult(researchPower(25,14).mul(c.d5))},
 			description:function(){return "Empower up to "+numOrFormula("r25_14")+" anti-V axis (based on multiplier per anti-X axis)"},
 			adjacent_req:["r25_13"],
 			condition:[],
@@ -1708,7 +1712,8 @@ const research = (function(){
 			type:"normal",
 			basecost:N(7777),
 			icon:icon.exoticmatter+icon.arr+icon.luckShard,
-			effect:function(power){return g.exoticmatter.add(c.d1).log10().div(c.e9).add(c.d1).pow(power.mul(c.d2))}
+			effect:function(power){return g.exoticmatter.add(c.d1).log10().div(c.e9).add(c.d1).pow(power.mul(c.d2))},
+			group:"study7"
 		},
 		r26_3:{
 			description:function(){return "Unlock 3 more Luck Upgrades"},
@@ -1716,7 +1721,7 @@ const research = (function(){
 			condition:[studyReq(7,4)],
 			visibility:function(){return g.studyCompletions[7]>3},
 			type:"permanent",
-			basecost:N(177777),
+			basecost:N(betaActive?277777:177777),
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 1.667%,var(--luck) 2.5%, var(--luck) 5.833%,rgba(0,0,0,0) 6.667%,rgba(0,0,0,0) 8.333%)\"></div>"
 		},
 		r26_5:{
@@ -1853,7 +1858,8 @@ const research = (function(){
 			type:"normal",
 			basecost:N(7777777),
 			icon:classes.luck("L"+classes.sub("π"))+icon.arr+classes.luck("L"),
-			effect:function(power){return power.mul(c.d7em4)}
+			effect:function(power){return power.mul(c.d7em4)},
+			group:"luck"
 		},
 		r32_12:antimatterRes1("O","r32_12",4),
 		r32_13:antimatterRes1("S","r32_13"),
@@ -1928,7 +1934,7 @@ const research = (function(){
 			type:"normal",
 			basecost:N(111111),
 			icon:icon.time+icon.arr+icon.darkaxis,
-			effect:function(power){return [g.truetimeThisWormholeReset.div(c.e7).alog(c.d10).pow(c.d2),c.e2,power].productDecimals()}
+			effect:function(power){return [g.truetimeThisWormholeReset.div(c.e7).add1Log(c.d10).pow(c.d2),c.e2,power].productDecimals()}
 		},
 		r34_12:{
 			description:function(){return "Research 32-14 is "+percentOrMult(researchEffect(34,12),2,false)+" stronger"},
@@ -1995,13 +2001,13 @@ const research = (function(){
 		...(()=>{
 			let out = {}
 			for (let t of Object.keys(researchList.finality)) {for (let i=1;i<13;i++) {out[researchList.finality[t][i]] = {
-				description:function(){return dictionary(t,[["EM","Exotic matter"],["DM","Dark matter"],["AM","Antimatter"],["S","Stardust"],["HR","Hawking radiation"],["K","Knowledge"]])+" gain is raised to the power of "+researchEffect(researchRow(researchList.finality[t][i]),researchCol(researchList.finality[t][i])).noLeadFormat(4)},
+				description:function(){return dictionary(t,{EM:"Exotic matter",DM:"Dark matter",AM:"Antimatter",S:"Stardust",HR:"Hawking radiation",K:"Knowledge"})+" gain is raised to the power of "+researchEffect(researchRow(researchList.finality[t][i]),researchCol(researchList.finality[t][i])).noLeadFormat(4)},
 				adjacent_req:[researchList.finality[t][i-1]].flat(),
-				condition:(i===1)?[dictionary(t,[["EM",studyReq(11,3)],["DM",studyReq(11,4)],["AM",studyReq(10,4)],["S",studyReq(12,3)],["HR",studyReq(12,4)],["K",studyReq(10,4)]])]:[],
+				condition:(i===1)?[dictionary(t,{EM:studyReq(11,3),DM:studyReq(11,4),AM:studyReq(10,4),S:studyReq(12,3),HR:studyReq(12,4),K:studyReq(10,4)})]:[],
 				visibility:function(){return researchConditionsMet(researchList.finality[t][i])},
 				type:"normal",
 				basecost:c.e5,
-				get icon(){return "<span style=\"color:"+researchGroupList["finality"+i].color+"\">η</span><br>"+icon[dictionary(t,[["EM","exoticmatter"],["DM","darkmatter"],["AM","antimatter"],["S","stardust"],["HR","hr"],["K","knowledge"]])]+"<br><span style=\"color:"+researchGroupList["finality"+i].color+"\">υ</span>"},
+				get icon(){return "<span style=\"color:"+researchGroupList["finality"+i].color+"\">η</span><br>"+icon[dictionary(t,{EM:"exoticmatter",DM:"darkmatter",AM:"antimatter",S:"stardust",HR:"hr",K:"knowledge"})]+"<br><span style=\"color:"+researchGroupList["finality"+i].color+"\">υ</span>"},
 				effect:function(power){return c.d1_01.pow(power)},
 				group:"finality"+i
 			}}}
@@ -2056,11 +2062,16 @@ const research = (function(){
 		},
 	}
 })();
+const researchCache = {
+	buyableGroups:[]
+}
+for (let i of Object.keys(researchGroupList)) {
+	researchGroupList[i].contents=Object.entries(research).filter(x=>x[1].group===i).map(x=>x[0])
+	researchGroupList[i].mostExpensive=Object.entries(research).filter(x=>x[1].group===i).sort((a,b)=>Decimal.lt(a[1].basecost,b[1].basecost))[0][0]
+}
 researchList.all = Object.keys(research).filter(x=>x!=="r6_9")
 researchList.nonPermanent = researchList.all.filter(x=>research[x].type!=="permanent")
 researchList.permanent = researchList.all.filter(x=>research[x].type==="permanent")
-researchList.study5 = ["r1_5","r1_6","r1_10","r1_11"]
-researchList.study7 = ["r24_2","r24_4","r25_2","r26_2"]
 researchList.study = researchList.all.filter(x=>research[x].type==="study")
 researchGroupList.spatialsynergism.effectors = Object.fromEntries(fullAxisCodes.map(x=>[x,researchList.nonPermanent.filter(y=>research[y].group==="spatialsynergism"&&((researchCol(y)>8?"dark":"")+research[y].a2)===x)]))
 function validateResearch(x) {
@@ -2096,20 +2107,25 @@ function resizeResearch(x){
 		}
 	}
 }
-function ownedResearchInGroup(x,owned=g.research) {
-	return researchGroupList[x].contents.filter(x=>owned[x])
+function ownedResearchInGroup(group,owned=g.research) {
+	return researchGroupList[group].contents.filter(i=>owned[i])
+}
+function canAffordAllInResearchGroup(group) {
+	let res = structuredClone(g.research)
+	for (let i of researchGroupList[group].contents) {if (researchGroupList[group].mostExpensive!==i) {res[i] = true}}
+	return researchCost(researchGroupList[group].mostExpensive,res).eq(c.d0)
 }
 function researchPower(row,col) {
-	if (StudyE(12)) return c.d0;
-	let id = "r"+row+"_"+col
+	if (StudyE(12)) {return c.d0;}
+	let id = "r"+row+"_"+col;
 	let out = c.d1;
 	// disablings
-	if (StudyE(3)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {return c.d1}
-	if ((g.activeStudy===10)&&(studyPower(10)===2)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {return c.d0}
+	if ((g.activeStudy===10)&&(studyPower(10)===2)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {return c.d0;}
+	if (StudyE(3)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {return c.d1;}
 	// row by row effects
 	if (row===1) { 
 		if ([3,8,13].includes(col)) { // prevent targeting study V research
-			if (achievement.ownedInTier(5)>=21) {out = out.mul(totalAchievements/1000+1)}
+			if (achievement.ownedInTier(5)>=21) {out = out.mul(totalAchievements/1000+1);}
 			if (g.research.r8_11) {out = out.mul(researchEffect(8,11).mul(research.r8_11.starCount()).div(c.e2).add(c.d1))}
 			if (study13.bound(55)) {out = out.mul(study13.bindingEff(55))}
 		}
@@ -2162,7 +2178,7 @@ function researchPower(row,col) {
 	}
 	// non-row by row effects
 	if (g.research.r9_5&&["r6_5","r6_6","r7_5","r8_5"].includes(id)) {out = out.mul(researchEffect(9,5).pow(totalAchievements))}
-	if (researchList.study7.includes(id)) {out = out.mul(studies[7].reward(2).div(c.e2))}
+	if (research[id].group==="study7") {out = out.mul(studies[7].reward(2).div(c.e2))}
 	if (g.achievement[904]&&["r9_15","r10_13"].includes(id)) {out = out.mul(achievement(904).effect())}
 	if (g.achievement[931]&&(col===8)) {out = out.mul(achievement(931).effect().div(c.e2).add(c.d1))}
 	if (study13.bound(254)&&[5,6].includes(row)&&[1,2,3,13,14,15].includes(col)) {out = out.mul(study13.bindingEff(254))}
@@ -2180,13 +2196,13 @@ function researchPower(row,col) {
 		if ((col>8)&&study13.bound(33)) {out = out.mul(study13.bindingEff(33))}
 		if ((col<8)&&study13.bound(37)) {out = out.mul(study13.bindingEff(37))}
 	} else if (research[id].group==="luck") {
-		let base = 1-0.07*(g.achievement[819]?achievement(819).effect():1)
+		let base = c.d1.sub((g.achievement[819]?achievement(819).effect():c.d1).mul(c.d0_07))
 		let eff = ownedResearchInGroup("luck").length-(g.research[id]?1:0)
 		out = out.mul(base**eff)
 	} else if (research[id].group==="prismal") {
 		out = out.mul(prismaticUpgrades.prismLab2.eff[String.fromCharCode(row+98)]())
 	} else if (research[id].group==="antimatter") {
-		let base = 1-0.09*(g.achievement[819]?achievement(819).effect():1)
+		let base = c.d1.sub((g.achievement[819]?achievement(819).effect():c.d1).mul(c.d0_09))
 		let eff = ownedResearchInGroup("antimatter").length-(g.research[id]?1:0)
 		out = out.mul(base**eff)
 	} else if ((research[id].group??"").substring(0,8)==="finality") {
@@ -2204,7 +2220,7 @@ function researchCost(x,owned=g.research) {
 	if ((research[x].group==="time")&&(!owned[x])) if (ownedResearchInGroup("time",owned).length>=g.studyCompletions[6]) {return c.maxvalue;}
 	// base
 	let output = research[x].basecost;
-	// class & study modifiers
+	// class modifiers
 	if (research[x].group!==undefined) {
 		if (research[x].group==="energy") {
 			output=output.mul(c.d2.pow(ownedResearchInGroup("energy",owned).length))
@@ -2215,7 +2231,7 @@ function researchCost(x,owned=g.research) {
 			let mult = g.achievement[713]?achievement(713).effect():c.d4
 			output=output.mul(mult.pow(ownedResearchInGroup("light",owned).filter(i=>researchRow(i)===researchRow(x)).length))
 		} else if (research[x].group==="lightaugment") {
-			output=output.mul([c.d1,c.d1,c.d2,c.d6,c.d24,c.d120,c.d720,c.d5040,c.d40320][ownedResearchInGroup("lightaugment",owned).length])
+			output=output.mul([c.d1,c.d1,c.d2,c.d6,c.d24,c.d120,c.d720,c.d5040,c.d40320,c.d362880][ownedResearchInGroup("lightaugment",owned).length])
 		} else if (research[x].group==="study5b") {
 			let over = ownedResearchInGroup("study5b",owned).length-ownedResearchInGroup("study5a",owned).length+1
 			if (over>0) {output = output.add(1e3**(over+1))}
@@ -2230,11 +2246,12 @@ function researchCost(x,owned=g.research) {
 	if (x==="r9_14") {output = output.mul(1.5**studyPower(4))}
 	if ((researchRow(x)>7)&&(researchRow(x)<13)) {output = output.mul(achievement.perAchievementReward[6].currentVal)}
 	if (StudyE(5)&&(research[x].type==="normal")) {output = output.mul(studies[5].difficultyConstant())}
-	for (let i of researchList.study5) {if (owned[i]) {output = output.mul(researchEffect(1,researchCol(i)))}}
+	if ((g.activeStudy===10)&&(studyPower(10)===1)&&betaActive) {output = output.mul(c.d1.sub(numberOfDigits(g.masteryPower).div(2e4)).max(c.d0_5))}
+	for (let i of researchGroupList.study5a.contents) {if (owned[i]) {output = output.mul(researchEffect(1,researchCol(i)))}}
 	if ((research[x].type==="study")&&g.achievement[907]) {output = output.mul(achievement(907).effect())}
 	// hyper 1
 	output = output.sub(studies[5].reward(3))
-	if (research[x].group==="lightaugment"&&g.achievement[712]) output = output.sub(achievement(712).effect().mul(ownedResearchInGroup("lightaugment",owned).length))
+	if ((research[x].group==="lightaugment")&&g.achievement[712]) output = output.sub(achievement(712).effect().mul(ownedResearchInGroup("lightaugment",owned).length))
 	// return
 	if (output.sign===-1) return c.d0
 	return output.ceil();
@@ -2242,7 +2259,7 @@ function researchCost(x,owned=g.research) {
 const researchRows = Object.keys(research).map(x => researchRow(x)).reduce((x,y)=>Math.max(x,y));
 function projectedResearchCost() { // calculate cost of research on respec due to things like Tier 6 reward or V's Achievements
 	// study V research always included, and always at the start
-	let owned = [researchList.study5.filter(x=>research[x].visibility()),researchList.nonPermanent.filter(x=>g.research[x]&&(!researchList.study5.includes(x)))].flat()
+	let owned = [researchGroupList.study5a.contents.filter(x=>research[x].visibility()),researchList.nonPermanent.filter(x=>g.research[x]&&(research[x].group!=="study5a"))].flat()
   let acc = c.d0
 	let accOwned = {}
 	for (let i of owned) {
@@ -2301,6 +2318,12 @@ function updateResearchTree() {
 				}
 			}
 		}
+	}
+	researchCache.buyableGroups = []
+	for (let i of Object.keys(researchGroupList)) {
+		if (ownedResearchInGroup(i).length===researchGroupList[i].contents.length) {continue}
+		if (!researchGroupList[i].contents.map(x=>(research[x].adjacent_req.length===0)||research[x].adjacent_req.map(y=>g.research[y]).includes(true)).includes(true)) {continue}
+		researchCache.buyableGroups.push(i)
 	}
 }
 function generateResearchCanvas() {

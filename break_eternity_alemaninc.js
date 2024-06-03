@@ -2924,7 +2924,7 @@ for (var i = 0; i < 10; ++i)
 			return this.add(1).pow(p).sub(1)
 		}
 
-		Decimal.prototype.alog = function(base=FC_NN(1,0,10)) { // log(x + 1) that works for low values
+		Decimal.prototype.add1Log = function(base=FC_NN(1,0,10)) { // log(x + 1) that works for low values
 			if (this.div(base.ln()).lt(1e-10)) return this.div(base.ln())
 			return this.add(1).log(base)
 		}
@@ -3092,7 +3092,6 @@ const notations = {
 		if (leadingEs===0) {
 			if (x.lt(constant.e33)) {return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+" "+["M","B","T","Qa","Qt","Sx","Sp","Oc","No"][Math.floor(x.log10().toNumber()/3-2)];}
 			let height = x.log10().div(constant.d3).sub(constant.d1).floor().toNumber()
-			let e3vals = [10,9,8,7,6,5,4,3,2,1,0].map(x=>Math.floor((height/1e3**x)%1e3))
 			let out = []
 			let hp = p+2
 			let sequence = notationSupport.standard.sequence(Math.floor(Math.log10(height)),hp)

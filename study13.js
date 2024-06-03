@@ -233,7 +233,7 @@ const study13 = {
 					icon:icon.exoticmatter+classes.sup("-1")+icon.arr+icon.stardust+classes.sup("-1"),
 					lv:1,
 					effect:function(power){
-						let out = g.exoticmatter.alog(c.d10).div(c.e7)
+						let out = g.exoticmatter.add1Log(c.d10).div(c.e7)
 						if (out.gt(1e-10)) {out = Decimal.sub(c.d1,out.add(c.d1).recip()).pow(power)}
 						return out
 					},
@@ -359,14 +359,14 @@ const study13 = {
 					icon:icon.stardust+classes.sup("-1")+icon.arr+icon.exoticmatter+classes.sup("-1"),
 					lv:1,
 					effect:function(power){
-						let out = g.stardust.alog(c.d10).div(c.e3)
+						let out = g.stardust.add1Log(c.d10).div(c.e3)
 						if (out.gt(1e-10)) {out = Decimal.sub(c.d1,out.add(c.d1).recip())}
 						return out.pow(power)
 					},
 					nameMod:["Ogres","Prestigious","Stacked"]
 				},
 				155:{
-					description:function(){return "The star cost superscaling starts "+study13.bindingEff(155).noLeadFormat(3)+" stars earlier"},
+					description:function(){return "Star Scaling starts "+study13.bindingEff(155).noLeadFormat(3)+" stars earlier"},
 					adjacent_req:[135],
 					icon:icon.star("")+icon.arr+icon.star("")+classes.stars("$"),
 					lv:8,
@@ -622,12 +622,21 @@ const study13 = {
 				},
 				275:{
 					numDesc:function(){return study13.bindingEff(275).noLeadFormat(2)},
-					formulaDesc:function(){let p = study13.bindingPower(275);return "((1 + log<sup>[2]</sup>(DM + 10) ÷ 100)<sup>331.3</sup>"+(p.eq(c.d1)?" ":"<br>")+"× 10<sup>5</sup>)"+formulaFormat.exp(p.recip())+formulaFormat.mult(p.recip())},
+					formulaDesc:function(){
+						let p = study13.bindingPower(275);
+						out = "((1 + log<sup>[2]</sup>(DM + 10) ÷ 100)<sup>331.3</sup>"+(p.eq(c.d1)?" ":"<br>")+"× 10<sup>5</sup>)"+formulaFormat.exp(p.recip())+formulaFormat.mult(p.recip())
+						if (StudyE(12)) {out = "1 - 1 ÷ ("+out+" + 1)"}
+						return out
+					},
 					description:function(){return "Dark matter gain is capped at 1, but Titanium Empowerments are available and fortitude gain and cap is multiplied by "+numOrFormula(275)+" (based on dark matter)"},
 					adjacent_req:[265],
 					get icon(){return studyIcon(12)},
 					lv:6,
-					effect:function(power){return g.darkmatter.add(c.d10).log10().log10().div(c.e2).add(c.d1).pow(331.3).mul(c.e5).root(power).div(power)},
+					effect:function(power){
+						let out = g.darkmatter.add(c.d10).log10().log10().div(c.e2).add(c.d1).pow(331.3).mul(c.e5).root(power).div(power)
+						if (StudyE(12)) {out = c.d1.sub(out.add(c.d1).recip())}
+						return out
+					},
 					nameMod:["Elements","Titanic","Fortified"]
 				},
 				291:{
@@ -1040,7 +1049,7 @@ const study13 = {
 				desc:function(){return "Activating both the Binding in column 2 and 8 of any row (e.g. 52 and 58; 192 and 198; 242 and 248) will make both of these Bindings 10% weaker"}
 			},
 			zemer:{
-				name:"Grey Flower",
+				name:"Gray Flower",
 				breakpoints:[144,154,164,176,188,200,212,226,240,256],
 				type:"scaling",
 				eff:function(lv=study13.rewardLevels.zemer){return c.d5.mul(lv)},

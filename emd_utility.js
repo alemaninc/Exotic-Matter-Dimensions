@@ -1,11 +1,11 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(c).11",
+	current:"𝕍1.5(c).12",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
-	nextProgress:[0.99],
-	nextUpdateHint:"Cursed research of the N axis",
+	nextProgress:[1],
+	nextUpdateHint:"Cursed research of the N axis<br><br><i>(The update is literally complete, why is alemaninc still keeping it hidden? Only beta testers know.)</i>",
 }
 /*
 	e event message
@@ -32,11 +32,11 @@ function notify(text,backgroundColor="#"+Math.floor(Math.random()*16777216).toSt
 }
 function error(text) {
 	halt()
-	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and give him this output:<textarea style=\"width:calc(100% - 32px)\">"+(new Error().stack)+"</textarea><br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\" target=\"_blank\">Discord</a>",buttons:[]})
-	error = function(){/* if multiple errors are thrown in a chain, only the first appears */}
+	popup({text:"Error: "+text+".<br>Please tell alemaninc about this and give him a console output.<br><table style=\"table-layout:fixed;width:calc(100% - 32px)\"><colgroup><col style=\"width:50%\"></col><col style=\"width:50%\"></col></colgroup><tr><td>Savefile before error:</td><td>Savefile at start of session:</td></tr><tr><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+btoa(localStorage.getItem("save"))+"</textarea></td><td><textarea id=\"span_fancyPopupInput\" style=\"width:100%\">"+savePreLoad+"</textarea><td></tr></table><br><a href=\""+discordInvite+"\" target=\"_blank\">Discord</a>",buttons:[]})
+	console.error()
 }
 const debug = {
-	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.log(i)}}},
+	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.error(i)}}},
 	secretAchievementDistribution: function(){
 		let out = Array(7).fill(0)
 		for (let i of Object.values(secretAchievementList).map(x=>x.rarity)) out[i-1]++
@@ -75,7 +75,7 @@ function popup(data) {
 	d.innerHTML("span_fancyPopupText",data.text)
 	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
 	d.innerHTML("span_fancyPopupButtons","")
-	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"hidePopup();"+i[1]+"\" class=\"genericbutton\">"+i[0]+"</button>"
+	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"hidePopup();"+i[1]+"\" class=\"genericbutton size3\">"+i[0]+"</button>"
 }
 function hidePopup() {
 	d.display('div_fancyPopupScreen','none')
@@ -193,6 +193,7 @@ const c = deepFreeze({		 // c = "constant"
 	d0_08			: Decimal.FC_NN(1,0,0.08),
 	d0_0816		: Decimal.FC_NN(1,0,0.0816),
 	d0_085		: Decimal.FC_NN(1,0,0.085),
+	d0_09			: Decimal.FC_NN(1,0,0.09),
 	d0_1			: Decimal.FC_NN(1,0,0.1),
 	d1div9		: Decimal.FC_NN(1,0,1/9), // 0.111
 	d0_12			: Decimal.FC_NN(1,0,0.12),
@@ -239,11 +240,11 @@ const c = deepFreeze({		 // c = "constant"
 	d1_025		: Decimal.FC_NN(1,0,1.025),
 	d1_026		: Decimal.FC_NN(1,0,1.026),
 	d1_03			: Decimal.FC_NN(1,0,1.03),
-	d1_0369		: Decimal.FC_NN(1,0,1.0369),
 	d1_04			: Decimal.FC_NN(1,0,1.04),
 	d1_05			: Decimal.FC_NN(1,0,1.05),
 	d1_06			: Decimal.FC_NN(1,0,1.06),
 	d1_08			: Decimal.FC_NN(1,0,1.08),
+	d1_0936		: Decimal.FC_NN(1,0,1.0936),
 	d1_1			: Decimal.FC_NN(1,0,1.1),
 	d10div9		: Decimal.FC_NN(1,0,10/9), // 1.111
 	d1_12			: Decimal.FC_NN(1,0,1.12),
@@ -370,6 +371,7 @@ const c = deepFreeze({		 // c = "constant"
 	d44444		: Decimal.FC_NN(1,0,44444),
 	d5e4			: Decimal.FC_NN(1,0,5e4),
 	e5				: Decimal.FC_NN(1,0,1e5),
+	d362880		: Decimal.FC_NN(1,0,362880),
 	d696342		: Decimal.FC_NN(1,0,696342),
 	d1_5e6		: Decimal.FC_NN(1,0,1.5e6),
 	e7				: Decimal.FC_NN(1,0,1e7),

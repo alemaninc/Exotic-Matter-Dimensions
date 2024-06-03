@@ -69,6 +69,7 @@ const HTPtexts = [
 			"Here is an overview of some mathematical notation used in these formulas:",
 			tableGenerator([
 				["⌊x⌋","Floor"],
+				["⌈x⌉","Ceiling"],
 				["log(n)","Logarithm"],
 				["log<sup>[x]</sup>(n)","Iterated logarithm: for example, log<sup>[2]</sup>(20) = log(log(20))"],
 				["log<sub>b</sub>(n)","Base b logarithm"],

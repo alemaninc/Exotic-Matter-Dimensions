@@ -1,5 +1,10 @@
 const newsSupport = {
-	br:function(x){return "<span style=\"padding-left:"+x+"px\"></span>"},
+	br:function(x){
+		if (newsSupport.brMode===0) {return "<span style=\"padding-left:"+x+"px\"></span>"}
+		if (newsSupport.brMode===1) {return "<br>"}
+		error("<code>newsSupport.brMode</code> has an invalid value (<code>"+newsSupport.brMode+"</code>)")
+	},
+	brMode:0,
 	randomVisible:function(){return Array.random(newsList.filter(x=>(x.weight??1)>Math.random()))},
 	redacted:"<span style=\"color:hsl(270 50% 50%);opacity:0.5;\">[REDACTED]</span>",
 	redactedFormat:function(x){return "<span style=\"color:hsl(270 50% 50%);opacity:0.5;\">"+x+"</span>"},
@@ -68,23 +73,23 @@ const newsSupport = {
 		popup({text:"To help alemaninc, answer the following five questions:<br>[1] How old are you?",input:"",buttons:[["Submit","newsSupport.phishing2()"]]})
 	},
 	phishing2:function(){
-		if (alemanicHash(popupInput())==="Jzh2ZvfKNy5TvnC4k1KE+gguJFvB0ziGIjCQMsrH35v6bBmeUg/8FQz3LlwbDQWXApab0j0cPuYsgDQPutXFqdoyDnsYzsg5fWhnM9Ou08Ph97RxZYXfjrDqzaIHbONdjUMZOtxzXKuT9z8zHG6k+4GuDSzdkmkO+jMkkwCsQSf2AnPp98nKlKq+HAy3cknjCyTdy6lW7ZzS3UuVFdaffgrXq5FgDEJhcXGbXGt/v/jCHVF+lNc+9vqHEz8Q5rBO7rtgvbGp/3iBPdqUtA8mzcTExKpuf0IM8/GwB/JCfIlyHrlFtBZ9k/Xrlu9FuqebU5OOjl5jvMO0e/ir8oAVpIr+aPQg1EVhDD3iDFe26Qfk+EwwVnHc91huoAJ5PtwBdFsodRM/+27JJPjyW0sgJa8FF3yWp+FBtcFW2nfxkQ/Ap2w0jxX3GBHjzII9y/uD0LVinZGpPCyye6YV9AXGB2JIRqNB9f+DE53PhoIqznT79CIPl8Ft5ZDIc+fePaXU") newsSupport.xhwzwkaPhishing++
+		if (alemanicHash(popupInput().replace(/\D/g,""),16)==="H77fRrw+YrxvuOhN") {newsSupport.xhwzwkaPhishing++}
 		popup({text:"[2] What is your full legal name?",input:"",buttons:[["Submit","newsSupport.phishing3()"],["Exit","newsSupport.xhwzwkaPhishing=0"]]})
 	},
 	phishing3:function(){
-		if (alemanicHash(popupInput())==="YumF343yCwPNdVYX3P2bZslfERBdMuguOP4eCEmuhDchclYzU6Fx/ajt5qNDe8hDR3Rz1S50QU5gYVN1+wLpK4alJmYb3wHGTezlxTZXf6BQt9RvZvDeCniM6bYt5WJsVmWIxYz+3/8ZEvW7c7LDFveXztfENrnEa4HJTX7RZ8HcAyPN5W5Ct0fTAJN5yW2zKxYsa1vyfsOnE6Kf9+JGh5goVz8BnNfBInRyzhSSWTozIn10nbJePocOPP04qCV+P+kbdDi1/dOEW7jRcPAmBpQUSpQ6hyfzbNm/ILzA3U2RWBVZMo3d5dl1hL7bRtNKUUULQSRNJToHgQfOse6H8Hw1D5NQYvdvz6rlF+FFFAcv4uXw50GTBe12qF00GUFHSPUbHzjCgO9zpxP/C45o//QIvTuIaAq0BgtQpDAV+ND7DkA/X0z9qPLHrFp3WClsj+XSvZ18n+mMMgfiqfG0H74ByV3WoTcjaFE2lKFJhMZKeI0zPbE90oZbu1f47xK6") newsSupport.xhwzwkaPhishing++;
+		if (alemanicHash(popupInput(),16)==="FKWIkeZxj3YRjMKL") {newsSupport.xhwzwkaPhishing++;}
 		popup({text:"[3] What is your Discord username?",input:"",buttons:[["Submit","newsSupport.phishing4()"],["Exit","newsSupport.xhwzwkaPhishing=0"]]})
 	},
 	phishing4:function(){
-		if (["Q1HkAdmVgm2ToS4YArCff8v+r7kjAxdVmJGdOT5E1c+eyymHFv33lUr1h9+9QhLOC0NA213x/lmSwTZbtGbJxWP9Kb2kyQx76Qmf9H9aBI0M4Ns2uMtBWw4Tt65SUZGrdwVIo2XGxiWRmBlbEB8NQrCQ2hQzQ5KQJ0LOJxfF2unPN6rmIZEoJYMvkvPmVKsxbyIXp6J5ogtXfcjJpb5mKLDa/dG0DxV4g16zfxOtz/RFloCQ/Z8J6kJ9VC6ScVm2HYYrrm0SVQUPLJBy5ddD0cqdvNplhXt4JM1PaEZPSgJJO0yTKWJxUzbIT44+uzgXwhapH51Hi77Dkxg+o7UpSPr23g+h4OV2h8gnlNIQ7ANYeiW9XL2lJu4BxSKpWuPIXmUIukyJJhGDbVUwq07bVTM8nLqKFr57GjKb/2jxLX3aE84gVgl8L8ZMFmtvP5J3kSB6sDs2RAuGrrn2iyWmJM4Nk9HZiIszYPjDX2XasnwJGR/RGcIH+sqaJVm+yUi/","SGfBY5zx12bAh/+BYTJ9+GGHizfTjoErzdcxlGChiLJkza733Bi1oPxuOrX9zNq757+QORdcOS+TDrPp6X4tkDtifL14Ql7wFPr18QvaAf4Yn+6fZXcRCwzPPItfr6tHL0qoVTryQVRkrcUkciR1Bic3SGcvhCh4H39FB2NUNpjiIHKC1iLMFHtsdZo6ZKuUgNimL+Epf/pxZwXpwZ7iFMmivGZm2bvgG9y+Apue0NiTGrxWbgOgUuLaW5ChhqLKfrSaEaf3wfQ3Ohoe11lwsxC44B1YCvDYGBmAbmaL6000kxsnN08icTtMZQqEPFTHMyFDL8omhCp0x0PBbZbWlo9NzqG7V8QhTjYzNEtgYS5A4HLxzRqh6ajgDiEuMFpfdG4vHUfyxMhD/gPphSY1qm91Y5TtUGJ5PF+V30xCvSO9icNurUSRIazE84TsDgnIWOxFY5BpfRPXShCk/X/eUDOzW8AtszcybFG1mrydryU44Udbv4259747mzhGNVme"].includes(alemanicHash(popupInput()))) newsSupport.xhwzwkaPhishing++
+		if (alemanicHash(popupInput(),16)==="o3iSQbI2/sG5gPgI") {newsSupport.xhwzwkaPhishing++}
 		popup({text:"[4] What is your house address?",input:"",buttons:[["Submit","newsSupport.phishing5()"],["Exit","newsSupport.xhwzwkaPhishing=0"]]})
 	},
 	phishing5:function(){
-		if (alemanicHash(popupInput())==="PgOyj5M0L+tkOJODW4a6v9n5V5+ju1gIErvXvC7ogpykzPmpfu7kDjsht8fnDU9mBhvE2fd8A/724/BY4h/DSzGQmJrJqmCPAFjoBy5BRbgNTFIqOOaOxsmU3PbPlQCsan292ZukHzR/XDLuE8UFYNJM0ljiU0s12IFwMVCFy0MLKIviRcd22sJpxy6KsPUA/hR+xOCjk8FL6vcJVTtGqGTSJvPxM842x4crnFN5+d578BUfe2BM7UaK5BY9Q+jMctwsOiKNve1ToclT4EuxvRFEnKAvCikKaA0JqGTZ1q0fDg82xqcdkKZ3+4jYnJAXcW/GSIu1zkh9KzBBj8sOJjE/hPbW07w2B9o1Ak5GQ5dPDIfLvBcfxmA25rUPYCwyoXg+KODYWV9mi4CGOXJ9Qraom+FO9m1h4qanAbzD1zqcvCUYYUtEMtU8UZ15WJ4LLkRvT5CqVAVCr8mqdzoz7iC++ir6+NpeGsi9s3P5UbLO6xmjj4ipCRLlWFbzKLW1") newsSupport.xhwzwkaPhishing++
+		if (alemanicHash(popupInput(),16)==="S+ThObRe3ZxOakFj") {newsSupport.xhwzwkaPhishing++}
 		popup({text:"[5] And finally, what is your credit card number?",input:"",buttons:[["Submit","newsSupport.submitPhishing()"],["Exit","newsSupport.xhwzwkaPhishing=0"]]})
 	},
 	submitPhishing:function(){
-		if (alemanicHash(popupInput())==="XNllS6xHLVS+BMZYExjmHzr+l9RY4WESX04XMZPBwwYqJw4SQODeGuiq1TR6/iZl6ZR/aJ+Cpw8A33SLLEb6d3DksTuM9J8O2xLpihuKexG11++J/Kx7LPNIjzk4svET66ux0tRNA/cPH4pLQnNkrHo3S9v9MW2sV2/UlzpM+Y1Rx4n+iOzK0GlTQh37nriNjLrFscdKLAloTnZCW09L6Ju7YgnaJ+WOe121Yt1wgFIbKi526eYXQJyqyKhrO5mq/Xnr9f6x4K9gJcux4EmOE0IS+WRNMLrzw6AyOPrS0rzK9V1Z1oQNDdlvFvd24cODP6XZxquMuCATArCFp7/eXpaF9jQ/yOupyUXVqnDQ5D6lI1f6xA0iffNI9DNh/d17Yg7NjmJpSw1GvEO4CM9fLj6RLDCfc2SRNdApzujeuLfHui48dQffYv9Ko4cc3/H/PmIIfpW9UWXaV/2ZsMlLu+IK74lAbLGDhcJZx+M4aBH3axMLavyt5Q3ppw0xBeL5") newsSupport.xhwzwkaPhishing++
+		if (alemanicHash(popupInput().replace(/\D/g,""),16)==="c6BRTQmHavCl9dKB") {newsSupport.xhwzwkaPhishing++}
 		for (let i of [26,28]) addSecretAchievement(i)
 		newsSupport.xhwzwkaPhishing=0
 		popup({text:'Thank you for helping alemaninc!',buttons:[["Exit","newsSupport.xhwzwkaPhishing=0"]]})
@@ -95,7 +100,11 @@ const newsSupport = {
 		for (let i of props) out.push(Object.getOwnPropertyDescriptor(item,i).value===undefined?Object.getOwnPropertyDescriptor(item,i).get.toString():(i+":\""+Object.getOwnPropertyDescriptor(item,i).value+"\""))
 		return "{"+out.join(",")+"}"
 	},
-	secretAchievementHelp:function(){notify("Here is the name of a random Secret Achievement: "+secretAchievementList[Object.keys(secretAchievementList).filter(x=>!g.secretAchievement[x]).random()].name+".");nextNewsItem()},
+	secretAchievementHelp:function(){
+		let num = Object.keys(secretAchievementList).filter(x=>(!g.secretAchievement[x])&&(secretAchievementList[x].prevReq??[]).map(y=>g.secretAchievement[y]).reduce((x,y)=>x&&y,true)).random()
+		notify("Here is the name of a random Secret Achievement: \""+secretAchievementList[num].name+"\".",secretAchievementRarityColors[secretAchievementList[num].rarity].dark,secretAchievementRarityColors[secretAchievementList[num].rarity].light)
+		nextNewsItem()
+	},
 	easterTime:function() {let Y = new Date().getUTCFullYear();let C = Math.floor(Y/100);let N = Y - 19*Math.floor(Y/19);let K = Math.floor((C - 17)/25);let I = C - Math.floor(C/4) - Math.floor((C - K)/3) + 19*N + 15;I = I - 30*Math.floor((I/30));I = I - Math.floor(I/28)*(1 - Math.floor(I/28)*Math.floor(29/(I + 1))*Math.floor((21 - N)/11));let J = Y + Math.floor(Y/4) + I + 2 - C + Math.floor(C/4);J = J - 7*Math.floor(J/7);let L = I - J;let M = 3 + Math.floor((L + 40)/44);let D = L + 28 - 31*Math.floor(M/4);return Math.abs((M*30+D)-((new Date().getUTCMonth()+1)*30+new Date().getUTCDate()))<7},
 	EMDevelopmentVariables:function(){return [g.exoticmatter,N(totalAchievements),g.truetimePlayed,g.masteryPower,g.stardust,g.darkmatter,g.hawkingradiation]},
 	EMDevelopmentIndex:function(){return newsSupport.EMDevelopmentVariables().map(x=>x.add(c.d10).quad_slog()).sumDecimals().mul(c.e2)},
@@ -206,7 +215,7 @@ const newsSupport = {
 				["4(a)(v)(Ϙ)(α)","the alemaninc Inc. company is dissolved",2],
 				["4(a)(v)(Ϙ)(β)","the universe evolves to a state of no thermodynamic free energy, and will therefore be unable to sustain processes that increase entropy (hence referred to as \"heat death\")",2],
 				["4(b)","If these Terms and Conditions are violated you also agree to allow our bomb squad to firebomb your house.",2],
-				["5","You also agree to prostrate yourself before His Imperial Grand Lord of All the World 〜 Master of Creation, nicodium \"cubane/cubane\" \"al-maniac\".<br><br>This includes clicking the below link, where the Terms and Conditions are continued:<br><a target=\"_blank\" href=\"https://youtu.be/dQw4w9WgXcQ\" style=\"color:inherit\"><i>Exotic Matter Dimensions 𝕍2 Newsletter, Terms and Conditions, Section B</a>",2],
+				["5","You also agree to prostrate yourself before His Imperial Grand Lord of All the World 〜 Master of Creation, nicodium \"cubane/cubane\" \"al-maniac\".<br><br>This includes clicking the below link, where the Terms and Conditions are continued:<br><a target=\"_blank\" href=\"https://youtu.be/dQw4w9WgXcQ\" style=\"color:inherit\"><i>Exotic Matter Dimensions</i> 𝕍2 Newsletter, Terms and Conditions, Section B</a>",2],
 				["6","You also agree to pay our taxes, which are as follows:",1],
 				["6(a)","Tax against existence: <i>$249.99</i>",2],
 				["6(b)","Tax for medical insurance for our employees: <i>$140.99</i>",2],
@@ -286,12 +295,14 @@ const newsSupport = {
 		finalNotify:function(){notify(g.secretAchievement[33]?"You must really love OMCCDV if you came back a second time... perhaps you wish to partake in its revival?<br>Sadly you are in the wrong place. Here there are only PROMOTIONS!":"Verification is complete! Your final task: use the name of the Secret Achievement you are about to get as a promotion code.","#009999","#00ffff")}
 	},
 	readMore:function(){
+		newsSupport.brMode=1;
 		newsSupport.readMoreIteration++
 		addAchievements("readMore");
-		let reading=[newsSupport.randomVisible().text]
+		let reading=[]
 		while(reading.map(x=>x.length).sum()<1e4){reading.push(newsSupport.randomVisible().text)}
-		let out="<p>We have compiled a list of "+reading.length+" news messages so that you can read more high-quality journalism.</p>"+reading.map(x=>"<p>"+x.replaceAll(/padding-left:.*px/g,"padding-left:20px")+"</p>").join("")
+		let out="<p>We have compiled a list of "+reading.length+" news messages so that you can read more high-quality journalism.</p><table>"+reading.map((x,i)=>"<tr><td style=\"width:"+(20+Math.floor(Math.log10(reading.length))*12)+"px;text-align:right;vertical-align:top;padding-right:20px;padding-bottom:20px;\">"+(i+1)+"</td><td style=\"width:calc(60vw - 80px);text-align:left;vertical-align:top;padding-bottom:20px;white-space:pre-wrap;word-break:break-word;\">"+x+"</td></tr>").join("")+"</table>"
 		popup({text:out,buttons:[["Read Less"]]})
+		newsSupport.brMode=0;
 	},
 	readMoreIteration:0,
 	mysteryTheme:function(){
@@ -310,77 +321,51 @@ const newsSupport = {
 	},
 	ord:function(level){return (newsSupport.calcOMCCDVLevel()>=level)?1:0},
 	malganis:false,
-	/*    mode    0                   1                   2                   3                   4                   5
-		pts
-		0           +0%                 ×1                  ×1                  ^10                 ^^1                 10{1}10
-		10          +10%                ×1.347              ×349,508            ^10.0&nbsp;B        ^^1.00159           10{1.1020157}10
-		20          +20%                ×1.807              ×37.9&nbsp;Sp       ^1.00e100           ^^1.00639           10{1.2171377}10
-		30          +30%                ×2.41               ×1.44e82            ^1.00e1,000         ^^1.0145            10{1.3475313}10
-		40          +40%                ×3.20               ×9.10e220           ^1.0e10,000         ^^1.0260            10{1.4958097}10
-		50          +50%                ×4.23               ×1.12e530           ^1e100,000          ^^1.0413            10{1.6651441}10
-		60          +60%                ×5.57               ×4.19e1,170         ^e1.000&nbsp;M      ^^1.0605            10{1.8594082}10
-		70          +70%                ×7.29               ×4.79e2,425         ^e10.00&nbsp;M      ^^1.0842            10{2.083363}10
-		80          +80%                ×9.50               ×3.19e4,775         ^e100.0&nbsp;M      ^^1.113             10{2.342902}10
-		90          +90%                ×12.3               ×1.44e9,012         ^e1.000&nbsp;B      ^^1.147             10{2.645372}10
-		100         +100%               ×15.9               ×1.9e16,410         ^e10.00&nbsp;B      ^^1.188             10{3}10
-		125         +125%               ×29.7               ×1.3e64,737         ^e3.162&nbsp;T      ^^1.326             10{4.199649}10
-		150         +150%               ×53.9               ×1e221,980          ^e1.000&nbsp;Qa     ^^1.542             10{6.102993}10
-		175         +175%               ×95.9               ×2e683,963          ^e316.2&nbsp;Qa     ^^1.893             10{9.292957}10
-		200         +200%               ×167                ×e1.936&nbsp;M      ^e100.0&nbsp;Qt     ^^2.52              10{15}10
-		250         +250%               ×480                ×e12.73&nbsp;M      ^e10.00&nbsp;Sp     ^^7.36              10{49.45251}10
-		300         +300%               ×1,294              ×e68.49&nbsp;M      ^e1.000&nbsp;No     ^^3,381             10{255}10
-		400         +400%               ×8,018              ×e1.299&nbsp;B      ^e1.000e40          ^^E1.353#6          10{65,535}10
-		500         +500%               ×41,898             ×e16.57&nbsp;B      ^e1.000e50          ^^E2.299#48         10{4.29&nbsp;B}10
-		600         +600%               ×191,173            ×e159.9&nbsp;B      ^e1.000e60          ^^E9.568#4,466      10{18.4&nbsp;Qt}10
-		700         +700%               ×780,763            ×e1.251&nbsp;T      ^e1.000e70          ^^E#972&nbsp;M      10{3.40e38}10
-		800         +800%               ×2.91&nbsp;M        ×e8.303&nbsp;T      ^e1.000e80          ^^E#26.4&nbsp;Sp    10{1.15e77}10
-		900         +900%               ×10.00&nbsp;M       ×e48.19&nbsp;T      ^e1.000e90          ^^E#3.93e82         10{1.34e154}10
-		1,000       +1,000%             ×32.1&nbsp;M        ×e250.2&nbsp;T      ^e1.000e100         ^^NaN               10{1.79e308}10 */
 	ticker325games:{
 //		"Anti-Idle: The Game":["progress bar boost",0,10],
 		"Antimatter Dimensions":["antimatter production",x=>"×"+N(x*0.015).layerplus(2).sub(c.d9).format(1)],
 		"Antimatter Dimensions NG+++":["all meta dimension multipliers",x=>"×"+N(x/200).layerplus(2).sub(c.d9).format(1)],
-		"Arcanum/Theory of Magic":["lore rate",x=>"+"+Math.min(x/10,10+x/100)],
-		"Array Game":["separators",1],
-		"Aspiring Artist":["white pixel generation",1],
-		"Ballad of Heroes":["Boon of Olympus",0],
-		"Cookie Clicker":["golden cookie duration bonus",0,100], // talk about balancing
-		"Distance Incremental":["distance",2],
-		"DodecaDragons":["holy tetrahedrons",2,10],
-		"Egg Inc.":["egg sell multiplier",1,6],
-		"Endless Stairwell":["XP gain",5,1.75],
-		"Evolve Idle":["plasmid gain",1,50],
-		"Exotic Matter Dimensions alpha":["tribute gain",2,10],
+		"Arcanum/Theory of Magic":["lore rate",x=>Math.min(x/10,10+x/100)],
+		"Array Game":["separators",x=>"×"+N(10**(x/100)).format(1)],
+		"Aspiring Artist":["white pixel generation",x=>"×"+N((1+0.005*x)*1.005**x).format(1)],
+		"Ballad of Heroes":["Boon of Olympus",x=>"+"+BEformat(x)+"%"],
+		"Cookie Clicker":["golden cookie duration bonus",x=>"+"+N(x/100).noLeadFormat(2)+"%"], // talk about balancing
+		"Distance Incremental":["distance",x=>"×"+N(x*0.01).layerplus(2).sub(c.d9).format(1)],
+		"DodecaDragons":["holy tetrahedrons",x=>"×"+N(x*0.005).layerplus(2).sub(c.d9).format(1)],
+		"Egg Inc.":["egg sell multiplier",x=>N(x*0.001).layerplus(2).sub(c.d9).mul(x*0.1+1).format(1)],
+//		"Endless Stairwell":["XP gain",5,1.75],
+		"Evolve Idle":["plasmid gain",x=>"+"+N(x/10).noLeadFormat(1)+"%"],
+		"Exotic Matter Dimensions alpha":["tribute gain",x=>"×"+N(x/250).layerplus(2).sub(c.d9).format(1)],
 //		"Factory Idle":[],
-		"Fundamental":["strange quarks",0,100],
-		"Gooboo":["global level",1,100],
-		"Grass Cutting Incremental":["grass gain",2,20],
-		"Hyper Game":["Hyper-points",4],
-		"Hollow Knight":["nail damage",1,100],
-		"Idle Dice":["dice multiplier",1,2],
-		"Idle Loops":["mana gain from Smash Pots",1,20],
+//		"Fundamental":["strange quarks",0,100],
+		"Gooboo":["global level",x=>Math.floor(Math.min(x,10+x/10,20+x/100))],
+		"Grass Cutting Incremental":["grass gain",x=>"×"+N(x*0.005).layerplus(2).sub(c.d9).format(1)],
+//		"Hyper Game":["Hyper-points",x=>"^^"],
+		"Hollow Knight":["nail damage",x=>Math.ceil(x/100)],
+//		"Idle Dice":["dice multiplier",1,2],
+		"Idle Loops":["mana gain from Smash Pots",x=>percentOrMult(N((1+x/60)**0.25))],
 //		"Incremancer":["zombie run speed",1,10],
-		"Incremental Mass Rewritten":["mass gain",3,10],
-		"Kittens Game":["kitten happiness",0,10],
+		"Incremental Mass Rewritten":["mass gain",x=>(x>100)?("^"+N(10**(x/100)**2-9).format(4)):("×"+N(x/20+x**2*0.0015).layerplus(2).sub(c.d9).format())],
+		"Kittens Game":["kitten happiness",x=>N(x/100).noLeadFormat(2)+"%"],
 //		"Kiwi Clicker":[],
 //		"LORED":["malignancy generation",1],
-		"NGU Idle":["Money Pit bonus",0,10],
-		"Ordinal Markup":["incrementy gain",5,2],
-		"Pachinkremental":["bumper point multiplier",1,10],
+		"NGU Idle":["Power and Toughness",x=>x+"%"],
+//		"Ordinal Markup":["incrementy gain"],
+//		"Pachinkremental":["bumper point multiplier",1,10],
 //		"Push the Button":[],
 //		"Revolution Idle":[]
-		"Scrap Clicker 2":["scrap gain",2,10],
-		"Shark Game":["fish gain",1],
-		"Synergism":["quark gains",0,10],
-		"Swarm Simulator":["Ant Queen production",1,0],
-		"The Factory of Automation":["steel generation",2,2],
+		"Scrap Clicker 2":["scrap gain",x=>"×"+[N(x+1),N(1.1).pow(x),N(1.001).pow(x**2)].productDecimals().format(2)],
+//		"Shark Game":["fish gain",1],
+		"Synergism":["quark gains",x=>N(x/10).noLeadFormat(1)+"%"],
+//		"Swarm Simulator":["Ant Queen production",1,0],
+//		"The Factory of Automation":["steel generation",2,2],
 //		"(the) Gnorp Apologue":[],
-		"The Perfect Tower":["tower damage",1],
-		"The Prestige Tree":["point gain",2],
-		"Trimps":["breed speed",1],
-		"True Infinity":["unfunity point gain",4,1000],
-		"Universal Paperclips":["paperclip gain",1],
-		"Unnamed Space Idle Prototype":[["synth speed",1],["warp essence gain multiplier"]].random(),
+//		"The Perfect Tower":["tower damage",1],
+//		"The Prestige Tree":["point gain",2],
+//		"Trimps":["breed speed",1],
+//		"True Infinity":["unfunity point gain",4,1000],
+//		"Universal Paperclips":["paperclip gain",1],
+//		"Unnamed Space Idle Prototype":[["synth speed",1],["warp essence gain multiplier"]].random(),
 //		"When he jump, he go up like this":["launch velocity",1],
 	}
 }
@@ -454,7 +439,7 @@ const newsList = [
 	{text:"Discovery №14: If you drop a metric ton of bricks and a metric ton of feathers off a building, they will experience the same velocity. If you drop a metric ton of bricks and an imperial ton of bricks off a building, they too will experience the same velocity.",get weight(){return g.totalDiscoveries.gt(c.d13)?0.5:0}},
 	{text:"Discovery №15: c = (E ÷ m)<sup>0.5</sup>",get weight(){return g.totalDiscoveries.gt(c.d14)?0.5:0}},
 	{text:"Discovery №16: You should go make a Discovery in real life.",get weight(){return g.totalDiscoveries.gt(c.d15)?0.5:0}},
-	{text:"Beware of phishing attempts, keep your information safe!"+newsSupport.br(window.innerWidth)+"<span onClick=\"newsSupport.phishing()\">🎣"+newsSupport.br(150)+"</span>Look, a phishing rod! You should click this.</span>"},
+	{text:"Beware of phishing attempts, keep your information safe!"+newsSupport.br(window.innerWidth)+"<span onClick=\"newsSupport.phishing()\">🎣"+newsSupport.br(150)+"</span>Look, a phishing rod! You should click this.</span>",get weight(){return newsSupport.ord(1)}},
 	{get text(){return "Have you ever wondered what the code of a news message looks like? Here is the code of a random news message: "+newsSupport.codeInsight(newsSupport.randomVisible())}},
 	{text:"<span onClick=\"newsSupport.secretAchievementHelp()\">Click this for help with a secret achievement!</span>",get weight(){return (1-totalSecretAchievements/Object.keys(secretAchievementList).length)/4}},
 	{text:"tHiS mEsSaGe Is CaSe sEnSiTiVe"},
@@ -481,7 +466,7 @@ const newsList = [
 	{get text(){return "\"Today is "+(newsSupport.excelDate()-44100)+" days since 2020-09-26. If you divide that by 25 you get "+(newsSupport.excelDate()/25-1764).toFixed(2)+". What happened on 2020-09-26, you may ask? Nothing, but we still measure the time.\" - xhwzwka"},get weight(){return newsSupport.ord(2)}},
 	{get text(){return "You have "+newsSupport.formatZP()+". Wait, what's a Zip Point?"}},
 	{text:"Welcome back to another episode of \"Exotic Math Dimensions\" by alemaninc! We all know that 2 + 2 = 5. But there are still many people who unknowingly partake in logic denial by claiming that 2 + 2 = 4. In this episode I will prove once and for all that 2 + 2 = 5. We all know that 9 + 10 = 21. If we subtract 0.5 from both sides, we get 9 + 9.5 = 20.5. Now, when we add 0.5 to both sides, we get 9.5 + 9.5 = 21. Now the two terms on the left side are equal. The next step is to divide both sides by 2 to produce 4.75 + 4.75 = 10.5. Now, we subtract 2.75 from both sides, getting 2 + 4.75 = 7.75. Finally, we subtract 2.75 from both sides again, and so we get our final answer of 2 + 2 = 5! Stay tuned for another episode of \"Exotic Math Dimensions\" by alemaninc, where we will prove that quaternion multiplication is sorcery made up by communists."},
-	{text:"This message was written by xhwzwka. Who's that, you may ask? Ask him! He's 324862 years old, his real name is &lt;unknown&gt;, his Discord number is xhwzwka#7155, he lives at 72 W Street and his credit card number is 72917164954.",get weight(){return newsSupport.ord(1)}},
+	{text:"This message was written by xhwzwka. Who's that, you may ask? Ask him! He's 324862 years old, his real name is &lt;unknown&gt;, his Discord number is xhwzwka, he lives at 72 W Street and his credit card number is 72917164954.",get weight(){return newsSupport.ord(1)}},
 	{text:"Hello, dear players of <i>Exotic Matter Dimensions</i>! alemaninc left his computer unattended, so I thought I might have some fun with this. alemaninc's real name is $, he lives at $ in $, $ and he is $ years old but still $ and gets a suspicious amount of $ from $ who $. If you see this message, ping alemaninc \"$\" at $ and post a screenshot in $.".replaceAll("$",newsSupport.redacted)},
 	{get text(){return [Array.random(newsSupport.CSSBaseShades)].map(x=>"<span style=\"color:"+newsSupport.intBaseShade(x)+"\">This news message is "+x+".</span>")[0]}},
 	{text:"They say that stardust tastes like everything at once.",get weight(){return unlocked("Stardust")?1:0}},
@@ -520,9 +505,9 @@ const newsList = [
 	{text:"The Q Axis neither exists nor doesn't exist. In fact, absolutely nothing is known about the Q Axis, not even that absolutely nothing is known about the Q Axis.",get weight(){return g.stardustUpgrades[0]<5?1:0}},
 	{text:"If the 26th axis is the A axis, then what is the 27th axis?"},
 	{text:"\"Shouldn't it be called 'Exotic Matter Axes'?\""},
-	{text:"An unidentified developer of Exotic Matter Dimensions would like to recommend that you play <a href=\"https://ivark.github.io/AntimatterDimensions/\" target=\"_blank\">Antimatter Dimensions</a>."},
-	{text:"An unidentified developer of Exotic Matter Dimensions would like to recommend that you play <a href=\"http://semenar.ru/matter-dim-test/\" target=\"_blank\">Matter Dimensions</a>."},
-	{text:"An unidentified developer of Exotic Matter Dimensions would like to recommend that you play <a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" target=\"_blank\">Strange Matter Dimensions</a>."},
+	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\"https://ivark.github.io/AntimatterDimensions/\" target=\"_blank\">Antimatter Dimensions</a>."},
+	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\"http://semenar.ru/matter-dim-test/\" target=\"_blank\">Matter Dimensions</a>."},
+	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" onClick=\"addSecretAchievement(25)\" target=\"_blank\">Strange Matter Dimensions</a>."},
 	{text:"2 + 2 = 2 × 2 = 2<sup>2</sup> = 2⇈2"},
 	{get text(){if(g.dilationUpgradesUnlocked===4){return "error"};return "You're so close to unlocking Dilation Upgrade "+(g.dilationUpgradesUnlocked+1)+"! You only need "+BEformat(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)+"× tickspeed"},get weight(){return [0,4].includes(g.dilationUpgradesUnlocked)?0:1}},
 	{text:"Exotic matter has made time travel possible. Unfortunately nobody who tried it has returned yet."},
@@ -538,13 +523,13 @@ const newsList = [
 	{text:"You can waste up to H<sub>ω<sup>2</sup></sub>[10] years here if you want"},
 	{text:"Don't mind me, I'm just another random news message."},
 	{text:"Refreshing cures Light mode.",get weight(){return ((new Date().getUTCMonth()===3) && (new Date().getUTCDate()===1))?1:0}},
-	{get text(){return "Thank you for playing Exotic Matter Dimensions Version "+this.version()+"!"},version:function(){if(version.current.substring(2).split(".").map(x=>Number(x)).includes(NaN)){return false};let out = version.current.split(".");out[Math.min(out.length-1,2)]++;return out.slice(0,3).join(".")},get weight(){return (this.version()===false)?0:1}},
+	{get text(){return "Thank you for playing <i>Exotic Matter Dimensions</i> Version "+this.version()+"!"},version:function(){if(version.current.substring(2).split(".").map(x=>Number(x)).includes(NaN)){return false};let out = version.current.split(".");out[Math.min(out.length-1,2)]++;return out.slice(0,3).join(".")},get weight(){return (this.version()===false)?0:1}},
 	{get text(){return "If I have bad $, I'll study $ until I have good $.".replaceAll("$",Array.random(["HTML","CSS","JavaScript"]))}},
 	{get text(){return "\"Because of this game I can now use the word '"+Array.random(["Stardust",...(unlocked("Hawking Radiation")?["Wormhole"]:[])])+"' as a verb\""},get weight(){return unlocked("Stardust")?1:0}},
-	{text:Array(33).join("A")+"lemaninc made Exotic Matter Dimensions. Therefore, "+Array(33).join("E")+"xotic Matter Dimensions was made by alemaninc."},
+	{text:"A".repeat(32)+"lemaninc made <i>Exotic Matter Dimensions</i>. Therefore, "+"E".repeat(31)+"<i>Exotic Matter Dimensions</i> was made by alemaninc."},
 	{text:"We have updated our Exotic Matter Privacy Policy."},
 	{get text(){return "<div style=\"width:"+ranint(400,1200,true)+"px;height:20px;background-image:linear-gradient(90deg,rgba(255,0,255,0),rgba(255,0,0,0.5),rgba(255,255,0,0.5),rgba(0,255,0,0.5),rgba(0,255,255,0.5),rgba(0,0,255,0.5),rgba(255,0,255,0.5),rgba(255,0,0,0.5),rgba(255,255,0,0))\"></div>"}},
-	{get text(){return "Congratulations! You have reached the end of Exotic Matter Dimensions "+version.current+"! While we wait for alemaninc to produce another release, why don't you experience the fun all over again? It's really easy, just go to Options, press the big black button and input the password."}},
+	{get text(){return "Congratulations! You have reached the end of <i>Exotic Matter Dimensions</i> "+version.current+"! While we wait for alemaninc to produce another release, why don't you experience the fun all over again? It's really easy, just go to Options, press the big black button and input the password."}},
 	{get text(){let contributors = this.contributors.select(2);return "If <span style=\"color:#0000ff\">alemaninc</span> is <span style=\"color:#0000ff\">blue</span> and <span style=\"color:"+contributors[0][2]+"\">"+contributors[0][0]+"</span> is <span style=\"color:"+contributors[0][2]+"\">"+contributors[0][1]+"</span>, what color is <span style=\"color:"+contributors[1][2]+"\">"+contributors[1][0]+"</span>?"},contributors:[["xhwzwka","red","#ff0000"],["Stat Mark","cyan","#00ffff"],["hyperbolia",":blob:","#fac112"],["nicodium","blue but light but not quite","#4285f4"]],get weight(){return newsSupport.ord(1)}},
 	{get text(){return "Did you know "+ranint(60,140)+"% of statistics are made up on the spot?"}},
 	{text:"\"But the R axis does exist! You just won't be able to experience it until around 𝕍6.9...\" - xhwzwka"+newsSupport.br(100)+"Little does xhwzwka know, that the R axis will enter the playing field as soon as 𝕍1.5.",get weight(){return (g.stardustUpgrades[0]===4)?1:0}},
@@ -628,7 +613,7 @@ const newsList = [
 	{text:"A new axis has just been discovered known as the Schrödinger Axis. The Schrödinger Axis is simultaneously real and fake, but at the same time neither real nor fake, but actually lost in the Ninth Antimatter Dimension.",get weight(){return stat.axisUnlocked>7?1:0}},
 	{text:"<i>Exotic Matter Dimensions</i> is proud to be sponsored by <i>Quark Dimensions</i>! Each exotic atom is actually made of exotic protons, exotic neutrons and exotic electrons. Each exotic proton is actually two exotic up quarks and an exotic down quark, and each exotic neutron is actually two exotic down quarks and an exotic up quark. We don't talk about exotic electrons however. Not until we get sponsored by <i>Preon Dimensions</i> also."},
 	{get text(){return "The world shook. The exotic matter is nearing uncountable numbers. This is no longer a game. It has become sentient. It took five æons until the game approached <span style=\"color:#ff0000\">[Error: Insufficient MEM]</span>. The world shook again. The numbers have all been replaced by NaNeNaN. The game window has started bugging. Even after 5 centuries worth of debugging and compiling, it was not enough. After a while, even the bugs started increasing incrementally, and alemaninc found himself trapped in the "+numword(fullAxisCodes.map(x=>g[x+"Axis"].gt(c.d0)?1:0).sum())+" dimensions of sloppy code which he himself helped to create. The game was stored on Github servers, then a server room, then a NASA supercomputer, then a giant Matryoshka brain orbiting the sun, built from the finest enriched alemanium-719 isotopes. After that, it was built again from a nanite swarm, its processors made by an ever expanding incrementally expanding automatic network across the Andromeda galaxy. The world shook yet again, and its denizens started to grow impatient for it to just end already and another news ticker to start. The end is near. The small aleph cardinal, aleph zero is being reached."},get weight(){return g.exoticmatter.gt(c.inf)?1:0}},
-	{text:"What's a Zip Point, you may ask? Well, the concept of a Zip Point varies between each person. Are you a conservative type, resistant to change and modern politics? If so, for you a Zip Point is <a target=\"_blank\" href=\"https://xhwzwka.github.io/Zip-Points/\">this</a>. Or perhaps are you an innovative type, always looking for ways to improve things? In which case, a Zip Point is <a target=\"_blank\" href=\"https://alemaninc.github.io/Z-Points/\">this</a> to you. Or perhaps are you still a young child, constantly seeking to dominate those around you? In that case, your definition of a Zip Point is <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\">this</a>.",get weight(){return newsSupport.ord(1)}},
+	{text:"What's a Zip Point, you may ask? Well, the concept of a Zip Point varies between each person. Are you a conservative type, resistant to change and modern politics? If so, for you a Zip Point is <a target=\"_blank\" href=\"https://xhwzwka.github.io/Zip-Points/\">this</a>. Or perhaps are you an innovative type, always looking for ways to improve things? In which case, a Zip Point is <a target=\"_blank\" href=\"https://alemaninc.github.io/Z-Points/\">this</a> to you. Or perhaps are you still a young child, constantly seeking to dominate those around you? In that case, your definition of a Zip Point is <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" onClick=\"addSecretAchievement(25)\">this</a>.",get weight(){return newsSupport.ord(1)}},
 	{text:"Did you know? According to a mythical person known as 'Run away', 10→10→...→10→10 With 10→10→...→10→10 With ... With 10→10→...→10→10 With 10→10→10→10→10 Irritations [sic] is the biggest number. He says: \"As So many Iterations has pass, It is Bigger than Any ordinal At all.\""},
 	{text:"It's come to our attention that some players have been trying to bribe the developers with cookies. For the record, chocolate chip is our favorite."},
 	{text:"It's time to face the truth: our existence is just a simulation in alemaninc's computer. Fortunately, alemaninc's not very good at coding, so the bugs are usually in our favor."},
@@ -638,7 +623,7 @@ const newsList = [
 	{text:"Now for sale at your local alemaninc Inc: exotic clocks! We're all familiar with matter clocks with clockwise-turning hands, and antimatter clocks with anticlockwise-turning hands. On our cutting-edge exotic matter clocks, however, the hands turn at a right angle to the clock face! Besides it being much easier to tell the time without annoying hour markers in the way, the hands jutting out of the clock make them perfect for a variety of everyday household chores, like picking locks, dislodging spiders and disciplining unruly children! Estimated delivery in: 5 hours."},
 	{get text(){return "There was an old man of Dunrose; A parrot seized hold of his nose. When he grew melancholy, they said, \"His name's Polly,\" Which soothed that old man of Dunrose. Thank you for your donation!"+newsSupport.br(150)+"You have donated a total of $"+(g.timePlayed>1e6?N(g.timePlayed/1e3).format(5):Math.sqrt(g.timePlayed).toFixed(2))+" to alemaninc's aviary."},get weight(){return g.achievement[106]?1:0}},
 	{get text(){return "You just made your "+g.totalexoticmatter.format()+"th exotic matter! This one tastes like <span style=\"color:#0000ff\">Lua error: Lua error Pou7: <i>Exotic Matter Dimensions</i> does not have a Pou notation! THATS IT, I DONT LIKE IT ANYMORE, AS PUNISHMENT I DELETED YOUR SHEETS]</span>. Ah yes, it tastes like potatoes! Thanks, Stat Mark!"},get weight(){return g.totalexoticmatter.gt(c.e6)?1:0}},
-	{get text(){return "You have "+timeFormat(g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)))+" of dilated exotic matter. <span onClick=\"newsSupport.dilationPenaltyReductions++;currentNewsOffset=0;addSecretAchievement(29)\">Click here to weaken the dilation penalty.</span>"},get weight(){return Decimal.mul(g.exoticmatter.add(c.d1).log10(),N(Math.log10(g.dilatedTime+1))).gt(c.d60)?1:0}},
+	{get text(){return "You have "+timeFormat(g.exoticmatter.dilate(c.d1_05.pow(newsSupport.dilationPenaltyReductions).mul(c.d0_75)))+" of dilated exotic matter. <span onClick=\"newsSupport.dilationPenaltyReductions++;nextNewsItem(undefined,252);addSecretAchievement(29)\">Click here to weaken the dilation penalty.</span>"},get weight(){return Decimal.mul(g.exoticmatter.add(c.d1).log10(),N(Math.log10(g.dilatedTime+1))).gt(c.d60)?1:0}},
 	{get text(){return "So when are you going to complete Study "+(this.studyNum()===0?newsSupport.redactedFormat("[ERROR]"):roman(this.studyNum()))+"? It's at position "+Math.min(Math.ceil(researchRowsUnlocked()*(Math.random()+1)),researchRows+1)+"-8 on the research tree."},studyNum:function(){return visibleStudies().reduce((x,y)=>Math.max(x,y),0)+1},get weight(){return unlocked("Studies")}},
 	{get text(){return Array(secretAchievementPoints).fill("1").join("+")+" secret achievement points! Impressive. Well, what if I told you the maximum is "+Array(Object.values(secretAchievementList).map(x=>x.rarity).sum()).fill("1").join("+")+"?"},get weight(){return secretAchievementPoints>14?1:0}},
 	{text:"This is the 256th news message. The news message after this should be the 257th, but xhwzwka thought it's a good idea to use 8-bit values to save space so it's actually the 1st again."},
@@ -663,7 +648,7 @@ const newsList = [
 	{text:"And the Celestials waxed wroth, for this mortal dared venture where none but they ruled. And it was that the Celestial of Blob, hyperbolia, cried of the Endtimes foretold by Stat Mark, for the Celestial of Exotic Matter waxed wroth that what was once His and His alone now has come under the dominion of others. \"Perhaps the R axis was the correct Path, the Fourth Path,\" the Celestial of Blob mused.",get weight(){return unlocked("Antimatter")?1:0}},
 	{text:"If anyone wants to bribe alemaninc to add a certain news ticker of his choice, how many chocolate cookies would it take? I wonder if a bunch of grandmas and a few cookie prestiges can make that many"},
 	{text:"Did you enjoy the OMCCDV Grand Tour? Click <a href=\"https://www.endquiz.com/quiz.php\" target=\"_blank\">here</a> to leave a review!",get weight(){return g.secretAchievement[33]?1:0}},
-	{get text(){return (this.owned()===1)?("A local exotic matter scientist has obtained the mantle of a god: the Celestial "+secretAchievementList[this.contAchs.filter(x=>g.secretAchievement[x])[0]].name+" gets angrier!"):("Local exotic matter scientist obtains the mantle of <i>"+numword(this.owned())+"</i> gods! Judge, jury and executioner Saul Goodman suspects identity crisis!")},get weight(){return this.owned()===0?0:1},owned:function(){return this.contAchs.map(x=>g.secretAchievement[x]?1:0).sum()},contAchs:[28,30,33]},
+	{get text(){return (this.owned()===1)?("A local exotic matter scientist has obtained the mantle of a god: the Celestial "+secretAchievementList[this.contAchs.filter(x=>g.secretAchievement[x])[0]].name+" gets angrier!"):("Local exotic matter scientist obtains the mantle of <i>"+numword(this.owned())+"</i> gods! Judge, jury and executioner Saul Goodman suspects identity crisis!")},get weight(){return this.owned()===0?0:1},owned:function(){return this.contAchs.map(x=>g.secretAchievement[x]?1:0).sum()},contAchs:[28,33,107]},
 	{get text(){return Decimal.fromComponents(1,1,2*501**Math.random()).format()+" miners dead in Raw Bip Ore mine catastrophe: Stat Mark blames alemaninc's Bitcoin game, citing previous cases of such mines causing earthquakes, sinkholes and, in one case, flooding an entire city in Bitcoin: \"That last oen shouldn't even be possible!, What is Alemaninc doing?\""},get weight(){return g.totalexoticmatter.gt(c.e100)?1:0}},
 	{text:"A preview of <i>Exotic Matter Dimensions</i> "+newsSupport.nextMajorVersion+" Official Discord: travel to an ultra scary alternate server with horrific Celestials. The secrets of OMCCDV heal for 25% of their maximum health before each Discord message. If a secret ever heals itself back to 100% health, the Celestial of Blob will fall to despair and instantly wither away. Every secret discovered by your server in the New OMCCDV World or New OMCCDV World-level Maps grants 1 stack of Hardness to your server (stacking up to 10,000 and increasing health by 0.1% per stack) and 1 stack of Horror to all enemies (increasing server activity by 0.05% per stack). Whenever a group of members is killed by Wither, the server loses half of its stacks of Hardness and blocks OMCCDV's ability to heal and Wither for an amount of messages equal to 10% of the Hardness stacks lost. Clearing OMCCDV II will complete this Challenge.",get weight(){return newsSupport.ord(2)}},
 	{text:"According to UTQP news, an entire town has been swallowed by an exotic matter-induced wormhole. More reliable sources such as Stat Mark affirm the town never really existed and is merely a myth perpetuated by alemaninc to procrastinate on the update.",get weight(){return unlocked("Hawking Radiation")?1:0}},
@@ -701,7 +686,7 @@ const newsList = [
 	{text:"⚡<span onClick=\"g.newsTickerSpeed=Math.max(1500,g.newsTickerSpeed+100)\">Click here to make the news ticker even more overwhelmingly fast</span>⚡",get weight(){return (g.newsTickerSpeed>=999)?1:0}},
 	{text:"Does exotic antimatter exist?"+newsSupport.br(100)+"No one knows.",get weight(){return unlocked("Antimatter")?1:0}},
 	{text:"We have a lucky reader on the line! This lucky reader, who resides in #ticker-suggestions, wants to say to you all: \"yes\". How enlightening! In response, our CEO himself, alemaninc \"\" alemaninc, says: \"This is going in the news ticker out of context now :D\"."},
-	{get text(){return "They say the "+ordinal(starCap()+1)+" star unlocks the "+(((study13.rewardLevels.slabdrill===4)||unlocked("Matrix"))?"N":"S")+" axis"},get weight(){return (((g.stardustUpgrades[0]===4)&&(study13.rewardLevels.slabdrill===0))||(study13.rewardLevels.slabdrill===4)||unlocked("Matrix"))?1:0}},
+	{get text(){return "They say the "+ordinal(starCap()+1)+" star unlocks the "+(((study13.rewardLevels.slabdrill===4)||unlocked("Matrix"))?"N":"R")+" axis."},get weight(){return (unlocked("Galaxies")&&(((g.stardustUpgrades[0]===4)&&(study13.rewardLevels.slabdrill===0))||(study13.rewardLevels.slabdrill===4)||unlocked("Matrix")))?1:0}},
 	{text:"<span onClick=\"d.innerHTML('newsline','Darn...')\">⚡Try to click me!⚡</span>",get weight(){return (g.newsTickerSpeed>=999)?1:0}},
 	{get text(){return "⚡+"+stat.tickspeed.sub(c.d1).mul(c.e2).format()+"% movement speed!⚡"},get weight(){return ((g.newsTickerSpeed>=999)&&stat.tickspeed.gt(c.d1))?1:0}},
 	{get text(){return "⚡Progress to speed of light: "+((g.newsTickerSpeed>=1133215491240)?"<i>how the hell are you reading this</i>":(N(g.newsTickerSpeed/11332154912.4).noLeadFormat(2)+"%"))+"⚡"},get weight(){return (g.newsTickerSpeed>=999)?1:0}},
@@ -711,7 +696,7 @@ const newsList = [
 	{text:"<span onClick=\"addSecretAchievement(49);newsSupport.malganis=false\">💊Click here to cure the news ticker💊</span>",get weight(){return newsSupport.malganis?1:0}},
 	{text:"🐢How did the turtle cross the road?🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
 	{get text(){return "Day "+BEformat(Math.ceil(((g.timePlayed+((g.dilatedTime>1e9)?0:g.dilatedTime))/86400)))+" of quarantine: created a universe of exotic matter, got raided by federal agents for violating "+numword(ranint(1,9,true)*10+ranint(1,9))+" international peace treaties, taken to the lunatic asylum - everything normal"}},
-	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievement points are increasing "+randInc[0]+" by "+["+"+N(eff).noLeadFormat(2)+"%","×"+N(eff/10+10).dilate(c.d3).div(c.d10).formatFrom1(2),"×"+N(eff/5+1).quad_tetr(c.d1_5).sub(c.d1).pow10().formatFrom1(2),"^"+N(eff/10).layerplus(2).formatFrom1(2),"^^"+c.d10.quad_tetr(2**2**(eff**2/100000)-2).formatFrom1(2),"10{"+[c.d2,c.d2,N(eff/100)].decimalPowerTower().sub(c.d1).formatFrom1(6)+"}10"][randInc[1]]+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
+	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievement points are increasing "+randInc[0]+" by "+randInc[1](eff)+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
 ]
 // bottom
 var currentNewsItem
@@ -727,8 +712,8 @@ function randomNewsItem() {
 	}
 }
 function initialNewsOffset() {return (currentNewsOffset<0)?(viewportWidth()+d.element("newsline").offsetWidth):0}
-function nextNewsItem(back=false) {
-	currentNewsItem = randomNewsItem()
+function nextNewsItem(back=false,val=randomNewsItem()) {
+	currentNewsItem = val
 	d.innerHTML("newsline",newsList[currentNewsItem].text)
 	currentNewsOffset = initialNewsOffset()
 	d.element("newsline").style.left = "calc(100vw - "+currentNewsOffset+"px)"

@@ -30,6 +30,9 @@
 			font-size: 15px;
 			transition: 0.4s;
 		}
+		.panel tr td {
+			padding-bottom: 3px;
+		}
 		.active, .accordion:hover {
 			background-color: #26a;
 		}
@@ -52,17 +55,21 @@
 		<title>Changelog</title>
 	</head>
 	<body>
-		<h2 style="color: #ff0000">WARNING: SPOILER ALERT FOR THE ENTIRE GAME</h2>
-		<h4 style="color: #6666ff">Code contributors who want to change their name or color within the changelog can do so by reaching out to alemaninc or submitting a pull request</h4>
-		<a href="index.html"><button class="back">Back to game</button></a>
-		<div id="logContainer"></div>
+		<div id="changelog" style="display:none;">
+			<h3 style="color: #3333ff">Code contributors who want to change their name or color within the changelog can do so by reaching out to alemaninc or submitting a pull request</h4>
+			<p>Some entries in this changelog are hidden based on how far you have progressed.<br>Progress is measured based on the number of achievement tiers you have unlocked.<br>The presence of hidden entries is indicated at the bottom of individual entries.<br><br>A number in italicised square brackets (e.g. <i>[3]</i>) next to the type annotation indicates that the change spans multiple parts of the game.<br>This change will update when the relevant number of achievement tiers is unlocked.<br><br><span id="tierText"></span></p>
+			<p>Click entries to expand/contract them.</p>
+			<div id="logContainer"></div>
+		</div>
+		<div id="loading" style="text-align:center;"><h1>Loading changelog...</h1></div>
 		<script type="text/javascript" src="alemaninc_utility.js"></script>
 		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
 		<script type="text/javascript" src="emd_utility.js"></script>
 		<script>
-const save = localStorage.getItem("save")
+const save = JSON.parse(localStorage.getItem("save"))
 const notation = (save===null)?"Mixed scientific":save.notation
 function format(x,p=0){return gformat(N(x),p,notation)}
+const highestTierUnlocked = (save===null)?Infinity:Array.removeDuplicates(Object.entries(save.achievement).filter(x=>x[1]).map(x=>x[0].substring(0,x[0].length-2))).length
 const contributors = {
 	"Hedrauta":"#00cc00",
 	"IRAD":"#ff9933",
@@ -73,1139 +80,1180 @@ const contributors = {
 const logEntries = [
 	/*
 	next major:
-	{num:"𝕍1ω",date:"",name:"Stellar Sect of Mathematical Wisdom 〜 Blobular Fusion",changes:[
-		["BALANCE","Research 9-2 now initially costs 360 Discoveries (previously 400), and the requirements for the first three levels are lower"],
-		["BALANCE","Study III goals are changed ()"],
-		["BALANCE","Row 9 Chromatic research are stronger (about 2× more chroma each)"],
-		["BALANCE","Achievement 607 \"There are Four Lights\" has a base reward of 2.75× (from 2.8×). Value once yellow light takes effect is unchanged."],
-		["BALANCE","Study IV has higher goals and unlock requirements"],
-		["BALANCE","Added a link to research 13-8 from 10-5 and 10-11"],
-		["BALANCE","Research 12-8 now has a base requirement of "+format(4800)+" Discoveries (from "+format(5250)+")"],
-		["BALANCE","Research 16-8 now costs "+format(1440)+" Discoveries (from "+format(1550)+")"],
-		["BALANCE","Study VI reward 1 is stronger at 2 and 3 completions"],
-		["BALANCE","Achievement 709 \"Mind-bending Curvature II\" requirement reduced to "+format("3.33e833")+" (from "+format("8.88e888")+"), and Achievement 710 \"Mind-bending Curvature III\" requirement reduced to "+format("8.88e888")+" (from "+format("9.99e999")+")"],
-		["BALANCE","Achievement 712 \"Rewind\" now requires "+format(3600)+" yellow lumens to be boosted (from "+format(3500)+"), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
-		["BALANCE","Research 16-6 and 16-10 are 24× stronger"],
-		["BALANCE","Achievement 719 \"OMCCDV II\" reward is stronger"],
-		["BALANCE","Achievement 801 \"The Explorer\" reward is stronger"],
-		["BALANCE","Achievement 813 \"Hidden Stars in Zero Dimensions\" requirement is now 208 (from 210)"],
-		["BALANCE","Research 23-5 has lower requirements"],
-		["BALANCE","The goal of Study VII level 1 is now "+format(6277)+" (from "+format(6666)+")"],
-		["BALANCE","Study of Studies rewards are significantly stronger"],
-		["BALANCE","Research 34-3 is stronger"],
-		["BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
-		["BUGFIX","Achievement 613 \"Antimatter Academia\" is now properly affected by yellow light and no longer affects 9-7, 9-8 or 9-9"],
-		["CONTENT","117 new research going up to row 47"],
+	{num:"𝕍1ω",date:"",name:"Temporal Skyscraper 〜 Thirteen Minds",changes:[
+		[5,"BALANCE","Research 9-2 now initially costs 360 Discoveries (previously 400), and the requirements for the first three levels are lower"],
+		[5,"BALANCE","Study III goals are changed ()"],
+		[6,"BALANCE","Row 9 Chromatic research are stronger (about 2× more chroma each)"],
+		[6,"BALANCE","Achievement 607 \"There are Four Lights\" has a base reward of 2.75× (from 2.8×). Value once yellow light takes effect is unchanged."],
+		[6,"BALANCE","Study IV has higher goals and unlock requirements"],
+		[6,"BALANCE","Added a link to research 13-8 from 10-5 and 10-11"],
+		[6,"BALANCE","Research 12-8 now has a base requirement of "+format(4800)+" Discoveries (from "+format(5250)+")"],
+		[7,"BALANCE","Research 16-8 now costs "+format(1440)+" Discoveries (from "+format(1550)+")"],
+		[7,"BALANCE","Study VI reward 1 is stronger at 2 and 3 completions"],
+		[7,"BALANCE","Achievement 709 \"Mind-bending Curvature II\" requirement reduced to "+format("3.33e833")+" (from "+format("8.88e888")+"), and Achievement 710 \"Mind-bending Curvature III\" requirement reduced to "+format("8.88e888")+" (from "+format("9.99e999")+")"],
+		[7,"BALANCE","Achievement 712 \"Rewind\" now requires "+format(3600)+" yellow lumens to be boosted (from "+format(3500)+"), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
+		[7,"BALANCE","Research 16-6 and 16-10 are 24× stronger"],
+		[7,"BALANCE","Achievement 719 \"OMCCDV II\" reward is stronger"],
+		[8,"BALANCE","Achievement 801 \"The Explorer\" reward is stronger"],
+		[8,"BALANCE","Achievement 813 \"Hidden Stars in Zero Dimensions\" requirement is now 208 (from 210)"],
+		[8,"BALANCE","Research 23-5 has lower requirements"],
+		[8,"BALANCE","The goal of Study VII level 1 is now "+format(6277)+" (from "+format(6666)+")"],
+		[8,"BALANCE","The Stellar and Decisive Triads now have additional conditions like the Temporal Triad, and the modification of the Study IX Binding in the Temporal Triad is different"],
+		[8,"BALANCE","Study of Studies rewards are significantly stronger"],
+		[8,"BALANCE","Research 34-3 is stronger"],
+		[8,"BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
+		[8,"BUGFIX","Achievement 613 \"Antimatter Academia\" is now properly affected by yellow light and no longer affects 9-7, 9-8 or 9-9"],
+		[8,"CONTENT","117 new research going up to row 47"],
+		[8,"CONTENT","2 new Tier 8 achievements and 30 Tier 9 achievements"],
+		[9,"CONTENT","Wormhole Upgrades"],
+		[9,"CONTENT","Ontological Triad"],
+		[9,"CONTENT","Study XI and XII are now possible to 4 completions each"],
+		[9,"CONTENT","Study XIII"]
 	]}
 	blank entry:
 	{num:"",date:"",changes:[
 
 	]},
 	*/
+	{num:"𝕍1.5(c).12",date:"2024-06-03",name:"𝕍1ω Beta, Anniversary of Beta",changes:[
+		[5,"BALANCE?","Achievement 526 \"Big Crunch\" no longer adds to the normal and dark S axis effects directly, but instead boosts the Achievement 525 \"You didn't need it anyway\" reward. The end result is the same if you have both achievements."],
+		[5,"BALANCE","Added 10 new Wormhole Milestones at the positions which previously didn't have any, which give minor knowledge boosts"],
+		[5,"BALANCE","Empowered Y Axis still add to the X axis effect as well as multiplying it"],
+		[8,"BALANCE","Cinquefolium Chroma uses a different formula for levels between 0 and 1"],
+		[8,"BALANCE","In a similar manner to Achievements 807 \"Get Lucky\" and 809 \"False Deity Destroyer\", Achievement 808 \"Octarine-colored Magic\" is now awarded for buying a Prismatic Upgrade rather than merely unlocking Prismatic"],
+		"Keep in mind these are only the balancing changes which I'm too incompetent to keep under wraps until 𝕍1ω. There are almost 100 balancing changes in the upcoming version.",
+		[2,"BUGFIX","All autobuyer intervals being 1% lower than they should be resulting in some weird initial numbering"],
+		[6,"BUGFIX","Achievement 613 \"Antimatter Academia\" yellow lumen effect not working"],
+		[8,"BUGFIX","Study VII not affecting stardust gain as strongly as it should, and even boosting it at bad luck if the exponent is below 1. The end result is the same at optimal luck."],
+		[8,"BUGFIX","Temporal Triad not disabling Row 5 and 6 Energy research"],
+		[[6,8],"CLARITY",(highestTierUnlocked>=8)?"\"Research unlocked by Study V and VII\" are now respectively Hypothesis and Crystal research":"\"Research unlocked by Study V\" is now Hypothesis research"],
+		[1,"INTERFACE","Dramatic shake-up of axis buttons"],
+		[1,"INTERFACE","Mastery buttons are now magenta like mastery power instead of the arbitrary green"],
+		[1,"INTERFACE","Normal axis buttons are now green like exotic matter instead of the arbitrary cyan"],
+		[1,"INTERFACE","Most buttons have nicer borders"],
+		[1,"INTERFACE","'Statistics' subtab within Statistics looks better, and 'Hidden Statistics' is merged into it"],
+		[2,"INTERFACE","Star interface has different colors for unpurchased stars"],
+		[2,"INTERFACE","Plain white buttons in the Stardust layer now use the stardust background instead"],
+		[2,"INTERFACE","Option to reverse Achievement rows no longer shows if only 1 tier is unlocked"],
+		[3,"INTERFACE","The first dark star effect now displays as an exponent rather than a percentage increase"],
+		[[3,8],"INTERFACE","Added lifetime statistics for dark matter"+((highestTierUnlocked>=8)?" and antimatter":"")+". Values may be lower than expected for a bit."],
+		[4,"INTERFACE","Energies are now in pretty boxes"],
+		[5,"INTERFACE","Compact Study info is 30px taller"],
+		[5,"INTERFACE","Tier 5 achievements no longer mention Wormhole Milestones in their per-achievement reward"],
+		[[6,8],"INTERFACE","Chromatic"+((highestTierUnlocked>=8)?" and Prismal":"")+" research have been condensed in the stat breakdown (from 1 row per research to 1 for the whole group)"],
+		[8,"INTERFACE","\"Respec Luck Upgrades\" is no longer black and white"],
+		[1,"META","The changelog now hides changes which would spoil parts of the game, and now correctly uses your chosen notation instead of 'Mixed scientific', and there are small vertical spaces between changes"],
+		[8,"QOL","Research autobuyer has been improved (grouped research are now auto-purchased only if all research in the group can be purchased)"],
+		[1,"SECRETFIX","Fixed dilated exotic matter"],
+		[8,"TEXTFIX","Study of Studies disclaimer about repeating a previous Triad not appearing if doing the level directly under the next one"],
+		[8,"TEXTFIX","Research 25-14 showing the wrong formula"],
+		[8,"TEXTFIX","Buying multiple luck upgrades at once only showing the change if buying 1 level"],
+		[2,"WHAT","The first QOL of the 𝕍1.5(b).2 entry is now comprehensible"]
+	]},
 	{num:"𝕍1.5(c).11",date:"2024-05-03",changes:[
-		["BALANCE","Achievement 803 \"Base 3\" now correctly multiplies by 0.97 instead of dividing by 1.03"],
-		["BUGFIXNCE","Effects such as Mastery 63 are no longer 0 at very small values, but instead corresponding very small numbers"],
-		["BUGFIX","Achievement 614 \"Redstone Clock\" no longer crashes the game when put on the progress bar"],
-		["WHAT","𝕍1.5(c).10 changelog being dated 2024-04-28"]
+		[8,"BALANCE","Achievement 803 \"Base 3\" now correctly multiplies by 0.97 instead of dividing by 1.03"],
+		[[1,2],"BUGFIXNCE",((highestTierUnlocked>=2)?"Effects such as Mastery 63":"Certain effects")+" are no longer 0 at very small values, but instead corresponding very small numbers"],
+		[6,"BUGFIX","Achievement 614 \"Redstone Clock\" no longer crashes the game when put on the progress bar"],
+		[1,"WHAT","𝕍1.5(c).10 changelog being dated 2024-04-28"]
 	]},
 	{num:"𝕍1.5(c).10",date:"2024-05-02",changes:[
-		["BUGFIX<sup>2</sup>","\"Loading game...\" screen now features a save export"]
+		[1,"BUGFIX<sup>2</sup>","\"Loading game...\" screen now features a save export"]
 	]},
 	{num:"𝕍1.5(c).9",date:"2024-04-28",name:"Remission of a Save-Killing Disease",changes:[
-		["BUGFIX","Projected research cost now includes unowned Study V research"],
-		["BUGFIX","Achievement 718 \"Softcap-colored Lights\" can no longer be abused in conjunction with Prismatic Upgrade R1 \"Chromatic Overdrive\""],
-		["INTERFACE","Achievement tooltips are now cleaner"],
-		["INTERFACE","Showing complex achievements on the progress bar now shows more information"],
-		["INTERFACE","Galaxy effects no longer jitter when showing formulas"],
-		["INTERFACE","Tier 7 achievements use darker colors"],
-		["QOL","Added an option to reverse the order in which Achievement tiers display"]
+		[6,"BUGFIX","Projected research cost now includes unowned Study V research"],
+		[8,"BUGFIX","Achievement 718 \"Softcap-colored Lights\" can no longer be abused in conjunction with Prismatic Upgrade R1 \"Chromatic Overdrive\""],
+		[1,"INTERFACE","Achievement tooltips are now cleaner"],
+		[2,"INTERFACE","Showing complex achievements on the progress bar now shows more information"],
+		[7,"INTERFACE","Galaxy effects no longer jitter when showing formulas"],
+		[7,"INTERFACE","Tier 7 achievements use darker colors"],
+		[2,"QOL","Added an option to reverse the order in which Achievement tiers display"]
 	]},
 	{num:"𝕍1.5(c).8",date:"2024-04-20",changes:[
-		["BUGFIX","Game crashing sporadically when Scientific notation is enabled"],
-		["TEXTFIX","\"Glow when anti-axis can be bought\" checking if this is enabled for dark axis"]
+		[1,"BUGFIX","Game crashing sporadically when Scientific notation is enabled"],
+		[8,"TEXTFIX","\"Glow when anti-axis can be bought\" checking if this is enabled for dark axis"]
 	]},
 	{num:"𝕍1.5(c).7.1",date:"2024-04-18",changes:[
-		["BUGFIX","Game not loading due to a bug alemaninc knew would happen, but implemented anyway"],
+		[1,"BUGFIX","Game not loading due to a bug alemaninc knew would happen, but implemented anyway"],
 		"You ever wonder why so many people actually play this for fun?"
 	]},
 	{num:"𝕍1.5(c).7",date:"2024-04-18",changes:[
-		["BALANCE","Row 10 Chromatic research now require "+format("e8")+" of the relevant chroma (from "+format("e9")+"), and their formulas are stronger"],
-		["BUGFIX","Game doing strange things when frozen"],
-		["INTERFACE","Tetration notation now uses quadratic base 10 approximation rather than linear base 10, and Standard notation is less excessively precise"],
-		["QOL","Hotkey-triggered resets now correctly show confirmation popups if enabled"],
-		["TEXTFIX","Additional research from the 15-achievement Wormhole Milestone not appearing without reload"],
-		["TEXTFIX","Achievement 526 \"Big Crunch\" shows its progress correctly"],
-		["TEXTFIX","Review of yellow light effects in 'Light' tab works properly now"],
-		["TEXTFIX","Removed all erroneous references to \"axes\". The rules of English do not apply in <i>Exotic Matter Dimensions</i> so the plural is \"axis\"."]
+		[6,"BALANCE","Row 10 Chromatic research now require "+format("e8")+" of the relevant chroma (from "+format("e9")+"), and their formulas are stronger"],
+		[1,"BUGFIX","Game doing strange things when frozen"],
+		[1,"INTERFACE","Tetration notation now uses quadratic base 10 approximation rather than linear base 10, and Standard notation is less excessively precise"],
+		[2,"QOL","Hotkey-triggered resets now correctly show confirmation popups if enabled"],
+		[5,"TEXTFIX","Additional research from the 15-achievement Wormhole Milestone not appearing without reload"],
+		[5,"TEXTFIX","Achievement 526 \"Big Crunch\" shows its progress correctly"],
+		[6,"TEXTFIX","Review of yellow light effects in 'Light' tab works properly now"],
+		[1,"TEXTFIX","Removed all erroneous references to \"axes\". The rules of English do not apply in <i>Exotic Matter Dimensions</i> so the plural is \"axis\"."]
 	]},
 	{num:"𝕍1.5(c).6",date:"2024-04-03",changes:[
-		["BUGFIX","Game actually no longer crashes when viewing Achievement 505 \"Iron Will IV\" when it is fully completed under Iron Will conditions"],
-		["TEXTFIX","Galaxy effect unlock requirements no longer show as 2 higher than they should be"],
-		["WHAT","The 1.5(c).5 changelog no longer has two undefined items"]
+		[5,"BUGFIX","Game actually no longer crashes when viewing Achievement 505 \"Iron Will IV\" when it is fully completed under Iron Will conditions"],
+		[7,"TEXTFIX","Galaxy effect unlock requirements no longer show as 2 higher than they should be"],
+		[1,"WHAT","The 1.5(c).5 changelog no longer has two undefined items"]
 	]},
 	{num:"𝕍1.5(c).5",date:"2024-03-31",changes:[
-		["BUGFIX","Feature unlock no longer crashes the game"],
-		["INTERFACE","Locked prestige buttons are darker in color"],
-		["QOL","Clicking \"Complete Study\" will no longer exit the Study if it cannot be completed (use \"Abort Study\" for this)"],
-		["TEXTFIX","Achievement 711 \"Moonlight Capital\" should now display its milestones correctly"]
+		[2,"BUGFIX","Feature unlock no longer crashes the game"],
+		[2,"INTERFACE","Locked prestige buttons are darker in color"],
+		[5,"QOL","Clicking \"Complete Study\" will no longer exit the Study if it cannot be completed (use \"Abort Study\" for this)"],
+		[7,"TEXTFIX","Achievement 711 \"Moonlight Capital\" should now display its milestones correctly"]
 	]},
 	{num:"𝕍1.5(c).4",date:"2024-03-31",name:"Nice and Fun Tier 8",changes:[
-		["BUGFIX","The game now loads once more"],
-		["SECRET","Removed the secret"]
+		[1,"BUGFIX","The game now loads once more"],
+		[1,"SECRET","Removed the secret"]
 	]},
 	{num:"𝕍1.5(c).3.1",date:"2024-03-31",changes:[
-		["SECRET","Fixed the new promotion code"]
+		[1,"SECRET","Fixed the new promotion code"]
 	]},
 	{num:"𝕍1.5(c).3",date:"2024-03-31",name:"Nice and Fun Tier 9",changes:[
-		["INTERFACE","The 1st effect of dark stars now displays its formula"],
-		["INTERFACE","Complicated Study Bindings now display as lists for clarity, and the disclaimers for Study of Studies now show separately from the Binding"],
-		["INTERFACE","Very short news ticker messages are now shown less frequently"],
-		["SECRET","All-new promotion code!"],
-		["TEXTFIX","Permanent and Study research can no longer be 'powered'"],
-		["WHAT","Added 𝕍1.5(c).2's second INTERFACE"],
-		["WHAT","Changed 𝕍1.5(c).2's second TEXTFIX to include Achievements 708-710"]
+		[1,"INTERFACE","Very short news ticker messages are now shown less frequently"],
+		[3,"INTERFACE","The 1st effect of dark stars now displays its formula"],
+		[5,"INTERFACE","Complicated Study Bindings now display as lists for clarity, and the disclaimers for Study of Studies now show separately from the Binding"],
+		[1,"SECRET","All-new promotion code!"],
+		[5,"TEXTFIX","Permanent and Study research can no longer be 'powered'"],
+		[1,"WHAT","Added 𝕍1.5(c).2's second INTERFACE"],
+		[1,"WHAT","Changed 𝕍1.5(c).2's fourth TEXTFIX to include Achievements 708-710"]
 	]},
 	{num:"𝕍1.5(c).2",date:"2024-03-28",changes:[
-		["BUGFIX","Achievement 807 \"Get Lucky\" is no longer awarded by clicking the button if cannot afford"],
-		["BUGFIX?","Save import should cause less display bugs requiring refresh"],
-		["BUGFIX","Game no longer crashes when viewing Achievement 505 \"Iron Will IV\" when it is fully completed under Iron Will conditions"],
-		["INTERFACE","Resizing the window will no longer make achievements display weirdly"],
-		["INTERFACE","Very long news ticker messages are now shown less frequently"],
-		["TEXTFIX","Stardust Boost 1 always showing in Stat Breakdown even if Stardust is not unlocked"],
-		["TEXTFIX","Progress for Achievements 708-710 \"Mind-bending Curvature\" showing negative values and 714 \"Old age\" being completely broken"],
-		["TEXTFIX","Icons for stars 81 and 83 are no longer \"undefined<sup>-</sup>\" on Modern view"],
-		["TEXTFIX","Reviewing all yellow light effects will no longer show unchanged achievements if the next yellow lumen will boost them"]
+		[5,"BUGFIX","Game no longer crashes when viewing Achievement 505 \"Iron Will IV\" when it is fully completed under Iron Will conditions"],
+		[8,"BUGFIX","Achievement 807 \"Get Lucky\" is no longer awarded by clicking the button if cannot afford"],
+		[1,"BUGFIX?","Save import should cause less display bugs requiring refresh"],
+		[1,"INTERFACE","Resizing the window will no longer make achievements display weirdly"],
+		[1,"INTERFACE","Very long news ticker messages are now shown less frequently"],
+		[2,"TEXTFIX","Stardust Boost 1 always showing in Stat Breakdown even if Stardust is not unlocked"],
+		[4,"TEXTFIX","Icons for stars 81 and 83 are no longer \"undefined<sup>-</sup>\" on Modern view"],
+		[6,"TEXTFIX","Reviewing all yellow light effects will no longer show unchanged achievements if the next yellow lumen will boost them"],
+		[7,"TEXTFIX","Progress for Achievements 708-710 \"Mind-bending Curvature\" showing negative values and 714 \"Old age\" being completely broken"]
 	]},
 	{num:"𝕍1.5(c).1",date:"2024-03-17",changes:[
-		["BUGFIX","Progress bar crashing when completing the achievement on it"],
+		[1,"BUGFIX","Progress bar crashing when completing the achievement on it"],
 	]},
 	{num:"𝕍1.5(c)",date:"2024-03-16",name:"Ageless Sect of Mystic Patience 〜 Timewall Fission",changes:[
-		["BALANCE","Research 9-15 and 10-13 are 2× stronger. The first of a number of changes which will hopefully speed up Tiers 6 and 7."],
-		["BUGFIX","Something called 'Corruption' unlocking in Study VIII"],
-		["INTERFACE","The Mastery 105 icon now correctly uses a ★ instead of a S"],
-		["WHAT","Added the missing second bugfix to the 𝕍1.5(b).10 changelog"],
-		["WHAT","Completion percentage is no longer incorrectly 96%"]
+		[6,"BALANCE","Research 9-15 and 10-13 are 2× stronger. The first of a number of changes which will hopefully speed up Tiers 6 and 7."],
+		[8,"BUGFIX","Something called 'Corruption' unlocking in Study VIII"],
+		[7,"INTERFACE","The Mastery 105 icon now correctly uses a ★ instead of a S"],
+		[1,"WHAT","Added the missing second bugfix to the 𝕍1.5(b).10 changelog"],
+		[1,"WHAT","Completion percentage is no longer incorrectly 96%"]
 	]},
 	{num:"𝕍1.5(b).10",date:"2024-03-16",changes:[
-		["BUGFIX","\"Unassign Mastery\" is no longer covered by footer on modern Mastery style"],
-		["BUGFIX","Mastery toggle confirmation now works properly"]
+		[1,"BUGFIX","\"Unassign Mastery\" is no longer covered by footer on modern Mastery style"],
+		[1,"BUGFIX","Mastery toggle confirmation now works properly"]
 	]},
 	{num:"𝕍1.5(b).9",date:"2024-03-15",name:"Condensation",changes:[
-		["BUGFIX","Tabs no longer glow if a subtab which isn't unlocked yet glows"],
-		["INTERFACE","Study interface has been shaken up <i>again</i>, and a second style has been added"]
+		[1,"BUGFIX","Tabs no longer glow if a subtab which isn't unlocked yet glows"],
+		[5,"INTERFACE","Study interface has been shaken up <i>again</i>, and a second style has been added"]
 	]},
 	{num:"𝕍1.5(b).8",date:"2024-03-12",name:"The Long-Awaited Tier 9 Preparations 〜 When?",changes:[
-		["ANTICIPATION GALORE","Clicking the progress bar for a hint of the next update now shows a completion percentage for it"],
-		["BUGFIX","Crash when buying research 3-6 with 2-6 but neither of 1-5 or 1-6 available"],
-		["BUGFIX","There is no longer a \"Show options\" in Previous Prestiges which crashes the game"],
-		["INTERFACE","The Study interface has been changed up dramatically"],
-		["INTERFACE","Third and fourth order tabs in the Stat Breakdown and 'Previous Prestiges' are less ugly"],
-		["INTERFACE","Input fields in the Automation tab are smaller"],
-		["INTERFACE","Effective dark stars and luck upgrade levels are now shown in the Stat Breakdown"],
-		["INTERFACE","Numbers which are very close to 1 (such as energy gain at very low tickspeeds) now display with more precision"],
+		[1,"ANTICIPATION GALORE","Clicking the progress bar for a hint of the next update now shows a completion percentage for it"],
+		[2,"BUGFIX","There is no longer a \"Show options\" in Previous Prestiges which crashes the game"],
+		[8,"BUGFIX","Crash when buying research 3-6 with 2-6 but neither of 1-5 or 1-6 available"],
+		[5,"INTERFACE","The Study interface has been changed up dramatically"],
+		[1,"INTERFACE","Third and fourth order tabs in the Stat Breakdown and 'Previous Prestiges' are less ugly"],
+		[2,"INTERFACE","Input fields in the Automation tab are smaller"],
+		[5,"INTERFACE","Effective dark stars and luck upgrade levels are now shown in the Stat Breakdown"],
+		[[1,4],"INTERFACE","Numbers which are very close to 1"+((highestTierUnlocked>=4)?" (such as energy gain at very low tickspeeds)":"")+" now display with more precision"],
 		"The above interface changes have all happened for a reason. Use this information as you will.",
-		["INTERFACE","Push notifications no longer go under Research buttons"],
-		["INTERFACE","Changelog row text is now top-aligned rather than center-aligned"],
-		["INTERFACE","Added some space between luck upgrade buttons"],
-		["INTERFACE","\"Overclock costs are much higher above <i>N</i>×\" text is no longer obscured by the Overclock buttons"],
-		["INTERFACE","Research 24-12 now uses the correct icon"],
-		["PERFORMANCE","Importing research or auto-restoring after a Study no longer lag the game out (performance is now the same as buying normally)"],
-		["QOL","The buttons to lose levels of 'Chromatic Overdrive' now change color if the chroma cost multiplier is above 1"],
-		["QOL","Milestone achievements can now be placed into the progress bar if not all milestones are unlocked"],
-		["TEXTFIX","The third reward of Study II no longer shows its reward as being double its true value (this is in fact an actual bug and not a text bug but alemaninc is too lazy to rebalance so you now get a useless Study reward :D)"],
-		["TEXTFIX","The dark star requirement now displays correctly when single buying is active"],
-		["TEXTFIX","All references to \"Mastery swap\" have been changed to \"Mastery unassignment\" which is more accurate"],
-		["TEXTFIX","Achievements 402-407 now correctly say \"Unlock the [number] type of energy\" instead of just \"unlock the [number]\""],
-		["TEXTFIX","Achievements 409-411 \"Time is relative\" now only show their own flavor texts instead of all three separated by commas"],
-		["TEXTFIX?","nicodium's newsletter now shows a different message if verification is completed with the relevant secret achievement already owned"]
+		[1,"INTERFACE","Changelog row text is now top-aligned rather than center-aligned"],
+		[1,"INTERFACE","\"Overclock costs are much higher above <i>N</i>×\" text is no longer obscured by the Overclock buttons"],
+		[5,"INTERFACE","Push notifications no longer go under Research buttons"],
+		[8,"INTERFACE","Added some space between luck upgrade buttons"],
+		[8,"INTERFACE","Research 24-12 now uses the correct icon"],
+		[1,"PERFORMANCE","Importing research or auto-restoring after a Study no longer lag the game out (performance is now the same as buying normally)"],
+		[5,"QOL","Milestone achievements can now be placed into the progress bar if not all milestones are unlocked"],
+		[8,"QOL","The buttons to lose levels of 'Chromatic Overdrive' now change color if the chroma cost multiplier is above 1"],
+		[1,"TEXTFIX","All references to \"Mastery swap\" have been changed to \"Mastery unassignment\" which is more accurate"],
+		[1,"TEXTFIX?","nicodium's newsletter now shows a different message if verification is completed with the relevant secret achievement already owned"],
+		[3,"TEXTFIX","The dark star requirement now displays correctly when single buying is active"],
+		[4,"TEXTFIX","Achievements 402-407 now correctly say \"Unlock the [number] type of energy\" instead of just \"unlock the [number]\""],
+		[4,"TEXTFIX","Achievements 409-411 \"Time is relative\" now only show their own flavor texts instead of all three separated by commas"],
+		[5,"TEXTFIX","The third reward of Study II no longer shows its reward as being double its true value (this is in fact an actual bug and not a text bug but alemaninc is too lazy to rebalance so you now get a useless Study reward :D)"],
 	]},
 	{num:"𝕍1.5(b).7",date:"2024-02-08",changes:[
-		["INTERFACE","Autobuyers now show their \"level\" in their boxes rather than in Hidden Statistics"],
-		["MISCELLANEOUS","'How to play' entry for Offline Time has been expanded"],
-		["MISCELLANEOUS","Added a 'how to play' entry for Tickspeed"],
-		["QOL","Added the ability to equalize time"],
-		["TEXTFIX","The formula for the 18-achievement Wormhole Milestone is no longer wrong above the softcap"],
-		["TEXTFIX","The 'how to play' entry for Offline Time no longer shows an incorrect value for the softcap start"],
-		["WHAT","The 𝕍1.2.3 changelog no longer has a ) trailing the date"]
+		[2,"INTERFACE","Autobuyers now show their \"level\" in their boxes rather than in Hidden Statistics"],
+		[1,"MISCELLANEOUS","'How to play' entry for Offline Time has been expanded"],
+		[2,"MISCELLANEOUS","Added a 'how to play' entry for Tickspeed"],
+		[1,"QOL","Added the ability to equalize time"],
+		[1,"TEXTFIX","The 'how to play' entry for Offline Time no longer shows an incorrect value for the softcap start"],
+		[5,"TEXTFIX","The formula for the 18-achievement Wormhole Milestone is no longer wrong above the softcap"],
+		[1,"WHAT","The 𝕍1.2.3 changelog no longer has a ) trailing the date"]
 	]},
 	{num:"𝕍1.5(b).6",date:"2024-01-31",name:"A Rather Different Content Wall",changes:[
-		["BUGFIX","It is once again possible to Wormhole if you have never done it before"],
-		["INTERFACE","Achievement boxes are now 50% taller when reviewing yellow light due to Achievement 819's new reward description overflowing"],
-		["QOL","Ascetic max buy research will no longer buy Study research unless this is the target research"],
-		["QOL","It is now possible to select an achievement to continually show its progress on the global progress bar"],
-		["REVERSE BUGFIX","Removed a completion tooltip from Achievement 718 \"Softcap-colored Lights\" which only appeared following a bug. No one should be getting this anyway at this point"],
-		["TEXTFIX","Achievements 708-710 \"Mind-bending Curvature\" no longer show an incorrect estimated time to get if Achievement 816 \"Cosmic Mind\" is owned"],
-		["TEXTFIX","Empowered anti-V axis now correctly references the dark Y axis instead of dark V"]
+		[5,"BUGFIX","It is once again possible to Wormhole if you have never done it before"],
+		[[6,8],"INTERFACE","Achievement boxes are now 50% taller when reviewing yellow light"+((highestTierUnlocked>=8)?" due to Achievement 819's new reward description overflowing":"")],
+		[1,"QOL","It is now possible to select an achievement to continually show its progress on the global progress bar"],
+		[5,"QOL","Ascetic max buy research will no longer buy Study research unless this is the target research"],
+		[7,"REVERSE BUGFIX","Removed a completion tooltip from Achievement 718 \"Softcap-colored Lights\" which only appeared following a bug. No one should be getting this anyway at this point"],
+		[7,"TEXTFIX","Achievements 708-710 \"Mind-bending Curvature\" no longer show an incorrect estimated time to get if Achievement 816 \"Cosmic Mind\" is owned"],
+		[8,"TEXTFIX","Empowered anti-V axis now correctly references the dark Y axis instead of dark V"]
 	]},
 	{num:"𝕍1.5(b).5",date:"2024-01-27",changes:[
-		["BUGFIX","Luck upgrades can be purchased without crashing the game"],
-		["QOL","'Set Overclock to softcap start' no longer puts you very slightly (∼0.04%) below the softcap start"]
+		[8,"BUGFIX","Luck upgrades can be purchased without crashing the game"],
+		[1,"QOL","'Set Overclock to softcap start' no longer puts you very slightly (∼0.04%) below the softcap start"]
 	]},
 	{num:"𝕍1.5(b).4",date:"2024-01-27",name:"Hello World",changes:[
 		"Only beta testers know."
 	]},
 	{num:"𝕍1.5(b).3",date:"2024-01-22",name:"Imperishable Error's End",changes:[
-		["BUGFIX","Game no longer crashes if formulas are shown in the Dark Matter tab"],
-		["FLAIR","Even fancier changelog!"],
-		["INTERFACE","Reversing Mastery rows no longer causes a flash of rows which aren't unlocked"],
-		["INTERFACE","Fixed achievement name text color black/white selection (i.e. tiers 3, 5 and 6 will no longer show achievement names in black)"],
-		["INTERFACE","Achievement tier containers no longer have the tier name underlined"],
-		["INTERFACE","If Mastery 101 is active, Achievement 501 \"Wormhole to Somewhere\" now shows the change from the base effect to the modified effect"],
-		["INTERFACE","Mousing out of an achievement now hides the tooltip"],
-		["INTERFACE","The research 33-3 animation is less chaotic when Study XI is first entered, but will now become more chaotic with each completion"],
-		["TEXTFIX","\"Affected by yellow light\" tooltip no longer displays on achievements 207-209 if yellow light is not unlocked"],
-		["TEXTFIX","Achievement 505 \"Iron Will IV\" reward description now has brackets for clarity"],
-		["TEXTFIX","Research 37-1 (which cannot yet be purchased) is invisible once more"],
-		["TEXTFIX","Achievement 819 \"Power of a Unicorn\" shows the correct formula and its forgotten secondary reward"],
-		["WHAT","Added the missing CONTENT to the 𝕍1.5(b).2 changelog"]
+		[3,"BUGFIX","Game no longer crashes if formulas are shown in the Dark Matter tab"],
+		[1,"FLAIR","Even fancier changelog!"],
+		[1,"INTERFACE","Reversing Mastery rows no longer causes a flash of rows which aren't unlocked"],
+		[[1,3,5,6],"INTERFACE","Fixed achievement name text color black/white selection"+((highestTierUnlocked>=3)?(" (i.e. "+((highestTierUnlocked>=6)?"tiers 3, 5 and 6":(highestTierUnlocked>=5)?"tiers 3 and 5":"tier 3")+" will no longer show achievement names in black)"):"")],
+		[1,"INTERFACE","Achievement tier containers no longer have the tier name underlined"],
+		[1,"INTERFACE","Mousing out of an achievement now hides the tooltip"],
+		[5,"INTERFACE","If Mastery 101 is active, Achievement 501 \"Wormhole to Somewhere\" now shows the change from the base effect to the modified effect"],
+		[8,"INTERFACE","The research 33-3 animation is less chaotic when Study XI is first entered, but will now become more chaotic with each completion"],
+		[5,"TEXTFIX","Achievement 505 \"Iron Will IV\" reward description now has brackets for clarity"],
+		[6,"TEXTFIX","\"Affected by yellow light\" tooltip no longer displays on achievements 207-209 if yellow light is not unlocked"],
+		[8,"TEXTFIX","Research 37-1 (which cannot yet be purchased) is invisible once more"],
+		[8,"TEXTFIX","Achievement 819 \"Power of a Unicorn\" shows the correct formula and its forgotten secondary reward"],
+		[1,"WHAT","Added the missing CONTENT to the 𝕍1.5(b).2 changelog"]
 	]},
 	{num:"𝕍1.5(b).2.5",date:"2024-01-06",changes:[
-		["BUGFIX","Game not loading due to news item #253 being undefined if Studies are not unlocked"],
-		["BUGFIX","Lumen gain achievements not awarding"]
+		[[1,5],"BUGFIX","Game not loading due to news item #253 being undefined if "+((highestTierUnlocked>=5)?"Studies are":"a Tier 5 feature is")+" not unlocked"],
+		[6,"BUGFIX","Lumen gain achievements not awarding"]
 	]},
 	{num:"𝕍1.5(b).2.4",date:"2024-01-06",changes:[
-		["BUGFIX","Game not loading with exactly 2 completions of Study III"],
+		[6,"BUGFIX","Game not loading with exactly 2 completions of Study III"],
 	]},
 	{num:"𝕍1.5(b).2.3",date:"2024-01-06",changes:[
-		["BUGFIX","Anti-S axis effect is no longer 0"],
+		[8,"BUGFIX","Anti-S axis effect is no longer 0"],
 	]},
 	{num:"𝕍1.5(b).2.2",date:"2024-01-06",changes:[
-		["BUGFIX","Game not loading"],
+		[1,"BUGFIX","Game not loading"],
 	]},
 	{num:"𝕍1.5(b).2.1",date:"2024-01-06",changes:[
-		["BUGFIX","Game not loading"],
+		[1,"BUGFIX","Game not loading"],
 	]},
 	{num:"𝕍1.5(b).2",date:"2024-01-06",name:"Trivial Tier 8",changes:[
-		["BALANCE","Refundable prismatic upgrades now refund their cost in prismatic when a level is lost"],
-		["BUGFIX?","Importing invalid research will now show a push notification instead of an error popup"],
-		["BUGFIX","Achievement 801 \"The Explorer\" reward which previously actually reduced production has been removed and replaced by a (much weaker) reward","st0ck53y"],
-		["CONTENT","Research 34-3 and 36-1"],
-		["FLAIR","Added an option to speed the news ticker up when Overclock is active"],
-		["INTERFACE","Achievement notifications now show the ID of the achievement given: this replaces the \"You have unlocked Tier <i>x</i> achievements!\" text"],
-		["INTERFACE","Secret achievements are now sorted alphabetically within their rarities"],
-		["INTERFACE","Mastery 101 now shows the ID of \"Wormhole to Somewhere\" (501)"],
-		["INTERFACE","Row 4 star icons are now correctly superscripted"],
-		["INTERFACE","Research 17-8 icon is less ugly"],
-		["INTERFACE","When a research or achievement with dynamic effect is selected, the displayed value will continually update until another is selected"],
-		["INTERFACE","Notification text colors now properly select between black and white"],
-		["INTERFACE","Achievement information is now displayed on tooltips rather than panels"],
-		["INTERFACE","The Tier 3 and Tier 5 achievement text colors are now darker"],
-		["MISCELLANEOUS","Large number visualisation now shows antimatter"],
-		["QOL","Added the option to lose all levels of a repeatable prismatic upgrade"],
-		["QOL","The previous prestige tracker no longer shows builds for 'last 10' resets, only shows builds which"],
-		["TEXTFIX","Formula for Galaxy Boost 5 showing \"undefined\""]
+		[8,"BALANCE","Refundable prismatic upgrades now refund their cost in prismatic when a level is lost"],
+		[5,"BUGFIX?","Importing invalid research will now show a push notification instead of an error popup"],
+		[8,"BUGFIX","Achievement 801 \"The Explorer\" reward which previously actually reduced production has been removed and replaced by a (much weaker) reward","st0ck53y"],
+		[8,"CONTENT","Research 34-3 and 36-1"],
+		[1,"FLAIR","Added an option to speed the news ticker up when Overclock is active"],
+		[1,"INTERFACE","Achievement notifications now show the ID of the achievement given: this replaces the \"You have unlocked Tier <i>x</i> achievements!\" text"],
+		[1,"INTERFACE","Notification text colors now properly select between black and white"],
+		[1,"INTERFACE","Achievement information is now displayed on tooltips rather than panels"],
+		[1,"INTERFACE","Secret achievements are now sorted alphabetically within their rarities"],
+		[2,"INTERFACE","Row 4 star icons are now correctly superscripted"],
+		[5,"INTERFACE","When a research or achievement with dynamic effect is selected, the displayed value will continually update until another is selected"],
+		[5,"INTERFACE","Mastery 101 now shows the ID of \"Wormhole to Somewhere\" (501)"],
+		[8,"INTERFACE","Research 17-8 icon is less ugly"],
+		[[3,5],"INTERFACE","The Tier 3"+((highestTierUnlocked>=5)?" and Tier 5":"")+" achievement text colors are now darker"],
+		[8,"MISCELLANEOUS","Large number visualisation now shows antimatter"],
+		[2,"QOL","The previous prestige tracker no longer shows builds for 'last 10' resets, only shows builds for record-breaking resets"],
+		[8,"QOL","Added the option to lose all levels of a repeatable prismatic upgrade"],
+		[7,"TEXTFIX","Formula for Galaxy Boost 5 showing \"undefined\""]
 	]},
 	{num:"𝕍1.5(b).1",date:"2023-12-24",name:"Christmas for Some",changes:[
-		["QOL","Research autobuyer no longer buys Study research in the two modes currently available"],
-		["TEXTFIX","Removed the input box in the research autobuyer (which had no effect)"]
+		[8,"QOL","Research autobuyer no longer buys Study research in the two modes currently available"],
+		[8,"TEXTFIX","Removed the input box in the research autobuyer (which had no effect)"]
 	]},
 	{num:"𝕍1.5(b)",date:"2023-12-23",name:"The Venerable Digital Battlefield 〜 Stat Mark Foughten Field",changes:[
-		["BALANCE","New pair of galaxy effects starting at 10 (not that anyone should reach this)"],
-		["CONTENT?","OMCCDV Grand Tour"],
-		["INTERFACE","Achievement tab and all references to specific achievements now shows the internal ID numbers of achievements"],
-		["INTERFACE","Wormhole reset button has been made darker"],
-		["INTERFACE","Blue chroma text has been made lighter"],
-		["INTERFACE","Spacing between automators has been increased"],
-		["META","Changelog entries are now right-shifted based on the magnitude of the update"],
-		["TEXTFIX","\"V's Achievements\" now correctly indicates that 500 yellow lumens are needed for a reward rather than 360"],
-		["TEXTFIX","Mastery 111 not having a × in the stat breakdown"],
-		["WHAT","Swapped the ∼ tildes in the names of 𝕍1.4 and 𝕍1.5(a) for 〜 wave dashes"]
+		[7,"BALANCE","New pair of galaxy effects starting at 10 (not that anyone should reach this)"],
+		[1,"CONTENT?","OMCCDV Grand Tour"],
+		[1,"INTERFACE","Achievement tab and all references to specific achievements now shows the internal ID numbers of achievements"],
+		[5,"INTERFACE","Wormhole reset button has been made darker"],
+		[5,"INTERFACE","Spacing between automators has been increased"],
+		[6,"INTERFACE","Blue chroma text has been made lighter"],
+		[1,"META","Changelog entries are now right-shifted based on the magnitude of the update"],
+		[7,"TEXTFIX","\"V's Achievements\" now correctly indicates that 500 yellow lumens are needed for a reward rather than 360"],
+		[8,"TEXTFIX","Mastery 111 not having a × in the stat breakdown"],
+		[1,"WHAT","Swapped the ∼ tildes in the names of 𝕍1.4 and 𝕍1.5(a) for 〜 wave dashes"]
 	]},
 	{num:"𝕍1.5(a).3",date:"2023-12-02",changes:[
-		["BUGFIX","Values less than "+format("2^-53")+" will no longer break the game (especially in Study of Studies: Temporal)"],
-		["BUGFIX<sup>2</sup>","The error popup now includes a stack trace so alemaninc will not need save exports as often"]
+		[[1,8],"BUGFIX","Values less than "+format("2^-53")+" will no longer break the game"+((highestTierUnlocked>=8)?" (especially in Study of Studies: Temporal)":"")],
+		[1,"BUGFIX<sup>2</sup>","The error popup now includes a stack trace so alemaninc will not need save exports as often"]
 	]},
 	{num:"𝕍1.5(a).2",date:"2023-12-02",changes:[
-		["BUGFIX","Saved values which become NaN will now automatically be reset to 0"],
-		["BUGFIX<sup>2</sup>","Added an option to export the save at the start of the session (before any errors have a chance to occur) and this is also shown whenever an error occurs"],
-		["CLARITY","\"Hidden Stars in Zero Dimensions\" now explicitly refers to effective dark stars"],
-		["CLARITY","Study of Studies will now mention in the tooltip if you need a higher level"],
-		["INTERFACE","RGB, CMY and WGB chroma are now all on separate lines on large displays"],
-		["QOL","Added an option for the research autobuyer to ignore grouped research (e.g. Chromatic, Photonic)"]
+		[1,"BUGFIX","Saved values which become NaN will now automatically be reset to 0"],
+		[1,"BUGFIX<sup>2</sup>","Added an option to export the save at the start of the session (before any errors have a chance to occur) and this is also shown whenever an error occurs"],
+		[8,"CLARITY","\"Hidden Stars in Zero Dimensions\" now explicitly refers to effective dark stars"],
+		[8,"CLARITY","Study of Studies will now mention in the tooltip if you need a higher level"],
+		[6,"INTERFACE","RGB, CMY and WGB chroma are now all on separate lines on large displays"],
+		[8,"QOL","Added an option for the research autobuyer to ignore grouped research (e.g. Chromatic, Photonic)"]
 	]},
 	{num:"𝕍1.5(a).1.1",date:"2023-11-12",changes:[
-		["WHAT","Added the missing 𝕍1.5(a).1 entry to the changelog"],
-		["WHAT","The footer no longer says 𝕍1.5(a)"]
+		[1,"WHAT","Added the missing 𝕍1.5(a).1 entry to the changelog"],
+		[1,"WHAT","The footer no longer says 𝕍1.5(a)"]
 	]},
 	{num:"𝕍1.5(a).1",date:"2023-11-12",changes:[
-		["BUGFIX","The game no longer crashes when Study of Studies level 3 is completed","the Celestial of Blob"]
+		[8,"BUGFIX","The game no longer crashes when Study of Studies level 3 is completed","the Celestial of Blob"]
 	]},
 	{num:"𝕍1.5(a)",date:"2023-11-11",name:"Flight of the Lazy Developer 〜 Featureless Prince",changes:[
-		["BUGFIX","The Reddit link in the footer has been updated to 𝕍1.4"],
-		["CONTENT","Added 12 more Tier 8 achievements, bringing the total to 23"],
-		["CONTENT","8 rows of Research"],
-		["CONTENT","1 new Study"],
-		["CONTENT","Study of Studies"],
-		["CONTENT","Prismal research"],
-		["CONTENT","Added three more anti-axis"],
-		["FLAIR","Prismatic \"Lumen Increaser\" upgrades have been renamed to \"Illumenati\""],
-		["HELP","Added how-to-play entries for luck, prismatic and antimatter"],
-		["INTERFACE","Luck upgrade names now show on two lines"],
-		["INTERFACE","Study I reward 2 now refers to percentage points"],
-		["INTERFACE","Study VI reward 3 and Study VIII reward 2 now mention that they are additive"],
-		["QOL","Added an autobuyer for free research (locked behind one of the new achievements)"]
+		[1,"BUGFIX","The Reddit link in the footer has been updated to 𝕍1.4"],
+		[8,"CONTENT","Added 12 more Tier 8 achievements, bringing the total to 23"],
+		[8,"CONTENT","8 rows of Research"],
+		[8,"CONTENT","1 new Study"],
+		[8,"CONTENT","Study of Studies"],
+		[8,"CONTENT","Prismal research"],
+		[8,"CONTENT","Added three more anti-axis"],
+		[8,"FLAIR","Prismatic \"Lumen Increaser\" upgrades have been renamed to \"Illumenati\""],
+		[8,"HELP","Added how-to-play entries for luck, prismatic and antimatter"],
+		[5,"INTERFACE","Study I reward 2 now refers to percentage points"],
+		[[7,8],"INTERFACE",(highestTierUnlocked>=8)?"Study VI reward 3 and Study VIII reward 2 now mention that they are additive":"Study VI reward 3 now mentions that it is additive"],
+		[8,"INTERFACE","Luck upgrade names now show on two lines"],
+		[8,"QOL","Added an autobuyer for free research (locked behind one of the new achievements)"]
 	]},
 	{num:"𝕍1.4.17",date:"2023-11-08",changes:[
-		["BUGFIX","The \"Gensokyo Millennium\" reward option should now actually be hidden"],
-		["BUGFIX","The Energy tab can now be opened once more"]
+		[4,"BUGFIX","The Energy tab can now be opened once more"],
+		[8,"BUGFIX","The \"Gensokyo Millennium\" reward option should now actually be hidden"]
 	]},
 	{num:"𝕍1.4.16",date:"2023-11-08",changes:[
-		["BALANCE","Light augmentation research requirements now scale much faster past 6"],
-		["BUGFIX","\"Buy max axis\" buttons showing negative numbers as the affordable quantity"],
-		["BUGFIX","Research 25-1 and beyond are no longer visible"],
-		["INTERFACE","Slightly changed the Tier 5 achievement text color"],
-		["INTERFACE","Buttons for buying luck runes are now 10px shorter"],
-		["INTERFACE","Prismatic upgrade buttons are now 2px apart"],
-		["INTERFACE","If energy second is very low, will now show more decimal precision (eg. 1.0000000038)"],
-		["QOL","Added the option to only respec one row of luck upgrades"]
+		[7,"BALANCE","Photonic research requirements now scale much faster past 6"],
+		[1,"BUGFIX","\"Buy max axis\" buttons showing negative numbers as the affordable quantity"],
+		[8,"BUGFIX","Research 25-1 and beyond are no longer visible"],
+		[4,"INTERFACE","If energy second is very low, will now show more decimal precision (eg. 1.0000000038)"],
+		[5,"INTERFACE","Slightly changed the Tier 5 achievement text color"],
+		[8,"INTERFACE","Buttons for buying luck runes are now 10px shorter"],
+		[8,"INTERFACE","Prismatic upgrade buttons are now 2px apart"],
+		[8,"QOL","Added the option to only respec one row of luck upgrades"]
 	]},
 	{num:"𝕍1.4.15.1",date:"2023-11-04",changes:[
-		["WHAT","Fixed the footer saying 𝕍1.4.14"],
-		["WHAT","Fixed the 𝕍1.4.15 changelog being completely broken"],
-		["WHAT","Fixed the 𝕍1.4.15 changelog saying 2023-10-27 as the date"]
+		[1,"WHAT","Fixed the footer saying 𝕍1.4.14"],
+		[1,"WHAT","Fixed the 𝕍1.4.15 changelog being completely broken"],
+		[1,"WHAT","Fixed the 𝕍1.4.15 changelog saying 2023-10-27 as the date"]
 	]},
 	{num:"𝕍1.4.15",date:"2023-11-04",changes:[
-		["BUGFIX","Light options no longer have a toggle for the reward of an unimplemented achievement (Gensokyo Millennium)"],
-		["BUGFIX","Forced study exit text now gives an indication of the cause"],
-		["BUGFIX","Hopefully fixed the \"forced Study IX exit\" bug caused when an experientia reset takes place at the goal requirement"],
-		["BUGFIX","The notorious time-reversal bug has been \"fixed\""],
-		["INTERFACE","At resource values above "+format("ee9")+" the header will stop displaying per-second gain if it is greater than or equal to ^0.9999 of the amount owned (from ^0.99)"],
-		["INTERFACE","Changed the icons of research 5-14 and 13-11"],
-		["INTERFACE","Fully completed studies will now continue to show the goal of the fourth level"],
-		["QOL","\"Wormhole reset\" hotkey no longer exits a Study if it cannot be completed"],
-		["QOL","Added hotkeys to force stardust/wormhole reset"]
+		[1,"BUGFIX","The notorious time-reversal bug has been \"fixed\""],
+		[5,"BUGFIX","Forced study exit text now gives an indication of the cause"],
+		[6,"BUGFIX","Light options no longer have a toggle for the reward of an unimplemented achievement (Gensokyo Millennium)"],
+		[8,"BUGFIX","Hopefully fixed the \"forced Study IX exit\" bug caused when an experientia reset takes place at the goal requirement"],
+		[7,"INTERFACE","At resource values above "+format("ee9")+" the header will stop displaying per-second gain if it is greater than or equal to ^0.9999 of the amount owned (from ^0.99)"],
+		[[5,7],"INTERFACE",(highestTierUnlocked>=7)?"Changed the icons of research 5-14 and 13-11":"Changed the icon of research 5-14"],
+		[5,"INTERFACE","Fully completed studies will now continue to show the goal of the fourth level"],
+		[[2,5],"QOL","Added hotkeys to force stardust"+((highestTierUnlocked>=5)?"/wormhole":"")+" reset"],
+		[5,"QOL","\"Wormhole reset\" hotkey no longer exits a Study if it cannot be completed"]
 	]},
 	{num:"𝕍1.4.14",date:"2023-10-27",changes:[
-		["BUGFIX","Generating primary chroma colors will no longer generate everything else at ¹⁄₄₆ efficiency"]
+		[6,"BUGFIX","Generating primary chroma colors will no longer generate everything else at ¹⁄₄₆ efficiency"]
 	]},
 	{num:"𝕍1.4.13",date:"2023-10-26",changes:[
-		["BUGFIX","Ascetic research bulk buy should now work again"]
+		[5,"BUGFIX","Ascetic research bulk buy should now work again"]
 	]},
 	{num:"𝕍1.4.12",date:"2023-10-26",changes:[
-		["BUGFIX","\"Last 10 runs\" now shows the correct builds"],
-		["BUGFIX?","Fixed a weird issue with research 3-6 which may or may not exist"],
-		["INTERFACE","If prismatic is unlocked, the light subtab will now show the chroma cost multiplier."],
-		["UNINTENDED BALANCE","Generation of all chromas at "+format("e-15")+" rate is now tied to \"Softcap-colored lights\""]
+		[2,"BUGFIX","\"Last 10 runs\" now shows the correct builds"],
+		[8,"BUGFIX?","Fixed a weird issue with research 3-6 which may or may not exist"],
+		[8,"INTERFACE","If prismatic is unlocked, the light subtab will now show the chroma cost multiplier."],
+		[[6,7],"UNINTENDED BALANCE","Generation of all chromas at "+format("e-15")+" rate is now tied to "+((highestTierUnlocked>=7)?"'Softcap-colored lights'":"a Tier 7 unlock")]
 	]},
 	{num:"𝕍1.4.11",date:"2023-10-23",name:"Exodus of the Endgame Dimensions",changes:[
-		["BALANCE","Anti-W axis effect softcaps past "+format("e100")],
-		["INTERFACE","Shiny secret achievements are now cyan instead of yellow"]
+		[8,"BALANCE","Anti-W axis effect softcaps past "+format("e100")],
+		[1,"INTERFACE","Shiny secret achievements are now cyan instead of yellow"]
 	]},
 	{num:"𝕍1.4.10",date:"2023-10-21",changes:[
-		["BETA","Research 21-8 has been hidden"],
-		["BUGFIX","\"If lacking component chroma, halt generation\" has been fixed"],
-		["BUGFIX","Permanent research which is not visible will no longer glow"],
-		["INTERFACE","The stardust text in the base gain of dark matter calculation is now the correct color below "+format("1e12")],
-		["WHAT","Fixed the 𝕍1.4.9 changelog saying 2023-10-16"]
+		[8,"BETA","Research 21-8 has been hidden"],
+		[6,"BUGFIX","\"If lacking component chroma, halt generation\" has been fixed"],
+		[8,"BUGFIX","Permanent research which is not visible will no longer glow"],
+		[3,"INTERFACE","The stardust text in the base gain of dark matter calculation is now the correct color below "+format("1e12")],
+		[1,"WHAT","Fixed the 𝕍1.4.9 changelog saying 2023-10-16"]
 	]},
 	{num:"𝕍1.4.9",date:"2023-10-17",name:"Study IV: alemaninc's Mental Decay",changes:[
-		["BUGFIX","'Chromatic Overdrive'"]
+		[8,"BUGFIX","'Chromatic Overdrive'"]
 	]},
 	{num:"𝕍1.4.8",date:"2023-10-16",changes:[
-		["BUGFIX","When running out of a component chroma with 'generate limiting component' mode active, will now properly generate the limiting component instead of chroma jittering at a very small value"],
-		["BUGFIX","When generating secondary chroma, colors not equal to 0 will no longer become an infinitesimally small value"]
+		[6,"BUGFIX","When running out of a component chroma with 'generate limiting component' mode active, will now properly generate the limiting component instead of chroma jittering at a very small value"],
+		[6,"BUGFIX","When generating secondary chroma, colors not equal to 0 will no longer become an infinitesimally small value"]
 	]},
 	{num:"𝕍1.4.7",date:"2023-10-16",changes:[
-		["BUGFIX","Hovering over Spatial Synergism research no longer breaks the game"],
-		["WHAT","Fixed the footer saying 𝕍1.4.5.1"]
+		[8,"BUGFIX","Hovering over Spatial Synergism research no longer breaks the game"],
+		[1,"WHAT","Fixed the footer saying 𝕍1.4.5.1"]
 	]},
 	{num:"𝕍1.4.6",date:"2023-10-16",name:"Overdriven to Insanity",changes:[
-		["BALANCE","Research 21-8 is now properly impossible"],
-		["BUGFIX","Did something to 'Chromatic Overdrive'"],
-		["BUGFIX","Stars and stardust upgrades can now be bought if you have stardust equal to the cost"],
-		["BUGFIX","Dark stars not showing in the dark matter gain breakdown if you have less than "+format("e12")+" stardust"]
+		[8,"BALANCE","Research 21-8 is now properly impossible"],
+		[2,"BUGFIX","Stars and stardust upgrades can now be bought if you have stardust equal to the cost"],
+		[3,"BUGFIX","Dark stars not showing in the dark matter gain breakdown if you have less than "+format("e12")+" stardust"],
+		[8,"BUGFIX","Did something to 'Chromatic Overdrive'"]
 	]},
 	{num:"𝕍1.4.5.1",date:"2023-10-16",changes:[
-		["BUGFIX","Actually \"fixed\" 'Chromatic Overdrive'"]
+		[8,"BUGFIX","Actually \"fixed\" 'Chromatic Overdrive'"]
 	]},
 	{num:"𝕍1.4.5",date:"2023-10-16",changes:[
-		["BUGFIX","'Chromatic Overdrive' freezing the game"],
-		["WHAT","Footer saying 𝕍1.4.3"]
+		[8,"BUGFIX","'Chromatic Overdrive' freezing the game"],
+		[1,"WHAT","Footer saying 𝕍1.4.3"]
 	]},
 	{num:"𝕍1.4.4",date:"2023-10-15",name:"Ghost of a Discovery",changes:[
-		["BUGFIX","Research 26-14 is no longer broken"],
-		["INTERFACE","White, black and gray chroma containers now slightly differ coloristically"],
-		["QOL","Study IX time per reset has been reduced to 9 seconds"]
+		[8,"BUGFIX","Research 26-14 is no longer broken"],
+		[[6,8],"INTERFACE",((highestTierUnlocked>=8)?"White, black and gray":"White and black")+" chroma containers now slightly differ coloristically"],
+		[8,"QOL","Study IX time per reset has been reduced to 9 seconds"]
 	]},
 	{num:"𝕍1.4.3",date:"2023-10-15",changes:[
-		["BUGFIX","Mastery rows can be unassigned once more"],
-		["BUGFIX","Saves can be correctly wiped once more"],
+		[1,"BUGFIX","Mastery rows can be unassigned once more"],
+		[1,"BUGFIX","Saves can be correctly wiped once more"],
 	]},
 	{num:"𝕍1.4.2",date:"2023-10-15",changes:[
-		["BUGFIX","Research can now be bought once more"],
+		[5,"BUGFIX","Research can now be bought once more"],
 	]},
 	{num:"𝕍1.4.1",date:"2023-10-15",changes:[
-		["BUGFIX","The changelog should now open once more"],
+		[1,"BUGFIX","The changelog should now open once more"],
 	]},
 	{num:"𝕍1.4",date:"2023-10-15",name:"Age Nobly, xhwzwka-Red Cherry Wine 〜 Border of OMCCDV",changes:[
-		["BALANCE","'Old age' achievement reward has been buffed"],
-		["BALANCE","The 'Mind-bending Curvature' achievements are easier, and the reward of III is stronger"],
-		["BALANCE","The magenta lumen softcap has been significantly pushed back"],
-		["BALANCE","The first dark star effect now works when the base gain is less than 1 by multiplying it instead"],
-		["BALANCE","Study research no longer count as temporary research for Pseudoscience (and several other purposes)"],
-		["BUGFIX","Showing the mastery build of a previous prestige will no longer show rows without an active mastery as, for example, \"10\" for row 1"],
-		["BUGFIX","Stardust and Wormhole reset now correctly reset mastery power to 0 rather than 1"],
-		["BUGFIX?","'Buy all previous research' will no longer buy Energy and Stardust research if used at or beyond 16-4 or 16-12"],
-		["CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"],
-		["CONTENT","Added Tier 8 achievements"],
-		["CONTENT","Research is now extended to 25 rows and 9 studies"],
-		["CONTENT","Added Luck Shards"],
-		["CONTENT","Added Prismatic"],
-		["CONTENT","Added Antimatter"],
-		["INTERFACE","Researches which boost by a quantity raised to a power (such as 8-2) now once again display, for example,\"tickspeed<sup>1.1</sup>\" instead of \"tickspeed ^ 1.1\""],
-		["INTERFACE","Changed the tooltip of the \"Destroy galaxies\" button to \"Destroy a galaxy\""],
-		["INTERFACE","The Modifier column of the stat breakdown is now wider relative to the others"],
-		["INTERFACE","\"Last 10\" tables in previous prestiges now have headers"],
-		["INTERFACE","Generated resources no longer show per-scond gain above "+format("ee9")],
-		["QOL","The reward of 'Superpowered' has been changed"],
-		["QOL","Actions triggered by mouseover are now triggered by click too"],
-		["WHAT","Added the missing MISCELLANEOUS entry to the 𝕍1.3.30 changelog"],
+		[2,"BUGFIX","Showing the mastery build of a previous prestige will no longer show rows without an active mastery as, for example, \"10\" for row 1"],
+		[[2,5],"BUGFIX",((highestTierUnlocked>=5)?"Stardust and Wormhole reset now correctly reset":"Stardust reset now correctly resets")+" mastery power to 0 rather than 1"],
+		[3,"BALANCE","The first dark star effect now works when the base gain is less than 1 by multiplying it instead"],
+		[6,"BALANCE","Study research no longer count as temporary research for 'Pseudoscience' (and several other purposes)"],
+		[7,"BALANCE","'Old age' achievement reward has been buffed"],
+		[7,"BALANCE","The 'Mind-bending Curvature' achievements are easier, and the reward of III is stronger"],
+		[7,"BALANCE","The magenta lumen softcap has been significantly pushed back"],
+		[7,"BUGFIX?","'Buy all previous research' will no longer buy Energy and Stardust research if used at or beyond 16-4 or 16-12"],
+		[7,"CONTENT","Added 4 new Tier 7 achievements, bringing the total to 19"],
+		[7,"CONTENT","Added Tier 8 achievements"],
+		[7,"CONTENT","Research is now extended to 25 rows and 9 studies"],
+		[8,"CONTENT","Added Luck Shards"],
+		[8,"CONTENT","Added Prismatic"],
+		[8,"CONTENT","Added Antimatter"],
+		[1,"INTERFACE","Researches which boost by a quantity raised to a power (such as 8-2) now once again display, for example,\"tickspeed<sup>1.1</sup>\" instead of \"tickspeed ^ 1.1\""],
+		[1,"INTERFACE","The Modifier column of the stat breakdown is now wider relative to the others"],
+		[2,"INTERFACE","\"Last 10\" tables in previous prestiges now have headers"],
+		[7,"INTERFACE","Changed the tooltip of the \"Destroy galaxies\" button to \"Destroy a galaxy\""],
+		[7,"INTERFACE","Generated resources no longer show per-second gain above "+format("ee9")],
+		[1,"QOL","Actions triggered by mouseover are now triggered by click too"],
+		[3,"QOL","The reward of 'Superpowered' has been changed"],
+		[1,"WHAT","Added the missing MISCELLANEOUS entry to the 𝕍1.3.30 changelog"],
 	]},
 	{num:"𝕍1.3.30",date:"2023-09-30",changes:[
-		["BUGFIX","Fixed research 14-2 having no effect"],
-		["BUGFIX","Chroma generation will no longer turn off randomly for no (visible) reason"],
-		["INTERFACE","Dark star button is now taller and the cost formula has an additional line break"],
-		["INTERFACE","\"You have completed all Tier <i>x</i> achievements!\" notification is now the correct color"],
-		["MISCELLANEOUS","'Destroy galaxies' button now destroys 1 galaxy per click rather than showing a popup"]
+		[6,"BUGFIX","Chroma generation will no longer turn off randomly for no (visible) reason"],
+		[7,"BUGFIX","Fixed research 14-2 having no effect"],
+		[1,"INTERFACE","\"You have completed all Tier <i>x</i> achievements!\" notification is now the correct color"],
+		[3,"INTERFACE","Dark star button is now taller and the cost formula has an additional line break"],
+		[7,"MISCELLANEOUS","'Destroy galaxies' button now destroys 1 galaxy per click rather than showing a popup"]
 	]},
 	{num:"𝕍1.3.29",date:"2023-09-21",changes:[
-		["BUGFIX","'Hyperspeed IV' giving 100% less effect than it should"],
-		["BUGFIX","Antimatter-related sections showing in the stat breakdown"],
-		["QOL","Confirmation for forfeiting 'Iron Will' will now only show up if you have the first tier of it unlocked, and should no longer be visible to people who can't use it"]
+		[1,"BUGFIX","Antimatter-related sections showing in the stat breakdown"],
+		[5,"BUGFIX","'Hyperspeed IV' giving 100% less effect than it should"],
+		[5,"QOL","Confirmation for forfeiting 'Iron Will' will now only show up if you have the first tier of it unlocked, and should no longer be visible to people who can't use it"]
 	]},
 	{num:"𝕍1.3.28",date:"2023-09-20",changes:[
-		["BALANCE","'"+img("blobwave","Blob wave",32)+"' secret achievement is now Rare (from Common)"],
-		["BALANCE","Galaxies have a new pair of effects at 6 or above"],
-		["BUGFIX","Stardust exotic matter requirement no longer displays NaN in Study IV above 54 stardust resets"],
-		["BUGFIX","Stardust Boost 11 now correctly shows the percentage rather than the multiplier as a percentage (eg. 25% showed as 1.25%)"],
-		["BUGFIX","Hopefully fixed a bizarre bug which only one player seems to have"],
-		["INTERFACE","Moved the tabs around. Tab hotkeys have been changed to account for this."],
-		["INTERFACE","Stardust and HR gain stat breakdowns are much uglier. Even alemaninc finds this completely unusable now but it was necessary for the above BUGFIX."],
-		["INTERFACE","The blue chroma container has increased contrast (again)"],
-		["INTERFACE","'Hyperspeed IV' reward description has been altered"],
-		["INTERFACE","Normal and study research titles are now the same color as their button borders"],
-		["INTERFACE","'Partially completed' achievement text is now clearer"],
-		["QOL","The game now remembers what tabs were open on reload"],
+		[1,"BALANCE","'"+img("blobwave","Blob wave",32)+"' secret achievement is now Rare (from Common)"],
+		[7,"BALANCE","Galaxies have a new pair of effects at 6 or above"],
+		[5,"BUGFIX","Stardust exotic matter requirement no longer displays NaN in Study IV above 54 stardust resets"],
+		[5,"BUGFIX","Stardust Boost 11 now correctly shows the percentage rather than the multiplier as a percentage (eg. 25% showed as 1.25%)"],
+		[1,"BUGFIX","Hopefully fixed a bizarre bug which only one player seems to have"],
+		[2,"INTERFACE","Moved the tabs around. Tab hotkeys have been changed to account for this."],
+		[[2,5],"INTERFACE",((highestTierUnlocked>=5)?"Stardust and HR gain stat breakdowns are":"Stardust gain stat breakdown is")+" much uglier. Even alemaninc finds this completely unusable now but it was necessary for the above BUGFIX."],
+		[5,"INTERFACE","'Hyperspeed IV' reward description has been altered"],
+		[5,"INTERFACE","Normal and study research titles are now the same color as their button borders"],
+		[5,"INTERFACE","'Partially completed' achievement text is now clearer"],
+		[6,"INTERFACE","The blue chroma container has increased contrast (again)"],
+		[1,"QOL","The game now remembers what tabs were open on reload"],
 	]},
 	{num:"𝕍1.3.27",date:"2023-09-04",name:"7625597484987",changes:[
-		["BALANCE","Being in a Study with a higher level than the maximum number of completions will now forcefully remove the player"],
-		["BUGFIX","Study V level 3 now correctly requires "+format("ee100")+" knowledge rather than "+format("e100")],
-		["WHAT","The v1β.4 entry is now correctly bold and does not have a random 'b>' before it. Speaking of that entry, did I mention that that announcement became invalid the day after it was posted?"]
+		[5,"BALANCE","Being in a Study with a higher level than the maximum number of completions will now forcefully remove the player"],
+		[6,"BUGFIX","Study V level 3 now correctly requires "+format("ee100")+" knowledge rather than "+format("e100")],
+		[1,"WHAT","The v1β.4 entry is now correctly bold and does not have a random 'b>' before it. Speaking of that entry, did I mention that that announcement became invalid the day after it was posted?"]
 	]},
 	{num:"𝕍1.3.26.1",date:"2023-09-03",changes:[
-		["WHAT","Fixed the footer still saying 𝕍1.3.25"]
+		[1,"WHAT","Fixed the footer still saying 𝕍1.3.25"]
 	]},
 	{num:"𝕍1.3.26",date:"2023-09-03",changes:[
-		["BUGFIX","Gaining a lumen no longer breaks the game. Why was this even released to production, you ask? NEXT CHANGE"],
-		["WHAT","Fixed the 𝕍1.3.25 entry having the date 2023-09-01"]
+		[6,"BUGFIX","Gaining a lumen no longer breaks the game. Why was this even released to production, you ask? NEXT CHANGE"],
+		[1,"WHAT","Fixed the 𝕍1.3.25 entry having the date 2023-09-01"]
 	]},
 	{num:"𝕍1.3.25",date:"2023-09-02",name:"<span style=\"color:#00ffff\">Shiny</span>",changes:[
-		["BALANCE","Study VI can no longer be entered if you have 2 completions"],
-		["BUGFIX","Running out of component chroma will no longer switch to a color which is not a component of the previous one if it is at 0"],
-		["BUGFIX","'You do know how these work, right?' is no longer impossible with permanent research"],
-		["INTERFACE","The Discord link is now <span style=\"color:#00ffff\">shiny</span>!"],
-		["TEXTFIX","Fixed research 13-5 erroneously referring to 'yellow light'"],
-		["TEXTFIX","Added a period at the end of the Study II description"]
+		[6,"BALANCE","Study VI can no longer be entered if you have 2 completions"],
+		[5,"BUGFIX","'You do know how these work, right?' is no longer impossible with permanent research"],
+		[6,"BUGFIX","Running out of component chroma will no longer switch to a color which is not a component of the previous one if it is at 0"],
+		[1,"INTERFACE","The Discord link is now <span style=\"color:#00ffff\">shiny</span>!"],
+		[5,"TEXTFIX","Added a period at the end of the Study II description"],
+		[7,"TEXTFIX","Fixed research 13-5 erroneously referring to 'yellow light'"]
 	]},
 	{num:"𝕍1.3.24",date:"2023-09-01",changes:[
-		["BUGFIX","Saving research to a loadout will now correctly show a 'Successfully saved!' notification rather than 'Successfully loaded!'"],
-		["BUGFIX","Red theme turning the background white"],
-		["BUGFIX","Fixed research 8-14 subtracting 4 stars from the effects of 'Arquillian Galaxy' and 'Double Galaxy' (buff!)"],
-		["BUGFIX","Fixed research 13-1, 13-2, 13-14, 13-15, 14-1, 14-2, 14-14, 14-15, 15-1, 15-2, 15-14, 15-15, 16-1, 16-2, 16-14 and 16-15 having no effect. You've got to wonder why alemaninc persists despite things like this happening every week..."],
-		["INTERFACE","Studies which are not possible to complete 4 times in the current release (V and VI) now state a lower number of maximum completions"],
-		["INTERFACE","The 'OMCCDV II' effect no longer shows 15 digits of precision in the stat breakdown"],
-		["INTERFACE","The upcoming Wormhole Milestone now shows as a darkened box instead of a text at the bottom of the tab"],
-		["INTERFACE","The amount of effective dark stars is now shown inside the button rather than next to the purchased text"],
-		["INTERFACE","Achievements which have milestones now show as blue and 'Partially completed' if all milestones are not reached"],
-		["INTERFACE","Research buy conditions with multiple parts should now be color coded more clearly"],
-		["QOL","Added a button which shows how many Discoveries you can save by respeccing and rebuying research"]
+		[1,"BUGFIX","Red theme turning the background white"],
+		[5,"BUGFIX","Saving research to a loadout will now correctly show a 'Successfully saved!' notification rather than 'Successfully loaded!'"],
+		[5,"BUGFIX","Fixed research 8-14 subtracting 4 stars from the effects of 'Arquillian Galaxy' and 'Double Galaxy' (buff!)"],
+		[7,"BUGFIX","Fixed research 13-1, 13-2, 13-14, 13-15, 14-1, 14-2, 14-14, 14-15, 15-1, 15-2, 15-14, 15-15, 16-1, 16-2, 16-14 and 16-15 having no effect.<br>You've got to wonder why alemaninc persists despite things like this happening every week..."],
+		[5,"INTERFACE","The upcoming Wormhole Milestone now shows as a darkened box instead of a text at the bottom of the tab"],
+		[5,"INTERFACE","The amount of effective dark stars is now shown inside the button rather than next to the purchased text"],
+		[5,"INTERFACE","Achievements which have milestones now show as blue and 'Partially completed' if all milestones are not reached"],
+		[5,"INTERFACE","Research buy conditions with multiple parts should now be color coded more clearly"],
+		[7,"INTERFACE","Studies which are not possible to complete 4 times in the current release (V and VI) now state a lower number of maximum completions"],
+		[7,"INTERFACE","The 'OMCCDV II' effect no longer shows 15 digits of precision in the stat breakdown"],
+		[6,"QOL","Added a button which shows how many Discoveries you can save by respeccing and rebuying research"]
 	]},
 	{num:"𝕍1.3.23",date:"2023-08-31",name:"Breakdown Broken Down",changes:[
-		["BUGFIX","Removed 'Effective axis' from the stat breakdown"],
-		["BUGFIX","Secret achievements linked to promotion codes no longer mention save imports"],
-		["BUGFIX","Study research will no longer show the name of the following study as their description. On an unrelated note, Study VII has been removed."],
-		["INTERFACE","Added pretty colors to the stat breakdown"],
-		["INTERFACE","The cyan light effect now shows <i>two</i> extra digits of precision beyond 100%"],
-		["WHAT","Added the missing BALANCE entry to the 𝕍1.3.22 entry"]
+		[1,"BUGFIX","Removed 'Effective axis' from the stat breakdown"],
+		[1,"BUGFIX","Secret achievements linked to promotion codes no longer mention save imports"],
+		[5,"BUGFIX","Study research will no longer show the name of the following study as their description. On an unrelated note, Study VII has been removed."],
+		[1,"INTERFACE","Added pretty colors to the stat breakdown"],
+		[7,"INTERFACE","The cyan light effect now shows <i>two</i> extra digits of precision beyond 100%"],
+		[1,"WHAT","Added the missing BALANCE entry to the 𝕍1.3.22 entry"]
 	]},
 	{num:"𝕍1.3.22",date:"2023-08-30",changes:[
-		["BALANCE","Researches 15-5 and 15-11 are now compounding with each other rather than additive"],
-		["BUGFIX","The 'Five-finger discount' reward description now correctly references dark Y axis rather than normal"],
-		["BUGFIX","The 'Twosday' reward is now correctly given by 'Twosday' and not 'Duplicated III'"],
-		["BUGFIX","'Big Crunch' is now properly given when buying a single dark X axis"],
-		["BUGFIX","Fixed promotion codes"],
-		["BUGFIX","Hopefully fixed research loadouts once and for all. But don't get your hopes up..."],
-		["EVIL","Wormhole reset will no longer add stardust upgrades if the axis autobuyer or 9 rows of Masteries are not unlocked. However, Study IV and achievements such as 'Rationing' will now act as if the player has these levels, even if they don't. Confusion ensues."],
-		["INTERFACE","The research tree will once again show the connections to unknown research"],
-		["INTERFACE","Stat breakdown sections relating to dark axis have been condensed into the respective sections for normal axis"],
-		["QOL","On running out of a component chroma, the game will now automatically generate the limiting component instead of halting chroma generation"],
-		["QOL","The 'Mind-bending Curvature' achievements now show the estimated time taken to get them (the real time will be very slightly lower due to tickspeed and Mastery 101 continuing to increase)"],
-		["QOL","If 'Buy all previous research' is disabled, clicking a research button will still attempt to buy previous research, but will spend as few Discoveries as possible."]
+		[7,"BALANCE","Researches 15-5 and 15-11 are now compounding with each other rather than additive"],
+		[1,"BUGFIX","Fixed promotion codes"],
+		[5,"BUGFIX","'Big Crunch' is now properly given when buying a single dark X axis"],
+		[5,"BUGFIX","Hopefully fixed research loadouts once and for all. But don't get your hopes up..."],
+		[6,"BUGFIX","The 'Twosday' reward is now correctly given by 'Twosday' and not 'Duplicated III'"],
+		[7,"BUGFIX","The 'Five-finger discount' reward description now correctly references dark Y axis rather than normal"],
+		[5,"EVIL","Wormhole reset will no longer add stardust upgrades if the axis autobuyer or 9 rows of Masteries are not unlocked. However, Study IV and achievements such as 'Rationing' will now act as if the player has these levels, even if they don't. Confusion ensues."],
+		[3,"INTERFACE","Stat breakdown sections relating to dark axis have been condensed into the respective sections for normal axis"],
+		[5,"INTERFACE","The research tree will once again show the connections to unknown research"],
+		[5,"QOL","If 'Buy all previous research' is disabled, clicking a research button will still attempt to buy previous research, but will spend as few Discoveries as possible."],
+		[6,"QOL","On running out of a component chroma, the game will now automatically generate the limiting component instead of halting chroma generation"],
+		[7,"QOL","The 'Mind-bending Curvature' achievements now show the estimated time taken to get them (the real time will be very slightly lower due to tickspeed and Mastery 101 continuing to increase)"]
 	]},
 	{num:"𝕍1.3.21",date:"2023-08-27",changes:[
-		["BUGFIX","Chroma gain is no longer broken, and an erroneous 'Empowered Dark W axis' entry no longer shows up"]
+		[6,"BUGFIX","Chroma gain is no longer broken, and an erroneous 'Empowered Dark W axis' entry no longer shows up"]
 	]},
 	{num:"𝕍1.3.20",date:"2023-08-27",changes:[
-		["BUGFIX","Empowered Y axis no longer show in the stat breakdown if they're not unlocked"],
-		["BUGFIX","A free Discovery is no longer given on the first Wormhole"],
-		["BUGFIX","Iron Will IV milestones no longer require 1 more dark axis than what they say"],
-		["INTERFACE","Light research are renamed to Chromatic, and Light Augmentation to Photonic"],
-		["INTERFACE","The chroma tab has brighter text"]
+		[5,"BUGFIX","Empowered Y axis no longer show in the stat breakdown if they're not unlocked"],
+		[5,"BUGFIX","A free Discovery is no longer given on the first Wormhole"],
+		[5,"BUGFIX","Iron Will IV milestones no longer require 1 more dark axis than what they say"],
+		[[6,7],"INTERFACE","Light research are renamed to Chromatic"+((highestTierUnlocked>=7)?", and Light Augmentation to Photonic":"")],
+		[6,"INTERFACE","The chroma tab has brighter text"]
 	]},
 	{num:"𝕍1.3.19",date:"2023-08-27",changes:[
-		["BUGFIX","Icons for stars 81 and 83 are now correct on the modern layout"],
-		["BUGFIX","It is once again possible to unlock Light and Galaxies"]
+		[4,"BUGFIX","Icons for stars 81 and 83 are now correct on the modern layout"],
+		[6,"BUGFIX","It is once again possible to unlock Light and Galaxies"]
 	]},
 	{num:"𝕍1.3.18",date:"2023-08-27",changes:[
-		["BUGFIX","News tickers which change the background now work when using the Wormhole theme"],
-		["BUGFIX","It is now properly possible to assign hotkeys with the Shift key"],
-		["BUGFIX","'There are Four Lights' achievement not showing yellow light effect"],
-		["BUGFIX","Star allocator will no longer buy stars which don't exist"],
-		["FLAIR","Added an option to see previous story entries in Options"],
-		["QOL","Added galaxy configuration options"],
-		["WHAT","Fixed the 𝕍1.3.17 changelog having no name"]
+		[1,"BUGFIX","News tickers which change the background now work when using the Wormhole theme"],
+		[1,"BUGFIX","It is now properly possible to assign hotkeys with the Shift key"],
+		[5,"BUGFIX","Star allocator will no longer buy stars which don't exist"],
+		[6,"BUGFIX","'There are Four Lights' achievement not showing yellow light effect"],
+		[2,"FLAIR","Added an option to see previous story entries in Options"],
+		[7,"QOL","Added galaxy configuration options"],
+		[1,"WHAT","Fixed the 𝕍1.3.17 changelog having no name"]
 	]},	
 	{num:"𝕍1.3.17",date:"2023-08-26",changes:[
-		["BUGFIX","Research 2-14 showing the wrong formula"],
-		["BUGFIX","An erroneous 'gray chroma' container being visible between white and black"]
+		[5,"BUGFIX","Research 2-14 showing the wrong formula"],
+		[6,"BUGFIX","An erroneous 'gray chroma' container being visible between white and black"]
 	]},
 	{num:"𝕍1.3.16",date:"2023-08-26",name:"Power of CONTRIBUTE",changes:[
-		["BALANCE","The red lumen softcap past 100 uses a stronger formula: anyone that hasn't cheated probably won't notice the difference, but it now approaches the cap of 200% much, much slower"],
-		["BALANCE","Research 11-8 now requires 10-5 to be bought"],
-		["BUGFIX","It is no longer possible to get \"Make [type] Axis effect go above [number]×\" without having the respective axis unlocked"],
-		["BUGFIX","'Buy Max Axis' button showing the wrong number if you can afford axis which are not unlocked yet"],
-		["BUGFIX","Row 8 Mastery formulas no longer have 2 multiplication signs (or a multiplication and division sign)"],
-		["BUGFIX","Hawking radiation base gain apex exponent breakdown not showing Stardust Boost 12"],
-		["BUGFIX","Mastery 41 and 43 formulas now account for their boost percentages"],
-		["FLAIR","Story entries have been edited, color has been added to the late-game ones and their titles are no longer underlined and have less empty space around them"],
-		["INTERFACE","Formulas for the knowledge effect and next Discovery requirement have been added"],
-		["INTERFACE","Standard notation now shows progressively less precision past "+format("e3e5")],
-		["INTERFACE","Fixed an issue with the Wormhole theme"],
-		["INTERFACE","Overclock being active now shows on the header"],
-		["INTERFACE","Stardust Boost 7 now shows the softcap formula (past "+format("1e6")+" seconds ≈ 11.5 days) in the stat breakdown"],
-		["INTERFACE","Dynamic base values of stats in the stat breakdown should be easier to understand"],
-		["META","People who have contributed code to the game (at the moment only Hedrauta and IRAD) now have their contributions color-coded within the changelog"],
-		["QOL","Added the option to freeze the game"],
-		["QOL","Added hotkeys for overclock and game freeze"]
+		[6,"BALANCE","The red lumen softcap past 100 uses a stronger formula: anyone that hasn't cheated probably won't notice the difference, but it now approaches the cap of 200% much, much slower"],
+		[6,"BALANCE","Research 11-8 now requires 10-5 to be bought"],
+		[1,"BUGFIX","It is no longer possible to get \"Make [type] Axis effect go above [number]×\" without having the respective axis unlocked"],
+		[1,"BUGFIX","'Buy Max Axis' button showing the wrong number if you can afford axis which are not unlocked yet"],
+		[1,"BUGFIX","Mastery 41 and 43 formulas now account for their boost percentages"],
+		[4,"BUGFIX","Row 8 Mastery formulas no longer have 2 multiplication signs (or a multiplication and division sign)"],
+		[5,"BUGFIX","Hawking radiation base gain apex exponent breakdown not showing Stardust Boost 12"],
+		[2,"FLAIR","Story entries have been edited, color has been added to the late-game ones and their titles are no longer underlined and have less empty space around them"],
+		[1,"INTERFACE","Standard notation now shows progressively less precision past "+format("e3e5")],
+		[1,"INTERFACE","Fixed an issue with the Wormhole theme"],
+		[1,"INTERFACE","Overclock being active now shows on the header"],
+		[1,"INTERFACE","Dynamic base values of stats in the stat breakdown should be easier to understand"],
+		[4,"INTERFACE","Stardust Boost 7 now shows the softcap formula (past "+format("1e6")+" seconds ≈ 11.5 days) in the stat breakdown"],
+		[5,"INTERFACE","Formulas for the knowledge effect and next Discovery requirement have been added"],
+		[1,"META","People who have contributed code to the game (at the moment only Hedrauta and IRAD) now have their contributions color-coded within the changelog"],
+		[1,"QOL","Added the option to freeze the game"],
+		[1,"QOL","Added hotkeys for overclock and game freeze"]
 	]},
 	{num:"𝕍1.3.15.1",date:"2023-08-26",name:"U.N. Owen Was Pull Request?",changes:[
-		["WHAT","Fixed the 𝕍1.3.15 changelog being undefined","IRAD"]
+		[1,"WHAT","Fixed the 𝕍1.3.15 changelog being undefined","IRAD"]
 	]},
 	{num:"𝕍1.3.15",date:"2023-08-23",changes:[
-		["BUGFIX","'Enneract' is now possible again"],
-		["INTERFACE","The Study III tooltip now shows the exponent that energy effects are raised to"]
+		[5,"BUGFIX","'Enneract' is now possible again"],
+		[6,"INTERFACE","The Study III tooltip now shows the exponent that energy effects are raised to"]
 	]},
 	{num:"𝕍1.3.14",date:"2023-08-23",changes:[
-		["BUGFIX","Inputting the star allocator build not lighting up star buttons on click"]
+		[5,"BUGFIX","Inputting the star allocator build not lighting up star buttons on click"]
 	]},
 	{num:"𝕍1.3.13",date:"2023-08-23",name:"Get Lucky",changes:[
-		["INTERFACE","Cyan light effect shows an additional digit of precision past 50%"],
-		["INTERFACE","Yellow lumens no longer automatically switch to 'from zero' display past 200, instead this option is now set manually and also affects the other colors"]
+		[6,"INTERFACE","Cyan light effect shows an additional digit of precision past 50%"],
+		[6,"INTERFACE","Yellow lumens no longer automatically switch to 'from zero' display past 200, instead this option is now set manually and also affects the other colors"]
 	]},
 	{num:"𝕍1.3.12",date:"2023-08-22",changes:[
-		["BUGFIX","The effect of tickspeed on chroma being labeled as 'undefined' in the stat breakdown"],
-		["BUGFIX","The formula of galaxy boost 3 now properly shows the percentage rather than the multiplier"],
-		["BUGFIX","'Mind-bending Curvature III' now correctly boosts Mastery 103 instead of 104"]
+		[6,"BUGFIX","The effect of tickspeed on chroma being labeled as 'undefined' in the stat breakdown"],
+		[7,"BUGFIX","The formula of galaxy boost 3 now properly shows the percentage rather than the multiplier"],
+		[7,"BUGFIX","'Mind-bending Curvature III' now correctly boosts Mastery 103 instead of 104"]
 	]},
 	{num:"𝕍1.3.11.0.1",date:"2023-08-22",changes:[
-		["BALANCE","Overclock is no longer disabled in Study III"],
-		["BUGFIX","Cyan light effect formula is now correct above 50 cyan lumens"],
-		["BUGFIX","'Double Galaxy' reward formula now correctly says '÷ 1e7' rather than '× 1e7'"],
-		["BUGFIX","Star ID's and active states are no longer left-aligned, which caused them to be outside modern-style buttons"],
-		["BUGFIX","Owned row 10 stars are now properly transparent on the modern layout"],
-		["BUGFIX","The secret research no longer persists on respec"],
-		["BUGFIX","Formulas for research 10-7, 10-8 and 10-9 now account for 'Antimatter Academia'"],
-		["BUGFIX","Really old saves with autobuyer levels higher than the cap will no longer show the 'upgrade autobuyer' button for autobuyers that can't be leveled further"],
-		["BUGFIX","Having a zip point multiplier no longer breaks hidden statistics"],
-		["INTERFACE","Dark axis effects no longer show leading zeroes"],
-		["INTERFACE","Iterated logarithms in formulas now show as <i>log<sup>[2]</sup>(x)</i> instead of <i>log(log(x))</i>"],
-		["INTERFACE","Achievements which are affected by yellow light but not owned are now transparent in the yellow light effect overviews and always at the bottom of the list"],
-		["QOL","Added an option to reverse the order of Mastery rows"]
+		[6,"BALANCE","Overclock is no longer disabled in Study III"],
+		[1,"BUGFIX","Having a zip point multiplier no longer breaks hidden statistics"],
+		[2,"BUGFIX","Really old saves with autobuyer levels higher than the cap will no longer show the 'upgrade autobuyer' button for autobuyers that can't be leveled further"],
+		[2,"BUGFIX","Star ID's and active states are no longer left-aligned, which caused them to be outside modern-style buttons"],
+		[4,"BUGFIX","Owned row 10 stars are now properly transparent on the modern layout"],
+		[5,"BUGFIX","The secret research no longer persists on respec"],
+		[6,"BUGFIX","Formulas for research 10-7, 10-8 and 10-9 now account for 'Antimatter Academia'"],
+		[6,"BUGFIX","Cyan light effect formula is now correct above 50 cyan lumens"],
+		[7,"BUGFIX","'Double Galaxy' reward formula now correctly says '÷ 1e7' rather than '× 1e7'"],
+		[1,"INTERFACE","Iterated logarithms in formulas now show as <i>log<sup>[2]</sup>(x)</i> instead of <i>log(log(x))</i>"],
+		[3,"INTERFACE","Dark axis effects no longer show leading zeroes"],
+		[6,"INTERFACE","Achievements which are affected by yellow light but not owned are now transparent in the yellow light effect overviews and always at the bottom of the list"],
+		[1,"QOL","Added an option to reverse the order of Mastery rows"]
 	]},
 	{num:"𝕍1.3.11",date:"2023-08-21",changes:[
-		["BUGFIX","Fixed an issue with <code>structuredClone()</code>"],
-		["INTERFACE","Removed the 'download save' button temporarily"],
+		[1,"BUGFIX","Fixed an issue with <code>structuredClone()</code>"],
+		[1,"INTERFACE","Removed the 'download save' button temporarily"],
 	]},
 	{num:"𝕍1.3.10",date:"2023-08-21",changes:[
-		["BUGFIX","The stat breakdown no longer shows 'Feedback Loop' as having a much larger effect than it really does"],
-		["BUGFIX","Removed an achievement called 'Base 3' which did nothing except breaking the game when moused over"],
-		["INTERFACE","Dark star button is now slightly taller to prevent formulas overflowing"]
+		[1,"BUGFIX","The stat breakdown no longer shows 'Feedback Loop' as having a much larger effect than it really does"],
+		[8,"BUGFIX","Removed an achievement called 'Base 3' which did nothing except breaking the game when moused over"],
+		[3,"INTERFACE","Dark star button is now slightly taller to prevent formulas overflowing"]
 	]},
 	{num:"𝕍1.3.9",date:"2023-08-21",changes:[
-		["BUGFIX","Stardust Boost 1 formula now correctly shows the 'Hyperspeed' reward"],
-		["BUGFIX","Research 15-9 crashing the game on view"],
-		["INTERFACE","Axis buttons now show the 'effective' level of each axis in the top-right"],
-		["INTERFACE","The dark star boost to each dark axis was moved to the bottom-right of each button"],
+		[5,"BUGFIX","Stardust Boost 1 formula now correctly shows the 'Hyperspeed' reward"],
+		[7,"BUGFIX","Research 15-9 crashing the game on view"],
+		[1,"INTERFACE","Axis buttons now show the 'effective' level of each axis in the top-right"],
+		[3,"INTERFACE","The dark star boost to each dark axis was moved to the bottom-right of each button"],
 	]},
 	{num:"𝕍1.3.8",date:"2023-08-21",changes:[
-		["BALANCE","Stardust Boosts 10, 11 and 12 are very slightly weaker at very low amounts of stardust. The end results are asymptotically equal at typical unlock values."],
-		["BUGFIX","Stardust Boost 9 is no longer harmful with less than "+format("ee2")+" stardust"],
-		["BUGFIX<sup>2</sup>","Error popup now shows the Discord invite link for easy reporting"],
-		["BUGFIX","Research loadouts ignoring research that branches off a research to the right or below it"],
-		["CONTENT","The secret achievements that required you to import specific save strings now use a separate 'Use promotion code' button, and the codes are now encrypted in the source code. :smirk:"],
-		["INTERFACE","Added a hotkey which shows in-game formulas"],
-		["INTERFACE","Research 12-8 now has a yellow icon rather than a white one"],
-		["INTERFACE","The icons of stars 82 and 84 are no longer swapped"],
-		["INTERFACE","Very small numbers are now displayed in the form (1 ÷ x) instead of (1 / x)"]
+		[5,"BALANCE","Stardust Boosts 10, 11 and 12 are very slightly weaker at very low amounts of stardust. The end results are asymptotically equal at typical unlock values."],
+		[1,"BUGFIX<sup>2</sup>","Error popup now shows the Discord invite link for easy reporting"],
+		[5,"BUGFIX","Stardust Boost 9 is no longer harmful with less than "+format("ee2")+" stardust"],
+		[5,"BUGFIX","Research loadouts ignoring research that branches off a research to the right or below it"],
+		[1,"CONTENT","The secret achievements that required you to import specific save strings now use a separate 'Use promotion code' button, and the codes are now encrypted in the source code. :smirk:"],
+		[1,"INTERFACE","Added a hotkey which shows in-game formulas"],
+		[1,"INTERFACE","Very small numbers are now displayed in the form (1 ÷ x) instead of (1 / x)"],
+		[4,"INTERFACE","The icons of stars 82 and 84 are no longer swapped"],
+		[6,"INTERFACE","Research 12-8 now has a yellow icon rather than a white one"]
 	]},
 	{num:"𝕍1.3.7",date:"2023-08-17",changes:[
-		["BUGFIX","Game not opening at all for new people"],
-		["BUGFIX","Loading research loadouts trying to buy all previous research"]
+		[1,"BUGFIX","Game not opening at all for new people"],
+		[5,"BUGFIX","Loading research loadouts trying to buy all previous research"]
 	]},
 	{num:"𝕍1.3.6",date:"2023-08-16",name:"Organic Achievements",changes:[
-		["BALANCE","'The 4th dimension doesn't exist' is no longer impossible without 7 Tier 5 achievements, but has an additional requirement. The end result is the same."],
-		["INTERFACE","The progress bar text is now white when its background is dark"]
+		[5,"BALANCE","'The 4th dimension doesn't exist' is no longer impossible without 7 Tier 5 achievements, but has an additional requirement. The end result is the same."],
+		[1,"INTERFACE","The progress bar text is now white when its background is dark"]
 	]},
 	{num:"𝕍1.3.5",date:"2023-08-16",name:"Royal Flush",changes:[
-		["BALANCE","Research 13-11 is now stronger (the percentage is the same but the effects are now exponentiated rather than multiplied)"],
-		["BUGFIX","'Previous Prestige' tab saying things like 'Show star/mastery/research builds builds'"],
-		["BUGFIX","'The 4th dimension doesn't exist' indicating that it can be completed with less than 7 Tier 5 achievements"],
-		["INTERFACE","Stardust boosts 2, 3, 6 and 8 now show multipliers instead of percentages at high values"],
-		["QOL","The 2nd galaxy boost now calculates the multiplier to chroma the next galaxy will give"],
-		["WHAT","Added a missing entry to the 𝕍1.3.3 changelog"],
+		[7,"BALANCE","Research 13-11 is now stronger (the percentage is the same but the effects are now exponentiated rather than multiplied)"],
+		[2,"BUGFIX","'Previous Prestige' tab saying things like 'Show star/mastery"+((highestTierUnlocked>=5)?"/research":"")+" builds builds'"],
+		[5,"BUGFIX","'The 4th dimension doesn't exist' indicating that it can be completed with less than 7 Tier 5 achievements"],
+		[2,"INTERFACE","Stardust boosts 2, 3, 6 and 8 now show multipliers instead of percentages at high values"],
+		[7,"QOL","The 2nd galaxy boost now calculates the multiplier to chroma the next galaxy will give"],
+		[1,"WHAT","Added a missing entry to the 𝕍1.3.3 changelog"],
 	]},
 	{num:"𝕍1.3.4",date:"2023-08-15",changes:[
-		["BUGFIX","'Valence' achievement now appears properly in the stat breakdown"],
+		[3,"BUGFIX","'Valence' achievement now appears properly in the stat breakdown"],
 	]},
 	{num:"𝕍1.3.3",date:"2023-08-15",changes:[
-		["BUGFIX","It is no longer possible to lose a negative number of galaxies"],
-		["BUGFIX","Save import should be slightly less broken"],
-		["BUGFIX","White lumens now softcap correctly past 25"],
+		[1,"BUGFIX","Save import should be slightly less broken"],
+		[6,"BUGFIX","White lumens now softcap correctly past 25"],
+		[7,"BUGFIX","It is no longer possible to lose a negative number of galaxies"]
 	]},
 	{num:"𝕍1.3.2",date:"2023-08-13",name:"Thou shalt not see anything useful here.",changes:[
-		["BUGFIX","Inputting an invalid number into the 'destroy galaxies' popup no longer makes galaxies NaN"],
-		["WHAT","Fixed the 𝕍1.3 changelog saying \"theu unlock requirement of Study III completion 4\""],
-		["WHAT","Fixed the 𝕍1.3.1 changelog having the same name as 𝕍1.3"]
+		[7,"BUGFIX","Inputting an invalid number into the 'destroy galaxies' popup no longer makes galaxies NaN"],
+		[1,"WHAT","Fixed the 𝕍1.3.1 changelog having the same name as 𝕍1.3"],
+		[6,"WHAT","Fixed the 𝕍1.3 changelog saying \"theu unlock requirement of Study III completion 4\""]
 	]},
 	{num:"𝕍1.3.1",date:"2023-08-13",changes:[
-		["BUGFIX","Secret achievement for buying research 6-9 being given on buying any research"],
-		["INTERFACE","Moved the endgame threshold from what it was in 𝕍1.2 to the correct value"],
-		["WHAT","Added a missing QOL entry to the 𝕍1.3 changelog"]
+		[5,"BUGFIX","Secret achievement for buying research 6-9 being given on buying any research"],
+		[6,"INTERFACE","Moved the endgame threshold from what it was in 𝕍1.2 to the correct value"],
+		[1,"WHAT","Added a missing QOL entry to the 𝕍1.3 changelog"]
 	]},
 	{num:"𝕍1.3",date:"2023-08-13",name:"One Meteor to Rule them All",changes:[
-		["CONTENT","Galaxies"],
-		["CONTENT","Study VI"],
-		["CONTENT","5 new rows of Research"],
-		["CONTENT","Tier 7 achievements"],
-		["CONTENT","4 new Tier 6 achievements"],
-		["CONTENT","Study IV and V can be completed more times"],
-		["BALANCE","Reduced the unlock requirement of Study III completion 4"],
-		["BALANCE","Temporal energy has a much weaker effect and increases much slower. So sorry for anyone that unlocked it before this..."],
-		["BALANCE","Changed the scaling of Study V reward 3"],
-		["BALANCE","Stardust Upgrade 3 level 10 has a lower cost ("+format("ee7")+"&nbsp;→&nbsp;"+format("6.66e6666666")+")"],
-		["BUGFIX","Toggling the display of the footer no longer crashes the page"],
-		["BUGFIX","Wormhole reset not resetting the 'Stardust this Wormhole reset' stat"],
-		["BUGFIX","Mastery 103 being unaffected by mental energy"],
-		["BUGFIX","Dilated time can no longer become something like -(1 / "+format(1.8e16)+") seconds. Hasn't this already been fixed earlier?"],
-		["INTERFACE","Story entries now open as a popup"],
-		["INTERFACE","The effect of the next yellow lumen now shows relative to the baseline rather than the current value above 200 yellow lumens"],
-		["INTERFACE","Unlocking a new tier of achievements now shows a separate notification"],
-		["WHAT","Numbers in the changelog now use your chosen notation, and all entries have been changed retroactively"],
-		["WHAT","Removed all erroneous references to \"AleManInc\". Only \"alemaninc\" refers to the real alemaninc."],
-		["WHAT","Fixed a broken entry from 𝕍1.2.18"]
+		[6,"CONTENT","Galaxies"],
+		[6,"CONTENT","Study VI"],
+		[6,"CONTENT","5 new rows of Research"],
+		[6,"CONTENT","Tier 7 achievements"],
+		[6,"CONTENT","4 new Tier 6 achievements"],
+		[6,"CONTENT","Study IV and V can be completed more times"],
+		[5,"BALANCE","Stardust Upgrade 3 level 10 has a lower cost ("+format("ee7")+"&nbsp;→&nbsp;"+format("6.66e6666666")+")"],
+		[6,"BALANCE","Reduced the unlock requirement of Study III completion 4"],
+		[6,"BALANCE","Temporal energy has a much weaker effect and increases much slower. So sorry for anyone that unlocked it before this..."],
+		[6,"BALANCE","Changed the scaling of Study V reward 3"],
+		[1,"BUGFIX","Toggling the display of the footer no longer crashes the page"],
+		[1,"BUGFIX","Dilated time can no longer become something like -(1 / "+format(1.8e16)+") seconds. Hasn't this already been fixed earlier?"],
+		[5,"BUGFIX","Wormhole reset not resetting the 'Stardust this Wormhole reset' stat"],
+		[5,"BUGFIX","Mastery 103 being unaffected by mental energy"],
+		[2,"INTERFACE","Story entries now open as a popup"],
+		[2,"INTERFACE","Unlocking a new tier of achievements now shows a separate notification"],
+		[6,"INTERFACE","The effect of the next yellow lumen now shows relative to the baseline rather than the current value above 200 yellow lumens"],
+		[1,"WHAT","Numbers in the changelog now use your chosen notation, and all entries have been changed retroactively"],
+		[1,"WHAT","Removed all erroneous references to \"AleManInc\". Only \"alemaninc\" refers to the real alemaninc."],
+		[1,"WHAT","Fixed a broken entry from 𝕍1.2.18"]
 	]},
 	{num:"𝕍1.2.21",date:"2023-07-31",changes:[
-		["BUGFIX","Chroma gain being unaffected by everything except tickspeed"]
+		[6,"BUGFIX","Chroma gain being unaffected by everything except tickspeed"]
 	]},
 	{num:"𝕍1.2.20",date:"2023-07-31",changes:[
-		["BUGFIX","Research 6-5, 7-5 and 8-5 not saving to loadouts correctly"]
+		[5,"BUGFIX","Research 6-5, 7-5 and 8-5 not saving to loadouts correctly"]
 	]},
 	{num:"𝕍1.2.19",date:"2023-07-30",changes:[
-		["BUGFIX","Dark star bulk buy turning itself off on refresh"],
-		["WHAT","Added a missing entry to the 𝕍1.2.18 changelog (the BUGFIX)"]
+		[3,"BUGFIX","Dark star bulk buy turning itself off on refresh"],
+		[1,"WHAT","Added a missing entry to the 𝕍1.2.18 changelog (the BUGFIX)"]
 	]},
 	{num:"𝕍1.2.18",date:"2023-07-30",changes:[
-		["BALANCE","Changed the reward of \"There are Four Lights\" - the effect is the same, but now scales based on (60 - stars) rather than (60 - stars)<sup>2</sup>"],
-		["BUGFIX","Fixed research loadouts for the 719th time"],
-		["INTERFACE","Added Time notation"],
-		["INTERFACE","The dark star gain button will no longer indicate multiple can be gained if bulk buy is disabled"]
+		[6,"BALANCE","Changed the reward of \"There are Four Lights\" - the effect is the same, but now scales based on (60 - stars) rather than (60 - stars)<sup>2</sup>"],
+		[5,"BUGFIX","Fixed research loadouts for the 719th time"],
+		[1,"INTERFACE","Added Time notation"],
+		[3,"INTERFACE","The dark star gain button will no longer indicate multiple can be gained if bulk buy is disabled"]
 	]},
 	{num:"𝕍1.2.17",date:"2023-07-29",changes:[
-		["BALANCE","Increased the dark energy per second requirement for Study III level 4"],
-		["BUGFIX","Time Loop breaking the game"],
-		["INTERFACE","Renamed achievement 115 \"Cheap Knockoff\" to \"Original Replicas\""]
+		[5,"BALANCE","Increased the dark energy per second requirement for Study III level 4"],
+		[5,"BUGFIX","Time Loop breaking the game"],
+		[1,"INTERFACE","Renamed achievement 115 \"Cheap Knockoff\" to \"Original Replicas\""]
 	]},
 	{num:"𝕍1.2.16.1",date:"2023-07-29",changes:[
-		["WHAT","Fixed the 𝕍1.2.16 changelog having no date"],
+		[1,"WHAT","Fixed the 𝕍1.2.16 changelog having no date"],
 	]},
 	{num:"𝕍1.2.16",date:"2023-07-29",changes:[
-		["BUGFIX","Star visual options not taking effect until refresh"],
-		["BUGFIX","Opening study options no longer crashes the page"],
-		["BUGFIX","It is now possible to change the notation without crashing the page"],
-		["INTERFACE","Mixed scientific notation gives one more digit of precision for values larger than "+format("ee6")],
+		[1,"BUGFIX","It is now possible to change the notation without crashing the page"],
+		[2,"BUGFIX","Star visual options not taking effect until refresh"],
+		[5,"BUGFIX","Opening study options no longer crashes the page"],
+		[4,"INTERFACE","Mixed scientific notation gives one more digit of precision for values larger than "+format("ee6")],
 	]},
 	{num:"𝕍1.2.15",date:"2023-07-28",changes:[
-		["BUGFIX","Study descriptions not updating to reflect harder levels of the study (affected III and V)"],
-		["BUGFIX","Removed beta research unlocked by study V which made all research costs 0"],
-		["BUGFIX","Notation toggle cutting off the start and end of the name of the current notation"],
-		["INTERFACE","Tetration notation now uses base 10 (quadratic approximation)"],
-		["INTERFACE","Infinity notation now displays 6 digits of precision instead of 8"],
-		["INTERFACE","Added Standard notation"]
+		[1,"BUGFIX","Notation toggle cutting off the start and end of the name of the current notation"],
+		[5,"BUGFIX","Study descriptions not updating to reflect harder levels of the study (affected III and V)"],
+		[5,"BUGFIX","Removed beta research unlocked by study V which made all research costs 0"],
+		[1,"INTERFACE","Tetration notation now uses base 10 (quadratic approximation)"],
+		[1,"INTERFACE","Infinity notation now displays 6 digits of precision instead of 8"],
+		[1,"INTERFACE","Added Standard notation"]
 	]},
 	{num:"𝕍1.2.14",date:"2023-07-28",name:"The Swarm",changes:[
-		["BUGFIX","Unassigning masteries by row not working"],
-		["BUGFIX","Notation toggle showing the notation names in quote marks"],
-		["BUGFIX","Alemaninc Ordinal notation not working at all"],
-		["INTERFACE","Added the option to show star ID and activity states"],
+		[1,"BUGFIX","Unassigning masteries by row not working"],
+		[1,"BUGFIX","Notation toggle showing the notation names in quote marks"],
+		[1,"BUGFIX","Alemaninc Ordinal notation not working at all"],
+		[2,"INTERFACE","Added the option to show star ID and activity states"],
 	]},
 	{num:"𝕍1.2.13",date:"2023-07-27",changes:[
-		["BUGFIX","Dark star autobuyer being broken"],
-		["CONTENT","Added two new super-endgame yellow light effects"],
-		["INTERFACE","Added option to view all yellow light effects"]
+		[5,"BUGFIX","Dark star autobuyer being broken"],
+		[6,"CONTENT","Added two new super-endgame yellow light effects"],
+		[6,"INTERFACE","Added option to view all yellow light effects"]
 	]},
 	{num:"𝕍1.2.12",date:"2023-07-27",changes:[
-		["BUGFIX","Impossible to exit study"]
+		[5,"BUGFIX","Impossible to exit study"]
 	]},
 	{num:"𝕍1.2.11",date:"2023-07-27",changes:[
-		["BUGFIX","Fixed dark star bulk buy being permanently disabled"],
-		["INTERFACE","\"Abort Study\" button now says \"Complete Study\" if the study can be completed"],
-		["INTERFACE","Added a modern style for the star table, similar to Masteries"],
-		["QOL","Added an option to buy back the research used in a study upon completing it. Does not work for the study research itself."]
+		[3,"BUGFIX","Fixed dark star bulk buy being permanently disabled"],
+		[2,"INTERFACE","Added a modern style for the star table, similar to Masteries"],
+		[5,"INTERFACE","\"Abort Study\" button now says \"Complete Study\" if the study can be completed"],
+		[5,"QOL","Added an option to buy back the research used in a study upon completing it. Does not work for the study research itself."]
 	]},
 	{num:"𝕍1.2.10",date:"2023-07-20",name:"Will alemaninc make Tier 7 already?",changes:[
-		["BUGFIX","\"You have unlocked a new Wormhole Milestone! undefined.\""],
-		["BUGFIX","Fixed the Wormhole Milestones tab thinking the player has 1 less Tier 5 achievement than they really do"],
+		[5,"BUGFIX","\"You have unlocked a new Wormhole Milestone! undefined.\""],
+		[5,"BUGFIX","Fixed the Wormhole Milestones tab thinking the player has 1 less Tier 5 achievement than they really do"],
 	]},
 	{num:"𝕍1.2.9",date:"2023-07-07",changes:[
-		["BUGFIX","'Research' how to play section not opening"],		
-		["BUGFIX","Importing a research export string into a research loadout will now save to the loadout without renaming instead of throwing an error"],
-		["BUGFIX","Studies being impossible to abort (again)"],
-		["INTERFACE","Added a notification appearing when you gain Wormhole Milestones"],
-		["QOL","The stardust upgrade autobuyer can now be set to only autobuy up to specific levels"],
-		["QOL","Added the ability to lock manual stardust upgrade buying (as a Wormhole Milestone)"],
-		["QOL","Added a confirmation for mastery toggling"]
+		[5,"BUGFIX","'Research' how to play section not opening"],		
+		[5,"BUGFIX","Importing a research export string into a research loadout will now save to the loadout without renaming instead of throwing an error"],
+		[5,"BUGFIX","Studies being impossible to abort (again)"],
+		[5,"INTERFACE","Added a notification appearing when you gain Wormhole Milestones"],
+		[1,"QOL","Added a confirmation for mastery toggling"],
+		[5,"QOL","The stardust upgrade autobuyer can now be set to only autobuy up to specific levels"],
+		[5,"QOL","Added the ability to lock manual stardust upgrade buying (as a Wormhole Milestone)"]
 	]},
 	{num:"𝕍1.2.8",date:"2023-07-02",changes:[
-		["BUGFIX","Fixed the star allocator only buying in order"]
+		[5,"BUGFIX","Fixed the star allocator only buying in order"]
 	]},
 	{num:"𝕍1.2.7",date:"2023-07-01",changes:[
-		["BUGFIX","Studies being impossible to abort"],
-		["QOL","The Offline Time subtab can now be opened in Study I"]
+		[5,"BUGFIX","Studies being impossible to abort"],
+		[5,"QOL","The Offline Time subtab can now be opened in Study I"]
 	]},
 	{num:"𝕍1.2.6",date:"2023-07-01",name:"alemaninc's Automatic Bug Generator",changes:[
-		["BUGFIX","Stardust and wormhole autobuyers should no longer be completely broken"]
+		[5,"BUGFIX","Stardust and wormhole autobuyers should no longer be completely broken"]
 	]},
 	{num:"𝕍1.2.5",date:"2023-06-30",name:"NaNite Swarms",changes:[
-		["BUGFIX","Variables which are NaN will get set back to default values upon reloading"]
+		[1,"BUGFIX","Variables which are NaN will get set back to default values upon reloading"]
 	]},
 	{num:"𝕍1.2.4",date:"2023-06-28",changes:[
-		["BUGFIX","Wormhole reset autobuyer breaking the game"],
-		["BUGFIX","Clicking the progress bar now correctly shows a hint of the next update at current endgame"],
-		["QOL","Added confirmations for stardust and wormhole reset, including a stardust reset confirmation which only triggers in Iron Will"]
+		[5,"BUGFIX","Wormhole reset autobuyer breaking the game"],
+		[6,"BUGFIX","Clicking the progress bar now correctly shows a hint of the next update at current endgame"],
+		[[2,5],"QOL",(highestTierUnlocked>=5)?"Added confirmations for stardust and wormhole reset, including a stardust reset confirmation which only triggers in Iron Will":"Added a confirmation for stardust reset"]
 	]},
 	{num:"𝕍1.2.3",date:"[...]5-6",name:"4",changes:[
-		["BUGFIX","Black Hole Era II can actually be completed"],
-		["MISCELLANEOUS","Added some more news"]
+		[6,"BUGFIX","'Black Hole Era II' can actually be completed"],
+		[1,"MISCELLANEOUS","Added some more news"]
 	]},
 	{num:"𝕍1.2.2",date:"2023-15-06",name:"Computer Scientific Illiteracy",changes:[
-		["BUGFIX","Observation costs no longer decrease infinitely after completing Study V"],
-		["SAFETY","Study V completion 1 has been temporarily made impossible due to bugs"]
+		[6,"BUGFIX","Observation costs no longer decrease infinitely after completing Study V"],
+		[6,"SAFETY","Study V completion 1 has been temporarily made impossible due to bugs"]
 	]},
 	{num:"𝕍1.2.1",date:"2023-15-06",changes:[
-		["BUGFIX","Study V showing when it's not supposed to"]
+		[6,"BUGFIX","Study V showing when it's not supposed to"]
 	]},
 	{num:"𝕍1.2",date:"2023-15-06",name:"In Light of all the bugs...",changes:[
 		"...your saves are gone again. (ok, I didn't <i>actually</i> wipe them, but you might want to replay the tier you're in again anyway.)",
-		["BALANCE","Axis cost exponent now applies before axis cost divisor, but stars 82 and 84 nerfed from 4× to 3×"],
-		["BALANCE","Demoted the secret achievements 'Epsilon Time' and 'I am speed' from the Common tier to the Super Easy tier"],
-		["BALANCE","'Big Bang' requirement reduced from 5000 to 4800 in light of the relevant bugfix"],
-		["BALANCE","Research 7-13 is 7× weaker"],
-		["BALANCE","Removed the 'Eternal Inflation' reward. Instead, a bug that caused tickspeed to multiply energy gain twice has been turned into a feature through its new 'reward'."],
-		["BALANCE","Stars are now capped at 60 in preparation for an upcoming feature ;)"],
-		["BALANCE","Stardust Upgrade 1 now affects dark axis (I am SO sorry for everyone in the Iron Will V run)"],
-		["BUGFIX","Fixed one of the news messages being undefined"],
-		["BUGFIX","Dilated time can no longer become something like -(1 / "+format(1.8e16)+") seconds"],
-		["BUGFIX","Fixed Mastery 103 being unaffected by knowledge"],
-		["BUGFIX","Fixed Mastery 52 being affected by the boost percentage of Mastery 51 instead of its own"],
-		["BUGFIX","Fixed Stardust Boost 12 being affected by the boost percentage for Stardust Boost 9 instead of its own"],
-		["BUGFIX","Fixed Wormhole reset resetting energies to 0 instead of 1"],
-		["BUGFIX","Fixed 'The Ultimate Upgrade' not working"],
-		["BUGFIX","'Big Bang' now accurately shows the amount of axis that can be purchased"],
-		["BUGFIX","The W axis effect no longer increases 30× faster with the 'Slow' achievement, but the effect is now approximately 12.5% higher to compensate"],
-		["BUGFIX","Research 8-5 no longer works if it's not purchased"],
-		["BUGFIX","Clicking stardust/wormhole reset buttons no longer adds to 'total reset' stats if no reset was done"],
-		["BUGFIX","Research 2-2 is no longer 100× stronger than displayed"],
-		["","(The full list of bugs can be found <a target=\"_blank\" href=\"https://libraryofbabel.info/random.cgi\" style=\"color:inherit\">here</a>.)"],
+		[1,"BALANCE","Demoted the secret achievements 'Epsilon Time' and 'I am speed' from the Common tier to the Super Easy tier"],
+		[2,"BALANCE","Stardust Upgrade 1 now affects dark axis"+((highestTierUnlocked>=5)?" (I am SO sorry for everyone in the Iron Will V run)":"")],
+		[4,"BALANCE","Axis cost exponent now applies before axis cost divisor, but stars 82 and 84 nerfed from 4× to 3×"],
+		[4,"BALANCE","Removed the 'Eternal Inflation' reward. Instead, a bug that caused tickspeed to multiply energy gain twice has been turned into a feature through its new 'reward'."],
+		[5,"BALANCE","'Big Bang' requirement reduced from 5000 to 4800 in light of the relevant bugfix"],
+		[5,"BALANCE","Research 7-13 is 7× weaker"],
+		[5,"BALANCE","Stars are now capped at 60 in preparation for an upcoming feature ;)"],
+		[1,"BUGFIX","Fixed one of the news messages being undefined"],
+		[1,"BUGFIX","Dilated time can no longer become something like -(1 / "+format(1.8e16)+") seconds"],
+		[1,"BUGFIX","Fixed 'The Ultimate Upgrade' not working"],
+		[1,"BUGFIX","The W axis effect no longer increases 30× faster with the 'Slow' achievement, but the effect is now approximately 12.5% higher to compensate"],
+		[2,"BUGFIX","Fixed Mastery 52 being affected by the boost percentage of Mastery 51 instead of its own"],
+		[[2,5],"BUGFIX","Clicking "+((highestTierUnlocked>=5)?"stardust/wormhole reset buttons":"the stardust reset button")+" no longer adds to 'total reset' stats if no reset was done"],
+		[5,"BUGFIX","Fixed Mastery 103 being unaffected by knowledge"],
+		[5,"BUGFIX","Fixed Stardust Boost 12 being affected by the boost percentage for Stardust Boost 9 instead of its own"],
+		[5,"BUGFIX","Fixed Wormhole reset resetting energies to 0 instead of 1"],
+		[5,"BUGFIX","'Big Bang' now accurately shows the amount of axis that can be purchased"],
+		[5,"BUGFIX","Research 8-5 no longer works if it's not purchased"],
+		[5,"BUGFIX","Research 2-2 is no longer 100× stronger than displayed"],
+		"(The full list of bugs can be found <a target=\"_blank\" href=\"https://libraryofbabel.info/random.cgi\" style=\"color:inherit\">here</a>.)",
 		"Do you still have faith in this developer to make ten more content updates?",
-		["CONTENT","Research was expanded to 12 rows and 5 Studies"],
-		["CONTENT","Tier 6 achievements"],
-		["CONTENT","Light"],
-		["CONTENT","Added Zip Points"],
-		["INTERFACE","Added the option to only show the footer in the Axis tab"],
-		["INTERFACE","The Study research icons are now patterns of dots rather than Roman numerals"],
-		["INTERFACE","'Iron Will IV' now shows the reward it would give upon being unlocked"],
-		["INTERFACE","Achievement notifications are now darker"],
-		["INTERFACE","Progress bar now shows progress to dilation upgrade unlocks"],
-		["INTERFACE","Changed the research icons"],
-		["INTERFACE","Research icons which would otherwise overflow now automatically resize themselves"],
-		["INTERFACE","Achievement progress percentages no longer show decimal points for integer values"],
-		["INTERFACE","Moved a lot of feature-specific options to the relevant subtabs"],
-		["INTERFACE","Added an option to turn off tab glow for specific conditions"],
-		["INTERFACE","Added an option to show or hide important resources from the top"],
-		["INTERFACE","Stardust upgrade buttons look better"],
-		["INTERFACE","Observation buttons now darken if unaffordable"],
-		["INTERFACE","Swapped the Stardust and Automation tabs"],
-		["INTERFACE","Research should be more screen-reader accessible"],
-		["MISCELLANEOUS","The node documentary news message no longer formats the number of nodes as a word"],
-		["MISCELLANEOUS","Stardust upgrade #2 can no longer be purchased if it would have no effect (i.e. if the relevant axis is not unlocked)"],
-		["PERFORMANCE","Improved"],
-		["QOL","Overclock is automatically disabled when story screens show up"],
-		["QOL","Added an option to set Overclock to exactly the softcap"],
-		["QOL","Added an option to make the Offline Time tab glow during Overclock"],
-		["QOL","Added basic hotkeys"],
-		["QOL","Stardust upgrade autobuyer now buys max"],
-		["QOL","Added the option to force a Wormhole reset"],
-		["QOL","Added Time Loop"],
-		["WHAT","Fixed the footer having the wrong version number"],
-		["WHAT","Fixed the 𝕍1.1.19 changelog not being alphabetized"],
-		["WHAT","Fixed an undefined message in the 𝕍1.1.18 changelog"]
+		[5,"CONTENT","Research was expanded to 12 rows and 5 Studies"],
+		[5,"CONTENT","Tier 6 achievements"],
+		[5,"CONTENT","Light"],
+		[1,"CONTENT","Added Zip Points"],
+		[1,"INTERFACE","Added the option to only show the footer in the Axis tab"],
+		[1,"INTERFACE","Achievement notifications are now darker"],
+		[1,"INTERFACE","Progress bar now shows progress to dilation upgrade unlocks"],
+		[1,"INTERFACE","Achievement progress percentages no longer show decimal points for integer values"],
+		[1,"INTERFACE","Moved a lot of feature-specific options to the relevant subtabs"],
+		[1,"INTERFACE","Added an option to turn off tab glow for specific conditions"],
+		[1,"INTERFACE","Added an option to show or hide important resources from the top"],
+		[2,"INTERFACE","Stardust upgrade buttons look better"],
+		[2,"INTERFACE","Swapped the Stardust and Automation tabs"],
+		[5,"INTERFACE","Observation buttons now darken if unaffordable"],
+		[5,"INTERFACE","Research should be more screen-reader accessible"],
+		[5,"INTERFACE","The Study research icons are now patterns of dots rather than Roman numerals"],
+		[5,"INTERFACE","'Iron Will IV' now shows the reward it would give upon being unlocked"],
+		[5,"INTERFACE","Changed the research icons"],
+		[5,"INTERFACE","Research icons which would otherwise overflow now automatically resize themselves"],
+		[1,"MISCELLANEOUS","The node documentary news message no longer formats the number of nodes as a word"],
+		[2,"MISCELLANEOUS","Stardust upgrade #2 can no longer be purchased if it would have no effect (i.e. if the relevant axis is not unlocked)"],
+		[1,"PERFORMANCE","Improved"],
+		[1,"QOL","Overclock is automatically disabled when story screens show up"],
+		[1,"QOL","Added an option to set Overclock to exactly the softcap"],
+		[1,"QOL","Added an option to make the Offline Time tab glow during Overclock"],
+		[1,"QOL","Added basic hotkeys"],
+		[5,"QOL","Stardust upgrade autobuyer now buys max"],
+		[5,"QOL","Added the option to force a Wormhole reset"],
+		[5,"QOL","Added Time Loop"],
+		[1,"WHAT","Fixed the footer having the wrong version number"],
+		[1,"WHAT","Fixed the 𝕍1.1.19 changelog not being alphabetized"],
+		[1,"WHAT","Fixed an undefined message in the 𝕍1.1.18 changelog"]
 	]},
 	{num:"𝕍1.1.19",date:"2023-04-05",changes:[
-		["BALANCE","Discovery news tickers are now 2× rarer relative to normal news tickers (up from 10×)"],
-		["BUGFIX","If you manage to respec research upon entering a study you get automatically removed from your Study."],
-		["CHEATING","The in-game command terminal is now encrypted"],
-		["CONTENT","Lots of new news!"],
-		["TEXTFIX","Fixed the storyline entry for Stardust"],
-		["TEXTFIX","Fixed the news message that contains xhwzwka's personal information not showing his real name"],
-		["TEXTFIX","Fixed the node documentary news message saying 'one children'"],
-		["WHAT","Added an entry to the 𝕍1.1.18 changelog that alemaninc forgot to add before and corrected another entry"],
-		["WHAT","Fixed the 𝕍1.1.18 changelog having no date"],
+		[5,"BALANCE","Discovery news tickers are now 2× rarer relative to normal news tickers (up from 10×)"],
+		[5,"BUGFIX","If you manage to respec research upon entering a study you get automatically removed from your Study."],
+		[1,"CHEATING","The in-game command terminal is now encrypted"],
+		[1,"CONTENT","Lots of new news!"],
+		[2,"TEXTFIX","Fixed the storyline entry for Stardust"],
+		[1,"TEXTFIX","Fixed the news message that contains xhwzwka's personal information not showing his real name"],
+		[1,"TEXTFIX","Fixed the node documentary news message saying 'one children'"],
+		[1,"WHAT","Added an entry to the 𝕍1.1.18 changelog that alemaninc forgot to add before and corrected another entry"],
+		[1,"WHAT","Fixed the 𝕍1.1.18 changelog having no date"],
 	]},
 	{num:"𝕍1.1.18",date:"2023-04-05",name:"NEWS",changes:[
-		["BUGFIX","People that haven't opened the game since 𝕍1.0 can now open the game again"],
-		["CONTENT","Added lots of news"],
-		["CONTENT","Added the large number visualization"],
-		["INTERFACE","Added the option to turn off mastery ID/boost percentage/active state displays"],
-		["INTERFACE","Study researches now show their ID"],
-		["WHAT","Fixed the footer having the wrong version number"],
-		["WHAT","Fixed the 𝕍1.1.16 changelog"]
+		[1,"BUGFIX","People that haven't opened the game since 𝕍1.0 can now open the game again"],
+		[1,"CONTENT","Added lots of news"],
+		[1,"CONTENT","Added the large number visualization"],
+		[1,"INTERFACE","Added the option to turn off mastery ID/boost percentage/active state displays"],
+		[5,"INTERFACE","Study researches now show their ID"],
+		[1,"WHAT","Fixed the footer having the wrong version number"],
+		[1,"WHAT","Fixed the 𝕍1.1.16 changelog"]
 	]},
 	{num:"𝕍1.1.17",date:"2023-04-05",name:"Officially the most bugged release ever?",changes:[
-		["BUGFIX","Fixed the news message that gives help with a secret achievement"],
-		["BUGFIX","Fixed Mastery 42 being visible before unlock"],
-		["BUGFIX","'You do know how these work, right?' and 'Precision to the millimeter' are possible again"],
-		["BUGFIX","Unassigning a Mastery now correctly resets mastery power"],
-		["CONTENT","Added more news"],
-		["INTERFACE","You can now toggle between the modern Mastery interface and the pre-𝕍1.1 interface"],
-		["TEXTFIX","Fixed the node documentary news message stopping mid-sentence"],
-		["WHAT","Added an entry to the 𝕍1.1.16 changelog that alemaninc forgot to add before"]
+		[1,"BUGFIX","Fixed the news message that gives help with a secret achievement"],
+		[1,"BUGFIX","Fixed Mastery 42 being visible before unlock"],
+		[1,"BUGFIX","'You do know how these work, right?' and 'Precision to the millimeter' are possible again"],
+		[1,"BUGFIX","Unassigning a Mastery now correctly resets mastery power"],
+		[1,"CONTENT","Added more news"],
+		[1,"INTERFACE","You can now toggle between the modern Mastery interface and the pre-𝕍1.1 interface"],
+		[1,"TEXTFIX","Fixed the node documentary news message stopping mid-sentence"],
+		[1,"WHAT","Added an entry to the 𝕍1.1.16 changelog that alemaninc forgot to add before"]
 	]},
 	{num:"𝕍1.1.16",date:"2023-04-04",changes:[
-		["BUGFIX","You can now see how many Tier 5 achievements you have in the 'Wormhole Milestones' tab"],
-		["CONTENT","Added more news"],
-		["INTERFACE","Added an option to change the speed of the news ticker"],
-		["WHAT","Gave 𝕍1.1.15 a name retroactively"]
+		[5,"BUGFIX","You can now see how many Tier 5 achievements you have in the 'Wormhole Milestones' tab"],
+		[1,"CONTENT","Added more news"],
+		[1,"INTERFACE","Added an option to change the speed of the news ticker"],
+		[1,"WHAT","Gave 𝕍1.1.15 a name retroactively"]
 	]},
 	{num:"𝕍1.1.15",date:"2023-04-04",name:"Just call this 𝕍1.2 already!",changes:[
-		["BALANCE","The secret achievement reward is now stronger (commons count twice as much, rares 3× more, legendaries 4× more and so on)"],
-		["BALANCE","'Four Second Mile IV' is slightly easier"],
-		["BUGFIX","Star 42 now shows its effect"],
-		["BUGFIX","Star rows now say how many stars you can buy"],
-		["BUGFIX","Fixed the secret achievement reward being invisible"],
-		["BUGFIX","'Hyperspeed IV' no longer applies if you do not have the achievement"],
-		["BUGFIX","It is no longer possible to respec research before entering a study"],
-		["BUGFIX","Fixed study tab not working"],
-		["CONTENT","Added a news ticker"],
-		["INTERFACE","Fancy notifications! Lag galore."],
-		["INTERFACE","Fancy changelog! As a wise man once said, \"always be doing something important to avoid doing something even more important.\""],
-		["INTERFACE","Removed the \"Unassign Row x Mastery\" buttons"],
+		[2,"BALANCE","The secret achievement reward is now stronger (commons count twice as much, rares 3× more, legendaries 4× more and so on)"],
+		[2,"BALANCE","'Four Second Mile IV' is slightly easier"],
+		[1,"BUGFIX","Fixed the secret achievement reward being invisible"],
+		[2,"BUGFIX","Star 42 now shows its effect"],
+		[2,"BUGFIX","Star rows now say how many stars you can buy"],
+		[5,"BUGFIX","'Hyperspeed IV' no longer applies if you do not have the achievement"],
+		[5,"BUGFIX","It is no longer possible to respec research before entering a study"],
+		[5,"BUGFIX","Fixed study tab not working"],
+		[1,"CONTENT","Added a news ticker"],
+		[1,"INTERFACE","Fancy notifications! Lag galore."],
+		[1,"INTERFACE","Fancy changelog! As a wise man once said, \"always be doing something important to avoid doing something even more important.\""],
+		[1,"INTERFACE","Removed the \"Unassign Row x Mastery\" buttons"],
 	]},
 	{num:"𝕍1.1.14",date:"2023-04-03",changes:[
-		["BUGFIX","Actually fixed Overclock charging an extra second of dilated time per second when above the softcap"],
-		["BUGFIX","Made an attempt to fix the research display"],
-		["INTERFACE","The Overclock multiplier and cost now update dynamically while the slider is being scrolled"],
-		["INTERFACE","Fixed the research container having a scrollbar"],
-		["WHAT","Retroactively changed an old changelog entry from over a year ago from <samp>v1α.2.1</samp> to <samp>v1α.3</samp>"]
+		[1,"BUGFIX","Actually fixed Overclock charging an extra second of dilated time per second when above the softcap"],
+		[5,"BUGFIX","Made an attempt to fix the research display"],
+		[1,"INTERFACE","The Overclock multiplier and cost now update dynamically while the slider is being scrolled"],
+		[5,"INTERFACE","Fixed the research container having a scrollbar"],
+		[1,"WHAT","Retroactively renumbered an old changelog entry from over a year ago from <samp>v1α.2.1</samp> to <samp>v1α.3</samp>"]
 	]},
 	{num:"𝕍1.1.13",date:"2023-04-03",changes:[
-		["BUGFIX","The research tree should no longer be invisible to some players"],
-		["WHAT","Fixed the 𝕍1.1.12 entry having no date"]
+		[5,"BUGFIX","The research tree should no longer be invisible to some players"],
+		[1,"WHAT","Fixed the 𝕍1.1.12 entry having no date"]
 	]},
 	{num:"𝕍1.1.12",date:"2023-04-03",changes:[
-		["BUGFIX<sup>2</sup>","Upgraded the in-game command terminal"],
-		["WHAT","The name of the tab is no longer 'Exotic Matter Dimensions 𝕍&lt;span style=\"filter:brightness(150%)\"&gt;1&lt;/span&gt;.&lt;span style=\"filter:brightness(150%)\"&gt;1&lt;/span&gt;.&lt;span style=\"filter:brightness(150%)\"&gt;11&lt;/span&gt;'"]
+		[1,"BUGFIX<sup>2</sup>","Upgraded the in-game command terminal"],
+		[1,"WHAT","The name of the tab is no longer 'Exotic Matter Dimensions 𝕍&lt;span style=\"filter:brightness(150%)\"&gt;1&lt;/span&gt;.&lt;span style=\"filter:brightness(150%)\"&gt;1&lt;/span&gt;.&lt;span style=\"filter:brightness(150%)\"&gt;11&lt;/span&gt;'"]
 	]},
 	{num:(()=>{function c(x) {return "<span style=\"color:#ccf\">"+x+"</span>"};return "𝕍"+c("1")+"."+c("1")+"."+c("11")})(),date:"<del>2023-04-02</del> <ins style=\"color:#ccf\">23-3-33</ins>",name:"NUM_MAX",changes:[
-		["QOL","Added an option to turn off the footer"],
-		["WHAT","The footer now has the correct version number"]
+		[1,"QOL","Added an option to turn off the footer"],
+		[1,"WHAT","The footer now has the correct version number"]
 	]},
 	{num:"𝕍1.1.10",date:"2023-04-02",changes:[
-		["BUGFIX","Hiding completed achievement tiers works now"]
+		[1,"BUGFIX","Hiding completed achievement tiers works now"]
 	]},
 	{num:"𝕍1.1.9",date:"2023-04-02",name:"The Decisive Fix",changes:[
-		["BUGFIX","Achievements should now load properly (again)"]
+		[1,"BUGFIX","Achievements should now load properly (again)"]
 	]},
 	{num:"𝕍1.1.8",date:"2023-04-02",changes:[
-		["BUGFIX","Hovering over achievements now properly displays their descriptions"],
-		["BUGFIX","Hidden Mastery rows now hide properly"],
-		["TEXTFIX","The Overclock cost no longer says things like <samp>17.0 seconds seconds</samp> or <samp>04:15 seconds</samp>"],
-		["WHAT","Added an entry to the 𝕍1.1.7 changelog that alemaninc forgot to add previously"]
+		[1,"BUGFIX","Hovering over achievements now properly displays their descriptions"],
+		[1,"BUGFIX","Hidden Mastery rows now hide properly"],
+		[1,"TEXTFIX","The Overclock cost no longer says things like <samp>17.0 seconds seconds</samp> or <samp>04:15 seconds</samp>"],
+		[1,"WHAT","Added an entry to the 𝕍1.1.7 changelog that alemaninc forgot to add previously"]
 	]},
 	{num:"𝕍1.1.7",date:"2023-04-02",changes:[
-		["BUGFIX","Anyone that opened the game in 𝕍1.1.6 probably lost all their achievements irreversibly"],
-		["BUGFIX<sup>2</sup>","Added an in-game command terminal"]
+		[1,"BUGFIX","Anyone that opened the game in 𝕍1.1.6 probably lost all their achievements irreversibly"],
+		[1,"BUGFIX<sup>2</sup>","Added an in-game command terminal"]
 	]},
 	{num:"𝕍1.1.6",date:"2023-04-02",changes:[
-		["BUGFIX","Research nodes should now show properly"],
-		["FLAIR","Secret achievements now have rarities"]
+		[5,"BUGFIX","Research nodes should now show properly"],
+		[1,"FLAIR","Secret achievements now have rarities"]
 	]},
 	{num:"𝕍1.1.5",date:"2023-04-01",changes:[
-		["BALANCE","Decreased Overclock hardcap from 100× to 64×"],
-		["BUGFIX","Fixed Overclock charging an extra second of dilated time per second when above the softcap"],
-		["BUGFIX","Dilation upgrade div is no longer visible with no dilation upgrades unlocked"],
-		["TEXTFIX","The \"Tichat's Heart\" secret achievement now correctly says 𝕍3.0 instead of v3.0"]
+		[1,"BALANCE","Decreased Overclock hardcap from 100× to 64×"],
+		[1,"BUGFIX","Fixed Overclock charging an extra second of dilated time per second when above the softcap"],
+		[1,"BUGFIX","Dilation upgrade div is no longer visible with no dilation upgrades unlocked"],
+		[4,"TEXTFIX","The \"Tichat's Heart\" secret achievement now correctly says 𝕍3.0 instead of v3.0"]
 	]},
 	{num:"𝕍1.1.4",date:"2023-04-01",changes:[
-		["BALANCE","Decreased Overclock hardcap from 512× to 100×"],
-		["CONTENT","Added Dilation Upgrades"],
-		["EVIL","The theme resets to Light on every page load as long as the UTC date is April 1"],
-		["QOL","Overclock softcap increased from 4× to 16×"]
+		[1,"BALANCE","Decreased Overclock hardcap from 512× to 100×"],
+		[1,"CONTENT","Added Dilation Upgrades"],
+		[1,"EVIL","The theme resets to Light on every page load as long as the UTC date is April 1"],
+		[1,"QOL","Overclock softcap increased from 4× to 16×"]
 	]},
 	{num:"𝕍1.1.3",date:"2023-04-01",changes:[
-		["VIRTUE","The theme no longer resets to Light on every page load (only the first time)"]
+		[1,"VIRTUE","The theme no longer resets to Light on every page load (only the first time)"]
 	]},
 	{num:"𝕍1.1.2",date:"2023-04-01",changes:[
-		["EVIL","Made the Light theme the default"]
+		[1,"EVIL","Made the Light theme the default"]
 	]},
 	{num:"𝕍1.1.1",date:"2023-04-01",changes:[
-		["TEXTFIX","Fixed the how-to-play entry for Energy saying there are seven types of Energy"],
-		["TEXTFIX","The 'Star/Mastery/Research builds' columns of the 'last 10 runs' tables in 'Previous Prestiges' are now properly labeled 'Star/Mastery/Research builds' instead of 'build'"]
+		[2,"TEXTFIX","The 'Star/Mastery"+((highestTierUnlocked>=5)?"/Research":"")+" builds' columns of the 'last 10 runs' tables in 'Previous Prestiges' are now properly labeled 'Star/Mastery"+((highestTierUnlocked>=5)?"/Research":"")+" builds' instead of 'build'"],
+		[4,"TEXTFIX","Fixed the how-to-play entry for Energy saying there are seven types of Energy"]
 	]},
 	{num:"<del>v1.1</del> <ins>𝕍1.1</ins>",date:"2023-04-01",name:"<del>The Light</del> <ins>Just for Lilith</ins>",changes:[
-		["BALANCE","The row 7 mastery unlock now costs "+format(1.5e61)+" stardust (from "+format(1e60)+")"],
-		["BALANCE","Stardust reset autobuyer is now unlocked at 8 Tier 5 achievements (previously 25)"],
-		["BALANCE","Wormhole reset autobuyer is now unlocked at 12 Tier 5 achievements (previously 20)"],
-		["BUGFIX","Dark T axis is no longer affected doubly by 'Grand Balance'"],
-		["FLAIR","Named the stardust upgrades"],
-		["FLAIR","The page title now states the version number. It is also now \"by alemaninc\" for ripoff prevention"],
-		["FLAIR","The version number now uses a fancy 𝕍 instead of an ordinary v"],
-		["INCLUSION","Masteries and Achievements should now be readable by screen readers. Possibly Research too, but can't guarantee that yet"],
-		["INTERFACE","Most options specific to a single feature have been moved from 'Options' to the relevant tab"],
-		["INTERFACE","Opening the Discord now opens to a new tab"],
-		["INTERFACE","The 'S' in the icons for researches 6-10 and 6-11 is now white as expected"],
-		["INTERFACE","Achievement progress percentage no longer goes above 100% for achievements like 'Enneract'"],
-		["INTERFACE","Stat breakdown now uses \"categories\" - i.e. instead of 50 third-level tabs in the Stat Breakdown tab, there are now 14 third-level tabs, which either open to a table like normally (e.g. 'exotic matter gain') or open to a menu of fourth-level tabs which each contain tables (e.g. 'normal axis effects')"],
-		["INTERFACE","Stardust upgrade buttons now show their \"level\""],
-		["INTERFACE","Maxed stardust upgrades now remain visible (this can be turned off)"],
-		["INTERFACE","The entire game is no longer offset around 16 pixels to the right"],
-		["INTERFACE","Popups are now more stylish"],
-		["INTERFACE","Buttons in 'Options' which previously cycled through a list of options now show a menu with the options instead"],
-		["INTERFACE","Dark U axis now states its overall multiplier in addition to the multiplier per total dark axis"],
-		["MISCELLANEOUS","The secret research no longer has prerequisite research"],
-		["MISCELLANEOUS","The game now tracks 'total stardust produced', 'total stardust this wormhole reset' and so on"],
-		["PERFORMANCE","Improved."],
-		["QOL","Added a 'previous prestiges' section that shows the last 10 Stardust and Wormhole resets done and mastery/star/research setups within them, and the same for all-time best stardust and wormhole runs"],
-		["QOL","Added research loadouts"],
-		["QOL","Changed the offline system"],
-		["CONTENT","Added a new 'how to play' section"],
-		["CONTENT","Added an achievement taken straight from Tichat's heart"],
-		["CONTENT","Added the Light theme. (◕‿◕)"]
+		[3,"BALANCE","The row 7 mastery unlock now costs "+format(1.5e61)+" stardust (from "+format(1e60)+")"],
+		[5,"BALANCE","Stardust reset autobuyer is now unlocked at 8 Tier 5 achievements (previously 25)"],
+		[5,"BALANCE","Wormhole reset autobuyer is now unlocked at 12 Tier 5 achievements (previously 20)"],
+		[3,"BUGFIX","Dark T axis is no longer affected doubly by 'Grand Balance'"],
+		[1,"FLAIR","The page title now states the version number. It is also now \"by alemaninc\" for ripoff prevention"],
+		[1,"FLAIR","The version number now uses a fancy 𝕍 instead of an ordinary v"],
+		[2,"FLAIR","Named the stardust upgrades"],
+		[[1,5],"INCLUSION","Masteries and Achievements should now be readable by screen readers"+((highestTierUnlocked>=5)?". Possibly Research too, but can't guarantee that yet":"")],
+		[1,"INTERFACE","Most options specific to a single feature have been moved from 'Options' to the relevant tab"],
+		[1,"INTERFACE","Opening the Discord now opens to a new tab"],
+		[[1,2],"INTERFACE","Achievement progress percentage no longer goes above 100% for "+((highestTierUnlocked>=2)?"achievements like 'Enneract'":"certain achievements")],
+		[1,"INTERFACE","Stat breakdown now uses \"categories\" - i.e. instead of 50 third-level tabs in the Stat Breakdown tab, there are now 14 third-level tabs, which either open to a table like normally (e.g. 'exotic matter gain') or open to a menu of fourth-level tabs which each contain tables (e.g. 'normal axis effects')"],
+		[1,"INTERFACE","The entire game is no longer offset around 16 pixels to the right"],
+		[1,"INTERFACE","Popups are now more stylish"],
+		[1,"INTERFACE","Buttons in 'Options' which previously cycled through a list of options now show a menu with the options instead"],
+		[2,"INTERFACE","Stardust upgrade buttons now show their \"level\""],
+		[2,"INTERFACE","Maxed stardust upgrades now remain visible (this can be turned off)"],
+		[3,"INTERFACE","Dark U axis now states its overall multiplier in addition to the multiplier per total dark axis"],
+		[5,"INTERFACE","The 'S' in the icons for researches 6-10 and 6-11 is now white as expected"],
+		[2,"MISCELLANEOUS","The game now tracks 'total stardust produced', 'total stardust this wormhole reset' and so on"],
+		[5,"MISCELLANEOUS","The secret research no longer has prerequisite research"],
+		[1,"PERFORMANCE","Improved."],
+		[1,"QOL","Changed the offline system"],
+		[2,"QOL","Added a 'previous prestiges' section that shows the last 10 Stardust and Wormhole resets done and mastery/star/research setups within them, and the same for all-time best stardust and wormhole runs"],
+		[5,"QOL","Added research loadouts"],
+		[1,"CONTENT","Added a new 'how to play' section"],
+		[5,"CONTENT","Added an achievement taken straight from Tichat's heart"],
+		[1,"CONTENT","Added the Light theme. (◕‿◕)"]
 	]},
 	{num:"v1.0.21",date:"2023-02-28",changes:[
-		["BUGFIX","Stardust reset now unlocks stardust properly"],
-		["INTERFACE","The button in the storyline screen looks better"]
+		[2,"BUGFIX","Stardust reset now unlocks stardust properly"],
+		[1,"INTERFACE","The button in the storyline screen looks better"]
 	]},
 	{num:"v1.0.20",date:"2023-02-27",changes:[
-		["BALANCE","Endgame is now 6 studies instead of 4"]
+		[5,"BALANCE","Endgame is now 6 studies instead of 4"]
 	]},
 	{num:"v1.0.19",date:"2023-02-27",name:"The Room of Requirement",changes:[
-		["BUGFIX","Added an option to turn off buying all prerequisite research"],
-		["INTERFACE","Opening the changelog now opens to a new tab"]
+		[5,"BUGFIX","Added an option to turn off buying all prerequisite research"],
+		[1,"INTERFACE","Opening the changelog now opens to a new tab"]
 	]},
 	{num:"v1.0.18",date:"2023-02-26",name:"Criticality",changes:[
-		["BUGFIX","The 'Rationing' achievement no longer breaks the game if obtained before 9 Tier 5 achievements"],
-		["QOL","Buying a research that has prerequisites will now attempt to buy all prerequisite research"],
-		["QOL","Added the ability to import and export star builds"]
+		[5,"BUGFIX","The 'Rationing' achievement no longer breaks the game if obtained before 9 Tier 5 achievements"],
+		[2,"QOL","Added the ability to import and export star builds"],
+		[5,"QOL","Buying a research that has prerequisites will now attempt to buy all prerequisite research"]
 	]},
 	{num:"v1.0.17",date:"2023-02-21",changes:[
-		["BUGFIX","Exiting a Study without completing it will no longer respec your Research"],
-		["WHAT","Fixed the v1.0.16 entry having an uppercase V"]
+		[5,"BUGFIX","Exiting a Study without completing it will no longer respec your Research"],
+		[1,"WHAT","Fixed the v1.0.16 entry having an uppercase V"]
 	]},
 	{num:"v1.0.16",date:"2023-02-21",changes:[
-		["BUGFIX","Tried really hard to prevent time reversal"],
-		["QOL","Exiting a Study without completing it will no longer respec your Research"]
+		[1,"BUGFIX","Tried really hard to prevent time reversal"],
+		[5,"QOL","Exiting a Study without completing it will no longer respec your Research"]
 	]},
 	{num:"v1.0.15",date:"2023-02-20",changes:[
-		["BUGFIX","The 'Big Crunch' achievement is now possible when buying single dark axis"],
-		["INTERFACE","Added more research achievements"]
+		[5,"BUGFIX","The 'Big Crunch' achievement is now possible when buying single dark axis"],
+		[5,"INTERFACE","Added more research achievements"]
 	]},
 	{num:"v1.0.14",date:"2023-02-19",changes:[
-		["BUGFIX","Fixed 'Iron Will IV' for not the first time and certainly not the last"]
+		[5,"BUGFIX","Fixed 'Iron Will IV' for not the first time and certainly not the last"]
 	]},
 	{num:"v1.0.13",date:"2023-02-19",changes:[
-		["BUGFIX","Fixed 'Iron Will IV' again"],
-		["WHAT","Fixed the v1.0.12 entry saying 2023-02-17 (this will just keep on happening until the last update, won't it...)"]
+		[5,"BUGFIX","Fixed 'Iron Will IV' again"],
+		[1,"WHAT","Fixed the v1.0.12 entry saying 2023-02-17 (this will just keep on happening until the last update, won't it...)"]
 	]},
 	{num:"v1.0.12",date:"2023-02-18",name:"Why is this even documented...",changes:[
-		["BUGFIX","Completing a study where your total dark axis are equal to the goal was not adding to the completion counter"],
-		["WHAT","Fixed the v1.0.11 entry having no date"]
+		[5,"BUGFIX","Completing a study where your total dark axis are equal to the goal was not adding to the completion counter"],
+		[1,"WHAT","Fixed the v1.0.11 entry having no date"]
 	]},
 	{num:"v1.0.11",date:"2023-02-17",changes:[
-		["BUGFIX","Tried to fix exotic matter becoming NaN (and probably failed)"],
-		["INTERFACE","\"Hiding completed achievement tiers\" will no longer hide secret achievements even if you have all of them"],
-		["INTERFACE","Study text in the Studies tab is easier to read"]
+		[1,"BUGFIX","Tried to fix exotic matter becoming NaN (and probably failed)"],
+		[1,"INTERFACE","\"Hiding completed achievement tiers\" will no longer hide secret achievements even if you have all of them"],
+		[5,"INTERFACE","Study text in the Studies tab is easier to read"]
 	]},
 	{num:"v1.0.10",date:"2023-02-17",changes:[
-		["INTERFACE","Tier 5 achievement text now uses a slightly darker shade of blue"],
-		["INTERFACE","Fixed the entire v1.0.9 entry being a heading"]
+		[5,"INTERFACE","Tier 5 achievement text now uses a slightly darker shade of blue"],
+		[1,"WHAT","Fixed the entire v1.0.9 entry being a heading"],
 	]},
 	{num:"v1.0.9",date:"2023-02-17",name:"What.",changes:[
-		["INTERFACE","Tier 5 achievements now use slightly lighter shades of blue"],
-		["WHAT","Changed the v1.0.8 entry incorrectly saying 2023-02-16"]
+		[5,"INTERFACE","Tier 5 achievements now use slightly lighter shades of blue"],
+		[1,"WHAT","Changed the v1.0.8 entry incorrectly saying 2023-02-16"]
 	]},
 	{num:"v1.0.8",date:"2023-02-17",name:"v1.0.7 v2",changes:[
-		["INTERFACE","Made	the dark star gain button smaller as the changes from v1.0.7 resulted in a lot of empty space"],
-		["NO CHEATING ARE YOU CHEATING","Time will no longer reverse if the system clock is changed"],
-		["WHAT","Changed the v1.0.7 entry incorrectly saying 2023-02-17"]
+		[3,"INTERFACE","Made the dark star gain button smaller as the changes from v1.0.7 resulted in a lot of empty space"],
+		[1,"NO CHEATING ARE YOU CHEATING","Time will no longer reverse if the system clock is changed"],
+		[1,"WHAT","Changed the v1.0.7 entry incorrectly saying 2023-02-17"]
 	]},
 	{num:"v1.0.7",date:"2023-02-16",changes:[
-		["BUGFIX","'Weakened' offline boost no longer breaks the game"],
-		["INTERFACE","The dark star boost to each axis is now shown inside the dark axis buttons rather than the dark star button. The dark star button shows which effects will increase."],
-		["INTERNAL","Even more HTML is now procedurally generated, so the game takes around 400% longer to load"]
+		[1,"BUGFIX","'Weakened' offline boost no longer breaks the game"],
+		[3,"INTERFACE","The dark star boost to each axis is now shown inside the dark axis buttons rather than the dark star button. The dark star button shows which effects will increase."],
+		[1,"INTERNAL","Even more HTML is now procedurally generated, so the game takes around 400% longer to load"]
 	]},
 	{num:"v1.0.6",date:"2023-02-16",changes:[
-		["INTERFACE","Changed the style of the resource modal at the top of the screen"],
+		[1,"INTERFACE","Changed the style of the resource modal at the top of the screen"],
 	]},
 	{num:"v1.0.5",date:"2023-02-16",changes:[
-		["BUGFIX","Free U axis from dark matter were not being counted when gaining stardust from a dark star"],
-		["INTERFACE","The research tree should now be scrollable on narrow viewports"]
+		[3,"BUGFIX","Free U axis from dark matter were not being counted when gaining stardust from a dark star"],
+		[5,"INTERFACE","The research tree should now be scrollable on narrow viewports"]
 	]},
 	{num:"v1.0.4",date:"2023-02-15",changes:[
-		["INTERFACE","The Star tab now shows your total stars as well as the row the next purchased star will go into"]
+		[2,"INTERFACE","The Star tab now shows your total stars as well as the row the next purchased star will go into"]
 	]},
 	{num:"v1.0.3",date:"2023-02-15",name:"Steelen Will",changes:[
-		["BUGFIX","Fixed 'Iron Will IV' giving no reward"],
-		["INTERFACE","Changed the description of the 'Halted' achievements"],
-		["INTERFACE","Moved the changelog from the 'Options' tab to a dedicated HTML file"]
+		[5,"BUGFIX","Fixed 'Iron Will IV' giving no reward"],
+		[1,"INTERFACE","Changed the description of the 'Halted' achievements"],
+		[1,"INTERFACE","Moved the changelog from the 'Options' tab to a dedicated HTML file"]
 	]},
 	{num:"v1.0.2",date:"2023-02-14",name:"1000 Ways to Export",changes:[
-		["INTERFACE","Added some more research descriptions"],
-		["SAVING","Changed the way that exporting saves works"]
+		[5,"INTERFACE","Added some more research descriptions"],
+		[1,"SAVING","Changed the way that exporting saves works"]
 	]},
 	{num:"v1.0.1",date:"2023-02-14",name:"Even Smaller Adjustments",changes:[
-		["INTERFACE","Clarified achievement 106 'Also 10,000 hours?' and renamed it to '10.000 Hours?'"],
-		["INTERFACE","Wormhole milestones are no longer visible until you unlock Wormhole"],
-		["QOL","Made it easier to wipe save"]
+		[1,"INTERFACE","Clarified achievement 106 'Also 10,000 hours?' and renamed it to '10.000 Hours?'"],
+		[5,"INTERFACE","Wormhole milestones are no longer visible until you unlock Wormhole"],
+		[1,"QOL","Made it easier to wipe save"]
 	]},
 	{num:"v1",date:"2023-02-14",name:"This is not early July!",changes:[
-		["BALANCE","A lot of costs and unlock requirements have been altered due to the addition of achievements. Old save import may now <s>slightly</s> adjust your resources to compensate."],
-		["BALANCE","Energy is around 4× weaker. Sorry!"],
-		["BALANCE","The 3rd dark star effect now softcaps past 100%"],
-		["BUGFIX","<code>infOP VI</code> has been replaced by <code>break_eternity.js</code> - resources no longer become 'NaN' arbitrarily"],
-		["CONTENT","Added the Wormhole reset tier"],
-		["CONTENT","Added the first 8 rows of Research"],
-		["CONTENT","Added the first 2 Studies"],
-		["CONTENT","Added achievements"],
-		["CONTENT","Removed Supernovas. <i>Far</i> too much micromanaging involved."],
-		["HELP","LAG"],
-		["INCLUSION","Stars, masteries and automation can now be read by screen readers"],
-		["INTERFACE","Dynamic resource UI"],
-		["INTERFACE","Main button is now green like the exotic matter text instead of blue"],
-		["INTERFACE","You no longer have to refresh the page in order to refresh the theme"],
-		["INTERFACE","Removed 'how to play' for no particular reason"],
-		["INTERNAL","A lot of HTML is now generated procedurally by JavaScript"],
-		["QOL","Stars no longer have to be bought in order if you have enough of them (eg. if you have 9 total stars, you can now buy four row 1 stars, three row 2 stars and two row 3 stars in any order)"],
-		["QOL","Added a button that allows you to fill all star rows which you can assign 4 stars to"],
-		["QOL","When you can gain multiple dark stars (and when you can but the option is turned off too!), the game will now show you how many you will gain and how many dark axis you need for the next"]
+		[1,"BALANCE","A lot of costs and unlock requirements have been altered due to the addition of achievements. Old save import may now <s>slightly</s> adjust your resources to compensate."],
+		[3,"BALANCE","The 3rd dark star effect now softcaps past 100%"],
+		[4,"BALANCE","Energy is around 4× weaker. Sorry!"],
+		[1,"BUGFIX","<code>infOP VI</code> has been replaced by <code>break_eternity.js</code> - resources no longer become 'NaN' arbitrarily"],
+		[4,"CONTENT","Added the Wormhole reset tier"],
+		[5,"CONTENT","Added the first 8 rows of Research"],
+		[5,"CONTENT","Added the first 2 Studies"],
+		[1,"CONTENT","Added achievements"],
+		[4,"CONTENT","Removed Supernovas. <i>Far</i> too much micromanaging involved."],
+		[1,"HELP","LAG"],
+		[1,"INCLUSION","Stars, masteries and automation can now be read by screen readers"],
+		[1,"INTERFACE","Dynamic resource UI"],
+		[1,"INTERFACE","Main button is now green like the exotic matter text instead of blue"],
+		[1,"INTERFACE","You no longer have to refresh the page in order to refresh the theme"],
+		[1,"INTERFACE","Removed 'how to play' for no particular reason"],
+		[1,"INTERNAL","A lot of HTML is now generated procedurally by JavaScript"],
+		[2,"QOL","Stars no longer have to be bought in order if you have enough of them (eg. if you have 9 total stars, you can now buy four row 1 stars, three row 2 stars and two row 3 stars in any order)"],
+		[2,"QOL","Added a button that allows you to fill all star rows which you can assign 4 stars to"],
+		[3,"QOL","When you can gain multiple dark stars (and when you can but the option is turned off too!), the game will now show you how many you will gain and how many dark axis you need for the next"]
 	]},
 	{num:"v1β.12",date:"2022-06-19",changes:[
-		["INTERFACE","Screen should no longer flash erratically"]
+		[1,"INTERFACE","Screen should no longer flash erratically"]
 	]},
 	{num:"v1β.11",date:"2022-06-17",changes:[
-		["INTERFACE","Screen should no longer flash erratically"],
-		["STORY","Only major updates will be named from now on"]
+		[1,"INTERFACE","Screen should no longer flash erratically"],
+		[1,"STORY","Only major updates will be named from now on"]
 	]},
 	{num:"v1β.10",date:"2022-06-14",name:"That's because I'm a good game dev and pushed some code which totally works",changes:[
-		["BUGFIX","Fixed exotic matter gain being raised by the spatial energy effect instead of the dark energy effect"]
+		[4,"BUGFIX","Fixed exotic matter gain being raised by the spatial energy effect instead of the dark energy effect"]
 	]},
 	{num:"v1β.9",date:"2022-06-11",name:"Worst balancing ever",changes:[
-		["BALANCE","Energy effects now softcap past ^2.5 (except spatial energy which softcaps at ^15 and meta energy which doesn't softcap)"]
+		[4,"BALANCE","Energy effects now softcap past ^2.5 (except spatial energy which softcaps at ^15 and meta energy which doesn't softcap)"]
 	]},
 	{num:"v1β.8",date:"2022-06-08",name:"But I <s>don't</s> want to grind! III",changes:[
-		["BUGFIX","The 'Offline Speedup On' button now works as intended (hopefully)"],
-		["BUGFIX","9th row Masteries are now properly on a separate row"],
-		["BUGFIX","Knowledge Supernova now displays the correct value"],
-		["INTERFACE","Added a tooltip explaining how mastery power gain works"]
+		[1,"BUGFIX","The 'Offline Speedup On' button now works as intended (hopefully)"],
+		[4,"BUGFIX","9th row Masteries are now properly on a separate row"],
+		[4,"BUGFIX","Knowledge Supernova now displays the correct value"],
+		[1,"INTERFACE","Added a tooltip explaining how mastery power gain works"]
 	]},
 	{num:"v1β.7",date:"2022-06-08",name:"But I <s>don't</s> want to grind! II",changes:[
-		["BALANCE","Dark W axis cost increases much, much faster once you reach 64"],
-		["QOL","Fixed 'Buy Max Axis'"]
+		[3,"BALANCE","Dark W axis cost increases much, much faster once you reach 64"],
+		[1,"QOL","Fixed 'Buy Max Axis'"]
 	]},
 	{num:"v1β.6",date:"2022-06-08",name:"But I <s>don't</s> want to grind!",changes:[
-		["QOL","Added option to weaken offline progress beyond 1 hour"]
+		[1,"QOL","Added option to weaken offline progress beyond 1 hour"]
 	]},
 	{num:"v1β.5",date:"2022-06-07",name:"Mastery of Glitches",changes:[
-		["BUGFIX","'NaN' should no longer occur"]
+		[1,"BUGFIX","'NaN' should no longer occur"]
 	]},
 	{num:"v1β.4",date:"2022-06-06",name:"I give up.",changes:[
-		["ANNOUNCEMENT","<b>The game will no longer display a permanent 'Loading game...' screen. alemaninc will from now on do the responsible thing and test his updates locally.</b>"]
+		[1,"ANNOUNCEMENT","<b>The game will no longer display a permanent 'Loading game...' screen. alemaninc will from now on do the responsible thing and test his updates locally.</b>"]
 	]},
 	{num:"v1β.3",date:"2022-06-05",name:"The Useless Stat Breakdown",changes:[
-		["BUGFIX","Stat breakdown for mastery power formula exponent now shows the correct value"],
-		["BUGFIX","Offline progress no longer exploitable by idling"],
-		["INTERFACE","Horizontal scroll bar should no longer be present"],
-		["INTERFACE","Stat breakdown has different layout for compounding boosts such as axis"],
-		["QOL","Added an option to disable offline progress"]
+		[1,"BUGFIX","Stat breakdown for mastery power formula exponent now shows the correct value"],
+		[1,"BUGFIX","Offline progress no longer exploitable by idling"],
+		[1,"INTERFACE","Horizontal scroll bar should no longer be present"],
+		[1,"INTERFACE","Stat breakdown has different layout for compounding boosts such as axis"],
+		[1,"QOL","Added an option to disable offline progress"]
 	]},
 	{num:"v1β.2",date:"2022-06-05",name:"True Radioactive Decay",changes:[
-		["BUGFIX","Forced stardust resets no longer reduce stardust"],
-		["INTERFACE","Added gray and black themes"]
+		[2,"BUGFIX","Forced stardust resets no longer reduce stardust"],
+		[1,"INTERFACE","Added gray and black themes"]
 	]},
 	{num:"v1β.1",date:"2022-06-04",name:"Glitches all the way down",changes:[
-		["QOL","Export save should work better now"],
-		["BUGFIX","Saves from apha should no longer load into beta"],
-		["BUGFIX","Axis autobuyer no longer breaks the game"]
+		[1,"QOL","Export save should work better now"],
+		[1,"BUGFIX","Saves from alpha should no longer load into beta"],
+		[2,"BUGFIX","Axis autobuyer no longer breaks the game"]
 	]},
 	{num:"v1β",date:"2022-06-03",name:"Popular Whining",changes:[
-		["BUGFIX","Saving should work properly now (maybe)"],
-		["CONTENT","Added Masteries"],
-		["CONTENT","Added 3 more Energies"],
-		["CONTENT","Added 6 more rows of Stars"],
-		["CONTENT","Added Supernova"],
-		["BALANCE","A lot of things are now stronger but have steeper cost growth"],
-		["BALANCE","A lot of things are now weaker but have slower cost growth"],
-		["INTERFACE","Progress bar text is now on a separate line"],
-		["INTERFACE","Center-aligned exotic matter text"],
-		["INTERFACE","Added option to change the color theme"],
-		["QOL","Tabs now glow if you can afford something in them (this affects parent tabs too)"],
-		["QOL","Game should be less laggy on mobile devices and low end computers (added delta time)"],
-		["QOL","Added 'Buy Max Axis' and 'Buy Max Dark Axis' buttons"],
-		["QOL","Gaining dark stars (formerly Axioms) now bulk-buys as many dark stars as possible (can be disabled in Options)"],
-		["QOL","Buying automation speed upgrades now bulk-buys"],
-		["STORY","Renamed nearly everything in the Tribute layer (including the layer name itself)"],
-		["STORY","Added a story"],
+		[1,"CONTENT","Added Masteries"],
+		[2,"CONTENT","Added 6 more rows of Stars"],
+		[4,"CONTENT","Added 3 more Energies"],
+		[4,"CONTENT","Added Supernova"],
+		[1,"BALANCE","A lot of things are now stronger but have steeper cost growth"],
+		[1,"BALANCE","A lot of things are now weaker but have slower cost growth"],
+		[1,"BUGFIX","Saving should work properly now (maybe)"],
+		[1,"INTERFACE","Progress bar text is now on a separate line"],
+		[1,"INTERFACE","Center-aligned exotic matter text"],
+		[1,"INTERFACE","Added option to change the color theme"],
+		[1,"QOL","Tabs now glow if you can afford something in them (this affects parent tabs too)"],
+		[1,"QOL","Game should be less laggy on mobile devices and low end computers (added delta time)"],
+		[[1,3],"QOL","Added 'Buy Max Axis'"+((highestTierUnlocked>=3)?" and 'Buy Max Dark Axis'":"")+" buttons"],
+		[2,"QOL","Buying automation speed upgrades now bulk-buys"],
+		[3,"QOL","Gaining dark stars (formerly Axioms) now bulk-buys as many dark stars as possible (can be disabled in Options)"],
+		[2,"STORY","Renamed nearly everything in the Tribute layer (including the layer name itself)"],
+		[2,"STORY","Added a story"],
 		"Current endgame: "+format("e2.5e5")+" exotic matter"
 	]},
 	{num:"v1α.3",date:"2022-03-07",name:"Smaller Adjustments",changes:[
-		["QOL","Engineering notation more readable (dynamic floating point)","Hedrauta"],
-		["QOL","Number shown on Tribute-Reset-Button more readable","Hedrauta"]
+		[1,"QOL","Engineering notation more readable (dynamic floating point)","Hedrauta"],
+		[2,"QOL","Number shown on Tribute-Reset-Button more readable","Hedrauta"]
 	]},
 	{num:"v1α.2",date:"2022-02-27",name:"Hedrautafunded?",changes:[
-		["BUGFIX","Fixed people's saves getting deleted","Hedrauta"],
-		["BUGFIX","<i>Hopefully</i> fixed energy per second setting itself to NaN"]
+		[1,"BUGFIX","Fixed people's saves getting deleted","Hedrauta"],
+		[4,"BUGFIX","<i>Hopefully</i> fixed energy per second setting itself to NaN"]
 	]},
 	{num:"v1α.1",date:"2022-02-25",name:"Crowdfunded",changes:[
-		["BUGFIX","Fixed save import","Hedrauta"],
-		["INTERFACE","Added Engineering notation","Hedrauta"],
-		["BALANCE","Axis autobuyer is a lot cheaper"]
+		[2,"BALANCE","Axis autobuyer is a lot cheaper"],
+		[1,"BUGFIX","Fixed save import","Hedrauta"],
+		[1,"INTERFACE","Added Engineering notation","Hedrauta"],
 	]},
 	{num:"v1α",date:"<span style=\"color:#ff0000; text-shadow:0 0 5px #ff0000,0 0 20px #ff0000,0 0 45px #ff0000\">22/2/22</span>",name:"Bugs Out, Bugs In",changes:[
-		["CONTENT","Added Energy"],
-		["CONTENT","Gaining an axiom now does a tribute reset"],
-		["CONTENT","Named the updates"],
-		["CONTENT","Added a 'How to play' section"],
-		["CONTENT","Added a 'Hidden Statistics' section"],
-		["CONTENT","Added a 'Stat Breakdown' section"],
-		["BALANCE","Rebalanced some values in Tributes"],
-		["BALANCE","Strengthened some Tribute Boosts, but increased some upgrade and unlock requirements"],
-		["INTERFACE","Tab buttons are now center-aligned rather than left-aligned"],
-		["INTERFACE","Added 4 new notations"],
-		["INTERFACE","Moved changelog from 'Statistics' to 'Options'"],
-		["QOL","Added export save (import does not currently work)"],
-		["QOL","Wiping your save now requires a confirmation"],
-		["BUGFIX","Fixed a bug that made exotic matter per second way too high in the first tick, allowing players to skip progression"],
-		["BUGFIX","Fixed tribute reset button shaking"],
-		["BUGFIX","Fixed exotic matter not resetting properly on tribute reset"]
+		[3,"CONTENT","Added Energy"],
+		[3,"CONTENT","Gaining an axiom now does a tribute reset"],
+		[1,"CONTENT","Named the updates"],
+		[1,"CONTENT","Added a 'How to play' section"],
+		[1,"CONTENT","Added a 'Hidden Statistics' section"],
+		[1,"CONTENT","Added a 'Stat Breakdown' section"],
+		[2,"BALANCE","Rebalanced some values in Tributes"],
+		[2,"BALANCE","Strengthened some Tribute Boosts, but increased some upgrade and unlock requirements"],
+		[1,"INTERFACE","Tab buttons are now center-aligned rather than left-aligned"],
+		[1,"INTERFACE","Added 4 new notations"],
+		[1,"INTERFACE","Moved changelog from 'Statistics' to 'Options'"],
+		[1,"QOL","Added export save (import does not currently work)"],
+		[1,"QOL","Wiping your save now requires a confirmation"],
+		[1,"BUGFIX","Fixed a bug that made exotic matter per second way too high in the first tick, allowing players to skip progression"],
+		[2,"BUGFIX","Fixed tribute reset button shaking"],
+		[2,"BUGFIX","Fixed exotic matter not resetting properly on tribute reset"]
 	]},
 	{num:"v0.2",date:"2022-01-29",changes:[
 		"- Added Dark Matter",
@@ -1228,10 +1276,17 @@ const logEntries = [
 	]},
 	{num:"v0",date:"2022-01-05",changes:["Initial release - X, Y, Z, W Axis, Options, Statistics, Tributes, Tribute Boosts"]}
 ]
+
+d.innerHTML("tierText",(highestTierUnlocked===Infinity)?"A savefile could not be retrieved, so all entries are shown. You may see spoilers if you proceed.":("You have unlocked "+highestTierUnlocked+" tier"+((highestTierUnlocked===1)?"":"s")+" of achievements according to the savefile retrieved."))
+d.element("tierText").style.color = (highestTierUnlocked===Infinity)?"#ff6666":"#cccc00"
+
 const depthChars = ".αβΩω".split("")
 for (let i of logEntries) {
 	let depth = depthChars.map(x=>i.num.length-i.num.replaceAll(x,"").length).sum()
-	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+i.changes.map(x => (typeof x === "object")?("<tr><td style=\"width:200px"+(x.length===3?(";color:"+contributors[x[2]]):"")+"\">"+x[0]+"</td><td style=\"width:calc(100vw - 200px)"+(x.length===3?(";color:"+contributors[x[2]]):"")+"\">"+x[1]+(x.length===3?(" (by "+x[2]+")"):"")+"</td></tr>"):("<tr><td colspan=\"2\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+"</table></div>"
+	let changes = i.changes
+	let displayed = changes.filter(x=>Array.isArray(x)?(highestTierUnlocked>=(Array.isArray(x[0])?x[0][0]:x[0])):true)
+	let tierForNext = changes.filter(x=>Array.isArray(x)?(highestTierUnlocked<(Array.isArray(x[0])?x[0][0]:x[0])):false).map(x=>x[0]).flat().filter(x=>x>=highestTierUnlocked).reduce((x,y)=>Math.min(x,y),Infinity)
+	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (typeof x === "object")?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((highestTierUnlocked<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>highestTierUnlocked)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Unlock "+tierForNext+" tiers of achievements to see more.</td></tr>"))+"</table></div>"
 }
 var acc = document.getElementsByClassName("accordion");
 
@@ -1250,6 +1305,8 @@ for (let i of acc) {
 		}
 	});
 }
+d.display("loading","none")
+d.display("changelog","inline-block")
 		</script>
 	</body>
 </html>

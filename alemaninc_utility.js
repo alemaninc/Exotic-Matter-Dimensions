@@ -142,9 +142,9 @@ function roman(number) { // generates a roman numeral. Monospace fonts are recom
 	}
 	return out;
 }
-function dictionary(key,array) {
-	if (!(array instanceof Array)) crash("dictionary("+JSON.stringify(key)+","+JSON.stringify(array)+") has an invalid array")
-	try {return array[array.map(x => x[0]).indexOf(key)][1];} catch {functionCrash("dictionary",arguments)}
+function dictionary(key,dict) {
+	if ((typeof dict) !== "object") {functionCrash("dictionary",arguments)}
+	return dict[key]
 }
 function halfFunction(x) {
 	return (typeof x === "function")?x():x;
