@@ -325,7 +325,7 @@ const research = (function(){
 			description:function(){return "Multiply knowledge gain by "+numOrFormula("r3_8")+" (based on total Discoveries)"},
 			adjacent_req:["r2_8"],
 			condition:[studyReq(5,1)],
-			visibility:function(){return (g.studyCompletions[5]>0)&&betaActive},
+			visibility:function(){return g.studyCompletions[5]>0},
 			type:"normal",
 			basecost:N(500),
 			icon:icon.discovery+icon.arr+icon.knowledge,
@@ -408,7 +408,7 @@ const research = (function(){
 			description:function(){return "Chroma gain is multiplied by "+numOrFormula("r4_7")+" (based on total Discoveries)"},
 			adjacent_req:["r2_8"],
 			condition:[studyReq(5,1)],
-			visibility:function(){return (g.studyCompletions[5]>0)&&betaActive},
+			visibility:function(){return g.studyCompletions[5]>0},
 			type:"normal",
 			basecost:N(500),
 			icon:icon.discovery+icon.arr+icon.chroma(6),
@@ -421,7 +421,7 @@ const research = (function(){
 			description:function(){return "Hawking radiation gain is multiplied by "+numOrFormula("r4_9")+" (based on total Discoveries)"},
 			adjacent_req:["r2_8"],
 			condition:[studyReq(5,1)],
-			visibility:function(){return (g.studyCompletions[5]>0)&&betaActive},
+			visibility:function(){return g.studyCompletions[5]>0},
 			type:"normal",
 			basecost:N(500),
 			icon:icon.discovery+icon.arr+icon.hr,
@@ -516,7 +516,7 @@ const research = (function(){
 			description:function(){return "The other Conclusion research are "+numOrFormula("r5_8")+(researchEffect(5,8).gte(c.d10)?"×":"%")+" stronger (based on total Discoveries)"},
 			adjacent_req:["r3_8","r4_7","r4_9"],
 			condition:[studyReq(5,2)],
-			visibility:function(){return (g.studyCompletions[5]>1)&&betaActive},
+			visibility:function(){return g.studyCompletions[5]>1},
 			type:"normal",
 			basecost:N(1500),
 			icon:icon.discovery+icon.arr+icon.research,
@@ -1158,7 +1158,7 @@ const research = (function(){
 			description:function(){return "Multiply knowledge gain by "+numOrFormula("r14_8")+"× (based on cyan, magenta and yellow lumens)"},
 			adjacent_req:["r13_8"],
 			condition:[],
-			visibility:function(){return betaActive},
+			visibility:function(){return true},
 			type:"normal",
 			basecost:N(540),
 			effect:function(power){return [3,4,5].map(x=>g.lumens[x]).productDecimals().pow(c.d0_25).mul(power).pow10()},
@@ -1685,7 +1685,7 @@ const research = (function(){
 			description:function(){return "Antimatter gain is multiplied by "+numOrFormula("r25_15")+" (based on time in current Wormhole)"},
 			adjacent_req:["r24_14","r25_14","r26_14"],
 			condition:[studyReq(10,3)],
-			visibility:function(){return betaActive&&(g.studyCompletions[10]>2)},
+			visibility:function(){return g.studyCompletions[10]>2},
 			type:"normal",
 			basecost:N(99999),
 			icon:icon.time+icon.arr+icon.antimatter,
@@ -2246,7 +2246,7 @@ function researchCost(x,owned=g.research) {
 	if (x==="r9_14") {output = output.mul(1.5**studyPower(4))}
 	if ((researchRow(x)>7)&&(researchRow(x)<13)) {output = output.mul(achievement.perAchievementReward[6].currentVal)}
 	if (StudyE(5)&&(research[x].type==="normal")) {output = output.mul(studies[5].difficultyConstant())}
-	if ((g.activeStudy===10)&&(studyPower(10)===1)&&betaActive) {output = output.mul(c.d1.sub(numberOfDigits(g.masteryPower).div(2e4)).max(c.d0_5))}
+	if ((g.activeStudy===10)&&(studyPower(10)===1)) {output = output.mul(c.d1.sub(numberOfDigits(g.masteryPower).div(2e4)).max(c.d0_5))}
 	for (let i of researchGroupList.study5a.contents) {if (owned[i]) {output = output.mul(researchEffect(1,researchCol(i)))}}
 	if ((research[x].type==="study")&&g.achievement[907]) {output = output.mul(achievement(907).effect())}
 	// hyper 1

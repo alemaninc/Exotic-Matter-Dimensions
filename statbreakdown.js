@@ -1046,9 +1046,9 @@ miscStats.stardustExponent={
 		statTemplates.study7(2),
 		{
 			label:"Study of Studies Stellar Triad",
-			func:function(prev){return ((g.activeStudy===10)&&(studyPower(10)===0)&&betaActive)?prev.mul(0.741):prev},
+			func:function(prev){return ((g.activeStudy===10)&&(studyPower(10)===0))?prev.mul(0.741):prev},
 			text:function(){return "× 0.741"},
-			show:function(){return (g.activeStudy===10)&&(studyPower(10)===0)&&betaActive},
+			show:function(){return (g.activeStudy===10)&&(studyPower(10)===0)},
 			color:"#cc0000"
 		}
 	]

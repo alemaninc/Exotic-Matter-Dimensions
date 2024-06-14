@@ -1628,8 +1628,7 @@ const achievementList = {
 				event:"wormholeResetAfter",
 				progress:function(){return ((g.activeStudy===10)&&(studyPower(10)===i))?achievement.wormholeProgress():("Enter Study of Studies ("+triads[i]+") first")},
 				reward:rewards[i],
-				flavor:flavors[i],
-				beta:i===3
+				flavor:flavors[i]
 			}])
 			return Object.fromEntries(out)
 		})(),
@@ -1645,8 +1644,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return g.ach825possible?achievement.percent(stat.totalAxis,N(1600),0):"Failed"},
 			reward:"Row 3 Masteries are 3× stronger and gain 10% "+prismaticUpgradeName("prismCondenser")+" power (this causes it to affect more anti-axis)",
-			flavor:"If you want to keep a secret, you must also hide it from yourself.",
-			beta:true
+			flavor:"If you want to keep a secret, you must also hide it from yourself."
 		}
 	},
 	9:{
@@ -1662,8 +1660,7 @@ const achievementList = {
 			effect:function(){return Decimal.sub(c.d1,N(5e9).div(g.ach901Int.add(c.e100).log10().pow(c.d5)))},
 			effectFormat:x=>x.format(3),
 			formulaText:()=>"1 - "+N(5e9).format()+" ÷ log("+c.e100.format()+" + ∫<span class=\"xscript\"><sup>t</sup><sub>0</sub></span>log(EM + 1)<sup>10</sup>dt)<sup>5</sup>",
-			flavor:"Reach g<sub>ψ(Ω)</sub> (11) to see when you can boost!",
-			beta:true
+			flavor:"Reach g<sub>ψ(Ω)</sub> (11) to see when you can boost!"
 		},
 		902:{
 			name:"四 Shattered Mirrors",
@@ -1674,8 +1671,7 @@ const achievementList = {
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[7]<3)?"Complete Study VII 3 times first":(g.activeStudy!==7)?"Enter Study VII first":(g.TotalStardustResets<=this.maxStardust)?{percent:achievement.percent(N(g.luckEssence),N(this.luckReq),0),text:(this.maxStardust-g.TotalStardustResets)+" resets left"}:"Failed"},
 			reward:"The third reward of Study VII is 11.1% stronger",
-			flavor:"I busted a mirror and got seven years of bad luck, but my lawyer thinks he can get me five.",
-			beta:true
+			flavor:"I busted a mirror and got seven years of bad luck, but my lawyer thinks he can get me five."
 		},
 		903:{
 			name:"The Long-Awaited Reskin",
@@ -1690,8 +1686,7 @@ const achievementList = {
 				let valid = 0 // the number of runs which already satisfy the achievement requirement
 				for (let i=0;i<(g.previousWormholeRuns.last10.length-1);i++) {if (Decimal.gte(g.previousWormholeRuns.last10[i].gain,N(g.previousWormholeRuns.last10[i+1].gain).mul(c.inf))) {valid++} else {break}}
 				return valid
-			},
-			beta:true
+			}
 		},
 		904:{
 			name:"Millionaire II",
@@ -1704,8 +1699,7 @@ const achievementList = {
 			flavor:"If you don't come from a rich family, a rich family must come from you.",
 			effect:function(){return g.hawkingradiation.add(1e200).log10().log10().pow(c.d5).div(c.d64);},
 			effectFormat:x=>x.format(3),
-			formulaText:()=>"log<sup>[2]</sup>(HR + "+N(1e200).format()+")<sup>5</sup> ÷ 64",
-			beta:true
+			formulaText:()=>"log<sup>[2]</sup>(HR + "+N(1e200).format()+")<sup>5</sup> ÷ 64"
 		},
 		905:{
 			name:"Enter the E",
@@ -1722,8 +1716,7 @@ const achievementList = {
 			},
 			effectFormat:x=>x.noLeadFormat(3),
 			formulaText:function(){for (let i=4;i>=0;i--) {if (g.studyCompletions[13]>=this.effectBreakpoints[i]) {return "(10<sup>(c"+formulaFormat.add(N((this.effectBreakpoints[i+1]-this.effectBreakpoints[i])*(i+1)-this.effectBreakpoints[i]))+")"+formulaFormat.mult(N(2/(this.effectBreakpoints[i+1]-this.effectBreakpoints[i])))+"</sup> - 1) × 13 ÷ 99"}}},
-			get flavor(){return "<b>This is the last update ever.</b> It has been <b>"+BEformat(Math.floor((Date.now()-1616371200000)/86400000))+"</b> days since the game being updated."},
-			beta:true
+			get flavor(){return "<b>This is the last update ever.</b> It has been <b>"+BEformat(Math.floor((Date.now()-1616371200000)/86400000))+"</b> days since the game being updated."}
 		},
 		906:{
 			name:"Dark Eternity on the Moon",
@@ -1738,8 +1731,7 @@ const achievementList = {
 			milestoneReq:function(x){return Decimal.decibel(Math.floor(x/4)+40).mul(1+(x%4)*0.06)},
 			milestones:function(){for (let i=40;i>0;i--) {if (g.bestTickspeedThisMatrix.gte(this.milestoneReq(i))) {return i}};return 0},
 			maxMilestones:40,
-			flavor:"One of the principal functions of a friend is to suffer (in a milder and symbolic form) the punishments that we should like, but are unable, to inflict upon our enemies.",
-			beta:true
+			flavor:"One of the principal functions of a friend is to suffer (in a milder and symbolic form) the punishments that we should like, but are unable, to inflict upon our enemies."
 		},
 		907:{
 			name:"Philosopher of Medicine",
@@ -1752,8 +1744,7 @@ const achievementList = {
 			effect:function(y=this.yellowValue){return c.d0_9.sub(c.d0_8.mul(y))},
 			effectFormat:x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3),
 			yellowBreakpoints:[N(250000),N(2.25e6),0],
-			flavor:"Never confuse education with intelligence, you can have a PhD and still be an idiot.",
-			beta:true
+			flavor:"Never confuse education with intelligence, you can have a PhD and still be an idiot."
 		},
 		908:{
 			name:"Master Date",
@@ -1763,8 +1754,7 @@ const achievementList = {
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[8]<3)?"Complete Study VIII 3 times first":(g.activeStudy!==8)?"Enter Study VIII first":g.ach524possible?(g.ach908possible?achievement.wormholeProgress():"Failed due to spending too much on a dark axis"):"Failed due to having Masteries"},
 			reward:"The third reward of Study VIII is 11.1% stronger",
-			flavor:"No eye at all is better than an evil eye, dark master!",
-			beta:true
+			flavor:"No eye at all is better than an evil eye, dark master!"
 		},
 		909:{
 			name:"Octadecayotton",
@@ -1780,8 +1770,7 @@ const achievementList = {
 				return out
 			},
 			effectFormat:x=>x.recip().noLeadFormat(3),
-			flavor:"Because triangles have 3 corners, while squares only have 5.... So because 3 is the square root of 9, therefore 9th axis can't exist because 'Illumenati IV' is real.",
-			beta:true
+			flavor:"Because triangles have 3 corners, while squares only have 5.... So because 3 is the square root of 9, therefore 9th axis can't exist because 'Illumenati IV' is real."
 		},
 		910:{
 			name:"Icosaxennon",
@@ -1797,8 +1786,7 @@ const achievementList = {
 				return out
 			},
 			effectFormat:x=>x.mul(c.e2).noLeadFormat(2),
-			get flavor(){return "Q axis base cost is "+Decimal.FC_NN(1,41898,1e10).format()},
-			beta:true
+			get flavor(){return "Q axis base cost is "+Decimal.FC_NN(1,41898,1e10).format()}
 		},
 		911:{
 			name:"Icosididakon",
@@ -1813,8 +1801,7 @@ const achievementList = {
 				return out
 			},
 			effectFormat:x=>x.mul(c.e2).noLeadFormat(2),
-			flavor:"(Eins, zwei,) P(olizei)",
-			beta:true
+			flavor:"(Eins, zwei,) P(olizei)"
 		},
 		912:{
 			name:"Icositetrahendon",
@@ -1824,8 +1811,7 @@ const achievementList = {
 			progress:function(){return "Not Completed!"},
 			prevReq:[911],
 			get reward(){return "Normal, dark and anti-S axis is 1% stronger"},
-			flavor:"Only real old-timers can associate 1E#1e41900 with the P axis",
-			beta:true
+			flavor:"Only real old-timers can associate 1E#1e41900 with the P axis"
 		},
 		913:{
 			name:"Axistential Dread",
@@ -1853,8 +1839,7 @@ const achievementList = {
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[9]<3)?"Complete Study IX 3 times first":(g.activeStudy!==9)?"Enter Study IX first":g.darkstars.eq(c.d0)?achievement.wormholeProgress():"Failed"},
 			reward:"The third reward of Study IX is 11.1% stronger",
-			flavor:"Everyone is a prisoner of his own experiences",
-			beta:true
+			flavor:"Everyone is a prisoner of his own experiences"
 		},
 		915:{
 			name:"End of the Stelliferous Era",
@@ -1867,8 +1852,7 @@ const achievementList = {
 			flavor:"The universe bursts into existence from life, not the other way around as we have been taught. For each life there is a universe, its own universe. We generate spheres of reality, individual bubbles of existence. Our planet is comprised of billions of spheres of reality, generated by each individual human and perhaps even by each animal.",
 			effect:function(){return g.truetimeThisWormholeReset.div(c.e8).add(c.d1).pow(c.e2)},
 			effectFormat:x=>x.format(4),
-			formulaText:()=>"(1 + t ÷ "+c.e8.format()+")<sup>100</sup>",
-			beta:true
+			formulaText:()=>"(1 + t ÷ "+c.e8.format()+")<sup>100</sup>"
 		},
 		916:{
 			name:"While you were away... nothing happened",
@@ -1881,8 +1865,7 @@ const achievementList = {
 			flavor:"A late game is only late until it ships. A bad game is bad until the end of time.",
 			effect:function(){return g.antimatterGalaxies.div(c.e3).add(c.d1).pow(c.e2).mul(c.e2).sub(c.d99)},
 			effectFormat:x=>x.noLeadFormat(3),
-			formulaText:()=>"(G ÷ 1,000 + 1)<sup>100</sup></sup> × 100 - 99",
-			beta:true
+			formulaText:()=>"(G ÷ 1,000 + 1)<sup>100</sup></sup> × 100 - 99"
 		},
 		917:{
 			name:"Ant God's Ascension",
@@ -1895,8 +1878,7 @@ const achievementList = {
 			effect:function(){return [c.d2,c.d1_05,[g.SAxis,g.darkSAxis,g.antiSAxis].sumDecimals()].decimalPowerTower().sub(c.d1)},
 			effectFormat:x=>x.format(2),
 			formulaText:()=>"2<sup>1.05<sup>ΣS</sup></sup> - 1",
-			flavor:"I ate some banana yogurt.<br>Then went out for a walk.<br><br>Fresh air never hurt anybody",
-			beta:true
+			flavor:"I ate some banana yogurt.<br>Then went out for a walk.<br><br>Fresh air never hurt anybody"
 		},
 		918:{
 			name:"Where is that Infinite Galaxy now?",
@@ -1906,8 +1888,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return achievement.percent(stat.realDarkStars,c.d308,0)},
 			get reward(){return "+3.08% chroma per dark star (currently: "+percentOrMult(N(1.0308).pow(stat.realDarkStars),2,true)+")"},
-			flavor:"The ability to destroy a planet is insignificant compared to the power of the Force.",
-			beta:true
+			flavor:"The ability to destroy a planet is insignificant compared to the power of the Force."
 		},
 		919:{
 			name:"Zero Player Game III",
@@ -1921,8 +1902,7 @@ const achievementList = {
 			effect:function(){return Decimal.convergentSoftcap(N(1-autobuyerMeta.totalLevels()*0.00035),c.d0_5,c.d0)},
 			effectFormat:x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3),
 			formulaText:()=>(autobuyerMeta.totalLevels()>=2500)?"100 - 2500 ÷ Σλ":"Σλ ÷ 50",
-			flavor:"There is nothing so useless as doing efficiently what should not be done at all.",
-			beta:true
+			flavor:"There is nothing so useless as doing efficiently what should not be done at all."
 		},
 		920:{
 			name:"Hyperbolic Lawmakers",
@@ -1944,8 +1924,7 @@ const achievementList = {
 			formulaText:()=>"μ ÷ 0.81",
 			milestones:function(){return g.ach920Completions.toString(2).replaceAll("0","").length},
 			maxMilestones:9,
-			flavor:"A hostess is giving a dinner party and she's got a lovely five-pound T-bone steak sitting on the sideboard in the kitchen waiting to be cooked while she chats with the guests in the living room—has a few drinks and whatnot. But then she excuses herself to go into the kitchen to cook the steak—and it's gone. And there's the family cat, in the corner, sedately washing it's face. \"The cat got the steak,\" Barney said. Did it? The guests are called in; they argue about it. The steak is gone, all five pounds of it; there sits the cat, looking well-fed and cheerful. \"Weigh the cat,\" someone says. They've had a few drinks; it looks like a good idea. So they go into the bathroom and weigh the cat on the scales. It reads exactly five pounds. They all perceive this reading and a guest says, \"okay, that's it. There's the steak.\" They're satisfied that they know what happened, now; they've got empirical proof. Then a qualm comes to one of them and he says, puzzled, \"But where's the cat?\"",
-			beta:true
+			flavor:"A hostess is giving a dinner party and she's got a lovely five-pound T-bone steak sitting on the sideboard in the kitchen waiting to be cooked while she chats with the guests in the living room—has a few drinks and whatnot. But then she excuses herself to go into the kitchen to cook the steak—and it's gone. And there's the family cat, in the corner, sedately washing it's face. \"The cat got the steak,\" Barney said. Did it? The guests are called in; they argue about it. The steak is gone, all five pounds of it; there sits the cat, looking well-fed and cheerful. \"Weigh the cat,\" someone says. They've had a few drinks; it looks like a good idea. So they go into the bathroom and weigh the cat on the scales. It reads exactly five pounds. They all perceive this reading and a guest says, \"okay, that's it. There's the steak.\" They're satisfied that they know what happened, now; they've got empirical proof. Then a qualm comes to one of them and he says, puzzled, \"But where's the cat?\""
 		},
 		...(()=>{
 			let out = {}
@@ -1976,8 +1955,7 @@ const achievementList = {
 						let out = "<b>Baseless Milestone №"+(i+1)+" ("+bmrs[i]+")</b><br>"+bms[i]
 						if (g.baselessMilestones[i]===13) {out += "<br><b>Baseless<sup>2</sup> Milestone №"+(i+1)+" ("+b2mrs[i].format()+" OP)</b><br>"+b2ms[i]}
 						return out
-					},
-					beta:true
+					}
 				}
 			}
 			return out
@@ -1990,8 +1968,7 @@ const achievementList = {
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[11]<3)?"Complete Study XI 3 times first":(g.activeStudy!==11)?"Enter Study XI first":(g.timeThisWormholeReset<9)?{percent:achievement.wormholeProgress(),text:timeFormat(9-g.timeThisWormholeReset)+" left"}:"Failed"},
 			reward:"The third reward of Study XI is 11.1% stronger",
-			flavor:"With skin as fair as mine, moonburn is a real possibility.",
-			beta:true
+			flavor:"With skin as fair as mine, moonburn is a real possibility."
 		},
 		...(()=>{
 			let out = {}
@@ -2008,8 +1985,7 @@ const achievementList = {
 					effect:function(y=this.yellowValue){return y.mul(c.d6).add(c.d1)},
 					effectFormat:x=>x.noLeadFormat(3),
 					yellowBreakpoints:[N(250000*2**i),N(2.5e6*2**i),1],
-					flavor:["The key is not to prioritize what's on your schedule...","...but to schedule your priorities.","Would alemaninc's players be satisfied with how low his game is on the schedule?","TBD","TBD"][i],
-					beta:true
+					flavor:["The key is not to prioritize what's on your schedule...","...but to schedule your priorities.","Would alemaninc's players be satisfied with how low his game is on the schedule?","TBD","TBD"][i]
 				}
 			}
 			return out
@@ -2021,8 +1997,7 @@ const achievementList = {
 			check:function(){return true}, // checked locally
 			progress:function(){return "Not Completed!"},
 			reward:"Research 7-8 is 2% stronger",
-			flavor:"When you sit with a nice girl for two hours you think it's only a minute. But when you sit on a hot stove for a minute you think it's two hours. That's relativity.",
-			beta:true
+			flavor:"When you sit with a nice girl for two hours you think it's only a minute. But when you sit on a hot stove for a minute you think it's two hours. That's relativity."
 		},
 		931:{
 			name:"The Shining Law of Conservation of Information",
@@ -2058,8 +2033,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return achievement.percent(g.masteryPower,this.req,1)},
 			get reward(){return "The anti-W axis effect softcaps 20.21× later, and an extra 4.11× later per anti-W axis (currently: "+N(4.11).pow(stat.realantiWAxis).mul(20.21).format(3)+"×, translated to about ^"+Decimal.div(miscStats.antiWAxisEffect.modifiers[0].softcap(true).log10().log10(),miscStats.antiWAxisEffect.modifiers[0].softcap(false).log10().log10()).pow(c.d2).format(4)+" more effect)"},
-			get flavor(){return "<del>500 sh--</del> <ins>933 achievements</ins>... We've come a long way since our beginning in <del>August 20--</del> <ins>January 2022</ins>. Memories...<br><br>Since <del>OMCCDV I--</del> <ins>Exotic Matter Dimensions'</ins> creation on <del>2--</del> <ins>3 January 2022</ins>, we've created an average of <del>2.75 sh--</del> <ins>"+N(achievement.all.length/(newsSupport.excelDate()-44564)).format(2)+" achievements</ins> per day.<br><br><del>OM--</del> <ins>EMD</ins> has been in <del>c--</del> <ins>public</ins> for <del>six months</del> <ins>"+numword(new Date().getUTCFullYear()-2022)+" years</ins> now because of <del>Ma--</del> <ins>Stat Mark and xhwzwka</ins>... and I refuse to acknowledge <del>my</del> <ins>their</ins> part in fueling <del>their va--</del> <ins>my contribution</ins> even though everyone knows <del>I started it</del> <ins>they suggested half the features</ins>.<br><br><del>What other statistics could I put i--</del> <ins style=\"color:#ff0000;\">Wow. It turns out alemaninc will really do ANYTHING to get this out...</ins>"},
-			beta:true
+			get flavor(){return "<del>500 sh--</del> <ins>933 achievements</ins>... We've come a long way since our beginning in <del>August 20--</del> <ins>January 2022</ins>. Memories...<br><br>Since <del>OMCCDV I--</del> <ins>Exotic Matter Dimensions'</ins> creation on <del>2--</del> <ins>3 January 2022</ins>, we've created an average of <del>2.75 sh--</del> <ins>"+N(achievement.all.length/(newsSupport.excelDate()-44564)).format(2)+" achievements</ins> per day.<br><br><del>OM--</del> <ins>EMD</ins> has been in <del>c--</del> <ins>public</ins> for <del>six months</del> <ins>"+numword(new Date().getUTCFullYear()-2022)+" years</ins> now because of <del>Ma--</del> <ins>Stat Mark and xhwzwka</ins>... and I refuse to acknowledge <del>my</del> <ins>their</ins> part in fueling <del>their va--</del> <ins>my contribution</ins> even though everyone knows <del>I started it</del> <ins>they suggested half the features</ins>.<br><br><del>What other statistics could I put i--</del> <ins style=\"color:#ff0000;\">Wow. It turns out alemaninc will really do ANYTHING to get this out...</ins>"}
 		}
 	}
 };

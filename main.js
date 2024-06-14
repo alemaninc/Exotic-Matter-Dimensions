@@ -1319,7 +1319,7 @@ function starScalePower(x=g.stars,gal=g.galaxies) {
 	let out = c.d1.sub(studies[2].reward(1).div(c.e2));
 	if (g.research.r7_8) {out = out.mul(researchEffect(7,8));}
 	if ((x>40)&&(gal>=galaxyEffects[4].req)) {out = out.mul(galaxyEffects[4].penalty.value(gal).mul(x-40).add(c.d1))}
-	if ((g.activeStudy===10)&&(studyPower(10)===1)&&betaActive) {out = out.mul(c.d2)}
+	if ((g.activeStudy===10)&&(studyPower(10)===1)) {out = out.mul(c.d2)}
 	return out
 }
 function starCost(x=g.stars,gal=g.galaxies,cap=starCap()) {
@@ -1454,8 +1454,7 @@ function starEffect(x) {
 		return exp.mul(mult).pow10();
 	}
 	if (x===20) {
-		let out = (g.research.r34_3&&betaActive)?researchEffect(34,3):c.d3
-		if (g.research.r34_3&&(!betaActive)) out = out.mul(researchEffect(34,3))
+		let out = (g.research.r34_3)?researchEffect(34,3):c.d3
 		return out
 	}
 	if (x===60) return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(g.exoticmatter.pow(c.d0_02).add(c.d10).log10().pow(c.d0_7),c.e3,c.d0_5),c.d7e3,c.d8e3);
@@ -2699,7 +2698,6 @@ function incrementAntimatter(x) {
 }
 function antiAxisActive(type) {
 	if (g.studyCompletions[9]===0) return false
-	if (["R","Q","P","O"].includes(type)&&(!betaActive)) return
 	if ((type==="V")&&(!g.research.r24_11)) return false
 	if ((type==="U")&&(!g.research.r24_13)) return false
 	if ((type==="T")&&(!g.research.r25_13)) return false
@@ -3149,38 +3147,26 @@ const progressMilestones = [
 		type:2,
 		condition:function(){return g.achievement[810];}
 	},
-	...(()=>{
-		if (betaActive) {return [
-			{
-				type:1,
-				label:"unlock the third Dilation upgrade",
-				percent:function(){return stat.tickspeed.log(dilationUpgrades[3].tickspeedNeeded)},
-				req:function(){return "Need "+dilationUpgrades[3].tickspeedNeeded.format()+"× tickspeed"},
-				color:"var(--time)",
-				condition:function(){return g.dilationUpgradesUnlocked>2}
-			},
-			{
-				type:2,
-				condition:function(){return g.achievement[905];}
-			},
-			{
-				type:1,
-				label:"current endgame",
-				percent:function(){return g.studyCompletions[13]/200},
-				req:function(){return "Need 200 Study XIII completions"},
-				color:"endgame",
-				condition:function(){return g.studyCompletions[13]>199}
-			}
-		]}
-		return [{
-			type:1,
-			label:"current endgame",
-			percent:function(){return g.studyCompletions.sum()/40},
-			req:function(){return "Need 40 Study completions"},
-			color:"endgame",
-			condition:function(){return g.studyCompletions.sum()>39}
-		}]
-	})(),
+	{
+		type:1,
+		label:"unlock the third Dilation upgrade",
+		percent:function(){return stat.tickspeed.log(dilationUpgrades[3].tickspeedNeeded)},
+		req:function(){return "Need "+dilationUpgrades[3].tickspeedNeeded.format()+"× tickspeed"},
+		color:"var(--time)",
+		condition:function(){return g.dilationUpgradesUnlocked>2}
+	},
+	{
+		type:2,
+		condition:function(){return g.achievement[905];}
+	},
+	{
+		type:1,
+		label:"current endgame",
+		percent:function(){return g.studyCompletions[13]/200},
+		req:function(){return "Need 200 Study XIII completions"},
+		color:"endgame",
+		condition:function(){return g.studyCompletions[13]>199}
+	},
 	{
 		type:3,
 		condition:function(){return false;}

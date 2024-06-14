@@ -512,7 +512,7 @@ function updateHTML() {
 		g.starAutobuyerCap=d.element("starAutobuyerMax").value;
 	}
 	if (g.activeTab==="wormhole") {
-		if ((g.activeStudy===10)&&(studyPower(10)===0)&&betaActive) {if (g.activeSubtabs.wormhole!=="studies") openSubTab("wormhole","studies")};
+		if ((g.activeStudy===10)&&(studyPower(10)===0)) {if (g.activeSubtabs.wormhole!=="studies") openSubTab("wormhole","studies")};
 		d.display("div_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		d.display("br_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())

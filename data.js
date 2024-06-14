@@ -173,12 +173,12 @@ studies[7] = {
 	luckEssenceGain:function(x=stat.pendingstardust.sub(g.stardust)){return (x.lt(c.d1)?c.d0:x.add(c.d10).log10().log10().mul([444444,555555,666666,777777][studyPower(7)]).floor()).add(g.luckEssence).min(c.e15).sub(g.luckEssence).toNumber()},
 	luckMinPenalty:function(){
 		let out = 0
-		if ((g.activeStudy===10)&&(studyPower(10)===0)&&betaActive) {out *= 0.741}
+		if ((g.activeStudy===10)&&(studyPower(10)===0)) {out *= 0.741}
 		return out
 	},
 	luckMaxPenalty:function(){
 		let out = 1
-		if ((g.activeStudy===10)&&(studyPower(10)===0)&&betaActive) {out *= 0.741}
+		if ((g.activeStudy===10)&&(studyPower(10)===0)) {out *= 0.741}
 		return out
 	},
 	luckEffect:function(x=g.luckEssence){
@@ -207,7 +207,7 @@ studies[8] = {
 	unlockReq:function(){return [N("3.33e333"),N("7.77e777"),N("9.99e2999"),N("4.44e4444")][studyPower(8)]},
 	darkAxisMaxCostExp:function(){
 		let out = N(88)
-		if ((g.activeStudy===10)&&(studyPower(10)===1)&&betaActive) {out = out.mul(Decimal.add(g.truetimeThisWormholeReset.add1Log(c.d10).add1Log(c.d10),g.truetimeThisWormholeReset.add1Log(c.d10).add1Log(c.d10).pow(c.d2)))}
+		if ((g.activeStudy===10)&&(studyPower(10)===1)) {out = out.mul(Decimal.add(g.truetimeThisWormholeReset.add1Log(c.d10).add1Log(c.d10),g.truetimeThisWormholeReset.add1Log(c.d10).add1Log(c.d10).pow(c.d2)))}
 		return out
 	},
 	darkAxisMaxCost:function(){return g.masteryPower.aps(this.darkAxisMaxCostExp())},
@@ -249,7 +249,7 @@ studies[9] = {
 	experientiaEffect:function(x=g.study9.xp,pow=studyPower(9)){
 		let base = N((15-pow)/30)
 		let exp = x.gt(c.d0)?x.div([c.e2,c.d125,c.d250,c.e3][pow]).add(c.d1).recip():c.d1.sub(x.div(c.e2))
-		if ((g.activeStudy===10)&&(studyPower(10)===2)&&betaActive) {exp = exp.mul(0.963)}
+		if ((g.activeStudy===10)&&(studyPower(10)===2)) {exp = exp.mul(0.963)}
 		return base.pow(exp)
 	},
 	timeLeft:function(){return 9-g.timeThisWormholeReset},

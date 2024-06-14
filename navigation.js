@@ -180,7 +180,7 @@ function openSubTab(parentTab,id) {
 		notify("This subtab is disabled in Study I","#990000","#ffffff")
 		return
 	}
-	if ((g.activeStudy===10)&&(studyPower(10)===0)&&betaActive&&(parentTab==="wormhole")&&(id!=="studies")) {
+	if ((g.activeStudy===10)&&(studyPower(10)===0)&&(parentTab==="wormhole")&&(id!=="studies")) {
 		notify("This subtab is disabled in the Stellar Triad","#990000","#ffffff")
 		return
 	}
