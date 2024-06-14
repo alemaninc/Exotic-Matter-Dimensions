@@ -31,7 +31,7 @@ const researchGroupList = {
 	light:{label:"Chromatic",get description(){return "Each Chromatic research owned multiplies the cost of all other Chromatic research in the same row by "+(g.achievement[713]?achievement(713).effectFormat(achievement(713).effect()):"4")+"."},color:{light:"#ffff00",dark:"51,51,0"},icon:"C"},
 	lightaugment:{label:"Photonic",description:"Each Photonic research multiplies the cost of all other Photonic research by the number already owned, and increases the lumen requirements to buy them.",color:{light:"#cccc00",dark:"34,34,0"},icon:"C<sup>2</sup>"},
 	study5a:{label:"Theoretical",color:{light:"#00aaaa",dark:"0,40,40"},icon:"T"},
-	study5b:{label:"Practical",get description(){return "Having more "+researchGroupList.study5b.label+" research ("+ownedResearchInGroup("study5b").length+") than "+researchGroupList.study5a.label+" ("+ownedResearchInGroup("study5a").length+") research massively increases their costs"},color:{light:"#009999",dark:"0,34,34"},icon:"P"},
+	study5b:{label:"Practical",get description(){return "Having more "+researchGroupList.study5b.label+" research ("+ownedResearchInGroup("study5b").length+") than "+researchGroupList.study5a.label+" research ("+ownedResearchInGroup("study5a").length+") massively increases their costs"},color:{light:"#009999",dark:"0,34,34"},icon:"P"},
 	time:{label:"Time",get description(){return "You can buy a maximum of "+g.studyCompletions[6]+" Time research (equal to Study VI completions)"},color:{light:"var(--time)",dark:"0,51,0"},icon:"t"},
 	spatialsynergism:{label:"Spatial Synergism",get description(){return "You can buy a maximum of "+achievement.perAchievementReward[8].currentVal+" research from this group"},color:{light:"var(--wormhole_text)",dark:"0,0,51"},icon:"SS"},
 	study7:{label:"Crystal",color:{light:"#009900",dark:"0,34,0"},icon:"S"},
@@ -513,7 +513,7 @@ const research = (function(){
 				if (researchEffect(5,8).lt(c.d10)) {out = "("+out+" - 1) × 100"}
 				return out
 			},
-			description:function(){return "The other Conclusion research are "+numOrFormula("r5_8")+(researchEffect(5,8).gte(c.d10)?"×":"%")+" stronger (based on total Discoveries)"},
+			description:function(){return "The other Practical research are "+numOrFormula("r5_8")+(researchEffect(5,8).gte(c.d10)?"×":"%")+" stronger (based on total Discoveries)"},
 			adjacent_req:["r3_8","r4_7","r4_9"],
 			condition:[studyReq(5,2)],
 			visibility:function(){return g.studyCompletions[5]>1},
