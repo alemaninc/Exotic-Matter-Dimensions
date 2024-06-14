@@ -696,7 +696,8 @@ const newsList = [
 	{text:"<span onClick=\"addSecretAchievement(49);newsSupport.malganis=false\">💊Click here to cure the news ticker💊</span>",get weight(){return newsSupport.malganis?1:0}},
 	{text:"🐢How did the turtle cross the road?🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
 	{get text(){return "Day "+BEformat(Math.ceil(((g.timePlayed+((g.dilatedTime>1e9)?0:g.dilatedTime))/86400)))+" of quarantine: created a universe of exotic matter, got raided by federal agents for violating "+numword(ranint(1,9,true)*10+ranint(1,9))+" international peace treaties, taken to the lunatic asylum - everything normal"}},
-	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievement points are increasing "+randInc[0]+" by "+randInc[1](eff)+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}}
+	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievement points are increasing "+randInc[0]+" by "+randInc[1](eff)+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}},
+	{text:"Blob asks why the Study of Studies moves? Well, there are 4 Triad Studies and 4 levels of the Study of Studies: the only explanation is that Hevipelle saw EMD when it was in v1.0 and wanted the Triads to have moving research. We don't want to disappoint the game that inspired this whole project, no?",get weight(){return g.achievement[810]?1:0}}
 ]
 // bottom
 var currentNewsItem

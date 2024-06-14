@@ -321,3 +321,19 @@ const wordShift = {
 }
 function gradientText(text,gradient) {return "<span style=\"background:"+gradient+";-webkit-background-clip:text;-webkit-text-fill-color:transparent;\">"+text+"</span>"}
 function reverseChildren(parent){parent.append(...Array.from(parent.childNodes).reverse())}
+function alignTooltip(tooltip,parent) {
+	let rect = d.element(parent).getBoundingClientRect()
+	if ((rect.top===0)&&(rect.left===0)) { // the element has become invisible
+		d.element(tooltip).visibility = "hidden"
+		return
+	}
+	let elemX = (rect.left+rect.right)/2
+	let elemY = (rect.top+rect.bottom)/2
+	let rightAlign = (viewportWidth()<elemX*2)
+	let bottomAlign = (viewportHeight()<elemY*2)
+	let position = {top:"",bottom:"",left:"",right:""}
+	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth()-rect.left+4):(rect.right+4))+"px"
+	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight()-rect.top+4):(rect.bottom+4))+"px"
+	let info = d.element(tooltip).style
+	for (let i of Object.keys(position)) info[i] = position[i]
+}

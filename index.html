@@ -47,10 +47,7 @@
 					<p><span id="div_masteryPower_disabledTop">You have <span class="big _mastery" id="span_masteryPower_disabledTop"></span> mastery power.<br>You are getting <span class="big _mastery" id="span_masteryPowerPerSec_disabledTop"></span> mastery power per second (based on exotic matter and time since last Mastery unassignmnet)</span><br id="br_masteryPower_disabledTop">You can activate 1 Mastery from each row. Unassigning a Mastery will reset your mastery power.</p>
 					<button class="genericbutton size2" onClick="g.activeMasteries.fill(0);masteryReset()">Unassign all Masteries (this will reset mastery power)</button>
 					<div id="masteryContainerLegacy"></div><div id="masteryContainerModern"></div><br>
-					<div id="masteryPanel" class="panel">
-						<span id="span_shownMasteryText"></span><br>
-						<span id="button_enableShownMastery"></span>
-					</div>
+					<div id="masteryInfo" class="tooltip" style="visibility:hidden;"></div>
 				</div>
 				<div class="subtab main" id="subtab_main_offlineTime" style="display:none">
 					<button class="featureConfig main" onClick="openConfig['Offline Time']()"></button>
@@ -93,7 +90,7 @@
 				<div class="subtab stardust" id="subtab_stardust_stars" style="display:none">
 					<button class="featureConfig stardust" onClick="openConfig['Star']()"></button>
 					<div><table id="starContainerLegacy"></table><table id="starContainerModern"></table></div>
-					<div id="starPanel" class="panel"></div>
+					<div id="starInfo" class="tooltip" style="visibility:hidden;"></div>
 					<div style="width:420px">
 						You have <span id="span_unspentStars" class="big _stars"></span> stars.<br>
 						<span id="span_nextStarRow"></span>
@@ -175,9 +172,8 @@
 						<button class="observation" onClick="researchLoadouts.open()">Show research loadouts</button>
 						<button class="observation" onClick="importResearch()">Import research</button>
 						<button class="observation" onClick="exportResearch()">Export research</button>
-						<hr>
-						<div id="researchInfo" style="height:70px;width:100%" style="display:none"></div>
 					</div>
+					<div id="researchInfo" class="tooltip" style="visibility:none;"></div>
 				</div>
 				<div class="subtab wormhole" id="subtab_wormhole_studies" style="display:none">
 					<button class="featureConfig wormhole" onClick="openConfig['Study']()"></button>
@@ -300,6 +296,8 @@
 					<button class="optionsbutton" onClick="toggle('newsTickerActive')">News ticker <span id="span_newsTickerActive"></span>abled</button>
 					<button class="optionsbutton" onClick="selectOption('newsTickerSpeed',[40,60,80,120,160,200,300,400,500,750,999],'speed',x=>N(x).noLeadFormat(2))">News ticker speed: <span id="span_newsTickerSpeed"></span> px·s<sup>-1</sup></button>
 					<button class="optionsbutton" onClick="selectOption('newsTickerDilation',[0,0.0625,0.125,0.1875,0.25],'mode',x=>dictionary(x,{'0':'None','0.0625':'Weak','0.125':'Moderate','0.1875':'Strong','0.25':'Extreme'}))">News ticker acceleration on Overclock: <span id="span_newsTickerDilation"></span></button>
+					<button class="optionsbutton" onClick="g.confirmations.doubleClickToBuy=!g.confirmations.doubleClickToBuy" id="button_options_doubleClickToBuy"></button>
+					<button class="optionsbutton" onClick="selectOption('EMDLevelDisplayInFooter',[0,1,2],'mode',x=>dictionary(x,{'0':'Nothing','1':'Level only','2':'Level and Score'}))" id="button_options_EMDLevelDisplayInFooter"></button>
 				</div>
 				<div class="subtab options" id="subtab_options_hotkeys" style="display:none"></div>
 				<div class="subtab options" id="subtab_options_story" style="display:none">
@@ -346,12 +344,12 @@
 					<span id="span_noAchievements" style="display:none">You have not earned any Achievements yet.</span>
 					<div id="achievementContainer"></div>
 					<button class="genericbutton size2" id="button_achievementToProgressBar" onClick="achievement.selectForProgressBar()"></button>
-					<div id="achievementInfo" class="achievementInfo" style="visibility:hidden"></div>
+					<div id="achievementInfo" class="tooltip" style="visibility:hidden"></div>
 				</div>
 				<div class="subtab achievements" id="subtab_achievements_secretAchievements" style="display:none">
 					<p>You have <span id="span_secretAchievementPoints" class="big _achievements"></span> secret achievement points. Each secret achievement point gives a super-secret boost!</p>
 					<div id="secretAchievementContainer"></div>
-					<div id="secretAchievementInfo" class="achievementInfo" style="visibility:hidden"></div>
+					<div id="secretAchievementInfo" class="tooltip" style="visibility:hidden"></div>
 				</div>
 				<div class="subtab achievements" id="subtab_achievements_wormholeMilestones" style="display:none">
 					<p>Each Tier 5 achievement gives an additional quality of life boost based on the total number unlocked. You currently have <span class="big _wormhole" id="span_wormholeMilestoneT5Achievements"></span> Tier 5 achievements.</p>
@@ -421,7 +419,7 @@
 			</div>
 			<div id="footer">
 				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
-				<a href="changelog.html" target="_blank">Changelog</a> | <a id="span_footerDiscord" target="_blank">Discord</a> <span id="span_discordPoll" style="color:#00ffff">(poll active!)</span> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://www.reddit.com/r/incremental_games/comments/178bccu/exotic_matter_dimensions_%F0%9D%95%8D14/" target="_blank">Reddit</a> | Version <span id="span_currentVersion"></span>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://forms.gle/G9ixRuWv3yPZCQWT7" target="_blank">Contact</a> | <a href="credits.html" target="_blank">Credits</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <a href="https://forms.gle/aBpgH6z4qpLCiztVA" target="_blank" style="color:#00ffff;">Feedback</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://alemaninc.github.io/" target="_blank">More by alemaninc</a> | <a href="https://www.reddit.com/r/incremental_games/comments/178bccu/exotic_matter_dimensions_%F0%9D%95%8D14/" target="_blank">Reddit</a> | <a href="savebank.html" target="_blank">Saves</a> | Version <span id="span_currentVersion"></span><span id="span_footerEMDLevel"></span>
 			</div>
 		</div>
 		<div id="div_fancyPopupScreen" class="popupScreen">

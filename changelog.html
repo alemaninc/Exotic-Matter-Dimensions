@@ -9,15 +9,6 @@
 			font-size: 15px;
 			font-family:verdana
 		}
-		.back {
-			background-color: #cccccc;
-			color: #000000;
-			padding: 0px;
-			border-radius: 20px;
-			width: 200px;
-			height: 50px;
-			margin: 2px;
-		}
 		.accordion {
 			background-color: #330066;
 			color: #fff;
@@ -57,7 +48,7 @@
 	<body>
 		<div id="changelog" style="display:none;">
 			<h3 style="color: #3333ff">Code contributors who want to change their name or color within the changelog can do so by reaching out to alemaninc or submitting a pull request</h4>
-			<p>Some entries in this changelog are hidden based on how far you have progressed.<br>Progress is measured based on the number of achievement tiers you have unlocked.<br>The presence of hidden entries is indicated at the bottom of individual entries.<br><br>A number in italicised square brackets (e.g. <i>[3]</i>) next to the type annotation indicates that the change spans multiple parts of the game.<br>This change will update when the relevant number of achievement tiers is unlocked.<br><br><span id="tierText"></span></p>
+			<p>Some entries in this changelog are hidden based on how far you have progressed.<br>Progress is measured by EMD Level.<br>The presence of hidden entries is indicated at the bottom of individual entries.<br><br>A number in italicised square brackets (e.g. <i>[3]</i>) next to the type annotation indicates that the change spans multiple parts of the game.<br>This change will update when this EMD Level is reached.<br><br><span id="EMDLevelText"></span></p>
 			<p>Click entries to expand/contract them.</p>
 			<div id="logContainer"></div>
 		</div>
@@ -67,9 +58,9 @@
 		<script type="text/javascript" src="emd_utility.js"></script>
 		<script>
 const save = JSON.parse(localStorage.getItem("save"))
-const notation = (save===null)?"Mixed scientific":save.notation
+const notation = (save===null)?"Mixed scientific":(save.notation??"Mixed Scientific")
 function format(x,p=0){return gformat(N(x),p,notation)}
-const highestTierUnlocked = (save===null)?Infinity:Math.max(Array.removeDuplicates(Object.entries(save.achievement).filter(x=>x[1]).map(x=>x[0].substring(0,x[0].length-2))).length,1)
+const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
 const contributors = {
 	"Hedrauta":"#00cc00",
 	"IRAD":"#ff9933",
@@ -80,41 +71,58 @@ const contributors = {
 const logEntries = [
 	/*
 	next major:
-	{num:"𝕍1ω",date:"",name:"Temporal Skyscraper 〜 Thirteen Minds",changes:[
-		[5,"BALANCE","Research 9-2 now initially costs 360 Discoveries (previously 400), and the requirements for the first three levels are lower"],
-		[5,"BALANCE","Study III goals are changed ()"],
-		[6,"BALANCE","Row 9 Chromatic research are stronger (about 2× more chroma each)"],
-		[6,"BALANCE","Achievement 607 \"There are Four Lights\" has a base reward of 2.75× (from 2.8×). Value once yellow light takes effect is unchanged."],
-		[6,"BALANCE","Study IV has higher goals and unlock requirements"],
-		[6,"BALANCE","Added a link to research 13-8 from 10-5 and 10-11"],
-		[6,"BALANCE","Research 12-8 now has a base requirement of "+format(4800)+" Discoveries (from "+format(5250)+")"],
-		[7,"BALANCE","Research 16-8 now costs "+format(1440)+" Discoveries (from "+format(1550)+")"],
-		[7,"BALANCE","Study VI reward 1 is stronger at 2 and 3 completions"],
-		[7,"BALANCE","Achievement 709 \"Mind-bending Curvature II\" requirement reduced to "+format("3.33e833")+" (from "+format("8.88e888")+"), and Achievement 710 \"Mind-bending Curvature III\" requirement reduced to "+format("8.88e888")+" (from "+format("9.99e999")+")"],
-		[7,"BALANCE","Achievement 712 \"Rewind\" now requires "+format(3600)+" yellow lumens to be boosted (from "+format(3500)+"), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
-		[7,"BALANCE","Research 16-6 and 16-10 are 24× stronger"],
-		[7,"BALANCE","Achievement 719 \"OMCCDV II\" reward is stronger"],
-		[8,"BALANCE","Achievement 801 \"The Explorer\" reward is stronger"],
-		[8,"BALANCE","Achievement 813 \"Hidden Stars in Zero Dimensions\" requirement is now 208 (from 210)"],
-		[8,"BALANCE","Research 23-5 has lower requirements"],
-		[8,"BALANCE","The goal of Study VII level 1 is now "+format(6277)+" (from "+format(6666)+")"],
-		[8,"BALANCE","The Stellar and Decisive Triads now have additional conditions like the Temporal Triad, and the modification of the Study IX Binding in the Temporal Triad is different"],
-		[8,"BALANCE","Study of Studies rewards are significantly stronger"],
-		[8,"BALANCE","Research 34-3 is stronger"],
-		[8,"BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
-		[8,"BUGFIX","Achievement 613 \"Antimatter Academia\" is now properly affected by yellow light and no longer affects 9-7, 9-8 or 9-9"],
-		[8,"CONTENT","117 new research going up to row 47"],
-		[8,"CONTENT","2 new Tier 8 achievements and 30 Tier 9 achievements"],
-		[9,"CONTENT","Wormhole Upgrades"],
-		[9,"CONTENT","Ontological Triad"],
-		[9,"CONTENT","Study XI and XII are now possible to 4 completions each"],
-		[9,"CONTENT","Study XIII"]
-	]}
+
 	blank entry:
 	{num:"",date:"",changes:[
 
 	]},
 	*/
+	{num:"𝕍1ω",date:"",name:"Heaven As Seen Through a Child's Mind",changes:[
+		[5,"BALANCE","Research 9-2 now initially costs 360 Discoveries (previously 400), and the requirements for the first three levels are lower ("+format("ee8")+" → "+format("e7.5e7")+", "+format("ee9")+" → "+format("ee10")+", "+format("e5e9")+" → "+format("ee11")+")"],
+		[5,"BALANCE","Study III goals are changed ("+format(2000)+" → "+format(2000)+", "+format(2200)+" → "+format(2222)+", "+format(2400)+" → "+format(2500)+", "+format(2700)+" → "+format(2666)+")"],
+		[6,"BALANCE","Row 9 Chromatic research are stronger (about 2× more chroma each)"],
+		[6,"BALANCE","Achievement 607 \"There are Four Lights\" has a base reward of 2.75× (from 2.8×). Value once yellow light takes effect is unchanged."],
+		[6,"BALANCE","Study IV has different goals ("+format(3000)+" → "+format(3200)+", "+format(3700)+" → "+format(3600)+", "+format(4500)+" → "+format(4250)+", "+format(5400)+" → "+format(5400)+") and unlock requirements ("+format("1e144")+" → "+format("2^512")+", "+format("2^1024")+" → "+format("2^1024")+", "+format("4.44e444")+" → "+format("2^1536")+", "+format("2^2048")+" → "+format("2^2048")+")"],
+		[6,"BALANCE","Added a link to research 13-8 from 10-5 and 10-11 and cheapened it from "+format(1760)+" to "+format(1080)+" Discoveries, but gave it conditions"],
+		[6,"BALANCE","Study V has different unlock requirements for level 1 ("+format("e4000")+" → "+format("e5000")+") and level 4 ("+format("e282624")+" → "+format("e281775")+")"],
+		[6,"BALANCE","Research 12-8 now has a base requirement of "+format(4800)+" Discoveries (from "+format(5250)+")"],
+		[7,"BALANCE","Research 16-8 now costs "+format(1440)+" Discoveries (from "+format(1550)+")"],
+		[7,"BALANCE","Research 16-6 and 16-10 are 24× stronger"],
+		[7,"BALANCE","Study VI reward 1 is stronger at 2 and 3 completions (1.5 → 1.75, 2 → 2.5)"],
+		[7,"BALANCE","Achievement 709 \"Mind-bending Curvature II\" requirement reduced to "+format("3.33e833")+" (from "+format("8.88e888")+"), and Achievement 710 \"Mind-bending Curvature III\" requirement reduced to "+format("8.88e888")+" (from "+format("9.99e999")+")"],
+		[7,"BALANCE","Achievement 712 \"Rewind\" now requires "+format(3600)+" yellow lumens to be boosted (from "+format(3500)+"), but its reward starts at 36 (from 35). The end result is the same above 3600 yellow lumens."],
+		[7,"BALANCE","Research 16-6 and 16-10 are 24× stronger"],
+		[7,"BALANCE","Achievement 719 \"OMCCDV II\" reward is stronger"],
+		[8,"BALANCE","Achievement 801 \"The Explorer\" reward is stronger"],
+		[8,"BALANCE","Study VII level 1 has a lower unlock requirement ("+format("6.66e666666666")+" → "+format("5.55e577777777")+")"],
+		[8,"BALANCE","Study VII levels 1 and 4 have different goals ("+format(6666)+" → "+format(6227)+", "+format(14777)+" → "+format(17777)+")"],
+		[8,"BALANCE","Study VIII has different unlock requirements ("+format("3.33e333")+" → "+format("3.33e333")+", "+format("6.66e666")+" → "+format("7.77e777")+", "+format("e2500")+" → "+format("9.99e2999")+", "+format("e5000")+" → "+format("4.44e4444")+") and goals ("+format(5888)+" → "+format(5888)+", "+format(7040)+" → "+format(7888)+", "+format(14080)+" → "+format(15288)+", "+format(16555)+" → "+format(16888)+")"],
+		[8,"BALANCE","Study IX has different unlock requirements for levels 2 and 4 ("+format("9.99e149")+" → "+format("9.99e229")+", "+format("5.67e1234")+" → "+format("9.99e1399")+")"],
+		[8,"BALANCE","The experientia effect is 20% weaker in Study IX levels 2 and 3, and gain is lower in levels 2-4 (5, 6 and 16 dark stars less respectively)"],
+		[8,"BALANCE","Study of Studies level 2 goal is increased from "+format(7258)+" to "+format(8285)],
+		[8,"BALANCE","Achievement 813 \"Hidden Stars in Zero Dimensions\" requirement is now 208 (from 210)"],
+		[8,"BALANCE","Study V level 4 has a different goal ("+format(10800)+" → "+format(10666)+")"],
+		[8,"BALANCE","Research 23-5 has lower requirements"],
+		[8,"BALANCE","Research 26-3 now requires "+format(277777)+" Discoveries (from "+format(177777)+")"],
+		[8,"BALANCE","The Stellar and Decisive Triads now have additional conditions like the Temporal Triad, and the modification of the Study IX Binding in the Temporal Triad is different"],
+		[8,"BALANCE","Study of Studies rewards are significantly stronger"],
+		[8,"BALANCE","Research 34-3 is stronger"],
+		[8,"BUGFIX","Study of Studies now affects Achievement 604 \"Graduation\""],
+		[8,"BUGFIX","Achievement 613 \"Antimatter Academia\" is now properly affected by yellow light and no longer affects 9-7, 9-8 or 9-9"],
+		[8,"BALANCE","Study XI level 1 unlock requirement is "+format(98765)+" (from "+format(1e5)+") and its goal is "+format(11800)+" (from "+format(11611)+")"],
+		[6,"CONTENT","Research 14-8 and 15-8 now exist between 13-8 and 16-8"],
+		[6,"CONTENT","Practical Research"],
+		[8,"CONTENT","117 new research going up to row 47"],
+		[8,"CONTENT","2 new Tier 8 achievements and 30 Tier 9 achievements"],
+		[8,"CONTENT","Achievement 527 \"The 4th dimension doesn't exist\" now has a yellow light boost which has no effect until well after it is unlocked"],
+		[9,"CONTENT","Wormhole Upgrades"],
+		[9,"CONTENT","Ontological Triad"],
+		[9,"CONTENT","Study XI and XII are now possible to 4 completions each"],
+		[9,"CONTENT","Study XIII"],
+		[[1,2,5],"INTERFACE/QOL","The following interfaces now have tooltips instead of panels, and purchasing their respective upgrades now has the option of requiring a double-click rather than showing a confirmation popup:<br><table>"+[["Modern Mastery (+ button annotations are now magenta instead of gray)",1],["Modern Star",2],["Research (knowledge, Discoveries, observations and options still use a panel)",5]].filter(x=>EMDLevel>=x[1]).map((x,i)=>"<tr><td style=\"padding-right:5px\"><i>("+String.fromCharCode(97+i)+")</i></td><td>"+x[0]+"</td></tr>").join("")+"</table>"],
+		[5,"INTERFACE","Research is now more readable"],
+		[1,"WHAT","Added the missing META (the second one) to the 𝕍1.5(c).12.1 changelog"],
+	]},
 	{num:"𝕍1.5(c).12.1",date:"2024-06-03",name:" 'No changes?' ",changes:[
 		[1,"META","A minor bug where no changes showed at all if 0 achievement tiers were unlocked (due to having opened the game but not unlocked a single achievement) is fixed."],
 		[1,"META","Comments related to spoilered changes no longer display out of context"],
@@ -132,7 +140,7 @@ const logEntries = [
 		[6,"BUGFIX","Achievement 613 \"Antimatter Academia\" yellow lumen effect not working"],
 		[8,"BUGFIX","Study VII not affecting stardust gain as strongly as it should, and even boosting it at bad luck if the exponent is below 1. The end result is the same at optimal luck."],
 		[8,"BUGFIX","Temporal Triad not disabling Row 5 and 6 Energy research"],
-		[[6,8],"CLARITY",(highestTierUnlocked>=8)?"\"Research unlocked by Study V and VII\" are now respectively Hypothesis and Crystal research":"\"Research unlocked by Study V\" is now Hypothesis research"],
+		[[6,8],"CLARITY",(EMDLevel>=8)?"\"Research unlocked by Study V and VII\" are now respectively Hypothesis and Crystal research":"\"Research unlocked by Study V\" is now Hypothesis research"],
 		[1,"INTERFACE","Dramatic shake-up of axis buttons"],
 		[1,"INTERFACE","Mastery buttons are now magenta like mastery power instead of the arbitrary green"],
 		[1,"INTERFACE","Normal axis buttons are now green like exotic matter instead of the arbitrary cyan"],
@@ -142,11 +150,11 @@ const logEntries = [
 		[2,"INTERFACE","Plain white buttons in the Stardust layer now use the stardust background instead"],
 		[2,"INTERFACE","Option to reverse Achievement rows no longer shows if only 1 tier is unlocked"],
 		[3,"INTERFACE","The first dark star effect now displays as an exponent rather than a percentage increase"],
-		[[3,8],"INTERFACE","Added lifetime statistics for dark matter"+((highestTierUnlocked>=8)?" and antimatter":"")+". Values may be lower than expected for a bit."],
+		[[3,8],"INTERFACE","Added lifetime statistics for dark matter"+((EMDLevel>=8)?" and antimatter":"")+". Values may be lower than expected for a bit."],
 		[4,"INTERFACE","Energies are now in pretty boxes"],
 		[5,"INTERFACE","Compact Study info is 30px taller"],
 		[5,"INTERFACE","Tier 5 achievements no longer mention Wormhole Milestones in their per-achievement reward"],
-		[[6,8],"INTERFACE","Chromatic"+((highestTierUnlocked>=8)?" and Prismal":"")+" research have been condensed in the stat breakdown (from 1 row per research to 1 for the whole group)"],
+		[[6,8],"INTERFACE","Chromatic"+((EMDLevel>=8)?" and Prismal":"")+" research have been condensed in the stat breakdown (from 1 row per research to 1 for the whole group)"],
 		[8,"INTERFACE","\"Respec Luck Upgrades\" is no longer black and white"],
 		[1,"META","The changelog now hides changes which would spoil parts of the game, and now correctly uses your chosen notation instead of 'Mixed scientific', and there are small vertical spaces between changes"],
 		[8,"QOL","Research autobuyer has been improved (grouped research are now auto-purchased only if all research in the group can be purchased)"],
@@ -158,7 +166,7 @@ const logEntries = [
 	]},
 	{num:"𝕍1.5(c).11",date:"2024-05-03",changes:[
 		[8,"BALANCE","Achievement 803 \"Base 3\" now correctly multiplies by 0.97 instead of dividing by 1.03"],
-		[[1,2],"BUGFIXNCE",((highestTierUnlocked>=2)?"Effects such as Mastery 63":"Certain effects")+" are no longer 0 at very small values, but instead corresponding very small numbers"],
+		[[1,2],"BUGFIXNCE",((EMDLevel>=2)?"Effects such as Mastery 63":"Certain effects")+" are no longer 0 at very small values, but instead corresponding very small numbers"],
 		[6,"BUGFIX","Achievement 614 \"Redstone Clock\" no longer crashes the game when put on the progress bar"],
 		[1,"WHAT","𝕍1.5(c).10 changelog being dated 2024-04-28"]
 	]},
@@ -256,7 +264,7 @@ const logEntries = [
 		[1,"INTERFACE","Third and fourth order tabs in the Stat Breakdown and 'Previous Prestiges' are less ugly"],
 		[2,"INTERFACE","Input fields in the Automation tab are smaller"],
 		[5,"INTERFACE","Effective dark stars and luck upgrade levels are now shown in the Stat Breakdown"],
-		[[1,4],"INTERFACE","Numbers which are very close to 1"+((highestTierUnlocked>=4)?" (such as energy gain at very low tickspeeds)":"")+" now display with more precision"],
+		[[1,4],"INTERFACE","Numbers which are very close to 1"+((EMDLevel>=4)?" (such as energy gain at very low tickspeeds)":"")+" now display with more precision"],
 		[1,"The above interface changes have all happened for a reason. Use this information as you will."],
 		[1,"INTERFACE","Changelog row text is now top-aligned rather than center-aligned"],
 		[1,"INTERFACE","\"Overclock costs are much higher above <i>N</i>×\" text is no longer obscured by the Overclock buttons"],
@@ -284,7 +292,7 @@ const logEntries = [
 	]},
 	{num:"𝕍1.5(b).6",date:"2024-01-31",name:"A Rather Different Content Wall",changes:[
 		[5,"BUGFIX","It is once again possible to Wormhole if you have never done it before"],
-		[[6,8],"INTERFACE","Achievement boxes are now 50% taller when reviewing yellow light"+((highestTierUnlocked>=8)?" due to Achievement 819's new reward description overflowing":"")],
+		[[6,8],"INTERFACE","Achievement boxes are now 50% taller when reviewing yellow light"+((EMDLevel>=8)?" due to Achievement 819's new reward description overflowing":"")],
 		[1,"QOL","It is now possible to select an achievement to continually show its progress on the global progress bar"],
 		[5,"QOL","Ascetic max buy research will no longer buy Study research unless this is the target research"],
 		[7,"REVERSE BUGFIX","Removed a completion tooltip from Achievement 718 \"Softcap-colored Lights\" which only appeared following a bug. No one should be getting this anyway at this point"],
@@ -302,7 +310,7 @@ const logEntries = [
 		[3,"BUGFIX","Game no longer crashes if formulas are shown in the Dark Matter tab"],
 		[1,"FLAIR","Even fancier changelog!"],
 		[1,"INTERFACE","Reversing Mastery rows no longer causes a flash of rows which aren't unlocked"],
-		[[1,3,5,6],"INTERFACE","Fixed achievement name text color black/white selection"+((highestTierUnlocked>=3)?(" (i.e. "+((highestTierUnlocked>=6)?"tiers 3, 5 and 6":(highestTierUnlocked>=5)?"tiers 3 and 5":"tier 3")+" will no longer show achievement names in black)"):"")],
+		[[1,3,5,6],"INTERFACE","Fixed achievement name text color black/white selection"+((EMDLevel>=3)?(" (i.e. "+((EMDLevel>=6)?"tiers 3, 5 and 6":(EMDLevel>=5)?"tiers 3 and 5":"tier 3")+" will no longer show achievement names in black)"):"")],
 		[1,"INTERFACE","Achievement tier containers no longer have the tier name underlined"],
 		[1,"INTERFACE","Mousing out of an achievement now hides the tooltip"],
 		[5,"INTERFACE","If Mastery 101 is active, Achievement 501 \"Wormhole to Somewhere\" now shows the change from the base effect to the modified effect"],
@@ -314,7 +322,7 @@ const logEntries = [
 		[1,"WHAT","Added the missing CONTENT to the 𝕍1.5(b).2 changelog"]
 	]},
 	{num:"𝕍1.5(b).2.5",date:"2024-01-06",changes:[
-		[[1,5],"BUGFIX","Game not loading due to news item #253 being undefined if "+((highestTierUnlocked>=5)?"Studies are":"a Tier 5 feature is")+" not unlocked"],
+		[[1,5],"BUGFIX","Game not loading due to news item #253 being undefined if "+((EMDLevel>=5)?"Studies are":"a Tier 5 feature is")+" not unlocked"],
 		[6,"BUGFIX","Lumen gain achievements not awarding"]
 	]},
 	{num:"𝕍1.5(b).2.4",date:"2024-01-06",changes:[
@@ -343,7 +351,7 @@ const logEntries = [
 		[5,"INTERFACE","When a research or achievement with dynamic effect is selected, the displayed value will continually update until another is selected"],
 		[5,"INTERFACE","Mastery 101 now shows the ID of \"Wormhole to Somewhere\" (501)"],
 		[8,"INTERFACE","Research 17-8 icon is less ugly"],
-		[[3,5],"INTERFACE","The Tier 3"+((highestTierUnlocked>=5)?" and Tier 5":"")+" achievement text colors are now darker"],
+		[[3,5],"INTERFACE","The Tier 3"+((EMDLevel>=5)?" and Tier 5":"")+" achievement text colors are now darker"],
 		[8,"MISCELLANEOUS","Large number visualisation now shows antimatter"],
 		[2,"QOL","The previous prestige tracker no longer shows builds for 'last 10' resets, only shows builds for record-breaking resets"],
 		[8,"QOL","Added the option to lose all levels of a repeatable prismatic upgrade"],
@@ -366,7 +374,7 @@ const logEntries = [
 		[1,"WHAT","Swapped the ∼ tildes in the names of 𝕍1.4 and 𝕍1.5(a) for 〜 wave dashes"]
 	]},
 	{num:"𝕍1.5(a).3",date:"2023-12-02",changes:[
-		[[1,8],"BUGFIX","Values less than "+format("2^-53")+" will no longer break the game"+((highestTierUnlocked>=8)?" (especially in Study of Studies: Temporal)":"")],
+		[[1,8],"BUGFIX","Values less than "+format("2^-53")+" will no longer break the game"+((EMDLevel>=8)?" (especially in Study of Studies: Temporal)":"")],
 		[1,"BUGFIX<sup>2</sup>","The error popup now includes a stack trace so alemaninc will not need save exports as often"]
 	]},
 	{num:"𝕍1.5(a).2",date:"2023-12-02",changes:[
@@ -395,7 +403,7 @@ const logEntries = [
 		[8,"FLAIR","Prismatic \"Lumen Increaser\" upgrades have been renamed to \"Illumenati\""],
 		[8,"HELP","Added how-to-play entries for luck, prismatic and antimatter"],
 		[5,"INTERFACE","Study I reward 2 now refers to percentage points"],
-		[[7,8],"INTERFACE",(highestTierUnlocked>=8)?"Study VI reward 3 and Study VIII reward 2 now mention that they are additive":"Study VI reward 3 now mentions that it is additive"],
+		[[7,8],"INTERFACE",(EMDLevel>=8)?"Study VI reward 3 and Study VIII reward 2 now mention that they are additive":"Study VI reward 3 now mentions that it is additive"],
 		[8,"INTERFACE","Luck upgrade names now show on two lines"],
 		[8,"QOL","Added an autobuyer for free research (locked behind one of the new achievements)"]
 	]},
@@ -424,9 +432,9 @@ const logEntries = [
 		[6,"BUGFIX","Light options no longer have a toggle for the reward of an unimplemented achievement (Gensokyo Millennium)"],
 		[8,"BUGFIX","Hopefully fixed the \"forced Study IX exit\" bug caused when an experientia reset takes place at the goal requirement"],
 		[7,"INTERFACE","At resource values above "+format("ee9")+" the header will stop displaying per-second gain if it is greater than or equal to ^0.9999 of the amount owned (from ^0.99)"],
-		[[5,7],"INTERFACE",(highestTierUnlocked>=7)?"Changed the icons of research 5-14 and 13-11":"Changed the icon of research 5-14"],
+		[[5,7],"INTERFACE",(EMDLevel>=7)?"Changed the icons of research 5-14 and 13-11":"Changed the icon of research 5-14"],
 		[5,"INTERFACE","Fully completed studies will now continue to show the goal of the fourth level"],
-		[[2,5],"QOL","Added hotkeys to force stardust"+((highestTierUnlocked>=5)?"/wormhole":"")+" reset"],
+		[[2,5],"QOL","Added hotkeys to force stardust"+((EMDLevel>=5)?"/wormhole":"")+" reset"],
 		[5,"QOL","\"Wormhole reset\" hotkey no longer exits a Study if it cannot be completed"]
 	]},
 	{num:"𝕍1.4.14",date:"2023-10-27",changes:[
@@ -439,7 +447,7 @@ const logEntries = [
 		[2,"BUGFIX","\"Last 10 runs\" now shows the correct builds"],
 		[8,"BUGFIX?","Fixed a weird issue with research 3-6 which may or may not exist"],
 		[8,"INTERFACE","If prismatic is unlocked, the light subtab will now show the chroma cost multiplier."],
-		[[6,7],"UNINTENDED BALANCE","Generation of all chromas at "+format("e-15")+" rate is now tied to "+((highestTierUnlocked>=7)?"'Softcap-colored lights'":"a Tier 7 unlock")]
+		[[6,7],"UNINTENDED BALANCE","Generation of all chromas at "+format("e-15")+" rate is now tied to "+((EMDLevel>=7)?"'Softcap-colored lights'":"a Tier 7 unlock")]
 	]},
 	{num:"𝕍1.4.11",date:"2023-10-23",name:"Exodus of the Endgame Dimensions",changes:[
 		[8,"BALANCE","Anti-W axis effect softcaps past "+format("e100")],
@@ -478,7 +486,7 @@ const logEntries = [
 	]},
 	{num:"𝕍1.4.4",date:"2023-10-15",name:"Ghost of a Discovery",changes:[
 		[8,"BUGFIX","Research 26-14 is no longer broken"],
-		[[6,8],"INTERFACE",((highestTierUnlocked>=8)?"White, black and gray":"White and black")+" chroma containers now slightly differ coloristically"],
+		[[6,8],"INTERFACE",((EMDLevel>=8)?"White, black and gray":"White and black")+" chroma containers now slightly differ coloristically"],
 		[8,"QOL","Study IX time per reset has been reduced to 9 seconds"]
 	]},
 	{num:"𝕍1.4.3",date:"2023-10-15",changes:[
@@ -493,7 +501,7 @@ const logEntries = [
 	]},
 	{num:"𝕍1.4",date:"2023-10-15",name:"Age Nobly, xhwzwka-Red Cherry Wine 〜 Border of OMCCDV",changes:[
 		[2,"BUGFIX","Showing the mastery build of a previous prestige will no longer show rows without an active mastery as, for example, \"10\" for row 1"],
-		[[2,5],"BUGFIX",((highestTierUnlocked>=5)?"Stardust and Wormhole reset now correctly reset":"Stardust reset now correctly resets")+" mastery power to 0 rather than 1"],
+		[[2,5],"BUGFIX",((EMDLevel>=5)?"Stardust and Wormhole reset now correctly reset":"Stardust reset now correctly resets")+" mastery power to 0 rather than 1"],
 		[3,"BALANCE","The first dark star effect now works when the base gain is less than 1 by multiplying it instead"],
 		[6,"BALANCE","Study research no longer count as temporary research for 'Pseudoscience' (and several other purposes)"],
 		[7,"BALANCE","'Old age' achievement reward has been buffed"],
@@ -506,9 +514,9 @@ const logEntries = [
 		[8,"CONTENT","Added Luck Shards"],
 		[8,"CONTENT","Added Prismatic"],
 		[8,"CONTENT","Added Antimatter"],
-		[1,"INTERFACE","Researches which boost by a quantity raised to a power (such as 8-2) now once again display, for example,\"tickspeed<sup>1.1</sup>\" instead of \"tickspeed ^ 1.1\""],
 		[1,"INTERFACE","The Modifier column of the stat breakdown is now wider relative to the others"],
 		[2,"INTERFACE","\"Last 10\" tables in previous prestiges now have headers"],
+		[5,"INTERFACE","Researches which boost by a quantity raised to a power (such as 8-2) now once again display, for example,\"tickspeed<sup>1.1</sup>\" instead of \"tickspeed ^ 1.1\""],
 		[7,"INTERFACE","Changed the tooltip of the \"Destroy galaxies\" button to \"Destroy a galaxy\""],
 		[7,"INTERFACE","Generated resources no longer show per-second gain above "+format("ee9")],
 		[1,"QOL","Actions triggered by mouseover are now triggered by click too"],
@@ -534,7 +542,7 @@ const logEntries = [
 		[5,"BUGFIX","Stardust Boost 11 now correctly shows the percentage rather than the multiplier as a percentage (eg. 25% showed as 1.25%)"],
 		[1,"BUGFIX","Hopefully fixed a bizarre bug which only one player seems to have"],
 		[2,"INTERFACE","Moved the tabs around. Tab hotkeys have been changed to account for this."],
-		[[2,5],"INTERFACE",((highestTierUnlocked>=5)?"Stardust and HR gain stat breakdowns are":"Stardust gain stat breakdown is")+" much uglier. Even alemaninc finds this completely unusable now but it was necessary for the above BUGFIX."],
+		[[2,5],"INTERFACE",((EMDLevel>=5)?"Stardust and HR gain stat breakdowns are":"Stardust gain stat breakdown is")+" much uglier. Even alemaninc finds this completely unusable now but it was necessary for the above BUGFIX."],
 		[5,"INTERFACE","'Hyperspeed IV' reward description has been altered"],
 		[5,"INTERFACE","Normal and study research titles are now the same color as their button borders"],
 		[5,"INTERFACE","'Partially completed' achievement text is now clearer"],
@@ -603,7 +611,7 @@ const logEntries = [
 		[5,"BUGFIX","Empowered Y axis no longer show in the stat breakdown if they're not unlocked"],
 		[5,"BUGFIX","A free Discovery is no longer given on the first Wormhole"],
 		[5,"BUGFIX","Iron Will IV milestones no longer require 1 more dark axis than what they say"],
-		[[6,7],"INTERFACE","Light research are renamed to Chromatic"+((highestTierUnlocked>=7)?", and Light Augmentation to Photonic":"")],
+		[[6,7],"INTERFACE","Light research are renamed to Chromatic"+((EMDLevel>=7)?", and Light Augmentation to Photonic":"")],
 		[6,"INTERFACE","The chroma tab has brighter text"]
 	]},
 	{num:"𝕍1.3.19",date:"2023-08-27",changes:[
@@ -712,7 +720,7 @@ const logEntries = [
 	]},
 	{num:"𝕍1.3.5",date:"2023-08-16",name:"Royal Flush",changes:[
 		[7,"BALANCE","Research 13-11 is now stronger (the percentage is the same but the effects are now exponentiated rather than multiplied)"],
-		[2,"BUGFIX","'Previous Prestige' tab saying things like 'Show star/mastery"+((highestTierUnlocked>=5)?"/research":"")+" builds builds'"],
+		[2,"BUGFIX","'Previous Prestige' tab saying things like 'Show star/mastery"+((EMDLevel>=5)?"/research":"")+" builds builds'"],
 		[5,"BUGFIX","'The 4th dimension doesn't exist' indicating that it can be completed with less than 7 Tier 5 achievements"],
 		[2,"INTERFACE","Stardust boosts 2, 3, 6 and 8 now show multipliers instead of percentages at high values"],
 		[7,"QOL","The 2nd galaxy boost now calculates the multiplier to chroma the next galaxy will give"],
@@ -845,7 +853,7 @@ const logEntries = [
 	{num:"𝕍1.2.4",date:"2023-06-28",changes:[
 		[5,"BUGFIX","Wormhole reset autobuyer breaking the game"],
 		[6,"BUGFIX","Clicking the progress bar now correctly shows a hint of the next update at current endgame"],
-		[[2,5],"QOL",(highestTierUnlocked>=5)?"Added confirmations for stardust and wormhole reset, including a stardust reset confirmation which only triggers in Iron Will":"Added a confirmation for stardust reset"]
+		[[2,5],"QOL",(EMDLevel>=5)?"Added confirmations for stardust and wormhole reset, including a stardust reset confirmation which only triggers in Iron Will":"Added a confirmation for stardust reset"]
 	]},
 	{num:"𝕍1.2.3",date:"[...]5-6",name:"4",changes:[
 		[6,"BUGFIX","'Black Hole Era II' can actually be completed"],
@@ -861,7 +869,7 @@ const logEntries = [
 	{num:"𝕍1.2",date:"2023-15-06",name:"In Light of all the bugs...",changes:[
 		[1,"...your saves are gone again. (ok, I didn't <i>actually</i> wipe them, but you might want to replay the tier you're in again anyway.)"],
 		[1,"BALANCE","Demoted the secret achievements 'Epsilon Time' and 'I am speed' from the Common tier to the Super Easy tier"],
-		[2,"BALANCE","Stardust Upgrade 1 now affects dark axis"+((highestTierUnlocked>=5)?" (I am SO sorry for everyone in the Iron Will V run)":"")],
+		[2,"BALANCE","Stardust Upgrade 1 now affects dark axis"+((EMDLevel>=5)?" (I am SO sorry for everyone in the Iron Will V run)":"")],
 		[4,"BALANCE","Axis cost exponent now applies before axis cost divisor, but stars 82 and 84 nerfed from 4× to 3×"],
 		[4,"BALANCE","Removed the 'Eternal Inflation' reward. Instead, a bug that caused tickspeed to multiply energy gain twice has been turned into a feature through its new 'reward'."],
 		[5,"BALANCE","'Big Bang' requirement reduced from 5000 to 4800 in light of the relevant bugfix"],
@@ -872,7 +880,7 @@ const logEntries = [
 		[1,"BUGFIX","Fixed 'The Ultimate Upgrade' not working"],
 		[1,"BUGFIX","The W axis effect no longer increases 30× faster with the 'Slow' achievement, but the effect is now approximately 12.5% higher to compensate"],
 		[2,"BUGFIX","Fixed Mastery 52 being affected by the boost percentage of Mastery 51 instead of its own"],
-		[[2,5],"BUGFIX","Clicking "+((highestTierUnlocked>=5)?"stardust/wormhole reset buttons":"the stardust reset button")+" no longer adds to 'total reset' stats if no reset was done"],
+		[[2,5],"BUGFIX","Clicking "+((EMDLevel>=5)?"stardust/wormhole reset buttons":"the stardust reset button")+" no longer adds to 'total reset' stats if no reset was done"],
 		[5,"BUGFIX","Fixed Mastery 103 being unaffected by knowledge"],
 		[5,"BUGFIX","Fixed Stardust Boost 12 being affected by the boost percentage for Stardust Boost 9 instead of its own"],
 		[5,"BUGFIX","Fixed Wormhole reset resetting energies to 0 instead of 1"],
@@ -1022,7 +1030,7 @@ const logEntries = [
 		[1,"EVIL","Made the Light theme the default"]
 	]},
 	{num:"𝕍1.1.1",date:"2023-04-01",changes:[
-		[2,"TEXTFIX","The 'Star/Mastery"+((highestTierUnlocked>=5)?"/Research":"")+" builds' columns of the 'last 10 runs' tables in 'Previous Prestiges' are now properly labeled 'Star/Mastery"+((highestTierUnlocked>=5)?"/Research":"")+" builds' instead of 'build'"],
+		[2,"TEXTFIX","The 'Star/Mastery"+((EMDLevel>=5)?"/Research":"")+" builds' columns of the 'last 10 runs' tables in 'Previous Prestiges' are now properly labeled 'Star/Mastery"+((EMDLevel>=5)?"/Research":"")+" builds' instead of 'build'"],
 		[4,"TEXTFIX","Fixed the how-to-play entry for Energy saying there are seven types of Energy"]
 	]},
 	{num:"<del>v1.1</del> <ins>𝕍1.1</ins>",date:"2023-04-01",name:"<del>The Light</del> <ins>Just for Lilith</ins>",changes:[
@@ -1033,10 +1041,10 @@ const logEntries = [
 		[1,"FLAIR","The page title now states the version number. It is also now \"by alemaninc\" for ripoff prevention"],
 		[1,"FLAIR","The version number now uses a fancy 𝕍 instead of an ordinary v"],
 		[2,"FLAIR","Named the stardust upgrades"],
-		[[1,5],"INCLUSION","Masteries and Achievements should now be readable by screen readers"+((highestTierUnlocked>=5)?". Possibly Research too, but can't guarantee that yet":"")],
+		[[1,5],"INCLUSION","Masteries and Achievements should now be readable by screen readers"+((EMDLevel>=5)?". Possibly Research too, but can't guarantee that yet":"")],
 		[1,"INTERFACE","Most options specific to a single feature have been moved from 'Options' to the relevant tab"],
 		[1,"INTERFACE","Opening the Discord now opens to a new tab"],
-		[[1,2],"INTERFACE","Achievement progress percentage no longer goes above 100% for "+((highestTierUnlocked>=2)?"achievements like 'Enneract'":"certain achievements")],
+		[[1,2],"INTERFACE","Achievement progress percentage no longer goes above 100% for "+((EMDLevel>=2)?"achievements like 'Enneract'":"certain achievements")],
 		[1,"INTERFACE","Stat breakdown now uses \"categories\" - i.e. instead of 50 third-level tabs in the Stat Breakdown tab, there are now 14 third-level tabs, which either open to a table like normally (e.g. 'exotic matter gain') or open to a menu of fourth-level tabs which each contain tables (e.g. 'normal axis effects')"],
 		[1,"INTERFACE","The entire game is no longer offset around 16 pixels to the right"],
 		[1,"INTERFACE","Popups are now more stylish"],
@@ -1223,7 +1231,7 @@ const logEntries = [
 		[1,"INTERFACE","Added option to change the color theme"],
 		[1,"QOL","Tabs now glow if you can afford something in them (this affects parent tabs too)"],
 		[1,"QOL","Game should be less laggy on mobile devices and low end computers (added delta time)"],
-		[[1,3],"QOL","Added 'Buy Max Axis'"+((highestTierUnlocked>=3)?" and 'Buy Max Dark Axis'":"")+" buttons"],
+		[[1,3],"QOL","Added 'Buy Max Axis'"+((EMDLevel>=3)?" and 'Buy Max Dark Axis'":"")+" buttons"],
 		[2,"QOL","Buying automation speed upgrades now bulk-buys"],
 		[3,"QOL","Gaining dark stars (formerly Axioms) now bulk-buys as many dark stars as possible (can be disabled in Options)"],
 		[2,"STORY","Renamed nearly everything in the Tribute layer (including the layer name itself)"],
@@ -1285,16 +1293,16 @@ const logEntries = [
 	]}
 ]
 
-d.innerHTML("tierText",(highestTierUnlocked===Infinity)?"A savefile could not be retrieved, so all entries are shown. You may see spoilers if you proceed.":("You have unlocked "+highestTierUnlocked+" tier"+((highestTierUnlocked===1)?"":"s")+" of achievements according to the savefile retrieved."))
-d.element("tierText").style.color = (highestTierUnlocked===Infinity)?"#ff6666":"#cccc00"
+d.innerHTML("EMDLevelText",(EMDLevel===Infinity)?"A savefile could not be retrieved, so all entries are shown. You may see spoilers if you proceed.":("You are at EMD Level "+EMDLevel+" according to the savefile retrieved."))
+d.element("EMDLevelText").style.color = (EMDLevel===Infinity)?"#ff6666":"#cccc00"
 
 const depthChars = ".αβΩω".split("")
 for (let i of logEntries) {
 	let depth = depthChars.map(x=>i.num.length-i.num.replaceAll(x,"").length).sum()
 	let changes = i.changes
-	let displayed = changes.filter(x=>highestTierUnlocked>=(Array.isArray(x[0])?x[0][0]:x[0]))
-	let tierForNext = changes.filter(x=>(highestTierUnlocked<(Array.isArray(x[0])?x[0][0]:x[0]))).map(x=>x[0]).flat().filter(x=>x>=highestTierUnlocked).reduce((x,y)=>Math.min(x,y),Infinity)
-	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (x.length > 2)?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((highestTierUnlocked<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>highestTierUnlocked)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x[1]+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Unlock "+tierForNext+" tiers of achievements to see more.</td></tr>"))+"</table></div>"
+	let displayed = changes.filter(x=>EMDLevel>=(Array.isArray(x[0])?x[0][0]:x[0]))
+	let levelForNext = changes.filter(x=>(EMDLevel<(Array.isArray(x[0])?x[0][0]:x[0]))).map(x=>x[0]).flat().filter(x=>x>=EMDLevel).reduce((x,y)=>Math.min(x,y),Infinity)
+	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (x.length > 2)?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((EMDLevel<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>EMDLevel)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x[1]+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Reach EMD Level "+levelForNext+" to see more.</td></tr>"))+"</table></div>"
 }
 var acc = document.getElementsByClassName("accordion");
 

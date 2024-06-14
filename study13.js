@@ -62,7 +62,7 @@ const study13 = {
 			for (let i=0;i<3;i++) {base = base.replace("["+i+"]",(used.length>i)?(" "+study13.bindings[used[i]].nameMod[i]+" "):"")}
 		}
 		let special25Name = g.study13Bindings[25]?["Filthy ","Sullied ","Disgraced ","Fallen ","Obscene "][Math.floor(Math.sqrt(25+lvExcl25)*48)%5]:""
-		return capitalize(special25Name+base+" ("+studyPower(13)+")")
+		return capitalize((special25Name+base+" ("+studyPower(13)+")").trim())
 	},
 	activeT3:"bindings",
 	openT3:function(name) {

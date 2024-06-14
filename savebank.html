@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<style>
+body {
+	color: #39f;
+	background: #190033;
+	font-size: 15px;
+	font-family:verdana
+}
+table, tr, td {
+	vertical-align:top;
+}
+a {color:inherit;}
+		</style>
+		<meta charset="utf-8"/>
+		<title>Save Bank</title>
+	</head>
+	<body>
+		There is no save bank here yet as save collection has only just started.
+		<br>
+		However, please do donate your own save for its implementation in an upcoming patch.
+		<br>
+		Do this via either:
+		<table>
+			<tr><td style="font-style:italic;padding-right:5px;">(a)</td><td><a target="_blank" href="https://forms.gle/3n73QNuvu8WVa7dT6">Google Forms</a><br>(note that you will need to <i>segment</i> your save to use Google Forms; this can be done <a target="_blank" href="savesegmenter.html">here</a>)</td></tr>
+			<tr><td style="font-style:italic;padding-right:5px;">(b)</td><td>Discord</td></tr>
+		</table>
+		<br>
+		<div id="levelSelection" style="width:100vw;background-color:rgba(255,255,0,0.25);"></div>
+		<div id=""></div>
+		<script type="text/javascript" src="alemaninc_utility.js"></script>
+		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
+		<script type="text/javascript" src="emd_utility.js"></script>
+		<script>
+const save = JSON.parse(localStorage.getItem("save"))
+const notation = (save===null)?"Mixed scientific":(save.notation??"Mixed Scientific")
+function format(x,p=0){return gformat(N(x),p,notation)}
+const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
+function openToLevel(level) {
+
+}
+const saves = {
+	1:{},
+	2:{},
+	3:{},
+	4:{},
+	5:{},
+	6:{},
+	7:{},
+	8:{},
+	9:[],
+	Unclassified:{}
+}
+		</script>
+	</body>
+</html>

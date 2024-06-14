@@ -25,7 +25,7 @@ achievement.perAchievementReward = {
 	8:{text:"2 additional Spatial Synergism research can be purchased per achievement in this tier (currently: {})",value:()=>2*achievement.ownedInTier(8)+6,calc:x=>2*x+6,currentVal:6},
 	9:{text:"The Study XIII goal is reduced based on achievements in this tier ({})",base:()=>1032,value:function(){return showFormulas?formulaFormat("min(999, "+this.base()+" - 4 × A)"):(achievement.ownedInTier(9)===Object.keys(achievementList[9]).length)?("currently: "+(this.base()-132)):("currently: "+this.calc(achievement.ownedInTier(9)).format()+", next: "+this.calc(achievement.ownedInTier(9)+1))},calc:function(x){return Decimal.FC_NN(1,0,Math.min(999,this.base()-x*4))},currentVal:c.d999}
 }
-achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:717,9:betaActive?823:905}
+achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:717,9:823}
 achievement.visible = function(id) {
 	if (g.achievement[id]) {return true}
 	if ((achievement(id).beta===true)&&(!betaActive)) {return false}
@@ -55,8 +55,6 @@ achievement.nextTier = function(){
 	let out = Object.keys(achievementList).filter(x=>!u.includes(x))
 	return out.length===0?null:out[0]
 }
-achievement.selected = undefined
-achievement.secretSelected = undefined
 achievement.selectForProgressBar = function(){
 	if (g.achOnProgressBar==="N") {
 		let available = achievement.all.filter(x=>achievement.visible(x)&&((!g.achievement[x])||((achievement(x).maxMilestones===undefined)?false:(achievement(x).milestones()<achievement(x).maxMilestones))))
@@ -924,7 +922,7 @@ const achievementList = {
 			flavor:"Einstein would agree",
 			effect:function(y=this.yellowValue){return studies[12].reward(2).mul(y).add(c.d4)},
 			effectFormat:x=>x.noLeadFormat(3),
-			get yellowBreakpoints(){return betaActive?[c.d12.pow(c.d4),c.d12.pow(c.d7),1]:[c.maxvalue,c.maxvalue,0]},
+			yellowBreakpoints:[c.d12.pow(c.d4),c.d12.pow(c.d7),1],
 			active:function(){return axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()<=3;}
 		},
 		528:{
@@ -1019,7 +1017,7 @@ const achievementList = {
 			get reward(){return "Every Study completion gives 1% of the relevant Study's base cost as free Discoveries (current total: "+this.effValue().noLeadFormat(2)+")"},
 			flavor:"He would automatically begin to assume that specialists in all other fields were magicians, judging the depth of their wisdom by the breadth of his own ignorance...",
 			studyValue:function(x){
-				if (x===10) {return betaActive?studies[10].researchList.slice(0,g.studyCompletions[10]).map(x=>research[x].basecost).sumDecimals().mul(c.d0_01):c.d0}
+				if (x===10) {return studies[10].researchList.slice(0,g.studyCompletions[10]).map(x=>research[x].basecost).sumDecimals().mul(c.d0_01)}
 				return research[studies[x].research].basecost.mul(0.01*g.studyCompletions[x])
 			},
 			effValue:function(){return countTo(13).map(x=>this.studyValue(x)).sumDecimals()}
@@ -1057,7 +1055,7 @@ const achievementList = {
 			progress:function(){return achievement.percent(N(this.lumens()),c.d4,0)},
 			get reward(){return "Each star below 60 divides chroma gain by {} rather than 3"},
 			flavor:"There are six lights. How many do you see now?",
-			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d1_25:y.eq(c.d0)?N(betaActive?2.75:2.8):c.d2_5.sub(y)},
+			effect:function(y=this.yellowValue){return y.eq(c.d1)?c.d1_25:y.eq(c.d0)?N(2.75):c.d2_5.sub(y)},
 			effectFormat:x=>x.noLeadFormat(3),
 			yellowBreakpoints:[N(999),c.e4,1],
 			lumens:function(){return g.lumens.map(x=>x.sign).sum()},
@@ -1248,7 +1246,7 @@ const achievementList = {
 		...(()=>{
 			let out = {}
 			for (let i=0;i<3;i++) {
-				let req = N(["7.77e777",betaActive?"3.33e833":"8.88e888",betaActive?"8.88e888":"9.99e999"][i])
+				let req = N(["7.77e777","3.33e833","8.88e888"][i])
 				out[708+i] = {
 					name:"Mind-bending Curvature"+achievement.roman(i+1),
 					get description(){return "Make the effect of the "+achievement.label(501)+" reward exceed "+req.format()+"×"},
@@ -1283,9 +1281,9 @@ const achievementList = {
 			event:"researchBuy",
 			progress:function(){return "Not Completed!"},
 			reward:"Each Photonic research reduces the cost of all other Photonic research by {} Discoveries",
-			effect:function(y=this.yellowValue){return betaActive?y.mul(c.d1404).add(c.d36):y.mul(1405).add(c.d35)},
+			effect:function(y=this.yellowValue){return y.mul(c.d1404).add(c.d36)},
 			effectFormat:x=>x.noLeadFormat(3),
-			yellowBreakpoints:[betaActive?c.d3600:N(3500),N(144000),0],
+			yellowBreakpoints:[c.d3600,N(144000),0],
 			flavor:"If you miss the beginning, the basics, then you are destined to go back and visit the basics."
 		},
 		713:{
@@ -1379,9 +1377,9 @@ const achievementList = {
 			check:function(){return stat.totalAxis.gte(this.req)},
 			event:"axisBuy",
 			progress:function(){return achievement.percent(stat.totalAxis,this.req,0)},
-			get reward(){return "Each observation increases knowledge gain by ("+(betaActive?"2,020 + 816":"20.20 + 8.16")+" × [number of galaxies])%, compounding with itself (currently: "+this.effect().format()+"×)"},
+			get reward(){return "Each observation increases knowledge gain by (2,020 + 816 × [number of galaxies])%, compounding with itself (currently: "+this.effect().format()+"×)"},
 			flavor:"\"This is a house, Do you want to live here?\" - Stat Mark, 2020",
-			effect:function(){return (betaActive?N(8.16):c.d0_0816).mul(g.galaxies).add(betaActive?N(21.2):c.d1_202).pow(g.observations.sumDecimals())}
+			effect:function(){return N(8.16).mul(g.galaxies).add(21.2).pow(g.observations.sumDecimals())}
 		}
 	},
 	8:{
@@ -1392,9 +1390,9 @@ const achievementList = {
 			event:"researchBuy",
 			progress:function(){function q(x){return "<span style=\"color:#330066\">"+"?".repeat(x)+"</span>"};return this.revealed()+" / "+q(2)+" ("+q(2)+"."+q(3)+"%)"},
 			reward:"Hawking radiation gain is multiplied based on the number of Tier 8 achievements (currently: ×{})",
-			effect:function(){return betaActive?(10**((1+achievement.ownedInTier(8)*0.08)**2-1)):achievement.ownedInTier(8)},
-			effectFormat:x=>Decimal.FC_NN(1,0,x).noLeadFormat(2),
-			formulaText:()=>betaActive?"10<sup>sqrt(1 + A × 0.08)<sup>2</sup> - 1</sup>":"A",
+			effect:function(){return Decimal.FC_NN(1,0,10**((1+achievement.ownedInTier(8)*0.08)**2-1))},
+			effectFormat:x=>x.noLeadFormat(2),
+			formulaText:()=>"10<sup>(1 + A × 0.08)<sup>2</sup> - 1</sup>",
 			flavor:"Adventure is just bad planning.",
 			revealed:function(){let v = visibleResearch();return researchGroupList.spatialsynergism.contents.map(x=>v.includes(x)?1:0).sum()},
 		},
@@ -1534,7 +1532,7 @@ const achievementList = {
 		},
 		813:{
 			name:"Hidden Stars in Zero Dimensions",
-			req:N(betaActive?208:210),
+			req:N(208),
 			get description(){return "Have "+this.req.format()+" total stars, (effective) dark stars and galaxies without any normal or dark axis in the current Wormhole"+(achievement.ownedInTier(5)>6?"":"<br>(note: you must have at least 7 Tier 5 achievements to attempt this!)")},
 			check:function(){return g.ach526possible&&(stat.totalDarkAxis.sign===0)&&(achievement.ownedInTier(5)>6)&&stat.realDarkStars.add(g.stars+g.galaxies).gte(this.req)},
 			event:"gameloop",
@@ -2619,22 +2617,9 @@ yellowLight.effectHTML = function(id,a,b) {
 	return arrowJoin("<span class=\"big\" style=\"font-size:110%;color:#cccc00\">"+achievement(id).effectFormat(achievement(id).effect(a))+"</span>","<span class=\"yellow\" style=\"font-size:110%\">"+achievement(id).effectFormat(achievement(id).effect(b))+"</span>")
 }
 function showAchievementInfo(id) {
-	let rect = d.element("div_achievement"+id).getBoundingClientRect()
-	if ((rect.top===0)&&(rect.left===0)) { // the achievement has become invisible
-		achievement.selected=undefined
-		d.element("achievementInfo").visibility = "hidden"
-		return
-	}
-	let elemX = (rect.left+rect.right)/2
-	let elemY = (rect.top+rect.bottom)/2
-	let rightAlign = (viewportWidth()<elemX*2)
-	let bottomAlign = (viewportHeight()<elemY*2)
-	let position = {top:"",bottom:"",left:"",right:""}
-	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth()-rect.left+4):(rect.right+4))+"px"
-	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight()-rect.top+4):(rect.bottom+4))+"px"
-	let info = d.element("achievementInfo").style
-	for (let i of Object.keys(position)) info[i] = position[i]
+	alignTooltip("achievementInfo","div_achievement"+id)
 	let colors = achievement.tierColors[achievement.tierOf(id)]
+	let info = d.element("achievementInfo").style
 	info["background-color"] = colors.dark
 	info.color = colors.light
 	info["border-color"] = colors.light
@@ -2663,8 +2648,8 @@ function showAchievementInfo(id) {
 	} else {
 		txt.push("<b>Progress</b><br><span style=\"color:#ffcc00;\">"+req+"</span>");
 	}
-	if (ach.flavor!==undefined&&g.achievement[id]) {txt.push("<div style=\"font-size:10px;color:#ffffff;white-space:break-spaces;color:"+blackOrWhiteContrast(hexToRGB(colors.dark))+"\">\""+ach.flavor+"\"</div>");}
-	d.innerHTML("achievementInfo",txt.join("<hr style=\"color:inherit;opacity:0.5;\">"))
+	if (ach.flavor!==undefined&&g.achievement[id]) {txt.push("<div style=\"font-size:10px;white-space:break-spaces;color:"+blackOrWhiteContrast(hexToRGB(colors.dark))+"\">\""+ach.flavor+"\"</div>");}
+	d.innerHTML("achievementInfo",txt.join("<hr>"))
 }
 function addAchievement(x) {
 	if (achievement(x).beta&&(!betaActive)) return
@@ -2705,16 +2690,8 @@ function addSecretAchievement(x) {
 	}
 }
 function showSecretAchievementInfo(id) {
-	let position = {top:"",bottom:"",left:"",right:""}
-	let rect = d.element("div_secretAchievement"+id).getBoundingClientRect()
-	let elemX = (rect.left+rect.right)/2
-	let elemY = (rect.top+rect.bottom)/2
-	let rightAlign = (viewportWidth()<elemX*2)
-	let bottomAlign = (viewportHeight()<elemY*2)
-	position[rightAlign?"right":"left"] = (rightAlign?(viewportWidth()-rect.left+4):(rect.right+4))+"px"
-	position[bottomAlign?"bottom":"top"] = (bottomAlign?(viewportHeight()-rect.top+4):(rect.bottom+4))+"px"
+	alignTooltip("secretAchievementInfo","div_secretAchievement"+id)
 	let info = d.element("secretAchievementInfo").style
-	for (let i of Object.keys(position)) info[i] = position[i]
 	let ach = secretAchievementList[id]
 	let colors = secretAchievementRarityColors[ach.rarity]
 	info["background-color"] = colors.dark

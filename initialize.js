@@ -83,7 +83,6 @@ const initSteps = [
 	}},
 	{function:function(){
 		d.element("span_footerDiscord").href = discordInvite
-		d.display("span_discordPoll",Date.now()<1694293080000?"inline-block":"none")
 	}},
 	{function:function(){
 		nextNewsItem()

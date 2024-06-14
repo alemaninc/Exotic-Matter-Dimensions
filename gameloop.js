@@ -30,6 +30,7 @@ function updateHTML() {
 			else {if (achievement(g.achOnProgressBar).milestones()===achievement(g.achOnProgressBar).maxMilestones) {g.achOnProgressBar="N"}}
 		}
 		ProgressBar()
+		d.innerHTML("span_footerEMDLevel",dictionary(g.EMDLevelDisplayInFooter,{0:"",1:" | EMD Level "+g.EMDLevel,2:" | EMD Level "+g.EMDLevel+" (Score "+BEformat(EMDScore())+")"}))
 	}
 	for (let tab of tabList) {
 		if (tabVisibility[tab]()) {
@@ -74,7 +75,6 @@ function updateHTML() {
 				d.innerHTML("span_empowered"+name+"AxisAmount",stat["empowered"+name+"Axis"].noLeadFormat(2));
 			}
 		} else if (g.activeSubtabs.main==="masteries") {
-			showMasteryInfo(shownMastery,1)
 			for (let i of ["div","br"]) d.display(i+"_masteryPower_disabledTop",g.topResourcesShown.masteryPower?"none":"inline-block")
 			if (!g.topResourcesShown.masteryPower) {
 				d.innerHTML("span_masteryPower_disabledTop",g.masteryPower.format())
@@ -97,7 +97,12 @@ function updateHTML() {
 					d.innerHTML("span_mastery"+i+"BoostModern",masteryBoost(i).eq(c.d1)?"":(masteryBoost(i).mul(c.e2).noLeadFormat(3)+"%"))
 					d.innerHTML("span_mastery"+i+"ActiveModern",MasteryE(i)?"Active":"Inactive")
 				}
-				d.element("masteryContainerModern").style["padding-bottom"] = d.element("masteryPanel").clientHeight+"px"
+				if (selections.mastery===undefined) {
+					d.element("masteryInfo").style.visibility = "hidden"
+				} else {
+					d.element("masteryInfo").style.visibility = "visible"
+					showMasteryInfo(selections.mastery)
+				}
 			} else {
 				g.masteryContainerStyle = "Legacy"
 			}
@@ -166,6 +171,18 @@ function updateHTML() {
 			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
 			d.innerHTML("span_newsTickerSpeed",N(g.newsTickerSpeed).noLeadFormat(2))
 			d.innerHTML("span_newsTickerDilation",dictionary(g.newsTickerDilation,{"0":"None","0.0625":"Weak","0.125":"Moderate","0.1875":"Strong","0.25":"Extreme"}))
+			let doubleClickToBuy = [
+				["assign Mastery",unlocked("Masteries")&&(g.masteryContainerStyle==="Modern")],
+				["assign Star",unlocked("Stardust")&&(g.starContainerStyle==="Modern")],
+				["buy Research",unlocked("Hawking Radiation")]
+			].filter(x=>x[1]).map(x=>x[0])
+			if (doubleClickToBuy.length===0) {
+				d.display("button_options_doubleClickToBuy",false)
+			} else {
+				d.display("button_options_doubleClickToBuy",true)
+				d.innerHTML("button_options_doubleClickToBuy","Double click to "+doubleClickToBuy.map(x=>unbreak(x)).join("/")+" "+(g.confirmations.doubleClickToBuy?"en":"dis")+"abled")
+			}
+			d.innerHTML("button_options_EMDLevelDisplayInFooter",dictionary(g.EMDLevelDisplayInFooter,{0:"EMD Level not shown in footer",1:"EMD Level shown in footer",2:"EMD Level and Score shown in footer"}))
 		} else if (g.activeSubtabs.options==="hotkeys") {
 			for (let name in hotkeys.hotkeyList) {
 				let hotkey = hotkeys.hotkeyList[name]
@@ -303,17 +320,17 @@ function updateHTML() {
 				d.element("div_achievement"+i).style["background-color"] = "rgba(0,"+(fullCompletion?"255,0":"204,204")+",0.5)"
 				d.element("div_achievement"+i).style["border-color"] = "#00"+(fullCompletion?"ff00":"cccc")
 			}
-			if (achievement.selected!==undefined) {
+			if (selections.achievement!==undefined) {
 				d.element("achievementInfo").style.visibility = "visible"
-				showAchievementInfo(achievement.selected)
+				showAchievementInfo(selections.achievement)
 			} else {
 				d.element("achievementInfo").style.visibility = "hidden"
 			}
 			d.innerHTML("button_achievementToProgressBar",(g.achOnProgressBar==="N")?"Show achievement on progress bar":"Hide achievement from progress bar")
 		} else if (g.activeSubtabs.achievements==="secretAchievements") {
-			if (achievement.secretSelected!==undefined) {
+			if (selections.secretAchievement!==undefined) {
 				d.element("secretAchievementInfo").style.visibility = "visible"
-				showSecretAchievementInfo(achievement.secretSelected)
+				showSecretAchievementInfo(selections.secretAchievement)
 			} else {
 				d.element("secretAchievementInfo").style.visibility = "hidden"
 			}
@@ -359,6 +376,15 @@ function updateHTML() {
 			let rowsShown = starRowsShown()
 			if (g.starContainerStyle==="Legacy") {
 				for (let i of dynamicStars) {if (rowsShown.includes(Math.floor(i/10))) {d.innerHTML("span_star"+i+"EffectLegacy",showFormulas?formulaFormat(showStarEffectFormula(i)):formatStarEffect(i))}}
+			} else if (g.starContainerStyle==="Modern") {
+				if (selections.star===undefined) {
+					d.element("starInfo").style.visibility = "hidden"
+				} else {
+					d.element("starInfo").style.visibility = "visible"
+					showStarInfo(selections.star)
+				}
+			} else {
+				g.starContainerStyle="Modern"
 			}
 			for (let row=1;row<11;row++) {
 				d.tr("starRow"+row+g.starContainerStyle,rowsShown.includes(row))
@@ -373,7 +399,6 @@ function updateHTML() {
 			d.innerHTML("span_unspentStars",unspentStars()+" / "+g.stars);
 			d.display("button_maxFullStarRows",[1,2,3,4,5,6,7,8,9,10].map(x => maxStars(x)).includes(4)?"inline-block":"none");
 			d.innerHTML("span_nextStarRow",g.stars>=40?"":("The next star you buy will go in row <span class=\"big _stars\">"+starRow(g.stars+1)+"</span>"));
-			d.element("starContainerModern").style["padding-bottom"] = d.element("starPanel").clientHeight+"px"
 		} else if (g.activeSubtabs.stardust==="darkMatter") {
 			d.display("div_darkMatterUnlocked",g.stardustUpgrades[4]===0?"none":"inline-block")
 			d.display("div_darkMatterLocked",g.stardustUpgrades[4]===0?"inline-block":"none")
@@ -492,13 +517,23 @@ function updateHTML() {
 		d.display("br_hr_disabledTop",g.topResourcesShown.hr?"none":"inline-block")
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
 		if (g.activeSubtabs.wormhole==="research") {
+			let visible = visibleResearch()
 			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format(0,3)+" / "+g.totalDiscoveries.format(0,3));
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10)"+formulaFormat.mult(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
 			d.innerHTML("span_knowledgePerSec",stat.knowledgePerSec.format(2));
 			d.element("researchContainer").style["padding-bottom"] = d.element("discoveryPanel").clientHeight+"px"
-			if (researchSelected !== "") {(researchSelected==="u")?unknownResearchInfo():showResearchInfo(researchRow(researchSelected),researchCol(researchSelected))}
+			if (selections.research===undefined) {
+				d.element("researchInfo").style.visibility = "hidden"
+			} else {
+				d.element("researchInfo").style.visibility = "visible"
+				if (visible.includes(selections.research)) {
+					showResearchInfo(researchRow(selections.research),researchCol(selections.research))
+				} else {
+					unknownResearchInfo(selections.research)
+				}
+			}
 			d.display("button_projectedResearchCost",unlocked("Light")?"inline-block":"none")
 			for (let i=0;i<4;i++) {
 				d.element("button_observation"+i).className = "observation"+(g[observationResources[i]].gte(observationCost(i))?"":" locked")
@@ -507,7 +542,6 @@ function updateHTML() {
 			d.element("button_researchRespec").style["background-color"] = g.researchRespec?"rgba(128,255,204,0.75)":"rgba(179,204,255,0.75)";
 			d.element("button_buyMaxResearch").style["background-color"] = g.buyMaxResearch?"rgba(255,204,128,0.75)":"rgba(179,204,255,0.75)";
 			if (showingResearchLoadouts) {for (let i=0;i<9;i++) d.class("div_researchLoadout"+(i+1),"researchLoadout"+(researchLoadoutSelected===(i+1)?" selected":""))}
-			let visible = visibleResearch()
 			for (let i of buyableResearch) d.element("button_research_"+i+"_visible").style.filter = "brightness("+(darkenResearch(i,visible)?50:100)+"%)"
 			for (let i of ["r27_8","r33_3","r33_13","r44_8"]) {if (visible.includes(i)) {d.innerHTML("button_research_"+i+"_visible",research[i].icon)}}
 		} else if (g.activeSubtabs.wormhole==="studies") {
@@ -746,11 +780,11 @@ function updateHTML() {
 			if (nextUpgrade!==Infinity) {rewardText.push("An existing reward will be upgraded at "+nextUpgrade+" completions")}
 			d.innerHTML("span_study13Reward",(rewardText.length===0)?"All rewards unlocked":rewardText.join("<br>"))
 			if (study13.activeT3==="bindings") {
-				if (study13.bindingSelected===undefined) {
+				if (selections.study13Binding===undefined) {
 					d.innerHTML("study13BindingInfo","Hover over a Binding to see more information")
 				} else {
-					let data = study13.bindings[study13.bindingSelected]
-					d.innerHTML("study13BindingInfo",(study13.bindingPower(study13.bindingSelected).eq(c.d1)?"":("<span style=\"float:right;font-size:50%\">"+study13.bindingPower(study13.bindingSelected).mul(c.e2).noLeadFormat(3)+"% Powered</span><br>"))+"<h6 style=\"font-size:16px;margin:0px;\">Binding "+study13.bindingSelected+"</h6><p>"+data.description()+"</p><p>["+data.lv+" binding level"+((data.lv===1)?"":"s")+"]</p>"+((g.study13ShowParentBindings&&(data.adjacent_req.length>0))?("<p>[Need Binding"+((data.adjacent_req.length===1)?"":"s")+" "+data.adjacent_req.joinWithAnd()+"]</p>"):"")+"<p>"+(g.study13Bindings[study13.bindingSelected]?"<span style=\"color:#ff6666\">(Active)</span>":"<span style=\"color:#999999\">(Inactive)</span>")+"</p>")
+					let data = study13.bindings[selections.study13Binding]
+					d.innerHTML("study13BindingInfo",(study13.bindingPower(selections.study13Binding).eq(c.d1)?"":("<span style=\"float:right;font-size:50%\">"+study13.bindingPower(selections.study13Binding).mul(c.e2).noLeadFormat(3)+"% Powered</span><br>"))+"<h6 style=\"font-size:16px;margin:0px;\">Binding "+selections.study13Binding+"</h6><p>"+data.description()+"</p><p>["+data.lv+" binding level"+((data.lv===1)?"":"s")+"]</p>"+((g.study13ShowParentBindings&&(data.adjacent_req.length>0))?("<p>[Need Binding"+((data.adjacent_req.length===1)?"":"s")+" "+data.adjacent_req.joinWithAnd()+"]</p>"):"")+"<p>"+(g.study13Bindings[selections.study13Binding]?"<span style=\"color:#ff6666\">(Active)</span>":"<span style=\"color:#999999\">(Inactive)</span>")+"</p>")
 				}
 				for (let i of [236,265,275]) {d.innerHTML("button_study13Binding"+i,study13.bindings[i].icon)}
 			} else if (study13.activeT3==="rewards") {
@@ -772,6 +806,7 @@ function updateHTML() {
 	if (d.element("storyTitle")!==null) d.element("storyTitle").style = "background:-webkit-repeating-linear-gradient("+(45*Math.sin(Number(new Date()/1e4)))+"deg,#f00,#ff0 4%,#0f0 8.5%,#0ff 12.5%,#00f 16.5%,#f0f 21%,#f00 25%);-webkit-background-clip:text;";
 }
 function tick(time) {																																		 // The game loop, which consists of functions that run automatically. Frame rate is 20fps
+	g.EMDLevel = EMDLevel()
 	if (time<0) {
 		error("An error has occurred which would have caused time to reverse by "+timeFormat(time)+"")
 		return

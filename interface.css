@@ -435,14 +435,11 @@ tab {
 	border-radius:8px;
 	color:inherit;
 	margin:4px;
-}
-.masteryButtonModern.active {
 	background-color:rgba(255,0,153,0.3);
 	border-color:rgba(255,0,153,0.6);
 }
 .masteryButtonModern.inactive {
-	background-color:rgba(128,128,128,0.2);
-	border-color:rgba(128,128,128,0.45);
+	opacity:0.5;
 }
 .panel {
 	position:fixed;
@@ -454,11 +451,11 @@ tab {
 	padding-right:40px;
   box-sizing: border-box;
 }
-#masteryPanel {
-	min-height:75px;
-	font-size:16px;
-	background:linear-gradient(180deg,rgba(72,0,24,0.95),rgba(72,0,24,1));
-	padding:5px;
+#masteryInfo {
+	background:radial-gradient(rgba(72,0,24,1),rgba(72,0,24,0.95));
+	border-color:#ff0099;
+	color:#ff0099;
+	max-width:min(300px,calc(50vw - 100px));
 }
 .glownotify{
 	box-shadow:0px 0px 20px 0px #ff0
@@ -599,11 +596,11 @@ tab {
 .starbutton.row10.modern {background:radial-gradient(rgba(255,255,255,0.3),rgba(0,0,0,0.3));border-color:rgba(51,51,51,0.6);}
 .starbutton.available.modern {background-color: rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.6);}
 .starbutton.locked.modern {filter:brightness(50%);}
-#starPanel {
-	min-height:75px;
-	font-size:16px;
+#starInfo {
 	background:linear-gradient(180deg,rgba(51,51,51,0.95),rgba(51,51,51,1));
-	padding:5px;
+	max-width:min(800px,calc(50vw - 100px));
+	border-color:#666666;
+	color:#cccccc;
 }
 .starbuybutton {
 	background-image:url("img/stardustbackground.png");
@@ -874,6 +871,10 @@ tab {
 	background:linear-gradient(180deg,rgba(0,24,72,0.95),rgba(0,24,72,1));
 	padding:5px;
 }
+#researchInfo {
+	z-index:6;
+	max-width:min(400px,calc(100vw - 100px));
+}
 .information {
 	height:16px;
 	width:16px;
@@ -994,15 +995,22 @@ tab {
 	border-width:2px;
 	margin:4px;
 }
-.achievementInfo {
+#achievementInfo {
+	max-width:min(500px,calc(100vw - 100px));
+}
+.tooltip {
 	position:fixed;
-	max-width:min(500px,calc(500vw - 70px));
 	font-size:14px;
 	text-align:center;
 	border-style:solid;
 	border-width:3px;
 	border-radius:12px;
 	padding:8px;
+	z-index:5;
+}
+.tooltip hr {
+	opacity:0.5;
+	color:inherit;
 }
 .dilationDiv {
 	width:450px;

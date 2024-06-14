@@ -87,7 +87,7 @@ const basesave = {
 		buyWormholeUpgrade:true,
 	},
 	confirmations:{
-		toggleMastery:false,
+		doubleClickToBuy:false,
 		stardustReset:false,
 		ironWillStardustReset:true,
 		buyStardustUpgrade:false,   // not a confirmation but whatever
@@ -95,6 +95,8 @@ const basesave = {
 		researchDoubleClick:false,
 	},
 	hotkeys:savefileHotkeyProperties(),
+	EMDLevel:1, // dynamic quantity but we store it regardless for compatibility with subpages
+	EMDLevelDisplayInFooter:0,
 	achievement:Object.fromEntries(achievement.all.map(x=>[x,false])),
 	secretAchievement:Object.fromEntries(Object.keys(secretAchievementList).map(x=>[x,false])),
 	achievementIDShown:true,
@@ -267,6 +269,16 @@ const empowerableAxis = {
 	dark:["W"],
 	anti:["V"]
 }
+const selections = {
+	achievement:undefined,
+	secretAchievement:undefined,
+	mastery:undefined,
+	masteryClick:undefined,
+	star:undefined,
+	starClick:undefined,
+	research:undefined,
+	study13Binding:undefined,
+}
 var timeSinceGameOpened = 0;								 // "halted" achievements were being awarded randomly on load
 var totalAchievements = 0;
 var totalSecretAchievements = 0;
@@ -332,6 +344,135 @@ function theme() {
 	d.element("background").style = scheme[1];
 	themeAchievementCount++;
 	addSecretAchievement(16);
+}
+function EMDLevel() {
+	if (unlocked("Study XIII")) {return 9}
+	if (unlocked("Luck")||unlocked("Prismatic")||unlocked("Antimatter")) {return 8}
+	if (unlocked("Galaxies")) {return 7}
+	if (unlocked("Light")) {return 6}
+	if (unlocked("Hawking Radiation")) {return 5}
+	if (unlocked("Energy")) {return 4}
+	if (unlocked("Dark Matter")) {return 3}
+	if (unlocked("Stardust")) {return 2}
+	return 1
+}
+function showEMDLevelTooltip(){
+	popup({
+		text:"Your EMD Level is an indicator of how far you have progressed in the game. It increments at certain major progression milestones.<br><br>EMD Level is used purely to indicate how far you have progressed (for features such as the Discord and save bank) and has no effect on gameplay.",
+		buttons:[["Close",""]]
+	})
+}
+/*
+Factors used to calculate EMD Score out of 1 000 000 are:
+(a) total exotic matter and prestige currencies, with the following approximate weightings:
+     (i) exotic matter = 5
+    (ii) most recent prestige currency = 5 if unlocked in this EMD level, then 4, then 3
+	 (iii) most recent new matter = 5 if unlocked in this EMD level, then 4, then 3
+    (iv) Matrix currencies = 1/2 of normal value
+    Round as appropriate.
+    (250 000)
+(b) main feature at this stage (450 000)
+(c) other features at this stage, or if nothing meaningful available add on to (a) (150 000)
+(d) achievements (150 000)
+EMD Score should never decrease.
+*/
+function EMDScore(showTooltip,valueArray,level=g.EMDLevel) {
+	let factors
+	function giveScore(min,val,max,tariff,formula,taper) {
+		let scaled = Decimal.div(Decimal.sub(formula(val),formula(min)),Decimal.sub(formula(max),formula(min))).toNumber()
+		scaled = taper?((scaled>0.95)?(1-0.05*Math.exp(19-scaled*20)):(scaled<0.05)?(min.eq(c.d0)?Math.max(scaled,0):(0.05*Math.exp(scaled*20-1))):scaled):Math.max(0,Math.min(1,scaled))
+		return Math.round(tariff*scaled)
+	}
+	// array = [resource name, minimum, maximum, score, tariff]
+	if (level===1) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(c.d0,x,N(1e22),400000,n=>n.div(c.e2).add(c.d1).log10(),true),400000],
+		["Total axis",stat.totalAxis,x=>x.min(c.d60).toNumber()*7500,450000],
+		["Tier 1 achievements",achievement.ownedInTier(1),x=>x*10000,150000]
+	]} else if (level===2) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(c.e25,x,N(1e150),125000,n=>n.add(c.d10).log10().log10(),true),125000],
+		["Total stardust",g.totalstardust,x=>giveScore(c.d0,x,c.e12,575000,n=>n.div(c.e2).add(c.d1).log10(),true),575000],
+		["Stars",g.stars,x=>(x>=6)?(150000-10000*0.4**(x-6)):(x*25000),150000],
+		["Tier 2 achievements",achievement.ownedInTier(2),x=>(x===17)?150000:(x===16)?147500:(x===1)?2500:(x===0)?0:((x-1)*10000),150000]
+	]} else if (level===3) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N(1e125),x,N("e1800"),90000,n=>n.add(c.d10).log10().log10(),true),90000],
+		["Total stardust",g.totalstardust,x=>giveScore(N(1e11),x,N(1e70),70000,n=>n.add(c.d10).log10().log10(),true),70000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(c.d0,x,N(1e35),450000,n=>n.div(c.e3).add(c.d1).log10(),true),450000],
+		["Dark stars",g.darkstars,x=>90250-(9.5-x.min(c.d9).toNumber())**2*1000,90000],
+		["Stars",g.stars,x=>x*22500-127500,150000],
+		["Tier 3 achievements",achievement.ownedInTier(3),x=>x*12500,150000]
+	]} else if (level===4) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N("e1500"),x,N("e3e5"),100000,n=>n.add(c.d10).log10().log10(),true),100000],
+		["Total stardust",g.totalstardust,x=>giveScore(N(1e55),x,N("e3000"),80000,n=>n.add(c.d10).log10().log10(),true),80000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(N(1e25),x,N("e4000"),70000,n=>n.add(c.d10).log10().log10(),true),70000],
+		["Energy types unlocked",g.stardustUpgrades[4]-1,x=>(x-1)*60000,300000],
+		["Stardust Upgrades 1-4",g.stardustUpgrades.slice(0,4).sum(),x=>(x>=19)?(27000*x-498000):(12500*2**(x-18)),150000],
+		["Stars",g.stars,x=>x*4000-47000,90000],
+		["Dark stars",g.darkstars,x=>x.toNumber()*1000,60000],
+		["Tier 4 achievements",achievement.ownedInTier(4),x=>x*12000-6000,150000],
+	]} else if (level===5) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N("e2e5"),x,N("e8e7"),75000,n=>n.add(c.d10).log10().log10().sub(c.d5).max(c.d0).pow(c.d2),true),75000],
+		["Total stardust",g.totalstardust,x=>giveScore(N("e1500"),x,N("e5e4"),50000,n=>n.add(c.d10).log10().log10().sub(c.d3).max(c.d0).pow(c.d2),true),50000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(N("e2500"),x,N("ee5"),50000,n=>n.add(c.d10).log10().log10().sub(c.d3).max(c.d0).pow(c.d2),true),50000],
+		["Total Hawking radiation",g.totalhawkingradiation,x=>giveScore(c.d0,x,N(1e12),75000,n=>n.div(c.d10).add(c.d1).log10(),true),75000],
+		["Knowledge",g.knowledge,x=>giveScore(c.d0,x,N("1e500"),337500,n=>n.add(c.d10).log10().pow(c.d0_5),true),337500],
+		[unlocked("Studies")?"Study completions":"? ? ?",g.studyCompletions.slice(1).sum(),x=>x*10000,75000],
+		["Tier 5 achievements",achievement.ownedInTier(5),x=>x*11250,337500]
+	]} else if (level===6) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N("e5e7"),x,N("e4e8"),80000,n=>n.add(c.d10).log10().log10(),true),80000],
+		["Total stardust",g.totalstardust,x=>giveScore(N("e4e4"),x,N("e2e5"),50000,n=>n.add(c.d10).log10().log10(),true),50000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(N("e6e4"),x,N("e2.5e5"),50000,n=>n.add(c.d10).log10().log10(),true),50000],
+		["Total Hawking radiation",g.totalhawkingradiation,x=>giveScore(c.e10,x,N(1e30),70000,n=>n.add(c.d10).log10().log10(),true),70000],
+		["Total RGB lumens",g.lumens.slice(0,3).sumDecimals(),x=>giveScore(c.d0,x,N(150),450000,n=>n,true),450000],
+		["Knowledge",g.knowledge,x=>giveScore(N("1e450"),x,N("e5000"),60000,n=>n.add(c.d10).log10().log10(),true),60000],
+		["Study completions",g.studyCompletions.slice(1).sum(),x=>10000*(x-6),90000],
+		["Tier 6 achievements",achievement.ownedInTier(6),x=>Math.max(x*5000,(x-1)*10000),150000]
+	]} else if (level===7) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N("e3e8"),x,N("e8e8"),85000,n=>n.add(c.d10).log10().log10(),true),85000],
+		["Total stardust",g.totalstardust,x=>giveScore(N("e1.5e5"),x,N("e3.5e5"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(N("e1.5e5"),x,N("e1.2e6"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Total Hawking radiation",g.totalhawkingradiation,x=>giveScore(N("e25"),x,N("e80"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Highest galaxies",g.highestGalaxies,x=>50000*(x-1),150000],
+		["Knowledge",g.knowledge,x=>giveScore(N("e4000"),x,N("e2.5e4"),100000,n=>n.add(c.d10).log10().log10(),true),100000],
+		["Study completions",g.studyCompletions.slice(1).sum(),x=>12500*(x-12),100000],
+		["Total lumens",g.lumens.sumDecimals(),x=>x.gt(c.d2e3)?250000:x.gt(1600)?(x.toNumber()*125):x.gt(1250)?((x.toNumber()-200)*1000/7):x.gt(1000)?((x.toNumber()-500)*200):x.gt(800)?((x.toNumber()-600)*250):x.gt(640)?((x.toNumber()-640)*312.5):0,250000],
+		["Tier 7 achievements",achievement.ownedInTier(7),x=>x*8000-2000,150000]
+	]} else if (level===8) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N("e7e8"),x,N("e3e10"),85000,n=>n.add(c.d10).log10().log10(),true),85000],
+		["Total stardust",g.totalstardust,x=>giveScore(N("e2.5e5"),x,N("e3e6"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(N("ee6"),x,N("e3e7"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Total Hawking radiation",g.totalhawkingradiation,x=>giveScore(N("e60"),x,N("e6000"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		[g.research.r24_5?"Trifolium runes":"? ? ? (Buy Research 24-5)",g.totalLuckRunes.trifolium,x=>giveScore(c.d0,x,N(25000),50000,n=>n,true),50000],
+		[g.research.r24_3?"Quatrefolium runes":"? ? ? (Buy Research 24-3)",g.totalLuckRunes.quatrefolium,x=>giveScore(c.d0,x,N(2500),50000,n=>n,true),50000],
+		[g.research.r25_3?"Cinquefolium runes":"? ? ? (Buy Research 25-3)",g.totalLuckRunes.cinquefolium,x=>giveScore(c.d0,x,N(200),50000,n=>n,true),50000],
+		[unlocked("Prismatic")?"Non-refundable Prismatic Upgrades":"? ? ? (Buy Research 20-8)",nonRefundablePrismaticUpgrades.map(x=>g.prismaticUpgrades[x]).sumDecimals(),x=>giveScore(c.d0,x,N(2400),150000,n=>n,true),150000],
+		[unlocked("Antimatter")?"Total anti-axis":"? ? ? (Complete Study IX)",stat.totalAntiAxis,x=>giveScore(c.d0,x,N(625),150000,n=>n,true),150000],
+		["Knowledge",g.knowledge,x=>giveScore(N("e1.75e4"),x,N("e1.5e6"),37500,n=>n.add(c.d10).log10().log10(),true),37500],
+		["Study completions",g.studyCompletions.slice(1).sum(),x=>1500*(x-21),37500],
+		["Total lumens",g.lumens.sumDecimals(),x=>giveScore(N(1500),x,N(2e5),37500,n=>n.add(c.d1).log10(),true),37500],
+		["Highest galaxies",g.highestGalaxies,x=>x*6000-22500,37500],
+		["Tier 8 achievements",achievement.ownedInTier(8),x=>x*6000,150000]
+	]} else if (level===9) {factors = [
+		["Total exotic matter",g.totalexoticmatter,x=>giveScore(N("e2e10"),x,N("ee13"),85000,n=>n.add(c.d10).log10().log10(),true),85000],
+		["Total stardust",g.totalstardust,x=>giveScore(N("e2e6"),x,N("e4e7"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Total dark matter",g.totaldarkmatter,x=>giveScore(N("e2e7"),x,N("ee9"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Total Hawking radiation",g.totalhawkingradiation,x=>giveScore(N("e4000"),x,N("ee5"),55000,n=>n.add(c.d10).log10().log10(),true),55000],
+		["Study XIII completions",g.studyCompletions[13],x=>(x===256)?450000:(x>=200)?(900*x+195000):(x>=144)?(900*x+170400):(x>=96)?(1050*x+124200):(x>=56)?(1260*x+79440):(x>=24)?(1575*x+37200):(2100*x),450000],
+		["Knowledge",g.knowledge,x=>giveScore(N("ee6"),x,N("ee8"),30000,n=>n.add(c.d10).log10().log10(),true),30000],
+		["Study completions excluding XIII",g.studyCompletions.slice(1,13).sum(),x=>Math.max(x-43.5,0)**2*1500-375,30000],
+		["Total lumens",g.lumens.sumDecimals(),x=>giveScore(N(1.5e5),x,N(1.5e6),30000,n=>n.add(c.d1).log10(),true),30000],
+		["Cinquefolium runes",g.totalLuckRunes.cinquefolium,x=>giveScore(N(150),x,N(750),15000,n=>n,true),15000],
+		[prismaticUpgradeName("prismaticSpeed"),g.prismaticUpgrades.prismaticSpeed,x=>giveScore(N(675),x,N(4050),15000,n=>n,true),15000],
+		["Anti-X axis",g.antiXAxis,x=>giveScore(N(200),x,N(700),15000,n=>n,true),15000],
+		["Non-repeatable Wormhole Upgrades",g.wormholeUpgrades.slice(1,10).sum(),x=>x*1000,9000],
+		["Repeatable Wormhole Upgrades",g.wormholeUpgrades.slice(10,13).sum(),x=>x*100,6000],
+		["Tier 9 achievements",achievement.ownedInTier(9),x=>(x>=9)?(6000*x-48000):[0,10,30,70,150,350,750,1500,3000][x],150000]
+	]}
+	function scoreFactor(i) {return Math.max(0,Math.min(factors[i][3],Math.round(factors[i][2]((valueArray===undefined)?factors[i][1]:valueArray[i]))))}
+	if (showTooltip) popup({
+		text:"Your EMD Level is a numeric indicator of your progression within the game as a whole. It will increment at major progression milestones.<br><br>EMD Level is only used for spoiler-free progression indicators such as in the save bank and Discord, and has no effect on gameplay.<br><br>Your EMD Level is <b>"+level+"</b>.<hr>EMD Score is used to further sub-divide each EMD Level in cases like the save bank (where saves are sorted according to progression). EMD Score is an indicator of how far you have progressed within the current EMD Level: it is given out of 1,000,000 and will decrease upon unlocking a new level. Like EMD Level, it has no effect on gameplay.<br><br>Your EMD Score is:<br><table style=\"width:95%\"><colgroup><col style=\"width:30%\"/><col style=\"width:25%\"/><col style=\"width:20%\"/><col style=\"width:20%\"/></colgroup><tbody style=\"width:100%\"><tr><th style=\"text-align:left;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">Factor</th><th style=\"text-align:center;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">Factor Value</th><th style=\"text-align:right;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">Score</th><th style=\"text-align:right;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">Maximum Score</th></tr>"+factors.map((x,i)=>"<tr><td style=\"text-align:left;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">"+x[0]+"</td><td style=\"text-align:center;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">"+BEformat(x[1])+"</td></td><td style=\"text-align:right;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">"+BEformat(scoreFactor(i))+"</td><td style=\"text-align:right;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">"+BEformat(x[3])+"</td></tr>").join("")+"<tr><td style=\"text-align:left;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">Overall</td><td style=\"text-align:center;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\"></td><td style=\"text-align:right;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">"+BEformat(countTo(factors.length,true).map(x=>scoreFactor(x)).sum())+"</td><td style=\"text-align:right;border-style:solid;border-width:1px;border-color:rgba(0,255,0,0.5);\">1,000,000</td></tr></tbody></table><br><i>Note that EMD Score is a composite indicator so cannot be accurately used for gatekeeping purposes.</i>",
+		buttons:[["Close",""]]
+	})
+	return countTo(factors.length,true).map(x=>scoreFactor(x)).sum()
 }
 
 // Offline Time
@@ -641,7 +782,7 @@ const masteryData = {
 	101:{icon:"<span class=\"_achievements\">A</span><span class=\"xscript\"><sup>+</sup><sub class=\"_achievements\">501</sub></span>",softcap:function(){return g.wormholeUpgrades[5]?wormholeUpgrades[5].eff():c.d75}},
 	102:{icon:"<span class=\"_wormhole\">HR</span><sup>+</sup>"},
 	103:{icon:"<span class=\"_research\">K</span><sup>+</sup>"},
-	104:{icon:"<span class=\"_stars\">L</span><sup>+</sup>",req:function(){return g.research.r10_11}},
+	104:{icon:"<span class=\"_stars\">C</span><sup>+</sup>",req:function(){return g.research.r10_11}},
 	105:{icon:"<span class=\"_stars\">"+icon.star("")+"$</span><sup>-</sup>",req:function(){return g.achievement[711]}},
 	111:{icon:"<span class=\"_mastery\">M<sub>104</sub></span>→<span class=\"_prismatic\">P</span>",req:function(){return g.research.r23_6}},
 	112:{icon:"<span class=\"_mastery\">M</span><span class=\"xscript\"><sup>+</sup><sub class=\"_mastery\">104</sub></span>",req:function(){return g.research.r23_10}}
@@ -668,14 +809,14 @@ function masteredRow(x) {
 	return false;
 }
 function tryToggleMastery(x) {
-	if (g.confirmations.toggleMastery&&(g.activeMasteries[Math.floor(x/10)]>0)) {
-		popup({
-			text:"Are you sure you want to "+((x%10===0)?("unassign Row "+Math.floor(x/10)+" Masteries"):("toggle Mastery "+x))+"?",
-			buttons:[["Confirm","toggleMastery("+x+")"],["Close",""]]
-		})
+	if (g.confirmations.doubleClickToBuy&&(g.masteryContainerStyle==="Modern")) {
+		if (selections.masteryClick===x) {
+			toggleMastery(x)
+		}
 	} else {
 		toggleMastery(x)
 	}
+	selections.masteryClick = x
 }
 function toggleMastery(x) {
 	let row = Math.floor(x/10);
@@ -903,34 +1044,11 @@ function masteryReset() {
 	g.masteryPower=c.d0;
 	g.baseMasteryPowerGain=c.d1;
 }
-var shownMastery
-function showMasteryInfo(x,mode) {	/* mode 1 = text; mode 2 = button */
-	if (mode & 1) {
-		d.innerHTML("span_shownMasteryText",x===undefined?"":masteryText(x))
-	}
-	let row = Math.floor(x/10)
-	if (mode & 2) {
-		let out2
-		if (masteredRow(row)) {
-			if (MasteryE(x)) {
-				out2="<button class=\"genericbutton size2\" onClick=\"unassignMasteryRow("+row+")\">Unassign Row "+row+" Masteries</button>"
-			} else {
-				out2="<button class=\"genericbutton size2\" onClick=\"tryToggleMastery("+x+")\">Activate Row "+row+" Masteries</button>"
-			}
-		} else {
-			if (MasteryE(x)) {
-				out2="<button class=\"genericbutton size2\" onClick=\"g.activeMasteries["+row+"]=0;masteryReset()\">Unassign Mastery "+x+"</button>"
-			} else if (g.activeMasteries[row]===0) {
-				out2="<button class=\"genericbutton size2\" onClick=\"tryToggleMastery("+x+")\">Activate Mastery "+x+"</button>"
-			} else {
-				out2="<button class=\"genericbutton size2\" onClick=\"tryToggleMastery("+x+")\">Switch from Mastery "+(row*10+g.activeMasteries[row])+" to "+x+"</button>"
-			}
-		}
-		d.innerHTML("button_enableShownMastery",out2)
-	}
+function showMasteryInfo(x) {
+	alignTooltip("masteryInfo","button_mastery"+x+"Modern")
+	d.innerHTML("masteryInfo","<b>Mastery "+x+"</b><br><div style=\"font-size:10px;white-space:break-spaces;\">("+(MasteryE(x)?"A":"Ina")+"ctive)</span>"+(masteryBoost(x).eq(c.d1)?"":("<br>("+masteryBoost(x).mul(c.e2).noLeadFormat(3)+"% Powered)"))+"</div><hr style=\"color:inherit\">"+masteryText(x))
 }
 function updateMasteryLayout() {
-	d.display("masteryPanel",g.masteryContainerStyle==="Modern"?"inline-block":"none")
 	d.display("masteryContainerLegacy",g.masteryContainerStyle==="Legacy"?"inline-block":"none")
 	d.display("masteryContainerModern",g.masteryContainerStyle==="Modern"?"inline-block":"none")
 	for (let i of document.getElementsByClassName("masteryID"+g.masteryContainerStyle)) i.style.display=g.masteryIdsShown?"inline-block":"none"
@@ -959,10 +1077,11 @@ function attemptStardustReset(showPopups=false) {
 				["exotic matter",()=>true],
 				[(unlocked("Dark Matter")?"normal ":"")+" axis"+((g.stardustUpgrades[1]===0)?"":(", except "+N(stat.stardustUpgrade2AxisRetentionFactor*100).noLeadFormat(3)+"% of the first "+numword(g.stardustUpgrades[0])+" (rounded down)")),()=>true],
 				["mastery power",()=>true],
-				["the mastery timer",()=>true]
+				["the mastery timer",()=>true],
+				[(g.studyCompletions[3]>0)?"the first six Energies":"energy",()=>unlocked("Energy")]
 			]
 			popup({
-				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?",
+				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?<br><br>This will reset "+willReset.filter(x=>x[1]).map(x=>x[0]).joinWithAnd()+".",
 				buttons:[["Confirm","if (stat.pendingstardust.gt(g.stardust)) {stardustReset()} else {notify('Insufficient exotic matter to stardust reset!','#ff9900','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
 			})
 		} else {
@@ -1254,6 +1373,16 @@ function affordableStars(gal=g.galaxies) {
 	for (let i=59;i>=0;i--) if (starCost(i,gal).lt(g.stardust)) {return i+1}
 	return 0
 }
+function tryBuyStarUpgrade(x) {
+	if (g.confirmations.doubleClickToBuy&&(g.starContainerStyle==="Modern")) {
+		if (selections.starClick===x) {
+			buyStarUpgrade(x)
+		}
+	} else {
+		buyStarUpgrade(x)
+	}
+	selections.starClick = x
+}
 function buyStarUpgrade(x) {
 	if (starList.includes(x) && (unspentStars() > 0) && availableStarRow(Math.floor(x/10)) && (!g.star[x])) {
 		g.star[x] = true;
@@ -1378,9 +1507,10 @@ function showStarEffectFormula(x) {
 		return out
 	}
 }
-function showStarInfo(x) {d.innerHTML("starPanel",starText(x).replace("{x}",dynamicStars.includes(x)?(showFormulas?formulaFormat(showStarEffectFormula(x)):formatStarEffect(x)):null)+(g.star[x]?"":("<br><button class=\"genericbutton size2\" onClick=\"buyStarUpgrade("+x+");showStarInfo("+x+")\">Buy Star "+x+"</button>")))}
+function showStarInfo(x) {
+	alignTooltip("starInfo","button_star"+x+"Modern")
+	d.innerHTML("starInfo","<b>Star "+x+"</b><hr>"+starText(x).replace("{x}",dynamicStars.includes(x)?(showFormulas?formulaFormat(showStarEffectFormula(x)):formatStarEffect(x)):null))}
 function updateStarLayout() {
-	d.display("starPanel",g.starContainerStyle==="Modern"?"inline-block":"none")
 	d.display("starContainerLegacy",g.starContainerStyle==="Legacy"?"inline-block":"none")
 	d.display("starContainerModern",g.starContainerStyle==="Modern"?"inline-block":"none")
 	for (let i of document.getElementsByClassName("starID"+g.starContainerStyle)) i.style.display=g.starIdsShown?"inline-block":"none"
@@ -1411,14 +1541,13 @@ function starText(x) {
 	if (x===42) {return "Exotic matter gain is multiplied by {x}";}
 	if (x===43) {return "Stardust gain is raised to the power of 1.05";}
 	if (x===44) {return "Stardust gain is multiplied by 100";}
-	if ([51,52,53,54].includes(x)) {return "You can activate all "+["second","third","fourth","fifth"][x-51]+" row Masteries";}
+	if ([51,52,53,54,101,102,103,104].includes(x)) {return "You can activate all Row "+(x-((x<101)?49:95))+" Masteries simultaneously";}
 	if ([61,62,63].includes(x)) {return "Gain {x} free "+axisCodes[x-57]+" axis (based on exotic matter)";}
 	if (x===64) {return "Gain {x} free S axis (based on exotic matter)";}
 	if ([71,72,73,74].includes(x)) {return "The game runs {x}% faster (based on "+["mastery power","exotic matter","stardust","time in this stardust reset"][x-71]+")";}
 	if ([81,83].includes(x)) {return (x===83?"Dark":"Normal")+" axis costs are raised to the power of 0.8";}
 	if ([82,84].includes(x)) {return (x===84?"Dark Y":"Normal V")+" axis is 3 times stronger";}
 	if ([91,92,93,94].includes(x)) {return "The effect of star "+(x-80)+" is raised to the power of {x} (based on exotic matter)";}
-	if ([101,102,103,104].includes(x)) {return "You can activate all "+["sixth","seventh","eighth","ninth"][x-101]+" row Masteries";}
 	functionError("starText",arguments)
 }
 function starRowsShown() {
@@ -1735,8 +1864,19 @@ function attemptWormholeReset(showPopups=false) {
 		if (!unlocked("Hawking Radiation")) {
 			wormholeAnimation()
 		} else if (g.confirmations.wormholeReset&&showPopups&&(g.activeStudy===0)) {
+			let willReset = [
+				["exotic matter",()=>true],
+				["normal and dark axis",()=>true],
+				["mastery power",()=>true],
+				["the mastery timer",()=>true],
+				["stardust",()=>true],
+				["Stardust Upgrades, except 1 level of #2 (Retention Path) and 5 levels of #4 (Mastery Path)",()=>true],
+				["stars",()=>true],
+				["dark matter",()=>true],
+				["energy",()=>true]
+			]
 			popup({
-				text:"Are you sure you want to Wormhole reset?",
+				text:"Are you sure you want to Wormhole reset?<br><br>This will reset "+willReset.filter(x=>x[1]).map(x=>x[0]).joinWithAnd()+".",
 				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset()} else {notify('Insufficient dark axis to stardust reset!','#000066','#ffffff')}"],["Cancel",""]]     /* stardust reset check must be done again because of autobuyers */
 			})
 		} else {
@@ -2824,7 +2964,6 @@ const openConfig = (()=>{
 		"Mastery":function(){updateMasteryLayout();showConfigModal("Mastery",[
 			{text:"Mastery power amount shown "+(g.topResourcesShown.masteryPower?"on top of screen":"in Masteries subtab"),onClick:toggle("g.topResourcesShown.masteryPower")},
 			{text:"Mastery tab layout: "+g.masteryContainerStyle,onClick:"g.masteryContainerStyle=(g.masteryContainerStyle==='Modern'?'Legacy':'Modern')"},
-			{text:"Mastery toggle confirmation "+(g.confirmations.toggleMastery?"en":"dis")+"abled",onClick:toggle("g.confirmations.toggleMastery")},
 			{text:(g.masteryIdsShown?"Show":"Hid")+"ing Mastery IDs",onClick:"toggle('masteryIdsShown')"},
 			{text:(g.masteryBoostsShown?"Show":"Hid")+"ing Mastery boost percentages",onClick:"toggle('masteryBoostsShown')"},
 			{text:(g.masteryActivityShown?"Show":"Hid")+"ing Mastery activity states",onClick:"toggle('masteryActivityShown')"},

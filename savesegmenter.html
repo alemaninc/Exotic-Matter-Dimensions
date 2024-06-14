@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<style>
+body {
+	color: #39f;
+	background: #190033;
+	font-size: 15px;
+	font-family:verdana
+}
+textarea {
+	height:60px;
+	width:99vw;
+}
+		</style>
+		<meta charset="utf-8"/>
+		<title>Save Segmenter</title>
+	</head>
+	<body>
+		Your Save:
+		<textarea id="save"></textarea>
+		<button onClick="segment()">Segment</button>
+		<hr>
+		<div id="segments"></div>
+		<script>
+function segment() {
+	let save = document.getElementById("save").value
+	if (save.length>300000) {
+		document.getElementById("segments").innerHTML = "Your save could not be segmented due to being longer than 300,000 characters."
+	} else {
+		let numSegments = Math.ceil(save.length/30000)
+		let segmentLength = Math.ceil(save.length/numSegments)
+		let segments = []
+		for (let i=0;i<numSegments;i++) {segments.push(save.substring(segmentLength*i,segmentLength*(i+1)))}
+		document.getElementById("segments").innerHTML = "This save has <b>"+segments.length+"</b> segment"+((segments.length===1)?"":"s")+"."+segments.map((x,i)=>"<br><br>Segment "+(i+1)+":<br><textarea>"+x+"</textarea>").join("")
+	}
+}
+		</script>
+	</body>
+</html>

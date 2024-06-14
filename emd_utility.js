@@ -1,11 +1,11 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1.5(c).12.1",
+	current:"𝕍1ω",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
-	nextProgress:[1],
-	nextUpdateHint:"Cursed research of the N axis<br><br><i>(The update is literally complete, why is alemaninc still keeping it hidden? Only beta testers know.)</i>",
+	nextProgress:[0],
+	nextUpdateHint:"Machine medicine",
 }
 /*
 	e event message
@@ -36,6 +36,10 @@ function error(text) {
 	console.error()
 }
 const debug = {
+	scoreUnclassifiedSave:function(){
+		let d = new Date()
+		return "U_"+((d.getUTCMonth()+1)*5000000+d.getUTCDate()*100000+d.getUTCHours()*3600+d.getUTCMinutes()*60+d.getUTCSeconds())
+	},
 	stats: function(){for(let i of statOrder){try{updateStat(i)}catch{console.error(i)}}},
 	secretAchievementDistribution: function(){
 		let out = Array(7).fill(0)
@@ -45,7 +49,7 @@ const debug = {
 	addResearch:function(x){
 		g.research=x
 		if (!g.researchVisibility.includes(x)) g.researchVisibility.push(x)
-	}
+	},
 }
 var savecounter=0;
 

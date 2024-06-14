@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<style>
+body {
+	color: #39f;
+	background: #190033;
+	font-size: 15px;
+	font-family:verdana;
+	text-align:center;
+}
+.popupScreen {
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100vw;
+	height:100vh;
+	background-color:rgba(0,0,0,0.5);
+	display:none;
+	z-index:4;
+}
+.popup {
+	position:fixed;
+	top:20vh;
+	left:20vw;
+	width:60vw;
+	height:60vh;
+	border-radius:24px;
+	background-image:radial-gradient(circle,#330066,#190033);
+	border-style:solid;
+	border-color:#330066;
+	border-width:3px;
+	z-index:4;
+	overflow:auto;
+	word-wrap:break-word;
+	padding:20px;
+}
+h4, h6 {
+	margin-top:2px;
+	margin-bottom:2px;
+}
+		</style>
+		<meta charset="utf-8"/>
+		<title>Credits</title>
+	</head>
+	<body>
+		Note that the credits are still being compiled, not everyone is in them yet.<br>If you have contributed but are not credited please contact alemaninc.<br><br>Click on a name to see that person's contributions.
+		<div id="credits"></div>
+		<div id="div_fancyPopupScreen" class="popupScreen">
+			<div id="div_fancyPopup" class="popup">
+				<span id="span_fancyPopupText"></span>
+				<br>
+				<span id="span_fancyPopupButtons"></span>
+			</div>
+		</div>
+		<script>
+const save = JSON.parse(localStorage.getItem("save"))
+const notation = (save===null)?"Mixed scientific":(save.notation??"Mixed Scientific")
+function format(x,p=0){return gformat(N(x),p,notation)}
+const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
+const coloredContributors = {
+	"alemaninc":"#0000ff",
+	"Celestial of Blob / hyperbolia":"#fac112",
+	"Hedrauta":"#00cc00",
+	"Kaffe-work / IRAD":"#ff9933",
+	"nicodium":"#4285f4",
+	"Stat Mark":"#00ffff",
+	"st0ck53y":"#336699",
+	"xhwzwka":"#ff0000"
+}
+const categories = [
+	{
+		title:"Lead Developer",
+		subtitle:"Eminently Masterful Degeneration",
+		color:"#0000ff",
+		contents:{
+			"alemaninc":[
+				["Put more than 25,000 lines of code together into something which seems to work",1]
+			]
+		}
+	},
+	{
+		title:"E̸t̴e̶r̶n̸a̸l̵ ̶/̷ ̵D̷e̷i̵t̴y̸ ̴/̶ ̷M̴o̶n̵a̶r̶c̸h̴",
+		subtitle:"For the one second only to alemaninc",
+		color:"#fac112",
+		contents:{
+			"Celestial of Blob / hyperbolia":[
+				["In eternal consultation",1]
+			],
+		}
+	},
+	{
+		title:"L̷e̴s̸s̶e̴r̵ ̴/̵ ̵D̸e̴i̴t̵y̴ ̸/̶ ̵M̸o̸n̴a̷r̴c̴h̵",
+		subtitle:"For the most impactful of contributors",
+		color:"inherit",
+		contents:{
+			"nicodium":[
+				["Everything except actual gameplay?",1]
+			],
+			"Stat Mark":[
+				["Named the project",1]
+			],
+			"xhwzwka":[
+				["Enabled the project to begin",1]
+			]
+		}
+	},
+	{
+		title:"Game Changer <i>-Superior-</i>",
+		subtitle:"For those who altered the substance of the game",
+		color:"#00ff00",
+		contents:{
+			"Celestial of Blob / hyperbolia":[
+				["A list without boundaries",1]
+			],
+			"Kaffe-work / IRAD":[
+				["Concept of Matrices",10]
+			],
+		}
+	},
+	{
+		title:"Scripter <i>-Superior-</i>",
+		subtitle:"For those who wrote to the source code most prolifically",
+		color:"#00cc00",
+		contents:{
+			"Hedrauta":[
+				["Fixed multiple critical bugs when alemaninc was unavailable",1],
+				["Engineering notation",1]
+			]
+		}
+	},
+	{
+		title:"Gamefixer",
+		subtitle:"For the discoverers of the most destructive errors",
+		color:"#00cc00",
+		contents:{
+			"Mixelz":[
+				["Made alemaninc see that half the game was basically unplayable for six months. Why was alemaninc in need of this in the first place?",1]
+			],
+			"st0ck53y":[
+				["Revealed that Achievement 801 was harmful",1]
+			]
+		}
+	},
+	{
+		title:"Game Changer <i>-Advanced-</i>",
+		subtitle:"For those who made impactful suggestions",
+		color:"#33ff33",
+		contents:{
+			"Aym":[
+				["Previous Prestige: records & build storage",2]
+			],
+			"b<sub>la</sub>c<sub>k hole</sub>":[
+				["News ticker",1]
+			],
+			"Celestial of Blob / hyperbolia":[
+				["Study of Studies having 4 different research",8]
+			],
+			"Dremion":[
+				["Basically the whole header",1]
+			],
+			"Kyle Wand":[
+				["Study abortion without research respec",5]
+			],
+			"Lanie Carmelo":[
+				["Accessibility features for screen readers",1]
+			],
+			"nicodium":[
+				["Study completion without research respec",5]
+			],
+			"Northo":[
+				["Research loadouts",5],
+				["Previous Prestige: last 10 (also the reason why the save segmenter is needed)",2],
+			],
+			"ResidualToast":[
+				["Achievement 817 \"The Knowing Existence\" reward",8]
+			],
+			"Tichat002":[
+				["Research multi-buy",5],
+			],
+			"xhwzwka":[
+				["Modern star UI",2]
+			]
+		}
+	},
+	{
+		title:"Scripter <i>-Advanced-</i>",
+		subtitle:"For those who wrote to the source code but are not quite worthy of credit",
+		color:"#00cc00",
+		contents:{
+			"Celestial of Blob / hyperbolia":[
+				["Wrote one line of code to fix a bug critical to those in end game",1]
+			],
+		}
+	},
+	{
+		title:"Scripter <i>-Basic-</i>",
+		subtitle:"For those who wrote trivial things into the source code",
+		color:"#00cc00",
+		contents:{
+			"Kaffe-work / IRAD":[
+				["A comma in the changelog",1]
+			]
+		}
+	},
+	{
+		title:"Disinsection Crew",
+		subtitle:"For those who identified pesky bugs",
+		color:"#cc9933",
+		contents:{
+			"jklw10":[
+				["Ability to fine-tune star allocator",5]
+			],
+		}
+	},
+	{
+		title:"Game Changer <i>-Basic-</i>",
+		subtitle:"For those who made suggestions of a trivial nature",
+		color:"#66ff66",
+		contents:{
+			"Acamaeda":[
+				["One of many Tier 5 color changes",5],
+			],
+			"anothernobody":[
+				["\"Set Overclock to softcap start\"",1]
+			],
+			"arsaes":[
+				["Prestige confrimations",2]
+			],
+			"BlazetheGameYT":[
+				["One of many Tier 5 color changes",5],
+				["\"Axistential Dread\"",9]
+			],
+			"Celestial of Blob / hyperbolia":[
+				["A blob",1],
+				["Named the Ontological Triad",8]
+			],
+			"Dreamare":[
+				["Import and export of star loadouts",2]
+			],
+			"Gorn21":[
+				["One of many chroma color changes",6]
+			],
+			"Hyggyldy":[
+				["Confirmation popup to assign star or Mastery",1]
+			],
+			"MaxFrost":[
+				["Display of footer in all tabs",1]
+			],
+			"MundM2007":[
+				["Ability to open Offline Time in Study I",5]
+			],
+			"Northo":[
+				["Collapse of finished achievement tiers",1]
+				["Transfer of Stardust and Wormhole autobuyers",5]
+			],
+			"Prophetic Eclipse":[
+				["Wormhole Milestone 6",5]
+			],
+			"ResidualToast":[
+				["One of many Tier 5 color changes",1],
+				["One of many chroma color changes",6],
+			],
+			"Tarin":[
+				["\"Tardis\" secret achievement",1],
+				["Special Wormhole reset confirmation when \"Iron Will\" is active",5]
+			],
+			"Tichat002":[
+				["Overall multiplier per dark U axis",3],
+				["One of many Tier 5 color changes",5],
+				["Transfer of Stardust and Wormhole autobuyers",5],
+				["Totals for prestige resources in Statistics",2]
+			],
+			"Vexed":[
+				["One of many Tier 5 color changes",5],
+			],
+			"Wexiity":[
+				["Display of total star amount",2]
+			],
+			"WhattayaBrian":[
+				["\"See all effects\" for yellow lumens",6],
+				["Life upgrade that fixes energy having a negative effect below 1 per second of the affected resource",10]
+			],
+		}
+	},
+	{
+		title:"Village Elder",
+		subtitle:"For those who altered the game community",
+		color:"#3333ff",
+		contents:[		
+
+		]
+	},
+	{
+		title:"Journalist",
+		subtitle:"For those with pens mightier than any sword",
+		color:"#999999",
+		contents:{
+			"Celestial of Blob / hyperbolia":[
+				["#326 \"Triad Studies and Study of Studies\"",8]
+			]
+		}
+	},
+/*	{
+		title:"Miscellaneous",
+		subtitle:"For those who probably shouldn't be in the credits",
+		color:"inherit",
+	}, */
+]
+const d = {		// d for "document"
+	element(elem) {
+		if (typeof elem === "object") return elem;		// if input is already an element
+		return document.getElementById(elem);				// if input is an id. Both retrieve an element, this is error detection.
+	},
+	innerHTML(element,value) {
+		d.element(element).innerHTML = value;						// sets the innerHTML of an element
+	},
+	display(element, value) {
+		d.element(element).style.display = value;				// sets the display mode of an element
+	},
+	/*
+	1 element: class name
+	2 elements: id, value
+	*/
+	class() {
+		if (arguments.length===1) return document.getElementsByClassName(arguments[0]);	 // gets elements by class name
+		if (arguments.length===2) d.element(arguments[0]).className = arguments[1];			 // sets the class of an element
+	},
+	tr(id,state) {
+		if (state) d.element(id).removeAttribute("hidden");				// shows and hides table rows
+		else d.element(id).setAttribute("hidden","hidden");
+	}
+};
+function popup(data) {
+	d.display("div_fancyPopupScreen","inline-block")
+	d.innerHTML("span_fancyPopupText",data.text)
+	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
+	d.innerHTML("span_fancyPopupButtons","")
+	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton size3\">"+i[0]+"</button>"
+}
+function showContributions(name) {
+	let out = ""
+	for (let i of categories) {if (i.contents[name]!==undefined) {out += "<div style=\"color:"+i.color+";\"><h4>"+i.title+"</h4><br>"+i.contents[name].filter(x=>EMDLevel>=x[1]).map(x=>x[0]).map(x=>"<div style=\"height:50px;width:300px;display:inline-block;\">"+x+"</div>").join("")+"</div><hr>"}}
+	popup({
+		text:out,
+		buttons:[["Close",""]]
+	})
+}
+function generateHTML() {
+	let out = ""
+	for (let i of categories) {out += "<hr><div style=\"color:"+i.color+";\"><h4>"+i.title+"</h4><h6>"+i.subtitle+"</h6><br>"+((i.contents.length===0)?"<i>No one has been credited for this yet.</i>":Object.keys(i.contents).map(x=>"<div style=\"height:50px;width:300px;display:inline-block;color:"+(coloredContributors[x]??"inherit")+";\" onClick=\"showContributions('"+x+"')\">"+x+"</div>").join(""))+"</div>"}
+	document.getElementById("credits").innerHTML = out
+}
+generateHTML()
+		</script>
+	</body>
+</html>
