@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1ω.2",
+	current:"𝕍1ω.3",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[0],
@@ -79,7 +79,7 @@ function popup(data) {
 	d.innerHTML("span_fancyPopupText",data.text)
 	if (data.input !== undefined) d.element("span_fancyPopupText").innerHTML += "<br><textarea id=\"span_fancyPopupInput\" style=\"width:90%;height:40%\">"+data.input+"</textarea>"
 	d.innerHTML("span_fancyPopupButtons","")
-	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"hidePopup();"+i[1]+"\" class=\"genericbutton size3\">"+i[0]+"</button>"
+	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"hidePopup();"+i[1]+"\" class=\"genericbutton size"+(data.buttonSize??3)+"\">"+i[0]+"</button>"
 }
 function hidePopup() {
 	d.display('div_fancyPopupScreen','none')

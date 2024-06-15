@@ -45,7 +45,7 @@ h4, h6 {
 		<title>Credits</title>
 	</head>
 	<body>
-		Note that the credits are still being compiled, not everyone is in them yet.<br>If you have contributed but are not credited please contact alemaninc.<br><br>Click on a name to see that person's contributions.
+		Note that the credits are still being compiled, not everyone is in them yet.<br>If you have contributed but are not credited please contact alemaninc.<br><br>Click on a name to see that person's contributions.<br>Some changes are hidden if they would be a spoiler according to your current savefile.
 		<div id="credits"></div>
 		<div id="div_fancyPopupScreen" class="popupScreen">
 			<div id="div_fancyPopup" class="popup">
@@ -341,7 +341,11 @@ function popup(data) {
 }
 function showContributions(name) {
 	let out = ""
-	for (let i of categories) {if (i.contents[name]!==undefined) {out += "<div style=\"color:"+i.color+";\"><h4>"+i.title+"</h4><br>"+i.contents[name].filter(x=>EMDLevel>=x[1]).map(x=>x[0]).map(x=>"<div style=\"height:50px;width:300px;display:inline-block;\">"+x+"</div>").join("")+"</div><hr>"}}
+	for (let i of categories) {if (i.contents[name]!==undefined) {
+		let filtered = i.contents[name].filter(x=>EMDLevel>=x[1]).map(x=>x[0])
+		if (filtered.length!==0) {out += "<div style=\"color:"+i.color+";\"><h4>"+i.title+"</h4><br>"+filtered.map(x=>"<div style=\"height:50px;width:300px;display:inline-block;\">"+x+"</div>").join("")+"</div><hr>"}}
+	}
+	if (out==="") {out = "<i>All contributions are spoilered. Reach a higher EMD Level to see more.</i>"}
 	popup({
 		text:out,
 		buttons:[["Close",""]]

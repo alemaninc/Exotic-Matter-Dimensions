@@ -2409,7 +2409,7 @@ function showResearchInfo(row,col) {
 	if ((researchPower(row,col).neq(c.d1))&&(res.type==="normal")) {smallHeader.push("("+researchPower(row,col).mul(c.e2).noLeadFormat(3)+"% Powered)</span>")}
 	if (smallHeader.length!==0) {out += "<br><div style=\"font-size:10px;white-space:break-spaces;\">"+smallHeader.join("<br>")+"</div>"}
 	out += "<hr>"
-	out += ((res.type==="study")&&(id!=="r44_8"))?fullStudyNames[studies.map(x=>x.research).indexOf(id)]:res.description();
+	out += ((res.type==="study")&&(res.description===undefined))?fullStudyNames[studies.map(x=>x.research).indexOf(id)]:res.description();
 	if (res.type === "permanent") {out += "<hr>Need "+researchCost(id).format()+" total Discover"+(researchCost(id).eq(c.d1)?"y":"ies")}
 	else {out += "<hr>Cost: "+researchCost(id).format()+" Discover"+(researchCost(id).eq(c.d1)?"y":"ies")}
 	if (res.condition.length>0) {
@@ -2428,7 +2428,7 @@ function unknownResearchInfo(id) {
 	d.element("researchInfo").style.color = "#999999"
 	d.element("researchInfo").style["border-color"] = "#999999"
 	d.element("researchInfo").style.background = "radial-gradient(rgba(51,51,51,1),rgba(51,51,51,0.95))"
-	d.innerHTML("researchInfo","<b>Research "+researchOut(id)+"</b><br><span style=\"font-size:10px\">(Undiscovered)</span><hr>Buy a Research adjacent to this to reveal this");
+	d.innerHTML("researchInfo","<b>Research "+researchOut(id)+" (Undiscovered)</b><hr>Buy a Research adjacent to this to reveal this");
 }
 function respecResearch() {
 	g.spentDiscoveries=c.d0;
@@ -2637,6 +2637,10 @@ const researchLoadouts = {
 		})
 	},
 	import:function(string) {
+		// prevent errors caused by trailing characters
+		while ((string.substring(0,1)!=="r")&&(string.length>0)) {string = string.substring(1)} // remove non-"r" characters from start (all research ids start with r)
+		while ((!"0123456789".includes(string.substring(string.length-1)))&&(string.length>0)) {string = string.substring(0,string.length-1)} // remove non-numeric characters from end (all research ids end with a number)
+		console.log(string)
 		let parts = string.split("|")
 		if (parts.length===1) {
 			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = string.split(",")
@@ -2677,10 +2681,22 @@ function importResearch() {
 		text:"Import your research build here:",
 		input:"",
 		buttons:[
-			["Confirm","try {let researchBuild = popupInput().split(',');for (let i of researchBuild) {asceticMaxBuyResearch(i,false)};updateResearchTree();generateResearchCanvas()} catch {notify('Invalid import.','var(--research)')}"],
+			["Confirm","processResearchImport()"],
 			["Close",""]
 		]
 	})
+}
+function processResearchImport() {
+	let string = popupInput()
+	// prevent errors caused by trailing characters
+	while ((string.substring(0,1)!=="r")&&(string.length>0)) {string = string.substring(1)} // remove non-"r" characters from start (all research ids start with r)
+	while ((!"0123456789".includes(string.substring(string.length-1)))&&(string.length>0)) {string = string.substring(0,string.length-1)} // remove non-numeric characters from end (all research ids end with a number)
+	try {
+		let researchBuild = string.split(",")
+		for (let i of researchBuild) {asceticMaxBuyResearch(i,false)};
+		updateResearchTree();
+		generateResearchCanvas()
+	} catch {notify('Invalid import.','var(--research)')}
 }
 function researchAccessibleName(id) {
 	let res = research[id]

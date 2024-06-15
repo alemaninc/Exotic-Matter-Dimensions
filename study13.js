@@ -5,7 +5,7 @@ const study13 = {
 		let lvExcl25 = studyPower(13)-(g.study13Bindings[25]?56:0)
 		if (lvExcl25===0) {return g.study13Bindings[25]?"Pure Filth (56)":"The First Study (0)"}
 		if (lvExcl25===24) {return g.study13Bindings[25]?"Sullied Galaxy (80)":"Dreamers' Galaxy (24)"}
-		if (lvExcl25===56) {return g.study13Bindings[25]?"Disgraced Reflections (112)":"The Amazing Mirror (56)"}
+		if (lvExcl25===56) {return g.study13Bindings[25]?"Sea of Disgraced Reflections (112)":"The Amazing Mirror (56)"}
 		if (lvExcl25===96) {return g.study13Bindings[25]?"Fallen Achievement 〜 Tenth Circle of Hell (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
 		if (lvExcl25===144) {return g.study13Bindings[25]?"Study of Obscenities (200)":"Study of Triads (144)"}
 		if (lvExcl25===200) {return g.study13Bindings[25]?"Entrusting the Game to Machines 〜 Development Hell (256)":"Thirteenth Hell 〜 Development Hell (200)"}
@@ -126,6 +126,14 @@ const study13 = {
 					lv:1,
 					effect:function(power){return c.d1_1.pow(power)},
 					nameMod:["Stars","Stellar","Blazing"]
+				},
+				25:{
+					description:function(){return "The Normal and Dark Axis corruptions start at ^"+study13.bindingEff(25).noLeadFormat(3)+" of their usual values"},
+					adjacent_req:[],
+					icon:"<span style=\"color:rgba(255,153,255,0.6);\">C</span><sup>+++</sup>",
+					lv:56,
+					effect:function(power){return c.em10.pow(power)},
+					// Binding 25 does not affect names in the normal way
 				},
 				26:{
 					description:function(){return "The dark star requirement is raised to the power of "+study13.bindingEff(26).noLeadFormat(3)},

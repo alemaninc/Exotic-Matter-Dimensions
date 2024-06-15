@@ -787,6 +787,7 @@ function updateHTML() {
 					d.innerHTML("study13BindingInfo",(study13.bindingPower(selections.study13Binding).eq(c.d1)?"":("<span style=\"float:right;font-size:50%\">"+study13.bindingPower(selections.study13Binding).mul(c.e2).noLeadFormat(3)+"% Powered</span><br>"))+"<h6 style=\"font-size:16px;margin:0px;\">Binding "+selections.study13Binding+"</h6><p>"+data.description()+"</p><p>["+data.lv+" binding level"+((data.lv===1)?"":"s")+"]</p>"+((g.study13ShowParentBindings&&(data.adjacent_req.length>0))?("<p>[Need Binding"+((data.adjacent_req.length===1)?"":"s")+" "+data.adjacent_req.joinWithAnd()+"]</p>"):"")+"<p>"+(g.study13Bindings[selections.study13Binding]?"<span style=\"color:#ff6666\">(Active)</span>":"<span style=\"color:#999999\">(Inactive)</span>")+"</p>")
 				}
 				for (let i of [236,265,275]) {d.innerHTML("button_study13Binding"+i,study13.bindings[i].icon)}
+				d.display("button_study13Binding25",g.achievement[913]?"inline-block":"none")
 			} else if (study13.activeT3==="rewards") {
 				if (study13.rewardSelected===undefined) {
 					d.innerHTML("study13RewardInfo",(g.studyCompletions[13]===0)?"When you unlock a reward, it will appear to the left.":"Hover over a reward to see more information")
@@ -824,7 +825,7 @@ function tick(time) {																																		 // The game loop, which 
 	if (StudyE(9)) {if (g.timeThisWormholeReset>=9) {studies[9].reset()}}
 	if (study13.bound(236)&&(g.timeThisWormholeReset>study13.bindingEff(236))) {wormholeReset();popup({text:stat.totalDarkAxis.gt(stat.wormholeDarkAxisReq)?"You have automatically completed Study XIII through Binding 236.":("You failed Study XIII due to running out of time for Binding 236.<br>You reached "+stat.totalDarkAxis.format()+" / "+studies[13].goal().format()+" dark axis"),buttons:[["Close",""]]})}
 	updateStats()
-	if (!unlocked("Corruption")) {for (let i of ["axis","darkAxis","antiAxis"]) {if (corruption.list[i].visible()) {unlockFeature("Corruption");addAchievement(930)}}}
+	if (!unlocked("Corruption")) {for (let i of ["axis","darkAxis","antiAxis"]) {if (corruption.list[i].visible()) {unlockFeature("Corruption");addAchievement(930)}}} else if (!g.achievement[930]) {addAchievement(930)}
 
 
 	// Time section
