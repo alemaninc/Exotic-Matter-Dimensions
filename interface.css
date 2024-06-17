@@ -28,6 +28,9 @@
 	--binding_light:#c29233;
 	--binding_dark:#7a5f33;
 }
+body {
+	background-color: rgba(0,0,0,0);
+}
 .big {
 	font-size:120%;
 }
@@ -72,20 +75,10 @@
 ._antimatter {color:var(--antimatter);}
 ._titanium {color:var(--titanium);}
 ._binding {color:var(--binding);}
-html, body {
-	max-width:100%;
-	min-width:1200px;
-	overflow-x:hidden;
-	min-height:100vh;
-	font-size:15px;
-	font-family:verdana;
-	text-align:center;
-}
 button, div {
 	vertical-align:top;
 	display:inline-block;
 }
-a {color:inherit;}
 del {opacity:0.5}
 .underline {
 	text-decoration:underline

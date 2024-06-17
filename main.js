@@ -1096,7 +1096,6 @@ function attemptStardustReset(showPopups=false) {
 }
 function stardustReset() {
 	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
-	if (g.timeThisStardustReset===0) return
 	let stardustGained = stat.pendingstardust.gt(g.stardust)
 	if (stardustGained) g.StardustResets++;
 	g.TotalStardustResets++;
@@ -1396,6 +1395,7 @@ function buyStarUpgrade(x) {
 	addAchievement(412);
 }
 function respecStars() {
+	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
 	stardustReset();
 	for (let i of starList) g.star[i]=false;
 	totalStars=0
@@ -1786,6 +1786,7 @@ function maxAffordableDarkStars(x) {
 	return out.floor().add(c.d1);
 }
 function gainDarkStar(cap) {
+	if (StudyE(12)&&(achievement.ownedInTier(5)<7)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
 	cap = (cap==="u")?c.maxvalue:N(cap)
 	if (!(cap instanceof Decimal)) {functionError("gainDarkStar",arguments)}
 	let gain = stat.maxAffordableDarkStars.min(N(cap));
@@ -1889,7 +1890,6 @@ function attemptWormholeReset(showPopups=false) {
 	}
 }
 function wormholeReset() {
-	if (g.timeThisWormholeReset===0) return
 	let HRgained = stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)
 	let timeLoopMult = 1
 	if (HRgained) {
@@ -1995,20 +1995,23 @@ function wormholeReset() {
 	updateStats();
 	if (HRgained) {addAchievements("wormholeResetAfter");}
 }
-function wormholeResetButtonText() {
-	let out;
-	if (g.activeStudy===0) out = "Reset to gain <span class=\"big _wormhole\">"+stat.pendinghr.floor().format(0)+"</span> Hawking radiation";
-	else out = "Complete Study "+studies[0].roman(g.activeStudy)
-	out+="<br><span class=\"small\">";
-	if (stat.totalDarkAxis.lt(stat.wormholeDarkAxisReq)) {
-		out+="(Need "+BEformat(stat.wormholeDarkAxisReq)+" total dark axis)";
+function updateWormholeResetButtonText() {
+	if (g.activeStudy===0) {
+		d.display("span_wormholeResetButtonHRText","inline-block")
+		d.display("span_wormholeResetButtonStudyText","none")
+		d.innerHTML("span_wormholeResetButtonPendingHR",stat.pendinghr.format())
 	} else {
-		if ((g.activeStudy===0)&&stat.pendinghr.lt(c.e2)) {
-			out+="(Next at "+BEformat(stat.pendinghr.floor().add(c.d1).root(stat.HRExponent).div(stat.HRMultiplier).root(stat.HRBaseExponent).log(c.d2).root(stat.HRBaseApexExp).mul(c.d1500).ceil())+" total dark axis)";
-		}
+		d.display("span_wormholeResetButtonHRText","none")
+		d.display("span_wormholeResetButtonStudyText","inline-block")
+		d.innerHTML("span_wormholeResetButtonPendingHR",roman(g.activeStudy))
 	}
-	out+="</span>";
-	return out;
+	if (stat.totalDarkAxis.lt(stat.wormholeDarkAxisReq)) {
+		d.innerHTML("span_wormholeResetButtonReqText","(Need "+BEformat(stat.wormholeDarkAxisReq)+" total dark axis)")
+	} else if ((g.activeStudy===0)&&stat.pendinghr.lt(c.e2)) {
+		d.innerHTML("span_wormholeResetButtonReqText","(Next at "+BEformat(stat.pendinghr.floor().add(c.d1).root(stat.HRExponent).div(stat.HRMultiplier).root(stat.HRBaseExponent).log(c.d2).root(stat.HRBaseApexExp).mul(c.d1500).ceil())+" total dark axis)")
+	} else {
+		d.innerHTML("span_wormholeResetButtonReqText","")
+	}
 }
 
 // Wormhole Milestones
@@ -2115,11 +2118,9 @@ function enterStudy(x) {
 		g.activeStudy=x;
 		if (x===1) setTimeout(()=>g.clickedInStudy1=false,0) // gameClick() function runs after this, timeout to circumvent
 		if (StudyE(5)) {
+			let studyRes = studies[g.activeStudy].research
 			respecResearch()
-			if (g.activeStudy!==0) { // study 10 proofing
-				let studyRes = studies[g.activeStudy].research
-				buySingleResearch(researchRow(studyRes),researchCol(studyRes),true)
-			}
+			buySingleResearch(researchRow(studyRes),researchCol(studyRes),true)
 			updateResearchTree()
 		}
 		if (x===13) {
@@ -2176,7 +2177,7 @@ function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.
 	return "<b>"+arrowJoin(format(curr),format(next))+"</b>";
 }
 function studyPower(x){
-	if (x===13) {return study13.allBindings.map(x=>g.study13Bindings[x]?study13.bindings[x].lv:0).sum() /* placeholder */ }
+	if (x===13) {return study13.allBindings.map(x=>g.study13Bindings[x]?study13.bindings[x].lv:0).sum()}
 	if ((x<10)&&(g.activeStudy===10)) {return 3} // no exploits :D
 	if (x===10) {for (let i=3;i>=0;i--) {if (g.research[studies[10].researchList[i]]) {return i}}} // allow retrying previous triads
 	return Math.min(g.studyCompletions[x],3)
@@ -3298,11 +3299,27 @@ function importSave() {
 		]
 	})
 }
-function processImport(string) {
+function processImport(string,bypassWarning=false) {
 	if (string.substring(0,34)==="AntimatterDimensionsSavefileFormat"&&string.substring(string.length-13)==="EndOfSavefile") {
 		addSecretAchievement(34)
 	} else {
-		load(JSON.parse(atob(string)))
+		let save = JSON.parse(atob(string))
+		if (!bypassWarning) {
+			let flag
+			try {
+				let checkVariables = ["exoticmatter","XAxis","SAxis","stardust","stardustUpgrades","masteryPower","timePlayed","stars","darkmatter","darkSAxis"]
+				let flag = false
+				for (let i of checkVariables) if (save[i]===undefined) {flag = true}
+			} catch {flag = true}
+			if (flag) {
+				popup({
+					text:"This doesn't look like a valid EMD save, are you sure you want to import this?<br><br><i style=\"color:#ff0000;\">Your progress could be wiped if you import this.</i>",
+					buttons:[["Import anyway","processImport('"+string+"',true)"],["Cancel",""]]
+				})
+				return 
+			}
+		}
+		load(save)
 		for (let i=0;i<initSteps.length;i++) if (initSteps[i].onImport??false) initSteps[i].function()
 	}
 }

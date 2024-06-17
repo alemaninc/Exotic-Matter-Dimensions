@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="stylesheet" type="text/css" href="globalstyle.css" />
 		<link rel="stylesheet" type="text/css" href="interface.css" />
 		<meta charset="utf-8"/>
 		<title>Exotic Matter Dimensions</title>
@@ -15,7 +16,11 @@
 					<td class="toptable" style="width:260px">
 						<table><tr>
 							<td><button onClick="attemptStardustReset(true)" id="button_stardustReset">Reset to gain <span class="big _stardust" id="span_pendingstardust"></span> stardust<br><span class="small" id="span_stardustExoticMatterReq"></span></button></td>
-							<td><button onClick="attemptWormholeReset(true)" id="button_wormholeReset"></button></td>
+							<td><button onClick="attemptWormholeReset(true)" id="button_wormholeReset">
+								<span id="span_wormholeResetButtonHRText">Reset to gain <span id="span_wormholeResetButtonPendingHR" class="big _wormhole"></span> Hawking radiation</span>
+								<span id="span_wormholeResetButtonStudyText">Complete Study <span id="wormholeResetButtonActiveStudy"></span></span>
+								<span id="span_wormholeResetButtonReqText" class="small"></span>
+							</button></td>
 						</tr></table>
 					</td>
 				</tr>

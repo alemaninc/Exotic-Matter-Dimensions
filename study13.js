@@ -1115,8 +1115,13 @@ const study13 = {
 				type:"scaling",
 				eff:function(lv=study13.rewardLevels.purifier){return {e:Decimal.FC_NN(1,0,1+lv/5-lv**2/100),d:Decimal.FC_NN(1,0,1+lv**2/100)}},
 				desc:function(curr,prev){return "Normal Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).e.noLeadFormat(2))+" later<br>Dark Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).d.noLeadFormat(2))+" later"}
+			},
+			spiritSurge:{
+				name:"Mailbreaker III 〜 Sinister Spirits",
+				breakpoints:[],
+				type:"single",
+				desc:function(){""}
 			}
-			// mailbreaker 3
 			// trinity 4
 			// stat mark 4
 			// matrix

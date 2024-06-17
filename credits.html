@@ -2,14 +2,8 @@
 <html>
 	<head>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="stylesheet" type="text/css" href="globalstyle.css" />
 		<style>
-body {
-	color: #39f;
-	background: #190033;
-	font-size: 15px;
-	font-family:verdana;
-	text-align:center;
-}
 .popupScreen {
 	position:fixed;
 	top:0px;
@@ -19,6 +13,14 @@ body {
 	background-color:rgba(0,0,0,0.5);
 	display:none;
 	z-index:4;
+}
+.navigation {
+	height:20px;
+	background-color:#330066;
+	color:#ffffff;
+	border-style:solid;
+	border-width:2px;
+	border-color:#9933ff;
 }
 .popup {
 	position:fixed;
@@ -35,10 +37,14 @@ body {
 	overflow:auto;
 	word-wrap:break-word;
 	padding:20px;
+	text-align:left;
 }
-h4, h6 {
+h3, h4, h6 {
 	margin-top:2px;
 	margin-bottom:2px;
+}
+div, td {
+	vertical-align:top;
 }
 		</style>
 		<meta charset="utf-8"/>
@@ -46,6 +52,8 @@ h4, h6 {
 	</head>
 	<body>
 		Note that the credits are still being compiled, not everyone is in them yet.<br>If you have contributed but are not credited please contact alemaninc.<br><br>Click on a name to see that person's contributions.<br>Some changes are hidden if they would be a spoiler according to your current savefile.
+		<div id="navigation"></div>
+		<hr>
 		<div id="credits"></div>
 		<div id="div_fancyPopupScreen" class="popupScreen">
 			<div id="div_fancyPopup" class="popup">
@@ -54,284 +62,383 @@ h4, h6 {
 				<span id="span_fancyPopupButtons"></span>
 			</div>
 		</div>
+		<script type="text/javascript" src="alemaninc_utility.js"></script>
+		<script type="text/javascript" src="break_eternity_alemaninc.js"></script>
+		<script type="text/javascript" src="emd_utility.js"></script>
 		<script>
 const save = JSON.parse(localStorage.getItem("save"))
 const notation = (save===null)?"Mixed scientific":(save.notation??"Mixed Scientific")
 function format(x,p=0){return gformat(N(x),p,notation)}
 const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
-const coloredContributors = {
-	"alemaninc":"#0000ff",
-	"Celestial of Blob / hyperbolia":"#fac112",
-	"Hedrauta":"#00cc00",
-	"Kaffe-work / IRAD":"#ff9933",
-	"nicodium":"#4285f4",
-	"Stat Mark":"#00ffff",
-	"st0ck53y":"#336699",
-	"xhwzwka":"#ff0000"
+const specialGrade = {
+	"alemaninc":{class:"Ω",color:"#0000ff",title:"Lead Developer"},
+	"Celestial of Blob / hyperbolia":{class:"S+",color:"#fac112",title:"Absolute Celestial"},
+	"nicodium":{class:"S",color:"#4285f4",title:"Duality Celestial"},
+	"Stat Mark":{class:"S",color:"#00ffff",title:"Entropic Celestial"},
+	"xhwzwka":{class:"S",color:"#ff0000",title:"Indeterminate Celestial"}
 }
-const categories = [
-	{
-		title:"Lead Developer",
-		subtitle:"Eminently Masterful Degeneration",
-		color:"#0000ff",
-		contents:{
-			"alemaninc":[
-				["Put more than 25,000 lines of code together into something which seems to work",1]
-			]
-		}
-	},
-	{
-		title:"E̸t̴e̶r̶n̸a̸l̵ ̶/̷ ̵D̷e̷i̵t̴y̸ ̴/̶ ̷M̴o̶n̵a̶r̶c̸h̴",
-		subtitle:"For the one second only to alemaninc",
-		color:"#fac112",
-		contents:{
-			"Celestial of Blob / hyperbolia":[
-				["In eternal consultation",1]
-			],
-		}
-	},
-	{
-		title:"L̷e̴s̸s̶e̴r̵ ̴/̵ ̵D̸e̴i̴t̵y̴ ̸/̶ ̵M̸o̸n̴a̷r̴c̴h̵",
-		subtitle:"For the most impactful of contributors",
-		color:"inherit",
-		contents:{
-			"nicodium":[
-				["Everything except actual gameplay?",1]
-			],
-			"Stat Mark":[
-				["Named the project",1]
-			],
-			"xhwzwka":[
-				["Enabled the project to begin",1]
-			]
-		}
-	},
-	{
-		title:"Game Changer <i>-Superior-</i>",
-		subtitle:"For those who altered the substance of the game",
-		color:"#00ff00",
-		contents:{
-			"Celestial of Blob / hyperbolia":[
-				["A list without boundaries",1]
-			],
-			"Kaffe-work / IRAD":[
-				["Concept of Matrices",10]
-			],
-		}
-	},
-	{
-		title:"Scripter <i>-Superior-</i>",
-		subtitle:"For those who wrote to the source code most prolifically",
-		color:"#00cc00",
-		contents:{
-			"Hedrauta":[
-				["Fixed multiple critical bugs when alemaninc was unavailable",1],
-				["Engineering notation",1]
-			]
-		}
-	},
-	{
-		title:"Gamefixer",
-		subtitle:"For the discoverers of the most destructive errors",
-		color:"#00cc00",
-		contents:{
-			"Mixelz":[
-				["Made alemaninc see that half the game was basically unplayable for six months. Why was alemaninc in need of this in the first place?",1]
-			],
-			"st0ck53y":[
-				["Revealed that Achievement 801 was harmful",1]
-			]
-		}
-	},
-	{
-		title:"Game Changer <i>-Advanced-</i>",
-		subtitle:"For those who made impactful suggestions",
-		color:"#33ff33",
-		contents:{
-			"Aym":[
-				["Previous Prestige: records & build storage",2]
-			],
-			"b<sub>la</sub>c<sub>k hole</sub>":[
-				["News ticker",1]
-			],
-			"Celestial of Blob / hyperbolia":[
-				["Study of Studies having 4 different research",8]
-			],
-			"Dremion":[
-				["Basically the whole header",1]
-			],
-			"Kyle Wand":[
-				["Study abortion without research respec",5]
-			],
-			"Lanie Carmelo":[
-				["Accessibility features for screen readers",1]
-			],
-			"nicodium":[
-				["Study completion without research respec",5]
-			],
-			"Northo":[
-				["Research loadouts",5],
-				["Previous Prestige: last 10 (also the reason why the save segmenter is needed)",2],
-			],
-			"ResidualToast":[
-				["Achievement 817 \"The Knowing Existence\" reward",8]
-			],
-			"Tichat002":[
-				["Research multi-buy",5],
-			],
-			"xhwzwka":[
-				["Modern star UI",2]
-			]
-		}
-	},
-	{
-		title:"Scripter <i>-Advanced-</i>",
-		subtitle:"For those who wrote to the source code but are not quite worthy of credit",
-		color:"#00cc00",
-		contents:{
-			"Celestial of Blob / hyperbolia":[
-				["Wrote one line of code to fix a bug critical to those in end game",1]
-			],
-		}
-	},
-	{
-		title:"Scripter <i>-Basic-</i>",
-		subtitle:"For those who wrote trivial things into the source code",
-		color:"#00cc00",
-		contents:{
-			"Kaffe-work / IRAD":[
-				["A comma in the changelog",1]
-			]
-		}
-	},
-	{
-		title:"Disinsection Crew",
-		subtitle:"For those who identified pesky bugs",
-		color:"#cc9933",
-		contents:{
-			"jklw10":[
-				["Ability to fine-tune star allocator",5]
-			],
-		}
-	},
-	{
-		title:"Game Changer <i>-Basic-</i>",
-		subtitle:"For those who made suggestions of a trivial nature",
-		color:"#66ff66",
-		contents:{
-			"Acamaeda":[
-				["One of many Tier 5 color changes",5],
-			],
-			"anothernobody":[
-				["\"Set Overclock to softcap start\"",1]
-			],
-			"arsaes":[
-				["Prestige confrimations",2]
-			],
-			"BlazetheGameYT":[
-				["One of many Tier 5 color changes",5],
-				["\"Axistential Dread\"",9]
-			],
-			"Celestial of Blob / hyperbolia":[
-				["A blob",1],
-				["Named the Ontological Triad",8]
-			],
-			"Dreamare":[
-				["Import and export of star loadouts",2]
-			],
-			"Gorn21":[
-				["One of many chroma color changes",6]
-			],
-			"Hyggyldy":[
-				["Confirmation popup to assign star or Mastery",1]
-			],
-			"MaxFrost":[
-				["Display of footer in all tabs",1]
-			],
-			"MundM2007":[
-				["Ability to open Offline Time in Study I",5]
-			],
-			"Northo":[
-				["Collapse of finished achievement tiers",1]
-				["Transfer of Stardust and Wormhole autobuyers",5]
-			],
-			"Prophetic Eclipse":[
-				["Wormhole Milestone 6",5]
-			],
-			"ResidualToast":[
-				["One of many Tier 5 color changes",1],
-				["One of many chroma color changes",6],
-			],
-			"Tarin":[
-				["\"Tardis\" secret achievement",1],
-				["Special Wormhole reset confirmation when \"Iron Will\" is active",5]
-			],
-			"Tichat002":[
-				["Overall multiplier per dark U axis",3],
-				["One of many Tier 5 color changes",5],
-				["Transfer of Stardust and Wormhole autobuyers",5],
-				["Totals for prestige resources in Statistics",2]
-			],
-			"Vexed":[
-				["One of many Tier 5 color changes",5],
-			],
-			"Wexiity":[
-				["Display of total star amount",2]
-			],
-			"WhattayaBrian":[
-				["\"See all effects\" for yellow lumens",6],
-				["Life upgrade that fixes energy having a negative effect below 1 per second of the affected resource",10]
-			],
-		}
-	},
-	{
-		title:"Village Elder",
-		subtitle:"For those who altered the game community",
-		color:"#3333ff",
-		contents:[		
-
+function contributorColor(name){return (specialGrade[name]===undefined)?"inherit":specialGrade[name].color}
+/*
+Class descriptors:
+Ω		alemaninc
+S		Like alemaninc but not for alemaninc
+A		Massive impact
+B		Useful / impactful to most players
+C		Smaller addition
+D		Easter egg / extremely minor
+E		Totally pointless
+*/
+const classes = ["E","E+","D/E","D-","D","D+","C/D","C-","C","C+","B/C","B-","B","B+","A/B","A-","A","A+","S/A","S-","S","S+","Ω"]
+function classToScore(x){
+	if (x==="Ω"){return Infinity}
+	let pos = classes.indexOf(x)
+	return 10**(pos/10)
+}
+function overallClass(arr) {
+	if (arr.length===0) {return "F"}
+	let total = arr.map(x=>classToScore(x)).sort((a,b)=>b-a).map((x,i)=>x/(i+1)).reduce((a,b)=>a+b)
+	for (let i=classes.length-1;i>=0;i--) {if (total>=classToScore(classes[i])) {return classes[i]}}
+}
+const categories = {
+	"Special":"For those who allowed the game to exist",
+	"Disinsection Crew":"For those who found infestations of pesky bugs",
+	"Game Changer":"For those who altered the substance of the game",
+	"Scripter":"For those who wrote their contributions directly into the code",
+	"Stylist":"For those who tried to sort the interface out",
+	"Technician":"For those who helped out in miscellaneous ways",
+	"Village Elder":"For those who contributed to the community",
+	"Worldbuilder":"For those who added flair to the game"
+}
+function news(id,txt,lv,grd) {return {text:"#"+id+" \""+txt+"\"",EMDLevel:lv,class:grd}}
+function person(name){return "<span onClick=\"showContributions('"+name+"')\">"+name+"</span>"}
+const contributions = {
+	// A
+	"Acamaeda":{
+		"Disinsection Crew":[
+			{text:"Identified one of many cases of the game simply not loading<br>(details: Weakened offline progress option trying to softcap a non-<code>Decimal</code>)",EMDLevel:1,class:"D"}
+		],
+		"Stylist":[
+			{text:"Suggested one of many Tier 5 color changes",EMDLevel:5,class:"C"}
 		]
 	},
-	{
-		title:"Journalist",
-		subtitle:"For those with pens mightier than any sword",
-		color:"#999999",
-		contents:{
-			"Celestial of Blob / hyperbolia":[
-				["#326 \"Triad Studies and Study of Studies\"",8]
-			]
-		}
+	"alemaninc":{
+		"Special":[
+			{text:"Put more than 25,000 lines of code into something which seems to work",EMDLevel:1,class:"Ω"}
+		]
 	},
-/*	{
-		title:"Miscellaneous",
-		subtitle:"For those who probably shouldn't be in the credits",
-		color:"inherit",
-	}, */
-]
-const d = {		// d for "document"
-	element(elem) {
-		if (typeof elem === "object") return elem;		// if input is already an element
-		return document.getElementById(elem);				// if input is an id. Both retrieve an element, this is error detection.
+	"anothernobody":{
+		"Game Changer":[
+			{text:"Suggested \"Set Overclock to softcap start\"",EMDLevel:1,class:"B"}
+		]
 	},
-	innerHTML(element,value) {
-		d.element(element).innerHTML = value;						// sets the innerHTML of an element
+	"arsaes":{
+		"Game Changer":[
+			{text:"Suggested prestige confirmations",EMDLevel:2,class:"B"}
+		]
 	},
-	display(element, value) {
-		d.element(element).style.display = value;				// sets the display mode of an element
+	"Aym":{
+		"Game Changer":[
+			{text:"Suggested Previous Prestige records & build storage",EMDLevel:2,class:"B/C"}
+		]
 	},
-	/*
-	1 element: class name
-	2 elements: id, value
-	*/
-	class() {
-		if (arguments.length===1) return document.getElementsByClassName(arguments[0]);	 // gets elements by class name
-		if (arguments.length===2) d.element(arguments[0]).className = arguments[1];			 // sets the class of an element
+	// B
+	"b<sub>la</sub>c<sub>k hole</sub>":{
+		"Village Elder":[
+			{text:"Added FredBoat to the Discord (does anyone even use this?)",EMDLevel:1,class:"E"}
+		],
+		"Worldbuilder":[
+			{text:"Suggested the news ticker",EMDLevel:1,class:"A"}
+		]
 	},
-	tr(id,state) {
-		if (state) d.element(id).removeAttribute("hidden");				// shows and hides table rows
-		else d.element(id).setAttribute("hidden","hidden");
+	"BlazetheGameYT":{
+		"Stylist":[
+			{text:"Suggested one of many Tier 5 color changes",EMDlevel:5,class:"C"},
+		],
+		"Worldbuilder":[
+			{text:"Suggested the name of Achievement 913 \"Axistential Dread\"",EMDLevel:9,class:"D"},
+		]
+	},
+	// C
+	"Celestial of Blob / hyperbolia":{
+		"Game Changer":[
+			{text:"Suggested Study XI",EMDLevel:8,class:"B"},
+			{text:"Indirectly suggested Study of Studies having 4 different research",EMDLevel:8,class:"B/C"}
+		],
+		"Journalist":[
+			{text:"Inspired news item #326 \"Triad Studies and Study of Studies\"",EMDLevel:8,class:"D"}
+		],
+		"Scripter":[
+			{text:"Wrote one line of code to fix a bug critical to those at Level 8 endgame",EMDLevel:8,class:"C"}
+		],
+		"Stylist":[
+			{text:"Suggested Prismatic Upgrade refund button coloring",EMDLevel:8,class:"B"},
+			{text:"Suggested otification for completing all achievements in a tier",EMDLevel:1,class:"C"}
+		],
+		"Worldbuilder":[
+			{text:"Suggested ability to see previous story entries",EMDLevel:2,class:"C"},
+			{text:"Named the Ontological Triad",EMDLevel:8,class:"C"},
+			{text:"Contributed a blob",EMDLevel:1,class:"D"},
+			{text:"Suggested \"Wrong game?\" secret achievement",EMDLevel:1,class:"D"}
+		]
+	},
+	"Crystalflare":{
+		"Disinsection Crew":[
+			{text:"Identified that reverting the system clock breaks the game through negative tickspeed",EMDLevel:2,class:"E"}
+		]
+	},
+	// D
+	"disastranagant":{
+		"Disinsection Crew":[
+			{text:"Identified that Stardust resets triggered by dark stars do not give the full stardust reward",EMDLevel:3,class:"C"}
+		]
+	},
+	"Dragonayzer":{
+		"Disinsection Crew":[
+			{text:"Pointed out that there should be an option to turn off \"buy all previous research\"",EMDLevel:5,class:"C"}
+		]
+	},
+	"Dreamare":{
+		"Disinsection Crew":[
+			{text:"Identified Achievement 530 \"Big Bang\" being awarded early",EMDLevel:5,class:"B"}
+		],
+		"Game Changer":[
+			{text:"Suggested import and export of star loadouts",EMDLevel:2,class:"B/C"}
+		]
+	},
+	"Dremion":{
+		"Stylist":[
+			{text:"Suggested the layout of the header which was used throughout all of 𝕍1",EMDLevel:1,class:"A/B"}
+		]
+	},
+	"ducdat0507 / duducat":{
+		"Stylist":[
+			{text:"One of many Tier 5 color changes",EMDLevel:5,class:"D"}
+		]
+	},
+	// E
+	"Eris":{
+		"Disinsection Crew":[
+			{text:"Helped identify Study completions not registering when completing exactly on goal (shared with "+person("Northo")+")",EMDLevel:5,class:"C/D"}
+		]
+	},
+	"eytanz":{
+		"Game Changer":[
+			{text:"Suggested Overclock hotkeys",EMDLevel:1,class:"B/C"}
+		],
+		"Stylist":[
+			{text:"Suggested Mastery row reversal",EMDLevel:1,class:"B"},
+			{text:"Suggested rearrangement of first order tabs",EMDLevel:1,class:"D"}
+		]
+	},
+	// F
+	"FIQ":{
+		"Game Changer":[
+			{text:"Suggested effective dark star text clarification",EMDLevel:5,class:"C"}
+		]
+	},
+	"Fusilliban":{
+		"Game Changer":[
+			{text:"Suggested research savings info",EMDLevel:8,class:"B"},
+			{text:"Suggested Achievement 815 \"Gensokyo Millennium\" reward (shared with "+person("sandwich8")+")",EMDLevel:8,class:"B/C"},
+		]
+	},
+	// G
+	"Gorn21":{
+		"Stylist":[
+			{text:"Suggested one of many chroma color changes",EMDLevel:6,class:"C"}
+		]
+	},
+	// H
+	"Hedrauta":{
+		"Scripter":[
+			{text:"Fixed multiple critical bugs when alemaninc was unavailable",EMDLevel:1,class:"A"},
+			{text:"Added Engineering notation",EMDLevel:1,class:"B"}
+		]
+	},
+	"Hyggyldy":{
+		"Game Changer":[
+			{text:"Suggested confirmation popup to assign Masteries",EMDLevel:1,class:"C"}
+		]
+	},
+	// I
+	"Ingibergur":{
+		"Disinsection Crew":[
+			{text:"Identified Achievement 526 \"Big Crunch\" not awarding when buying single dark axis",EMDLevel:5,class:"B"}
+		]
+	},
+	"iota":{
+		"Disinsection Crew":[
+			{text:"Identified game breaking if Achievement 520 \"Rationing\" is acquired with less than 9 total Tier 5 achievements",EMDLevel:5,class:"B"}
+		]
+	},
+	// J
+	"jklw10":{
+		"Disinsection Crew":[
+			{text:"Identified star allocator always buying in numerical order regardless of configuration",EMDLevel:5,class:"B"}
+		]
+	},
+	// K
+	"kastark":{
+		"Technician":[
+			{text:"Made the <a href=\"https://kastark.co.uk/articles/incrementals.html\">tutorial</span> alemaninc used to get started",EMDLevel:1,class:"A"}
+		]
+	},
+	"Kaffe-work / IRAD":{
+		"Disinsection Crew":[
+			{text:"Added a comma in the changelog",EMDLevel:1,class:"D"}
+		],
+		"Village Elder":[
+			{text:"Named the Matrices",EMDLevel:10,class:"A"},
+			{text:"Suggested ascetic research multi-buy",EMDLevel:8,class:"A/B"}
+		]
+	},
+	"Kyle Wand":{
+		"Game Changer":[
+			{text:"Suggested Study abortion without research respec",EMDLevel:5,class:"B"}
+		]
+	},
+	"kumamushi":{
+		"Game Changer":[
+			{text:"Suggested memory of which tabs were open when game was closed",EMDLevel:1,class:"B"},
+			{text:"Suggested single row Luck Upgrade respec",EMDLevel:8,class:"B"}
+		]
+	},
+	// L
+	"Lanie Carmelo":{
+		"Game Changer":[
+			{text:"Suggested accessibility features for screen readers",EMDLevel:1,class:"B"}
+		]
+	},
+	// M
+	"MaxFrost":{
+		"Stylist":[
+			{text:"Suggested display of footer in all tabs",EMDLevel:1,class:"A/B"}
+		]
+	},
+	"Mixelz":{
+		"Disinsection Crew":[
+			{text:"Helped make alemaninc see that half the game was basically unplayable for six months. Why was alemaninc in need of this in the first place?",EMDLevel:1,class:"A"}
+		]
+	},
+	"MundM2007":{
+		"Game Changer":[
+			{text:"Suggested access to Offline Time in Study I",EMDLevel:5,class:"B"}
+		]
+	},
+	// N
+	"nicodium":{
+		"Game Changer":[
+			{text:"Suggested Study completion without research respec",EMDLevel:5,class:"B"}
+		]
+	},
+	"Northo":{
+		"Disinsection Crew":[
+			{text:"Identified one of many cases of sudden, unexplainable <code>NaN</code>",EMDLevel:1,class:"E"},
+			{text:"Helped identify Achievement 505 \"Iron Will IV\" milestones only working when buying single dark axis",EMDLevel:5,class:"C"},
+			{text:"Helped identify Study completions not registering when completing exactly on goal (shared with "+person("Eris")+")",EMDLevel:5,class:"C/D"}
+		],
+		"Game Changer":[
+			{text:"Suggested Research loadouts",EMDLevel:5,class:"B"},
+			{text:"Suggested Previous Prestige last 10 (also the reason why the save segmenter is needed)",EMDLevel:2,class:"B"},
+			{text:"Suggested transfer of Stardust and Wormhole automators (shared with "+person("Tichat002")+")",EMDLevel:5,class:"C/D"}
+		],
+		"Stylist":[
+			{text:"Suggested collapse of finished achievement tiers",EMDLevel:1,class:"B"}
+		]
+	},
+	// O
+	// P
+	"Prophetic Eclipse":{
+		"Game Changer":[
+			{text:"Indirectly suggested Wormhole Milestone 6",EMDLevel:5,class:"C"}
+		]
+	},
+	// Q
+	// R
+	"ResidualToast":{
+		"Game Changer":[
+			{text:"Indirectly suggested Achievement 817 \"The Knowing Existence\" reward",EMDLevel:8,class:"B"}
+		],
+		"Stylist":[
+			{text:"Suggested one of many Tier 5 color changes",EMDLevel:5,class:"C"},
+			{text:"Suggested one of many chroma color changes",EMDLevel:6,class:"C"}
+		]
+	},
+	// S
+	"sandwich8":{
+		"Game Changer":[
+			{text:"Indirectly suggested Achievement 815 \"Gensokyo Millennium\" reward (shared with "+person("Fusilliban")+")",EMDLevel:8,class:"B/C"}
+		]
+	},
+	"Stat Mark":{
+		"Special":[
+			{text:"Named the project",EMDLevel:1,class:"S"}
+		],
+		"Game Changer":[
+			{text:"Suggested normal T axis effect",EMDLevel:2,class:"B"}
+		]
+	},
+	"st0ck53y":{
+		"Disinsection Crew":[
+			{text:"Revealed that Achievement 801 was harmful",EMDLevel:7,class:"A"}
+		]
+	},
+	// T
+	"Tarin":{
+		"Game Changer":[
+			{text:"Suggested special Wormhole reset confirmation when \"Iron Will\" is active",EMDLevel:5,class:"B/C"},
+			{text:"Suggested \"Tardis\" secret achievement",EMDLevel:1,class:"D"}
+		]
+	},
+	"Tichat002":{
+		"Game Changer":[
+			{text:"Suggested totals for prestige resources in Statistics",EMDLevel:2,class:"B"},
+			{text:"Suggested greedy research multi-buy",EMDLevel:5,class:"A/B"},
+			{text:"Suggested transfer of Stardust and Wormhole automators (shared with "+person("Northo")+")",EMDLevel:5,class:"C/D"}
+		],
+		"Stylist":[
+			{text:"Suggested display of overall multiplier per dark U axis",EMDLevel:3,class:"D"},
+			{text:"Suggested one of many Tier 5 color changes",EMDLevel:5,class:"C"}
+		]
+	},
+	// U
+	// V
+	"Vexed":{
+		"Stylist":[
+			{text:"Suggested one of many Tier 5 color changes",EMDLevel:5,class:"C"}
+		]
+	},
+	// W
+	"Wexiity":{
+		"Stylist":[
+			{text:"Suggested display of total star amount",EMDLevel:5,class:"B"}
+		]
+	},
+	"WhattayaBrian":{
+		"Stylist":[
+			{text:"Suggested \"See all effects\" for yellow lumens",EMDLevel:6,class:"B"}
+		]
+	},
+	"Wong TingHo":{
+		"Disinsection Crew":[
+			{text:"Identified stardust exponents below "+format("2^-53")+" behaving like 0 regardless of the true value",EMDLevel:5,class:"C"}
+		],
+		"Stylist":[
+			{text:"Suggested white/black/gray chromas having very slightly different colors",EMDLevel:6,class:"B"}
+		]
+	},
+	// X
+	"xhwzwka":{
+		"Special":[
+			{text:"Taught alemaninc how to do this",EMDLevel:1,class:"S"}
+		],
+		"Stylist":[
+			{text:"Suggested modern star UI",EMDLevel:2,class:"B"}
+		]
 	}
-};
+	// Y
+	// Z
+}
 function popup(data) {
 	d.display("div_fancyPopupScreen","inline-block")
 	d.innerHTML("span_fancyPopupText",data.text)
@@ -339,22 +446,32 @@ function popup(data) {
 	d.innerHTML("span_fancyPopupButtons","")
 	for (let i of (data.buttons??[["Close",""]])) d.element("span_fancyPopupButtons").innerHTML += "<button onClick=\"d.display('div_fancyPopupScreen','none');"+i[1]+"\" class=\"genericbutton size3\">"+i[0]+"</button>"
 }
+function personClass(name){return (specialGrade[name]===undefined)?overallClass(Object.values(contributions[name]).map(x=>x.map(y=>y.class)).flat()):specialGrade[name].class}
 function showContributions(name) {
-	let out = ""
-	for (let i of categories) {if (i.contents[name]!==undefined) {
-		let filtered = i.contents[name].filter(x=>EMDLevel>=x[1]).map(x=>x[0])
-		if (filtered.length!==0) {out += "<div style=\"color:"+i.color+";\"><h4>"+i.title+"</h4><br>"+filtered.map(x=>"<div style=\"height:50px;width:300px;display:inline-block;\">"+x+"</div>").join("")+"</div><hr>"}}
-	}
-	if (out==="") {out = "<i>All contributions are spoilered. Reach a higher EMD Level to see more.</i>"}
+	let out = "", counter = 1
+	for (let i of Object.keys(categories)) {if (contributions[name][i]!==undefined) {
+		out += "<h4 style=\"color:"+i.color+";\">"+i+"</h4><table>"
+		for (let j of contributions[name][i]) {
+			out += "<tr><td style=\"width:25px;padding-right:10px;text-align:right;color:"+i.color+";\">"+counter+"</td><td style=\"width:calc(60vw - 36px);text-align:left;color:"+i.color+";\">"+((j.EMDLevel>EMDLevel)?("<i>Reach EMD Level "+j.EMDLevel+" to reveal this</i>"):j.text)+"<span style=\"float:right;\">[Class "+j.class.replace("+","<sup>+</sup>").replace("-","<sup>-</sup>")+"]</span></td></tr>"
+			counter++
+		}
+		out += "</table>"		
+	}}
 	popup({
-		text:out,
+		text:"<h3 style=\"color:"+(contributorColor(name)??"inherit")+";\">"+name+"'s Contributions <span style=\"float:right;\">[Overall Class "+personClass(name).replace("+","<sup>+</sup>").replace("-","<sup>-</sup>")+"]</span></h3><hr>"+out,
 		buttons:[["Close",""]]
 	})
 }
+function contributorSort(a,b){return ((Object.keys(specialGrade).includes(b)?1:0)-(Object.keys(specialGrade).includes(a)?1:0))||(a.toLowerCase()>b.toLowerCase())}
+function switchTab(name) {
+	let names = (name==="All")?Object.keys(contributions).sort(contributorSort):(name==="Special")?Object.keys(specialGrade):Object.keys(contributions).map(x=>[x,(contributions[x][name]===undefined)?"F":overallClass(contributions[x][name].map(x=>x.class))]).filter(x=>x[1]!=="F").map(x=>x[0]).sort(contributorSort)
+	d.innerHTML("credits",names.map(x=>"<div style=\"height:30px;width:300px;display:inline-block;color:"+contributorColor(x)+";\" onClick=\"showContributions('"+x+"')\">"+x+"</div>").join(""))
+	for (let i of ["All",...Object.keys(categories)]) {d.element("navigation_"+i).style.opacity = "0.6"}
+	d.element("navigation_"+name).style.opacity = "1"
+}
 function generateHTML() {
-	let out = ""
-	for (let i of categories) {out += "<hr><div style=\"color:"+i.color+";\"><h4>"+i.title+"</h4><h6>"+i.subtitle+"</h6><br>"+((i.contents.length===0)?"<i>No one has been credited for this yet.</i>":Object.keys(i.contents).map(x=>"<div style=\"height:50px;width:300px;display:inline-block;color:"+(coloredContributors[x]??"inherit")+";\" onClick=\"showContributions('"+x+"')\">"+x+"</div>").join(""))+"</div>"}
-	document.getElementById("credits").innerHTML = out
+	document.getElementById("navigation").innerHTML = ["All",...Object.keys(categories)].map(x=>"<button id=\"navigation_"+x+"\" class=\"navigation\" style=\"width:calc("+(100/(Object.keys(categories).length+1))+"vw - 3px);\" onClick=\"switchTab('"+x+"');\">"+x+"</button>").join("")
+	switchTab("All")
 }
 generateHTML()
 		</script>

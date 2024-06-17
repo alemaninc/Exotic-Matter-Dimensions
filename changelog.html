@@ -2,45 +2,43 @@
 <html>
 	<head>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="stylesheet" type="text/css" href="globalstyle.css" />
 		<style>
-		body {
-			color: #39f;
-			background: #190033;
-			font-size: 15px;
-			font-family:verdana
-		}
-		.accordion {
-			background-color: #330066;
-			color: #fff;
-			cursor: pointer;
-			padding: 6px;
-			width: 100%;
-			border: none;
-			text-align: left;
-			outline: none;
-			font-size: 15px;
-			transition: 0.4s;
-		}
-		.panel tr td {
-			padding-bottom: 3px;
-		}
-		.active, .accordion:hover {
-			background-color: #26a;
-		}
-		.panel {
-			padding: 0 18px;
-			background-color: #4c0099;
-			display:none;
-		}
-		table {
-			border-spacing:0;
-			display:inline-block;
-			table-layout:fixed;
-			border-color:rgba(0,0,0,0);
-		}
-		td {
-			vertical-align:top;
-		}
+.accordion {
+	background-color: #330066;
+	color: #fff;
+	cursor: pointer;
+	padding: 6px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+	font-size: 15px;
+	transition: 0.4s;
+}
+body {
+	text-align:left;
+}
+.panel tr td {
+	padding-bottom: 3px;
+}
+.active, .accordion:hover {
+	background-color: #26a;
+}
+.panel {
+	padding: 0 18px;
+	background-color: #4c0099;
+	display:none;
+}
+table {
+	border-spacing:0;
+	display:inline-block;
+	table-layout:fixed;
+	border-color:rgba(0,0,0,0);
+}
+td {
+	vertical-align:top;
+}
 		</style>
 		<meta charset="utf-8"/>
 		<title>Changelog</title>
@@ -48,7 +46,7 @@
 	<body>
 		<div id="changelog" style="display:none;">
 			<h3 style="color: #3333ff">Code contributors who want to change their name or color within the changelog can do so by reaching out to alemaninc or submitting a pull request</h4>
-			<p>Some entries in this changelog are hidden based on how far you have progressed.<br>Progress is measured by EMD Level.<br>The presence of hidden entries is indicated at the bottom of individual entries.<br><br>A number in italicised square brackets (e.g. <i>[3]</i>) next to the type annotation indicates that the change spans multiple parts of the game.<br>This change will update when this EMD Level is reached.<br><br><span id="EMDLevelText"></span></p>
+			<p>Some entries in this changelog are hidden based on how far you have progressed.<br>Progress is measured by EMD Level.<br>The presence of hidden entries is indicated at the bottom of individual entries.<br><br>A number in italicised square brackets (e.g. <i>[3]</i>) next to the type annotation indicates that the change spans multiple parts of the game.<br>This change will update when this EMD Level is reached.<br><br><span id="EMDLevelText"></span><br><button id="allShown" onClick="allShown=!allShown;document.getElementById('allShown').innerHTML=allShown?'Filter entries beyond EMD Level':'Stop filtering entries beyond EMD Level';loadLog()">Stop filtering entries beyond EMD Level</button></p>
 			<p>Click entries to expand/contract them.</p>
 			<div id="logContainer"></div>
 		</div>
@@ -60,7 +58,7 @@
 const save = JSON.parse(localStorage.getItem("save"))
 const notation = (save===null)?"Mixed scientific":(save.notation??"Mixed Scientific")
 function format(x,p=0){return gformat(N(x),p,notation)}
-const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
+const EMDLevel = (save===null)?4:(save.EMDLevel??Infinity)
 const contributors = {
 	"Hedrauta":"#00cc00",
 	"IRAD":"#ff9933",
@@ -77,6 +75,10 @@ const logEntries = [
 
 	]},
 	*/
+	{num:"𝕍1ω.4",date:"2024-06-17",changes:[
+		[7,"BUGFIX","Infinite galaxy bug"],
+		[8,"BUGFIX","Study of Studies \"Decisive Triad\" crashing the game on entry"]
+	]},
 	{num:"𝕍1ω.3",date:"2024-15-06",changes:[
 		[1,"BUGFIX","People starting with 54.5 years of dilated time in certain circumstances"],
 		[1,"BUGFIX","Complex achievements crashing the game on the progress bar"],
@@ -1321,30 +1323,34 @@ d.innerHTML("EMDLevelText",(EMDLevel===Infinity)?"A savefile could not be retrie
 d.element("EMDLevelText").style.color = (EMDLevel===Infinity)?"#ff6666":"#cccc00"
 
 const depthChars = ".αβΩω".split("")
-for (let i of logEntries) {
-	let depth = depthChars.map(x=>i.num.length-i.num.replaceAll(x,"").length).sum()
-	let changes = i.changes
-	let displayed = changes.filter(x=>EMDLevel>=(Array.isArray(x[0])?x[0][0]:x[0]))
-	let levelForNext = changes.filter(x=>(EMDLevel<(Array.isArray(x[0])?x[0][0]:x[0]))).map(x=>x[0]).flat().filter(x=>x>=EMDLevel).reduce((x,y)=>Math.min(x,y),Infinity)
-	document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (x.length > 2)?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((EMDLevel<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>EMDLevel)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x[1]+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Reach EMD Level "+levelForNext+" to see more.</td></tr>"))+"</table></div>"
-}
-var acc = document.getElementsByClassName("accordion");
+var allShown = false
+function loadLog() {
+	document.getElementById("logContainer").innerHTML = ""
+	for (let i of logEntries) {
+		let depth = depthChars.map(x=>i.num.length-i.num.replaceAll(x,"").length).sum()
+		let changes = i.changes
+		let displayed = allShown?changes:changes.filter(x=>EMDLevel>=(Array.isArray(x[0])?x[0][0]:x[0]))
+		let levelForNext = changes.filter(x=>(EMDLevel<(Array.isArray(x[0])?x[0][0]:x[0]))).map(x=>x[0]).flat().filter(x=>x>=EMDLevel).reduce((x,y)=>Math.min(x,y),Infinity)
+		document.getElementById("logContainer").innerHTML += "<button class=\"accordion\"><table><tr><td style=\"width:20vw;text-align:left\">"+"&nbsp;".repeat(depth*3)+i.num+"</td><td style=\"width:60vw;text-align:center\">"+((i.name===undefined)?"":("\""+i.name+"\""))+"</td><td style=\"width:20vw;text-align:right\">"+i.date+"</td></tr></table></button><div class=\"panel d"+depth+"\"><table>"+displayed.map(x => (x.length > 2)?("<tr><td style=\"width:200px"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[1]+"</td><td style=\"width:calc(100vw - 250px)"+((x.length===4)?(";color:"+contributors[x[3]]):"")+"\">"+x[2]+((x.length===4)?(" (by "+x[3]+")"):"")+"</td><td style=\"width:50px;text-align:right;vertical-align:bottom;\">"+(Array.isArray(x[0])?((EMDLevel<x[0][x[0].length-1])?(" <i>["+(x[0].filter(x=>x>EMDLevel)[0])+"]</i>"):""):"")+"</td></tr>"):("<tr><td colspan=\"3\" style=\"width:100vw\">"+x[1]+"</td></tr>")).join("")+((changes.length===displayed.length)?"":("<tr><td colspan=\"3\" style=\"width:100vw\"><i>"+(changes.length-displayed.length)+" change"+(((changes.length-displayed.length)===1)?" is":"s are")+" not shown.<br>Reach EMD Level "+levelForNext+" to see more.</td></tr>"))+"</table></div>"
+	}
+	var acc = document.getElementsByClassName("accordion");
+	for (let i of acc) {
+		i.addEventListener("click", function() {
+			/* Toggle between adding and removing the "active" class,
+			to highlight the button that controls the panel */
+			this.classList.toggle("active");
 
-for (let i of acc) {
-	i.addEventListener("click", function() {
-		/* Toggle between adding and removing the "active" class,
-		to highlight the button that controls the panel */
-		this.classList.toggle("active");
-
-		/* Toggle between hiding and showing the active panel */
-		var panel = this.nextElementSibling;
-		if (panel.style.display === "inline-block") {
-			panel.style.display = "none";
-		} else {
-			panel.style.display = "inline-block";
-		}
-	});
+			/* Toggle between hiding and showing the active panel */
+			var panel = this.nextElementSibling;
+			if (panel.style.display === "inline-block") {
+				panel.style.display = "none";
+			} else {
+				panel.style.display = "inline-block";
+			}
+		});
+	}
 }
+loadLog()
 d.display("loading","none")
 d.display("changelog","inline-block")
 		</script>

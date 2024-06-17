@@ -22,7 +22,7 @@ function updateHTML() {
 	d.element("button_stardustReset").style.visibility=(masteryData[42].req()?"visible":"hidden");
 	d.class("button_wormholeReset",stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)?"wormholeResetButton":"lockedStardustResetButton");
 	d.element("button_wormholeReset").style.visibility=(unlocked("Hawking Radiation")||stat.totalDarkAxis.gte(c.e3))?"visible":"hidden";
-	d.innerHTML("button_wormholeReset",wormholeResetButtonText());
+	updateWormholeResetButtonText()
 	d.display("footer",showFooter()?"inline-block":"none")
 	if (showFooter()) {
 		if (g.achOnProgressBar!=="N") {
@@ -177,9 +177,9 @@ function updateHTML() {
 				["buy Research",unlocked("Hawking Radiation")]
 			].filter(x=>x[1]).map(x=>x[0])
 			if (doubleClickToBuy.length===0) {
-				d.display("button_options_doubleClickToBuy",false)
+				d.display("button_options_doubleClickToBuy","none")
 			} else {
-				d.display("button_options_doubleClickToBuy",true)
+				d.display("button_options_doubleClickToBuy","inline-block")
 				d.innerHTML("button_options_doubleClickToBuy","Double click to "+doubleClickToBuy.map(x=>unbreak(x)).join("/")+" "+(g.confirmations.doubleClickToBuy?"en":"dis")+"abled")
 			}
 			d.innerHTML("button_options_EMDLevelDisplayInFooter",dictionary(g.EMDLevelDisplayInFooter,{0:"EMD Level not shown in footer",1:"EMD Level shown in footer",2:"EMD Level and Score shown in footer"}))
@@ -886,10 +886,6 @@ function tick(time) {																																		 // The game loop, which 
 		if (!g.research[studies[g.activeStudy].research]) {
 			forceExit = true
 			exitText = "Relevant study research not owned ("+researchOut(studies[g.activeStudy].research)+")"
-		}
-		if ((g.activeStudy!==13)&&(studyPower(g.activeStudy)>=studies[0].effectiveMaxCompletions[g.activeStudy])) {
-			forceExit = true
-			exitText = "Placeholder level entered (current: "+(studyPower(g.activeStudy)+1)+", max: "+studies[0].effectiveMaxCompletions[g.activeStudy]+")"
 		}
 		if (forceExit) {
 			popup({text:"You have been forcefully removed from Study "+studies[0].roman(g.activeStudy)+" due to the presence of a bug. Sorry!<br>Details: "+exitText+"<br>Please tell alemaninc about this.",buttons:[["Close",""]]})

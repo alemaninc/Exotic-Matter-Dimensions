@@ -1650,7 +1650,7 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 4%,var(--luck) 6%, var(--luck) 14%,rgba(0,0,0,0) 16%,rgba(0,0,0,0) 20%)\"></div>"
 		},
 		r25_8:{
-			description:function(){return "Study of Studies: Decisive Triad"},
+			description:function(){return "Study of Studies \"Decisive Triad\""},
 			adjacent_req:["r24_7","r24_8","r24_9"],
 			condition:[studyReq(2,4),studyReq(5,4),studyReq(8,4),studyReq(10,1)],
 			visibility:function(){return (g.studyCompletions[2]===4)&&(g.studyCompletions[5]===4)&&(g.studyCompletions[8]===4)&&(g.studyCompletions[10]>0);},
@@ -1725,7 +1725,7 @@ const research = (function(){
 			icon:"<div style=\"position:absolute;top:0px;left:0px;height:100%;width:100%;background-image:repeating-conic-gradient(rgba(0,0,0,0),rgba(0,0,0,0) 1.667%,var(--luck) 2.5%, var(--luck) 5.833%,rgba(0,0,0,0) 6.667%,rgba(0,0,0,0) 8.333%)\"></div>"
 		},
 		r26_5:{
-			description:function(){return "Study of Studies: Stellar Triad"},
+			description:function(){return "Study of Studies \"Stellar Triad\""},
 			adjacent_req:["r24_5"],
 			condition:[studyReq(1,4),studyReq(4,4),studyReq(7,4)],
 			visibility:function(){return (g.studyCompletions[1]===4)&&(g.studyCompletions[4]===4)&&(g.studyCompletions[7]===4)},
@@ -1734,7 +1734,7 @@ const research = (function(){
 			icon:icon.study([[50,45,5],[50,15,5],[85,50,5],[15,50,5],...[10,110,130,230,250,350].map(x=>[50+35*Math.sin(Math.PI*x/180),45+35*Math.cos(Math.PI*x/180),4])])
 		},
 		r26_11:{
-			description:function(){return "Study of Studies: Temporal Triad"},
+			description:function(){return "Study of Studies \"Temporal Triad\""},
 			adjacent_req:["r24_11"],
 			condition:[studyReq(3,4),studyReq(6,4),studyReq(9,4),studyReq(10,2)],
 			visibility:function(){return (g.studyCompletions[3]===4)&&(g.studyCompletions[6]===4)&&(g.studyCompletions[9]===4)&&(g.studyCompletions[10]>1);},
@@ -1782,7 +1782,7 @@ const research = (function(){
 			effect:function(power){return N(1.11).pow(power)}
 		},
 		r27_8:{
-			description:function(){return "Study of Studies: Ontological Triad"},
+			description:function(){return "Study of Studies \"Ontological Triad\""},
 			adjacent_req:["r26_5","r25_8","r26_11"],
 			condition:[studyReq(10,3),studyReq(11,4),studyReq(12,4)],
 			visibility:function(){return (g.studyCompletions[10]>2)&&(g.studyCompletions[11]>3)&&(g.studyCompletions[12]>3);},
@@ -2397,7 +2397,7 @@ function showResearchInfo(row,col) {
 	} else if (res.type==="permanent") {
 		out += "<b>"+researchName+" (Permanent)</b>"
 		smallHeader.push("This research will not be refunded upon respec.");
-		colors = {light:"#cccccc",dark:"51,51,51"}
+		colors = {light:"#cccccc",dark:"34,34,34"}
 	} else if (res.type==="study") {
 		out += "<b>"+researchName+" (Study)</b>"
 		smallHeader.push("Purchasing this will unlock a Study. If you can do a Wormhole reset under special restrictions, you will gain a permanent reward.");

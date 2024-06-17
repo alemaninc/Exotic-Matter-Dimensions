@@ -83,7 +83,7 @@ studies[3] = {
 	description:function(){return ["Energy increases "+this.energyGainConstant().format(0)+"× faster, but all other Energy speed and effect multipliers are disabled.","Energies severely reduce production instead of boosting it (<i>x</i> → <i>x</i><sup>"+this.energyPowerConstant().format()+"</sup>).","You start with all Energies unlocked."]},
 	disclaimers:[
 		studies[0].exactFrames,
-		["Row 5 and 6 Energy research are always 100% powered, unaffected by any boosts or nerfs.",()=>unlocked("Study XIII")]
+		["Row 5 and 6 Energy research are always 100% powered in Study III, unaffected by any boosts or nerfs.",()=>unlocked("Study XIII")]
 	],
 	research:"r9_2",
 	goal:function(comp=studyPower(3)){return [c.d2e3,N(2222),N(2500),N(2666)][comp];},

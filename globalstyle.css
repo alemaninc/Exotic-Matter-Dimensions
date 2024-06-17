@@ -1,0 +1,12 @@
+a {color:inherit;}
+html, body {
+	max-width:100%;
+	min-width:1200px;
+	overflow-x:hidden;
+	min-height:100vh;
+	font-size:15px;
+	font-family:verdana;
+	text-align:center;
+	color: #39f;
+	background: #190033;
+}

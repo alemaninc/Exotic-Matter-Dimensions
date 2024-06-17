@@ -1,7 +1,7 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1ω.3",
+	current:"𝕍1ω.4",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[0],
