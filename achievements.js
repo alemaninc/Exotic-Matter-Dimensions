@@ -27,7 +27,6 @@ achievement.perAchievementReward = {
 }
 achievement.initial = {1:101,2:201,3:301,4:402,5:501,6:601,7:701,8:717,9:823}
 achievement.visible = function(id) {
-	return true
 	if (g.achievement[id]) {return true}
 	if ((achievement(id).beta===true)&&(!betaActive)) {return false}
 	let tier = achievement.tierOf(id)
