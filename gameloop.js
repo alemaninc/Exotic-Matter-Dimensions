@@ -818,12 +818,18 @@ function tick(time) {																																		 // The game loop, which 
 		g.dilatedTime += diff
 		time -= diff
 	}
+	for (let i of ["timePlayed","timeThisStardustReset","timeThisWormholeReset","timeThisSpacetimeReset","dilatedTime"]) {
+		if ((typeof g[i]) !== "number") {
+			g[i] = 0
+			error("<code>"+i+"</code> has memory-leaked. This is a known error which alemaninc is investigating")
+		}
+	}
 	g.timePlayed+=time;
 	g.timeThisStardustReset+=time;
 	g.timeThisWormholeReset+=time;
 	g.timeThisSpacetimeReset+=time;
 	if (StudyE(9)) {if (g.timeThisWormholeReset>=9) {studies[9].reset()}}
-	if (study13.bound(236)&&(g.timeThisWormholeReset>study13.bindingEff(236))) {wormholeReset();popup({text:stat.totalDarkAxis.gt(stat.wormholeDarkAxisReq)?"You have automatically completed Study XIII through Binding 236.":("You failed Study XIII due to running out of time for Binding 236.<br>You reached "+stat.totalDarkAxis.format()+" / "+studies[13].goal().format()+" dark axis"),buttons:[["Close",""]]})}
+	if (study13.bound(236)&&(g.timeThisWormholeReset>study13.bindingEff(236))) {popup({text:stat.totalDarkAxis.gt(stat.wormholeDarkAxisReq)?"You have automatically completed Study XIII through Binding 236.":("You failed Study XIII due to running out of time for Binding 236.<br>You reached "+stat.totalDarkAxis.format()+" / "+studies[13].goal().format()+" dark axis"),buttons:[["Close",""]]});wormholeReset()}
 	updateStats()
 	if (!unlocked("Corruption")) {for (let i of ["axis","darkAxis","antiAxis"]) {if (corruption.list[i].visible()) {unlockFeature("Corruption");addAchievement(930)}}} else if (!g.achievement[930]) {addAchievement(930)}
 
@@ -946,7 +952,7 @@ function tick(time) {																																		 // The game loop, which 
 	}
 	if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");
 	if (starAutobuyerProgress > 1) {
-		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap))) buyStar();}
+		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap))) buyStar(false);}
 		if (unspentStars()>0&&g.starAllocatorOn&&(totalStars<g.starAllocatorBuild.length)) for (let i of g.starAllocatorBuild) buyStarUpgrade(i);
 		starAutobuyerProgress%=1;
 	}

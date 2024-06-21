@@ -92,16 +92,17 @@ const classes = ["E","E+","D/E","D-","D","D+","C/D","C-","C","C+","B/C","B-","B"
 function classToScore(x){
 	if (x==="Ω"){return Infinity}
 	let pos = classes.indexOf(x)
-	return 10**(pos/10)
+	return Math.exp(pos/Math.E)
 }
 function overallClass(arr) {
 	if (arr.length===0) {return "F"}
-	let total = arr.map(x=>classToScore(x)).sort((a,b)=>b-a).map((x,i)=>x/(i+1)).reduce((a,b)=>a+b)
+	let total = arr.map(x=>classToScore(x)).reduce((a,b)=>a+b)
 	for (let i=classes.length-1;i>=0;i--) {if (total>=classToScore(classes[i])) {return classes[i]}}
 }
 const categories = {
 	"Special":"For those who allowed the game to exist",
 	"Disinsection Crew":"For those who found infestations of pesky bugs",
+	"Exowriter":"For those who fixed issues with text",
 	"Game Changer":"For those who altered the substance of the game",
 	"Scripter":"For those who wrote their contributions directly into the code",
 	"Stylist":"For those who tried to sort the interface out",
@@ -112,6 +113,12 @@ const categories = {
 function news(id,txt,lv,grd) {return {text:"#"+id+" \""+txt+"\"",EMDLevel:lv,class:grd}}
 function person(name){return "<span onClick=\"showContributions('"+name+"')\">"+name+"</span>"}
 const contributions = {
+	// ![A-Z]
+	"10mart10":{
+		"Disinsection Crew":[
+			{text:"Pointed out Study V breaking the game",EMDLevel:6,class:"B/C"}
+		]
+	},
 	// A
 	"Acamaeda":{
 		"Disinsection Crew":[
@@ -126,7 +133,15 @@ const contributions = {
 			{text:"Put more than 25,000 lines of code into something which seems to work",EMDLevel:1,class:"Ω"}
 		]
 	},
+	"Alien714":{
+		"Disinsection Crew":[
+			{text:"Pointed out Wormhole automator breaking the game",EMDLevel:5,class:"C"}
+		]
+	},
 	"anothernobody":{
+		"Disinsection Crew":[
+			{text:"Research 6-9 not working",EMDLevel:5,class:"D"}
+		],
 		"Game Changer":[
 			{text:"Suggested \"Set Overclock to softcap start\"",EMDLevel:1,class:"B"}
 		]
@@ -142,12 +157,23 @@ const contributions = {
 		]
 	},
 	// B
+	"badzad31(Davin)":{
+		"Disinsection Crew":[
+			{text:"Pointed out when alemaninc made Research invisible (shared with "+person("Dragonus")+", "+person("Hori")+" and "+person("Titus")+")",EMDLevel:5,class:"D"}
+		]
+	},
 	"b<sub>la</sub>c<sub>k hole</sub>":{
+		"Disinsection Crew":[
+			{text:"\"You currently have Tier 5 achievements\"",EMDLevel:5,class:"D"}
+		],
+		"Exowriter":[
+			{text:"The 𝕍1.1.16 entry having \"undefined\"",EMDLevel:1,class:"E"}
+		],
 		"Village Elder":[
 			{text:"Added FredBoat to the Discord (does anyone even use this?)",EMDLevel:1,class:"E"}
 		],
 		"Worldbuilder":[
-			{text:"Suggested the news ticker",EMDLevel:1,class:"A"}
+			{text:"Suggested the news ticker",EMDLevel:1,class:"B"}
 		]
 	},
 	"BlazetheGameYT":{
@@ -160,6 +186,9 @@ const contributions = {
 	},
 	// C
 	"Celestial of Blob / hyperbolia":{
+		"Disinsection Crew":[
+			{text:"Identified Scientific notation not working.<br>How does alemaninc break what is literally the notation used by half the playerbase and release it to production?",EMDLevel:1,class:"C"}
+		],
 		"Game Changer":[
 			{text:"Suggested Study XI",EMDLevel:8,class:"B"},
 			{text:"Indirectly suggested Study of Studies having 4 different research",EMDLevel:8,class:"B/C"}
@@ -195,6 +224,11 @@ const contributions = {
 	"Dragonayzer":{
 		"Disinsection Crew":[
 			{text:"Pointed out that there should be an option to turn off \"buy all previous research\"",EMDLevel:5,class:"C"}
+		]
+	},
+	"Dragonus":{
+		"Disinsection Crew":[
+			{text:"Pointed out when alemaninc made Research invisible (shared with "+person("badzad31(Davin)")+", "+person("Hori")+" and "+person("Titus")+")",EMDLevel:5,class:"D"}
 		]
 	},
 	"Dreamare":{
@@ -233,10 +267,23 @@ const contributions = {
 	// F
 	"FIQ":{
 		"Game Changer":[
-			{text:"Suggested effective dark star text clarification",EMDLevel:5,class:"C"}
+			{text:"Suggested reset automator settings that use previous gain rather than current amount",EMDLevel:5,class:"B"},
+			{text:"Suggested effective dark star text clarification",EMDLevel:5,class:"C"},
+			{text:"Suggested for Research 17-8 to make Time research show the unchanged effect",EMDLevel:8,class:"E"}
+		],
+		"Exowriter":[
+			{text:"Pointed out that Achievement 501 \"Wormhole to Somewhere\" does not have a softcap like Wormhole Upgrade 5 \"More Achievement\" would suggest<br>(the softcap is actually on Mastery 101)",EMDLevel:8,class:"C"}
+		]
+	},
+	"FreeLancer":{
+		"Exowriter":[
+			{text:"Identified Stardust story entry showing that 0 stardust was produced",EMDLevel:2,class:"D"}
 		]
 	},
 	"Fusilliban":{
+		"Disinsection Crew":[
+			{text:"Identified game-breaking infinite galaxy bug",EMDLevel:7,class:"A/B"}
+		],
 		"Game Changer":[
 			{text:"Suggested research savings info",EMDLevel:8,class:"B"},
 			{text:"Suggested Achievement 815 \"Gensokyo Millennium\" reward (shared with "+person("sandwich8")+")",EMDLevel:8,class:"B/C"},
@@ -255,12 +302,41 @@ const contributions = {
 			{text:"Added Engineering notation",EMDLevel:1,class:"B"}
 		]
 	},
+	"HollowX913":{
+		"Disinsection Crew":[
+			{text:"Identified Studies being impossible to complete if \"respec Research after Study\" is switched off",EMDLevel:5,class:"C"}
+		]
+	},
+	"Hori":{
+		"Disinsection Crew":[
+			{text:"Studies being impossible to enter",EMDLevel:5,class:"C"},
+			{text:"Pointed out when alemaninc made Research invisible (shared with "+person("badzad31(Davin)")+", "+person("Dragonus")+" and "+person("Titus")+")",EMDLevel:5,class:"D"}
+		]
+	},
 	"Hyggyldy":{
 		"Game Changer":[
 			{text:"Suggested confirmation popup to assign Masteries",EMDLevel:1,class:"C"}
 		]
 	},
 	// I
+	"IKA":{
+		"Game Changer":[
+			{text:"Suggested achievements on the progress bar being impossible to fail",EMDLevel:1,class:"A/B"}
+		]
+	},
+	"imhoden":{
+		"Disinsection Crew":[
+			{text:"Identified Study V being impossible to abort even after "+person("WhattayaBrian")+" reported it",EMDLevel:6,class:"C"}
+		],
+		"Exowriter":[
+			{text:"Pointed out that \"Abort Study\" does not change to \"Complete Study\"",EMDLevel:5,class:"D"}
+		]
+	},
+	"InfoHazard":{
+		"Disinsection Crew":[
+			{text:"Identified one of many cases of research loadouts not working correctly (this particular case is shared with "+person("lexicalpedant")+")",EMDLevel:5,class:"C/D"}
+		]
+	},
 	"Ingibergur":{
 		"Disinsection Crew":[
 			{text:"Identified Achievement 526 \"Big Crunch\" not awarding when buying single dark axis",EMDLevel:5,class:"B"}
@@ -274,7 +350,14 @@ const contributions = {
 	// J
 	"jklw10":{
 		"Disinsection Crew":[
-			{text:"Identified star allocator always buying in numerical order regardless of configuration",EMDLevel:5,class:"B"}
+			{text:"Identified star allocator always buying in numerical order regardless of configuration",EMDLevel:5,class:"B"},
+			{text:"Identified Stardust automator setting itself to an invalid setting when switched off (shared with "+person("themadvirus613tmv")+")",EMDLevel:5,class:"C/D"},
+			{text:"Identified the research build imported into a loadout counting towards the 40 character limit for the name",EMDLevel:5,class:"C/D"}
+		]
+	},
+	"johannarsakeio":{
+		"Disinsection Crew":[
+			{text:"Star 42 not showing its multiplier",EMDLevel:2,class:"C/D"}
 		]
 	},
 	// K
@@ -284,12 +367,14 @@ const contributions = {
 		]
 	},
 	"Kaffe-work / IRAD":{
-		"Disinsection Crew":[
+		"Exowriter":[
 			{text:"Added a comma in the changelog",EMDLevel:1,class:"D"}
+		],
+		"Game Changer":[
+			{text:"Suggested ascetic research multi-buy",EMDLevel:8,class:"A/B"}
 		],
 		"Village Elder":[
 			{text:"Named the Matrices",EMDLevel:10,class:"A"},
-			{text:"Suggested ascetic research multi-buy",EMDLevel:8,class:"A/B"}
 		]
 	},
 	"Kyle Wand":{
@@ -307,6 +392,11 @@ const contributions = {
 	"Lanie Carmelo":{
 		"Game Changer":[
 			{text:"Suggested accessibility features for screen readers",EMDLevel:1,class:"B"}
+		]
+	},
+	"lexicalpedant":{
+		"Disinsection Crew":[
+			{text:"Identified one of many cases of research loadouts not working correctly (this particular case is shared with "+person("InfoHazard")+")",EMDLevel:5,class:"C/D"}
 		]
 	},
 	// M
@@ -327,6 +417,9 @@ const contributions = {
 	},
 	// N
 	"nicodium":{
+		"Disinsection Crew":[
+			{text:"Research section of 'How to play' not showing anything",EMDLevel:5,class:"D"}
+		],
 		"Game Changer":[
 			{text:"Suggested Study completion without research respec",EMDLevel:5,class:"B"}
 		]
@@ -348,6 +441,12 @@ const contributions = {
 	},
 	// O
 	// P
+	"Pickle Rick Sanchez":{
+		"Disinsection Crew":[
+			{text:"Identified alemaninc Ordinal notation not working",EMDLevel:1,class:"C"},
+			{text:"Identified dark star bulk buy being impossible to switch off",EMDLevel:3,class:"C"}
+		]
+	},
 	"Prophetic Eclipse":{
 		"Game Changer":[
 			{text:"Indirectly suggested Wormhole Milestone 6",EMDLevel:5,class:"C"}
@@ -370,6 +469,26 @@ const contributions = {
 			{text:"Indirectly suggested Achievement 815 \"Gensokyo Millennium\" reward (shared with "+person("Fusilliban")+")",EMDLevel:8,class:"B/C"}
 		]
 	},
+	"sese müller":{
+		"Disinsection Crew":[
+			{text:"Pointed out Wormhole automator breaking the game, even after alemaninc ostensibly fixed it after "+person("Alien714")+" reported it",EMDLevel:5,class:"C"}
+		]
+	},
+	"Shinwmyste":{
+		"Disinsection Crew":[
+			{text:"Star allocator not working",EMDLevel:5,class:"C"}
+		]
+	},
+	"sino":{
+		"Disinsection Crew":[
+			{text:"Most recently unlocked Wormhole Milestone not showing"}
+		]
+	},
+	"Spacekiwi_":{
+		"Disinsection Crew":[
+			{text:"Identified \"Unassign Row <i>X</i> Masteries\" not working (shared with "+person("Tom")+")",EMDLevel:1,class:"C/D"}
+		]
+	},
 	"Stat Mark":{
 		"Special":[
 			{text:"Named the project",EMDLevel:1,class:"S"}
@@ -390,6 +509,17 @@ const contributions = {
 			{text:"Suggested \"Tardis\" secret achievement",EMDLevel:1,class:"D"}
 		]
 	},
+	"themadvirus613tmv":{
+		"Disinsection Crew":[
+			{text:"Identified Stardust automator setting itself to an invalid setting when switched off (shared with "+person("jklw10")+")",EMDLevel:5,class:"C/D"},
+			{text:"Identified best prestige events showing default values when a prestige has not been done",EMDLevel:2,class:"D"}
+		]
+	},
+	"The Platinum Possum":{
+		"Disinsection Crew":[
+			{text:"Dark star autobuyer crashing game",EMDLevel:3,class:"C"}
+		]
+	},
 	"Tichat002":{
 		"Game Changer":[
 			{text:"Suggested totals for prestige resources in Statistics",EMDLevel:2,class:"B"},
@@ -399,6 +529,17 @@ const contributions = {
 		"Stylist":[
 			{text:"Suggested display of overall multiplier per dark U axis",EMDLevel:3,class:"D"},
 			{text:"Suggested one of many Tier 5 color changes",EMDLevel:5,class:"C"}
+		]
+	},
+	"Titus":{
+		"Disinsection Crew":[
+			{text:"Pointed out when alemaninc made Research invisible (shared with "+person("badzad31(Davin)")+", "+person("Dragonus")+" and "+person("Hori")+")",EMDLevel:5,class:"D"},
+			{text:"Pointed out the Discovery text always indicating that no discoveries are spent",EMDLevel:5,class:"C/D"}
+		]
+	},
+	"Tom":{
+		"Disinsection Crew":[
+			{text:"Identified \"Unassign Row <i>X</i> Masteries\" not working (shared with "+person("Spacekiwi_")+")",EMDLevel:1,class:"C/D"}
 		]
 	},
 	// U
@@ -415,6 +556,9 @@ const contributions = {
 		]
 	},
 	"WhattayaBrian":{
+		"Disinsection Crew":[
+			{text:"Identified Study V being impossible to abort",EMDLevel:6,class:"C"}
+		],
 		"Stylist":[
 			{text:"Suggested \"See all effects\" for yellow lumens",EMDLevel:6,class:"B"}
 		]
@@ -433,7 +577,8 @@ const contributions = {
 			{text:"Taught alemaninc how to do this",EMDLevel:1,class:"S"}
 		],
 		"Stylist":[
-			{text:"Suggested modern star UI",EMDLevel:2,class:"B"}
+			{text:"Suggested modern star UI",EMDLevel:2,class:"B"},
+			{text:"Pointed out that some research have incorrectly colored icons",EMDLevel:5,class:"D"}
 		]
 	}
 	// Y
@@ -465,7 +610,7 @@ function showContributions(name) {
 function contributorSort(a,b){return ((Object.keys(specialGrade).includes(b)?1:0)-(Object.keys(specialGrade).includes(a)?1:0))||(a.toLowerCase()>b.toLowerCase())}
 function switchTab(name) {
 	let names = (name==="All")?Object.keys(contributions).sort(contributorSort):(name==="Special")?Object.keys(specialGrade):Object.keys(contributions).map(x=>[x,(contributions[x][name]===undefined)?"F":overallClass(contributions[x][name].map(x=>x.class))]).filter(x=>x[1]!=="F").map(x=>x[0]).sort(contributorSort)
-	d.innerHTML("credits",names.map(x=>"<div style=\"height:30px;width:300px;display:inline-block;color:"+contributorColor(x)+";\" onClick=\"showContributions('"+x+"')\">"+x+"</div>").join(""))
+	d.innerHTML("credits",((name==="All")?"For all who helped to make <i>Exotic Matter Dimensions</i> a better game.":categories[name])+"<br><br>"+names.map(x=>"<div style=\"height:30px;width:300px;display:inline-block;color:"+contributorColor(x)+";\" onClick=\"showContributions('"+x+"')\">"+x+"</div>").join(""))
 	for (let i of ["All",...Object.keys(categories)]) {d.element("navigation_"+i).style.opacity = "0.6"}
 	d.element("navigation_"+name).style.opacity = "1"
 }

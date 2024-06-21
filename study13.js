@@ -944,11 +944,11 @@ const study13 = {
 				desc:function(curr,prev){return "The effects of the first seven anti-axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3,false))+" stronger"},
 			},
 			masterNumber:{
-				name:"Master's Encyclopedia of Integer Sequences®",
+				name:"Master's Encyclopædia of Integer Sequences®",
 				breakpoints:[2,5,12,29,70,169],
 				type:"composite",
 				l3Mult:function(){return (study13.rewardLevels.masterNumber===6)?(g.stars+g.galaxies+totalAchievements):g.stars},
-				desc:function(lv){return ["Mastery 42 is 130% stronger","Mastery 63 is 1.3× stronger","Mastery 105 is 0.13% stronger per star (currently: "+N(this.l3Mult()*0.13).noLeadFormat(2)+"%)","Mastery 42 is an additional 1.3% stronger per Study XIII completion (currently: "+N(g.studyCompletions[13]*1.3).noLeadFormat(2)+"%)","Mastery 63 is an additional 0.13% stronger per purchased dark star (currently: "+g.darkstars.mul(0.13).noLeadFormat(2)+"%)","Galaxies and achievements now add to the Level 3 effect"][lv-1]}
+				desc:function(lv){return ["Mastery 42 is 130% stronger","Mastery 63 is 1.3× stronger","Mastery 105 is 0.13% stronger per star (currently: "+N(this.l3Mult()*0.13).noLeadFormat(2)+"%)","Mastery 42 is an additional 1.3% stronger per Study XIII completion (currently: "+N(g.studyCompletions[13]*1.3).noLeadFormat(2)+"%) (multiplicative with Level 1)","Mastery 63 is an additional 0.13% stronger per purchased dark star (currently: "+g.darkstars.mul(0.13).noLeadFormat(2)+"%) (multiplicative with Level 2)","Galaxies and achievements now add to the Level 3 effect"][lv-1]}
 			},
 			particleLab:{
 				name:"Stat Mark's Edible Periodic Table",

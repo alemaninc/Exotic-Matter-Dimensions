@@ -75,7 +75,7 @@ const research = (function(){
 		}
 	}
 	function numOrFormula(id) {return showFormulas?formulaFormat(research[id].formulaDesc()):research[id].numDesc()}
-	function timeResearchDesc(row,col,res){return function(){let eff = researchEffect(row,col);return "+"+(eff.gte(c.d0_01)?(eff.mul(c.e2).noLeadFormat(2)+"% "+res+" per second"):("1% "+res+" per "+eff.mul(c.e2).max(c.minvalue).recip().noLeadFormat(2)+" seconds"))+" in the current Wormhole"+(g.research.r17_8?(", and this multiplier is then raised to the power of "+researchEffect(17,8).noLeadFormat(4)):"")+" (currently: "+percentOrMult(eff.mul(g.truetimeThisWormholeReset).add(c.d1).pow(g.research.r17_8?researchEffect(17,8):c.d1),2,true)+")"}}
+	function timeResearchDesc(row,col,res){return function(){let eff = researchEffect(row,col);return "+"+(eff.gte(c.d0_01)?(eff.mul(c.e2).noLeadFormat(2)+"% "+res+" per second"):("1% "+res+" per "+eff.mul(c.e2).max(c.minvalue).recip().noLeadFormat(2)+" seconds"))+" in the current Wormhole"+(g.research.r17_8?(", and this multiplier is then raised to the power of "+researchEffect(17,8).noLeadFormat(4)):"")+" (currently: "+(g.research.r17_8?arrowJoin(percentOrMult(eff.mul(g.truetimeThisWormholeReset).add(c.d1),2,true),percentOrMult(eff.mul(g.truetimeThisWormholeReset).add(c.d1).pow(researchEffect(17,8)),2,true)):percentOrMult(eff.mul(g.truetimeThisWormholeReset).add(c.d1),2,true))+")"}}
 	function prismalResearch(num) {
 		let row = 22+Math.floor(num/3)
 		let col = [7,8,9,7,8,9,7,9,8][num]
@@ -2503,18 +2503,20 @@ function allParentResearch(row,col) {		// This returns all "parent" research; i.
 function buySingleResearch(row,col,force=false) {
 	let id = "r"+row+"_"+col;
 	let data = research[id]
-	if (data===undefined) return;					// research does not exist
-	if ((!availableResearch(row,col))&&(!force)) return;			// prerequisite research not owned
-	if (!researchConditionsMet(id)) return				// special requirement not met		
-	if (g.research[id]) return;										// research already owned
+	if (data===undefined) return;																						// research does not exist
+	if ((!availableResearch(row,col))&&(!force)) return;										// prerequisite research not owned
+	if (!researchConditionsMet(id)) return																	// special requirement not met		
+	if (g.research[id]) return;																							// research already owned
 	let cost = researchCost(id);
 	if (data.type==="permanent") {
-		if (cost.gt(g.totalDiscoveries)) return;		// not enough discoveries
+		if (cost.gt(g.totalDiscoveries)) return;															// not enough discoveries
 		totalResearch.permanent++
 	} else {
-		if (cost.gt(unspentDiscoveries())) return;	// research too expensive
+		if (achievement.locking(616)&&cost.neq(c.d0)) {return;}								// Achievement 616 "Pseudoscience" lock
+		if (achievement.maxForLocks.research.includes(g.achOnProgressBar)&&achievement.locking(g.achOnProgressBar)&&(data.type==="normal")) {return;}				// Achievement locks preventing all temporary research
+		if (cost.gt(unspentDiscoveries())) return;														// research too expensive
 		o.add("spentDiscoveries",cost);
-		if ((id!=="r6_9")&&(data.type==="normal")) totalResearch.temporary++ // exclude study research
+		if ((id!=="r6_9")&&(data.type==="normal")) totalResearch.temporary++	// exclude study research
 		if (data.type==="study") {g.ach907Progress++}
 	}
 	g.research[id] = true

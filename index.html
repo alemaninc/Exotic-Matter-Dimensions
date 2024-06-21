@@ -99,7 +99,7 @@
 					<div style="width:420px">
 						You have <span id="span_unspentStars" class="big _stars"></span> stars.<br>
 						<span id="span_nextStarRow"></span>
-						<button class="starbuybutton" onClick="buyStar()">Buy a Star<br>Cost: <span id="span_starCost"></span> stardust</button>
+						<button class="starbuybutton" onClick="buyStar(true)">Buy a Star<br>Cost: <span id="span_starCost"></span> stardust</button>
 						<button class="starbuybutton" onClick="respecStars()">Respec your Stars (This forces a Stardust reset)</button>
 						<button class="starbuybutton" onClick="importStars()">Import star build</button>
 						<button class="starbuybutton" onClick="exportStars()">Export star build</button>
@@ -118,7 +118,7 @@
 							<td style="vertical-align:top;width:450px;">
 								<div id="div_darkstars">
 									You have <span class="big _darkmatter" id="span_darkstars"></span> dark stars<br>
-									<button id="button_darkstar" onClick="gainDarkStar('u')">
+									<button id="button_darkstar" onClick="gainDarkStar('u',true)">
 										<div id="span_realDarkStars" style="position:absolute;font-size:8px;top:6px;right:6px;text-align:right;color:rgba(0,0,0,0.4);"></div>
 										<div id="span_darkStarMainText"></div>
 									</button>

@@ -55,7 +55,7 @@ const basesave = {
 	newsTickerDilation:0.125,
 	zipPoints:0,
 	zipPointMulti:1,
-	version:null,
+	version:1,
 	alwaysBeta:false,
 	topResourcesShown:{
 		exoticmatter:true,
@@ -96,7 +96,7 @@ const basesave = {
 	},
 	hotkeys:savefileHotkeyProperties(),
 	EMDLevel:1, // dynamic quantity but we store it regardless for compatibility with subpages
-	EMDLevelDisplayInFooter:0,
+	EMDLevelDisplayInFooter:1,
 	achievement:Object.fromEntries(achievement.all.map(x=>[x,false])),
 	secretAchievement:Object.fromEntries(Object.keys(secretAchievementList).map(x=>[x,false])),
 	achievementIDShown:true,
@@ -724,7 +724,12 @@ function maxAffordableAxis(type,em=g.exoticmatter) {
 	axis = Decimal.semilogSoftcap(axis,stat.axisSuperscalingStart,realAxisSuperscalePower(type));
 	return axis.floor().add(c.d1);
 }
-function buyAxis(x) {
+function maxAxisForAchievement(type) {
+	if (achievement.maxForLocks.axis[g.achOnProgressBar]!==undefined) {if (achievement.locking(g.achOnProgressBar)) {if (achievement.maxForLocks.axis[g.achOnProgressBar][type]!==undefined) {return achievement.maxForLocks.axis[g.achOnProgressBar][type]}}}
+	return c.maxvalue
+}
+function buyAxis(x,manual=false) {
+	if (Decimal.eq(maxAxisForAchievement(type),g[x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
 	if ((g.exoticmatter.gte(axisCost(x)))&&(stat.axisUnlocked>axisCodes.indexOf(x))) {
 		o.sub("exoticmatter",axisCost(x));
 		o.add(x+"Axis",c.d1);
@@ -737,10 +742,12 @@ function buyAxis(x) {
 
 function buyMaxAxis(caps) {
 	let totalBefore = stat.totalNormalAxis;
-	for (let j=0; j<stat.axisUnlocked; j++) {
+	axis: for (let j=0; j<stat.axisUnlocked; j++) {
+		for (let i=0;i<4;i++) {if ((g.achOnProgressBar===(202+i))&&(i===j)) {continue axis}}
 		let amount = caps[j]==="u"?maxAffordableAxis(axisCodes[j]):Decimal.min(maxAffordableAxis(axisCodes[j]),N(caps[j]));
 		if (amount==="NA") continue;
 		if (amount.lte(g[axisCodes[j]+"Axis"])) continue;
+		amount = amount.min(maxAxisForAchievement(axisCodes[j]))
 		if (axisCost(axisCodes[j],amount.sub(c.d1)).lt(g.exoticmatter)) o.sub("exoticmatter",axisCost(axisCodes[j],amount.sub(c.d1)));
 		g[axisCodes[j]+"Axis"]=amount;
 	}
@@ -814,14 +821,15 @@ function masteredRow(x) {
 function tryToggleMastery(x) {
 	if (g.confirmations.doubleClickToBuy&&(g.masteryContainerStyle==="Modern")) {
 		if (selections.masteryClick===x) {
-			toggleMastery(x)
+			toggleMastery(x,true)
 		}
 	} else {
-		toggleMastery(x)
+		toggleMastery(x,true)
 	}
 	selections.masteryClick = x
 }
-function toggleMastery(x) {
+function toggleMastery(x,manual=false) {
+	if (achievement.locking(524)||achievement.locking(707)) {if (manual) {achievement.lockPopup()};return}
 	let row = Math.floor(x/10);
 	if (!(x===g.activeMasteries[row])) {
 		if ((g.activeMasteries[row]!==0)&&(!MasteryE(x))) masteryReset()
@@ -1072,7 +1080,9 @@ function incrementStardust(x) {
 	for (let i of stardustVariables) o.add(i,x)
 }
 function attemptStardustReset(showPopups=false) {
-	if (StudyE(12)) {
+	if ((achievement.maxForLocks.stardustReset[g.achOnProgressBar]??false)&&achievement.locking(g.achOnProgressBar)) {
+		if (showPopups) achievement.lockPopup()
+	} else if (StudyE(12)) {
 		if (showPopups) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff")}
 	} else if (stat.pendingstardust.gt(g.stardust)) {
 		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
@@ -1088,13 +1098,14 @@ function attemptStardustReset(showPopups=false) {
 				buttons:[["Confirm","if (stat.pendingstardust.gt(g.stardust)) {stardustReset()} else {notify('Insufficient exotic matter to stardust reset!','#ff9900','#ffffff')}"],["Cancel",""]]     // stardust reset check must be done again because of autobuyers
 			})
 		} else {
-			stardustReset()
+			stardustReset(showPopups)
 		}
 	} else {
 		if (showPopups) notify("You must be able to gain stardust in order to reset!","#ff6600","#000000")
 	}
 }
-function stardustReset() {
+function stardustReset(showPopups=false) {
+	if (achievement.maxForLocks.stardustReset[g.achOnProgressBar]??false) {if (showPopups) {achievement.lockPopup()}; return}
 	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
 	let stardustGained = stat.pendingstardust.gt(g.stardust)
 	if (stardustGained) g.StardustResets++;
@@ -1189,7 +1200,10 @@ function stardustBoost7IsSoftcapped(){
 }
 
 // Stardust Upgrades
-function buyStardustUpgrade(x) {
+function buyStardustUpgrade(x,manual=false) {
+	if (achievement.locking(520)&&(effectiveStardustUpgrades()===15)) {if (manual) {achievement.lockPopup()};return}
+	if ((achievement.locking(707)||achievement.locking(915))&&(effectiveStardustUpgrades()===6)) {if (manual) {achievement.lockPopup()};return}
+	if (x===5) {for (let i=0;i<3;i++) {if (achievement.locking(521+i)&&(g.stardustUpgrades[5]===(4-2*i))) {if (manual) {achievement.lockPopup()};return}}}
 	if (g.stardust.gte(stat["stardustUpgrade"+x+"Cost"])&&(g.stardustUpgrades[x-1]<stat["stardustUpgrade"+x+"Cap"])) {
 		if (stat["stardustUpgrade"+x+"Cost"].lt(c.inf.recip())) addAchievement(716)
 		o.sub("stardust",stat["stardustUpgrade"+x+"Cost"]);
@@ -1363,7 +1377,10 @@ function starCost(x=g.stars,gal=g.galaxies,cap=starCap()) {
 	if (g.achievement[702]) cost = cost.div(achievement(702).effect().pow(x**2))
 	return cost;
 }
-function buyStar() {
+function buyStar(manual=false) {
+	if (achievement.locking(516)) {if (manual) {achievement.lockPopup()};return}
+	if (achievement.locking(528)&&(g.stars===40)) {if (manual) {achievement.lockPopup()};return}
+	if (achievement.locking(609)) {if (manual) {achievement.lockPopup()};return}
 	if (g.stardust.gte(starCost())) {
 		o.sub("stardust",starCost());
 		g.stars++;
@@ -1378,14 +1395,16 @@ function affordableStars(gal=g.galaxies) {
 function tryBuyStarUpgrade(x) {
 	if (g.confirmations.doubleClickToBuy&&(g.starContainerStyle==="Modern")) {
 		if (selections.starClick===x) {
-			buyStarUpgrade(x)
+			buyStarUpgrade(x,true)
 		}
 	} else {
-		buyStarUpgrade(x)
+		buyStarUpgrade(x,true)
 	}
 	selections.starClick = x
 }
-function buyStarUpgrade(x) {
+function buyStarUpgrade(x,manual=false) {
+	if (achievement.locking(302)) {if (maxStars(Math.floor(x/10))!==4) {if (manual) {achievement.lockPopup()};return}}
+	if (achievement.locking(519)) {if (manual) {achievement.lockPopup()};return}
 	if (starList.includes(x) && (unspentStars() > 0) && availableStarRow(Math.floor(x/10)) && (!g.star[x])) {
 		g.star[x] = true;
 		g.ach519possible = false;
@@ -1395,7 +1414,8 @@ function buyStarUpgrade(x) {
 	addAchievement(412);
 }
 function respecStars() {
-	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
+	if (achievement.maxForLocks.stardustReset[g.achOnProgressBar]??false) {if (manual) {achievement.lockPopup()}; return}
+ 	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
 	stardustReset();
 	for (let i of starList) g.star[i]=false;
 	totalStars=0
@@ -1405,7 +1425,7 @@ function importStars() {
 		text:"Import your star build here:",
 		input:"",
 		buttons:[
-			["Confirm","let starBuild = popupInput().split(',');for (let i of starBuild) buyStarUpgrade(Number(i))"],
+			["Confirm","let starBuild = popupInput().split(',');for (let i of starBuild) buyStarUpgrade(Number(i),true)"],
 			["Close",""]
 		]
 	})
@@ -1414,7 +1434,7 @@ function exportStars() {
 	openExport(starList.filter(x=>g.star[x]).join(","));
 }
 function maxFullStarRows() {
-	for (let i=1;i<11;i++) if (maxStars(i)===4) for (let j=1;j<5;j++) buyStarUpgrade(i*10+j);
+	for (let i=1;i<11;i++) if (maxStars(i)===4) for (let j=1;j<5;j++) buyStarUpgrade(i*10+j,true);
 }
 const dynamicStars = [11,12,13,14,42,61,62,63,64,71,72,73,74,91,92,93,94]
 const starBoosts = {
@@ -1581,7 +1601,8 @@ function incrementDarkMatter(x) {
 	x=x.fix(c.d0);
 	for (let i of darkmatterVariables) o.add(i,x)
 }
-function buyDarkAxis(x) {
+function buyDarkAxis(x,manual=false) {
+	if (Decimal.eq(maxAxisForAchievement(type),g["dark"+x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
 	if (g.darkmatter.gt(darkAxisCost(x))&&(4+g.stardustUpgrades[0]>axisCodes.indexOf(x))) {
 		if (darkAxisCost(x).gt(c.d1)) {g.ach908possible = false}
 		o.sub("darkmatter",darkAxisCost(x));
@@ -1595,6 +1616,7 @@ function buyMaxDarkAxis(caps) {
 		let amount = caps[j]==="u"?maxAffordableDarkAxis(axisCodes[j]):Decimal.min(maxAffordableDarkAxis(axisCodes[j]),N(caps[j]));
 		if (amount==="NA") continue;
 		if (amount.lte(g["dark"+axisCodes[j]+"Axis"])) continue;
+		amount = amount.min(maxAxisForAchievement("dark"+axisCodes[j]))
 		if (darkAxisCost(axisCodes[j],amount.sub(c.d1)).lt(g.darkmatter)) o.sub("darkmatter",darkAxisCost(axisCodes[j],amount.sub(c.d1)));
 		g["dark"+axisCodes[j]+"Axis"]=amount;
 		if (darkAxisCost(axisCodes[j],g["dark"+axisCodes[j]+"Axis"].sub(c.d1)).gt(c.d1)) {g.ach908possible = false}
@@ -1680,11 +1702,11 @@ function darkAxisCost(type,axis=g["dark"+type+"Axis"],ignoreStudy8=false) { // i
 	cost = corruption.value("darkAxis",cost)
 	cost=cost.pow(realDarkAxisCostExponent(type));
 	cost=cost.div(realDarkAxisCostDivisor(type));
-	if (StudyE(8)&&Decimal.gt(cost,studies[8].darkAxisMaxCost())&&(!ignoreStudy8)) return c.maxvalue
+	if (StudyE(8)&&Decimal.gt(cost,achievement.locking(908)?c.d1:studies[8].darkAxisMaxCost())&&(!ignoreStudy8)) return c.maxvalue
 	return cost;
 }
 function maxAffordableDarkAxis(type,dm=g.darkmatter) {
-	if (StudyE(8)) dm = Decimal.min(dm,studies[8].darkAxisMaxCost())
+	if (StudyE(8)) dm = Decimal.min(dm,achievement.locking(908)?c.d1:studies[8].darkAxisMaxCost())
 	if (darkAxisCost(type).gte(dm)&&dm.eq(g.darkmatter)) return g["dark"+type+"Axis"];
 	let effective_DM = dm.mul(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type));
 	effective_DM = corruption.invertValue("darkAxis",effective_DM)
@@ -1785,9 +1807,13 @@ function maxAffordableDarkStars(x) {
 	}
 	return out.floor().add(c.d1);
 }
-function gainDarkStar(cap) {
-	if (StudyE(12)&&(achievement.ownedInTier(5)<7)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
-	cap = (cap==="u")?c.maxvalue:N(cap)
+function gainDarkStar(cap,manual=false) {
+	if (achievement.ownedInTier(5)<7) {
+		if (StudyE(12)) {if (manual) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff")}; return}
+ 	}
+	let achCap = achievement.maxForLocks.darkstars[g.achOnProgressBar]??c.maxvalue
+	if (Decimal.eq(g.darkstars,achCap)) {if (manual) {achievement.lockPopup()};return}
+	cap = achCap.min((cap==="u")?c.maxvalue:N(cap))
 	if (!(cap instanceof Decimal)) {functionError("gainDarkStar",arguments)}
 	let gain = stat.maxAffordableDarkStars.min(N(cap));
 	if (!g.darkstarBulk) gain = gain.min(g.darkstars.add(c.d1))
@@ -2782,7 +2808,8 @@ function maxAffordableAntiAxis(type,am=g.antimatter) {
 	axis = Decimal.semilogSoftcap(axis,stat.antiAxisSuperscalingStart,realAntiAxisSuperscalePower(type));
 	return axis.floor().add(c.d1);
 }
-function buyAntiAxis(x) {
+function buyAntiAxis(x,manual=false) {
+	if (Decimal.eq(maxAxisForAchievement(type),g["anti"+x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
 	if (g.antimatter.gte(antiAxisCost(x))&&antiAxisUnlocked(x)) {
 		o.sub("antimatter",antiAxisCost(x));
 		o.add("anti"+x+"Axis",c.d1);
@@ -2797,6 +2824,7 @@ function buyMaxAntiAxis(caps) {
 		let amount = caps[j]==="u"?maxAffordableAntiAxis(axisCodes[j]):Decimal.min(maxAffordableAntiAxis(axisCodes[j]),N(caps[j]));
 		if (amount==="NA") continue;
 		if (amount.lte(g["anti"+axisCodes[j]+"Axis"])) continue;
+		amount = amount.min(maxAxisForAchievement("anti"+axisCodes[j]))
 		if (antiAxisCost(axisCodes[j],amount.sub(c.d1)).lt(g.antimatter)) o.sub("antimatter",antiAxisCost(axisCodes[j],amount.sub(c.d1)));
 		g["anti"+axisCodes[j]+"Axis"]=amount;
 	}
@@ -3270,6 +3298,7 @@ function load(savegame) {
 		for (let i=0; i<9; i++) g.chroma[i]=N(g.chroma[i]).fix(c.d0);
 		g.TotalStardustResets=Math.max(g.StardustResets,g.TotalStardustResets);
 		g.TotalWormholeResets=Math.max(g.WormholeResets,g.TotalWormholeResets);
+		if (((typeof g.version) !== "number")&&(g.EMDLevelDisplayInFooter===0)) {g.version = 1;g.EMDLevelDisplayInFooter = 1} // make "level only" the default
 		// savefixer
 		if (typeof g.galaxies !== "number") g.galaxies = 0             // < 1.3.2
 		// initialize

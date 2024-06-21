@@ -264,10 +264,12 @@ studies[9] = {
 		let xp = g.study9.xp.add(this.deltaXP())
 		let fracxp = g.study9.fracxp
 		let resets = g.study9.resets+1
+		let ontological = g.study10Options
 		if ((g.activeStudy===0)||Decimal.gt(stat.totalDarkAxis,stat.wormholeDarkAxisReq)) {wormholeReset()} else {enterStudy(g.activeStudy)} // Study X proofing
 		g.study9.xp = xp
 		g.study9.fracxp = fracxp
 		g.study9.resets = resets
+		g.study10Options = ontological
 	}
 },
 studies[10] = {
@@ -810,7 +812,7 @@ const wormholeUpgrades = {
 	},
 	5:{
 		name:"More Achievement",
-		text:function(){return "The "+achievement.label(501)+" reward softcaps at {} instead of 75 (based on total achievements)"},
+		text:function(){return "The Mastery 101 effect softcaps at {} instead of 75 (based on total achievements)"},
 		cost:Decimal.FC_NN(1,1,4000),
 		eff:function(){return Decimal.FC_NN(1,0,(totalAchievements>=200)?(totalAchievements/2):(75+totalAchievements**4/64e6))},
 		format:x=>x.noLeadFormat(3),
