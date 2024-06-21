@@ -729,7 +729,7 @@ function maxAxisForAchievement(type) {
 	return c.maxvalue
 }
 function buyAxis(x,manual=false) {
-	if (Decimal.eq(maxAxisForAchievement(type),g[x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
+	if (Decimal.eq(maxAxisForAchievement(x),g[x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
 	if ((g.exoticmatter.gte(axisCost(x)))&&(stat.axisUnlocked>axisCodes.indexOf(x))) {
 		o.sub("exoticmatter",axisCost(x));
 		o.add(x+"Axis",c.d1);
@@ -1602,7 +1602,7 @@ function incrementDarkMatter(x) {
 	for (let i of darkmatterVariables) o.add(i,x)
 }
 function buyDarkAxis(x,manual=false) {
-	if (Decimal.eq(maxAxisForAchievement(type),g["dark"+x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
+	if (Decimal.eq(maxAxisForAchievement(x),g["dark"+x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
 	if (g.darkmatter.gt(darkAxisCost(x))&&(4+g.stardustUpgrades[0]>axisCodes.indexOf(x))) {
 		if (darkAxisCost(x).gt(c.d1)) {g.ach908possible = false}
 		o.sub("darkmatter",darkAxisCost(x));
@@ -2809,7 +2809,7 @@ function maxAffordableAntiAxis(type,am=g.antimatter) {
 	return axis.floor().add(c.d1);
 }
 function buyAntiAxis(x,manual=false) {
-	if (Decimal.eq(maxAxisForAchievement(type),g["anti"+x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
+	if (Decimal.eq(maxAxisForAchievement(x),g["anti"+x+"Axis"])) {if (manual) {achievement.lockPopup()};return}
 	if (g.antimatter.gte(antiAxisCost(x))&&antiAxisUnlocked(x)) {
 		o.sub("antimatter",antiAxisCost(x));
 		o.add("anti"+x+"Axis",c.d1);
