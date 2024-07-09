@@ -1,6 +1,7 @@
 "use strict";
 // Constants
 const basesave = {
+	playerName:"EMD"+String(ranint(0,9999)).padStart(4,"0"),
 	exoticmatter:c.d0,
 	exoticmatterThisStardustReset:c.d0,
 	exoticmatterThisWormholeReset:c.d0,
@@ -89,7 +90,7 @@ const basesave = {
 	confirmations:{
 		doubleClickToBuy:false,
 		stardustReset:false,
-		ironWillStardustReset:true,
+		ironWillStardustReset:false,
 		buyStardustUpgrade:false,   // not a confirmation but whatever
 		wormholeReset:false,
 		researchDoubleClick:false,
@@ -308,6 +309,13 @@ function gameClick() {
 }
 
 // Options & Display
+function changePlayerName() {
+	popup({
+		text:"Input your player name:<br><i>(you can change this in Options later.)</i>",
+		input:g.playerName,
+		buttons:[["Confirm","g.playerName=popupInput()"]]
+	})
+}
 function availableThemes() {
 	let out = ["Default","Red","Green","Blue","Cyan","Magenta","Yellow","Light Gray","Dark Gray","Black","Light"];
 	if (g.secretAchievement[16]) out.push("Wormhole");
@@ -740,7 +748,8 @@ function buyAxis(x,manual=false) {
 	addAchievements("axisBuy");
 }
 
-function buyMaxAxis(caps) {
+function buyMaxAxis(caps,manual=false) {
+	let total = axisCodes.map(x=>g[x+"Axis"]).sumDecimals()
 	let totalBefore = stat.totalNormalAxis;
 	axis: for (let j=0; j<stat.axisUnlocked; j++) {
 		for (let i=0;i<4;i++) {if ((g.achOnProgressBar===(202+i))&&(i===j)) {continue axis}}
@@ -757,6 +766,7 @@ function buyMaxAxis(caps) {
 	if (axisCodes.map(x => g[x+"Axis"]).sumDecimals().sub(totalBefore).gte(c.d4800)) addAchievement(530);
 	if (g.XAxis.gt(c.d0)) unlockFeature("Masteries");
 	addAchievements("axisBuy");
+	if (manual&&(achievement.maxForLocks.axis[g.achOnProgressBar]!==undefined)&&achievement.locking(g.achOnProgressBar)&&axisCodes.map(x=>g[x+"Axis"]).sumDecimals().eq(total)) {achievement.lockPopup();}
 }
 var empoweredAxisBought = 0;
 function buyEmpoweredAxis() {
@@ -829,7 +839,7 @@ function tryToggleMastery(x) {
 	selections.masteryClick = x
 }
 function toggleMastery(x,manual=false) {
-	if (achievement.locking(524)||achievement.locking(707)) {if (manual) {achievement.lockPopup()};return}
+	if (achievement.maxForLocks.mastery.includes(Number(g.achOnProgressBar))&&achievement.locking(g.achOnProgressBar)) {if (manual) {achievement.lockPopup()};return}
 	let row = Math.floor(x/10);
 	if (!(x===g.activeMasteries[row])) {
 		if ((g.activeMasteries[row]!==0)&&(!MasteryE(x))) masteryReset()
@@ -1087,11 +1097,11 @@ function attemptStardustReset(showPopups=false) {
 	} else if (stat.pendingstardust.gt(g.stardust)) {
 		if ((g.confirmations.stardustReset||(g.confirmations.ironWillStardustReset&&stat.ironWill))&&showPopups) {
 			let willReset = [
-				["exotic matter",()=>true],
-				[(unlocked("Dark Matter")?"normal ":"")+" axis"+((g.stardustUpgrades[1]===0)?"":(", except "+N(stat.stardustUpgrade2AxisRetentionFactor*100).noLeadFormat(3)+"% of the first "+numword(g.stardustUpgrades[0])+" (rounded down)")),()=>true],
-				["mastery power",()=>true],
-				["the mastery timer",()=>true],
-				[(g.studyCompletions[3]>0)?"the first six Energies":"energy",()=>unlocked("Energy")]
+				["exotic matter",true],
+				[(unlocked("Dark Matter")?"normal ":"")+" axis"+((g.stardustUpgrades[1]<2)?"":(" except "+N(stat.stardustUpgrade2AxisRetentionFactor*100).noLeadFormat(3)+"% of the first "+numword(g.stardustUpgrades[0])+" (rounded down)")),true],
+				["mastery power",true],
+				["the mastery timer",true],
+				[(g.studyCompletions[3]>0)?"the first six Energies":"energy",unlocked("Energy")]
 			]
 			popup({
 				text:"Are you sure you want to "+((stat.ironWill&&g.achievement[502])?"forfeit your Iron Will run":"Stardust reset")+"?<br><br>This will reset "+willReset.filter(x=>x[1]).map(x=>x[0]).joinWithAnd()+".",
@@ -1201,9 +1211,8 @@ function stardustBoost7IsSoftcapped(){
 
 // Stardust Upgrades
 function buyStardustUpgrade(x,manual=false) {
-	if (achievement.locking(520)&&(effectiveStardustUpgrades()===15)) {if (manual) {achievement.lockPopup()};return}
-	if ((achievement.locking(707)||achievement.locking(915))&&(effectiveStardustUpgrades()===6)) {if (manual) {achievement.lockPopup()};return}
-	if (x===5) {for (let i=0;i<3;i++) {if (achievement.locking(521+i)&&(g.stardustUpgrades[5]===(4-2*i))) {if (manual) {achievement.lockPopup()};return}}}
+	if (((achievement.maxForLocks.specificStardustUpgrades[g.achOnProgressBar]?.[x]??Infinity)===g.stardustUpgrades[x-1])&&achievement.locking(g.achOnProgressBar)) {if (manual) {achievement.lockPopup()}return}
+	if (((achievement.maxForLocks.totalStardustUpgrades[g.achOnProgressBar]??Infinity)===effectiveStardustUpgrades())&&achievement.locking(g.achOnProgressBar)) {if (manual) {achievement.lockPopup()}return}
 	if (g.stardust.gte(stat["stardustUpgrade"+x+"Cost"])&&(g.stardustUpgrades[x-1]<stat["stardustUpgrade"+x+"Cap"])) {
 		if (stat["stardustUpgrade"+x+"Cost"].lt(c.inf.recip())) addAchievement(716)
 		o.sub("stardust",stat["stardustUpgrade"+x+"Cost"]);
@@ -1234,7 +1243,7 @@ const stardustUpgradeTooltip = [
 ]
 const stardustUpgradeNames = [null,"Dimensional","Retention","Boost","Mastery","Progression"]
 const baseStardustUpgradeCosts = [
-	[c.d1_5e6,c.d4_5e10,c.e14,c.e20,c.ee10,N("e5e11"),N("e2e13"),N("e8e13")],
+	[c.d1_5e6,c.d4_5e10,c.e14,c.e20,c.ee10,N("e5e11"),N("e2e13"),N(betaActive?"e7.5e13":"e8e13")],
 	[c.d50,c.e2,c.e4,c.e6,c.e8,c.e12,c.e16,c.e24,c.e100,N("ee11"),N("ee13"),N("ee15"),N("ee17")],
 	[c.d3_3333e9,c.d1_5e16,c.e43,c.e75,c.e140,c.inf,c.ee4,c.ee5,c.ee6,N("6.66e6666666")],
 	[c.d125,c.d2e7,c.d5e18,c.d1_5e61,c.e115],
@@ -1289,15 +1298,30 @@ function upgradeAutobuyer(id) {
 	}
 	addAchievements("autobuyerUpgrade")
 }
-const stardustAutomatorModes = ["Amount of stardust","Real time in this Stardust","X times (current stardust)","(current stardust)<sup>X</sup>"]
-const wormholeAutomatorModes = ["Amount of HR","Real time in this Wormhole","X times (current HR)","(current HR)<sup>X</sup>"]
+const stardustAutomatorModes = ["Amount of stardust","Real time in this Stardust","<i>X</i> times (current stardust)","(current stardust)<sup><i>X</i></sup>","<i>X</i> times (previous stardust)","(previous stardust)<sup><i>X</i></sup>"]
+const wormholeAutomatorModes = ["Amount of HR","Real time in this Wormhole","<i>X</i> times (current HR)","(current HR)<sup><i>X</i></sup>","<i>X</i> times (previous HR)","(previous HR)<sup><i>X</i></sup>"]
 const researchAutobuyerModes = ["All free research"]
-function inputStarAllocatorBuild() {
-	inputStarAllocatorBuild.order =  []
-	popup({
-		text:"Select the stars in the order you want them autobought:<br><table>"+countTo(10).map(r=>"<tr>"+countTo(4).map(c=>"<td><button style=\"height:24px;width:24px;border-radius:50%;font-size:9px;padding:0px\" id=\"button_inputStarAllocatorBuild_"+(10*r+c)+"\" onClick=\"inputStarAllocatorBuild.toggle("+(10*r+c)+")\">"+(10*r+c)+"</button></td>").join("")+"</tr>").join("")+"</table>",
-		buttons:[["Confirm","g.starAllocatorBuild=structuredClone(inputStarAllocatorBuild.order);notify('Build saved successfully')"],["Cancel",""]]
-	})
+const inputStarAllocatorBuild = {
+	selectRow:function(){
+		popup({
+			text:"Select row: ",
+			buttons:countTo(10).map(x=>[x,"inputStarAllocatorBuild.order=[];inputStarAllocatorBuild.editRow("+x+")"]),
+			buttonSize:5
+		})
+	},
+	order:[],
+	editRow:function(row){
+		let tableStyle = "border-style:solid;border-color:#00ff00;border-collapse:collapse;border-width:1px;"
+		popup({
+			text:"<table style=\"vertical-align:bottom;\"><tr><td style=\"width:160px\">Current selection:</td>"+countTo(4,true).map(x=>"<td style=\"width:50px\">"+(inputStarAllocatorBuild.order[x]??((x===0)?"<i>None</i>":""))+"</td>").join("")+"</tr></table><br><br>"+((inputStarAllocatorBuild.order.length===4)?"Is this correct?":("Options are:<br>"+tableGenerator([countTo(4).map(x=>row*10+x),countTo(4).map(x=>starText(row*10+x).replace("{x}",dynamicStars.includes(row*10+x)?formatStarEffect(row*10+x):null))],tableStyle,tableStyle,tableStyle+"width:25%;padding:8px;")+"<br><br>Select next or save current selection:")),
+			buttons:[...countTo(4).map(x=>10*row+x).filter(x=>!inputStarAllocatorBuild.order.includes(x)).map(x=>[x,"inputStarAllocatorBuild.order.push("+x+");inputStarAllocatorBuild.editRow("+row+")"]),["Save","inputStarAllocatorBuild.setRow("+row+")"],["Cancel",""]],
+			buttonSize:4
+		})
+	},
+	setRow:function(row){
+		for (let i=1;i<5;i++) {g.starAllocatorBuild.remove(row*10+i)}
+		for (let i of inputStarAllocatorBuild.order) {g.starAllocatorBuild.push(i)}
+	}
 }
 inputStarAllocatorBuild.order = []
 inputStarAllocatorBuild.toggle = function(id){
@@ -1375,12 +1399,11 @@ function starCost(x=g.stars,gal=g.galaxies,cap=starCap()) {
 	// hyper-2 cost reductions
 	if (g.achievement[519]) cost = cost.div(achievement(519).effect().pow(g.stardustUpgrades.sum()));
 	if (g.achievement[702]) cost = cost.div(achievement(702).effect().pow(x**2))
+	// return
 	return cost;
 }
 function buyStar(manual=false) {
-	if (achievement.locking(516)) {if (manual) {achievement.lockPopup()};return}
-	if (achievement.locking(528)&&(g.stars===40)) {if (manual) {achievement.lockPopup()};return}
-	if (achievement.locking(609)) {if (manual) {achievement.lockPopup()};return}
+	if (((achievement.maxForLocks.stars[g.achOnProgressBar]??Infinity)===g.stars)&&achievement.locking(g.achOnProgressBar)) {if (manual) {achievement.lockPopup()}return}
 	if (g.stardust.gte(starCost())) {
 		o.sub("stardust",starCost());
 		g.stars++;
@@ -1480,7 +1503,7 @@ function starEffect(x) {
 		let out = (g.research.r34_3)?researchEffect(34,3):c.d3
 		return out
 	}
-	if (x===60) return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(g.exoticmatter.pow(c.d0_02).add(c.d10).log10().pow(c.d0_7),c.e3,c.d0_5),c.d7e3,c.d8e3);
+	if (x===60) return Decimal.convergentSoftcap(Decimal.logarithmicSoftcap(g.exoticmatter.add(c.d1).pow(c.d0_02).log10().pow(c.d0_7),c.e3,c.d0_5),c.d7e3,c.d8e3);
 	if (x===64) return Decimal.convergentSoftcap(g.exoticmatter.add(c.d10).log10().pow(c.d0_1),c.d1,c.d3);
 	if ([71,72,73,74].includes(x)) {
 		let ef;
@@ -1512,7 +1535,7 @@ function showStarEffectFormula(x) {
 		if (x===14) modifier = " ÷ (1 + t ÷ 1,000)"
 		return "10<sup>"+starBoosts[1](x).noLeadFormat(3)+modifier+"</sup>"
 	}
-	if ([61,62,63].includes(x)) return formulaFormat.convSoftcap(formulaFormat.logSoftcap("log(EM<sup>0.02</sup> + 10)<sup>0.7</sup>",c.e3,c.d0_5,starEffect(60).gt(c.e3)),c.d7e3,c.d8e3,starEffect(60).gt(c.d7e3))
+	if ([61,62,63].includes(x)) return formulaFormat.convSoftcap(formulaFormat.logSoftcap("log((EM + 1)<sup>0.02</sup>)<sup>0.7</sup>",c.e3,c.d0_5,starEffect(60).gt(c.e3)),c.d7e3,c.d8e3,starEffect(60).gt(c.d7e3))
 	if (x===64) return formulaFormat.convSoftcap("log(EM + 10)<sup>0.1</sup>",c.d1,c.d3,true) // always softcapped
 	if ([71,72,73,74].includes(x)) {
 		let power = starBoosts[7].mult(),out
@@ -1611,7 +1634,8 @@ function buyDarkAxis(x,manual=false) {
 	if (g.darkSAxis.gt(c.d0)) g.ach525possible=false;
 	addAchievements("axisBuy");
 }
-function buyMaxDarkAxis(caps) {
+function buyMaxDarkAxis(caps,manual=false) {
+	let total = axisCodes.map(x=>g["dark"+x+"Axis"]).sumDecimals()
 	for (let j=0; j<4+g.stardustUpgrades[0]; j++) {
 		let amount = caps[j]==="u"?maxAffordableDarkAxis(axisCodes[j]):Decimal.min(maxAffordableDarkAxis(axisCodes[j]),N(caps[j]));
 		if (amount==="NA") continue;
@@ -1623,6 +1647,7 @@ function buyMaxDarkAxis(caps) {
 	}
 	if (g.darkSAxis.gt(c.d0)) g.ach525possible=false;
 	addAchievements("axisBuy");
+	if (manual&&(achievement.maxForLocks.axis[g.achOnProgressBar]!==undefined)&&achievement.locking(g.achOnProgressBar)&&axisCodes.map(x=>g["dark"+x+"Axis"]).sumDecimals().eq(total)) {achievement.lockPopup();}
 }
 function darkStarEffect1(x=stat.realDarkStars) {
 	return studies[4].reward(3).mul(x).div(c.d20).add(c.d1)
@@ -1811,7 +1836,7 @@ function gainDarkStar(cap,manual=false) {
 	if (achievement.ownedInTier(5)<7) {
 		if (StudyE(12)) {if (manual) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff")}; return}
  	}
-	let achCap = achievement.maxForLocks.darkstars[g.achOnProgressBar]??c.maxvalue
+	let achCap = ((achievement.maxForLocks.darkstars[g.achOnProgressBar]!==undefined)&&achievement.locking(g.achOnProgressBar))?achievement.maxForLocks.darkstars[g.achOnProgressBar]:c.maxvalue
 	if (Decimal.eq(g.darkstars,achCap)) {if (manual) {achievement.lockPopup()};return}
 	cap = achCap.min((cap==="u")?c.maxvalue:N(cap))
 	if (!(cap instanceof Decimal)) {functionError("gainDarkStar",arguments)}
@@ -1894,28 +1919,28 @@ function attemptWormholeReset(showPopups=false) {
 			wormholeAnimation()
 		} else if (g.confirmations.wormholeReset&&showPopups&&(g.activeStudy===0)) {
 			let willReset = [
-				["exotic matter",()=>true],
-				["normal and dark axis",()=>true],
-				["mastery power",()=>true],
-				["the mastery timer",()=>true],
-				["stardust",()=>true],
-				["Stardust Upgrades, except 1 level of #2 (Retention Path) and 5 levels of #4 (Mastery Path)",()=>true],
-				["stars",()=>true],
-				["dark matter",()=>true],
-				["energy",()=>true]
+				["exotic matter",true],
+				["normal and dark axis",true],
+				["mastery power",true],
+				["the mastery timer",true],
+				["stardust",true],
+				["Stardust Upgrades, except 1 level of #2 (Retention Path) and 5 levels of #4 (Mastery Path)",true],
+				["stars",true],
+				["dark matter",true],
+				["energy",true]
 			]
 			popup({
 				text:"Are you sure you want to Wormhole reset?<br><br>This will reset "+willReset.filter(x=>x[1]).map(x=>x[0]).joinWithAnd()+".",
-				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset()} else {notify('Insufficient dark axis to stardust reset!','#000066','#ffffff')}"],["Cancel",""]]     /* stardust reset check must be done again because of autobuyers */
+				buttons:[["Confirm","if (stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)) {wormholeReset("+showPopups+")} else {notify('Insufficient dark axis to Wormhole reset!','#000066','#ffffff')}"],["Cancel",""]]     /* stardust reset check must be done again because of autobuyers */
 			})
 		} else {
-			wormholeReset()
+			wormholeReset(showPopups)
 		}
 	} else {
 		if (showPopups) notify((g.activeStudy===0)?"You must be able to gain Hawking radiation in order to reset!":"You must reach the goal of the Study in order to reset!<br>If you are stuck, abort the Study from the Studies tab.","#000099","#ffffff")
 	}
 }
-function wormholeReset() {
+function wormholeReset(showPopups=false) {
 	let HRgained = stat.totalDarkAxis.gte(stat.wormholeDarkAxisReq)
 	let timeLoopMult = 1
 	if (HRgained) {
@@ -1951,7 +1976,7 @@ function wormholeReset() {
 			g.studyCompletions[g.activeStudy] = (g.activeStudy===13)?Math.max(studyPower(13),g.studyCompletions[13]):Math.min(studyPower(g.activeStudy)+1,4); // study X proof - no completions from doing Stellar Triad 4 times!
 			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(research[x].type!=="study"))
 			if (g.activeStudy===13) {study13.updateRewardLevels()} else {respecResearch()};
-			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {asceticMaxBuyResearch(i,false)}}
+			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {asceticMaxBuyResearch(i,false,showPopups)}}
 			updateResearchTree();
 			generateResearchCanvas();
 			if ((g.activeStudy===10)&&(studyPower(10)===3)) {for (let i of g.study10Options) {g.ach920Completions |= 2**(i-1)}}
@@ -2136,7 +2161,8 @@ function enterStudy(x) {
 	if ((x===10)&&(studyPower(10)===3)&&(g.study10Options.length<3)) { // pick options
 		popup({
 			text:"Select "+ordinal(g.study10Options.length+1)+" option:",
-			buttons:countTo(9).filter(i=>!g.study10Options.includes(i)).map(x=>[x,"g.study10Options.push("+x+");enterStudy(10)"])
+			buttons:countTo(9).filter(i=>!g.study10Options.includes(i)).map(x=>[roman(x),"g.study10Options.push("+x+");enterStudy(10)"]),
+			buttonSize:5
 		})
 	} else {
 		g.researchRespec=false
@@ -2817,7 +2843,8 @@ function buyAntiAxis(x,manual=false) {
 	if (g.antiSAxis.gt(c.d0)) g.ach525possible=false;
 	addAchievements("axisBuy");
 }
-function buyMaxAntiAxis(caps) {
+function buyMaxAntiAxis(caps,manual=false) {
+	let total = axisCodes.map(x=>g["anti"+x+"Axis"]).sumDecimals()
 	for (let j=0;j<8+study13.rewardLevels.slabdrill;j++) {
 		let type = axisCodes[j]
 		if (!antiAxisUnlocked(type)) continue
@@ -2830,6 +2857,7 @@ function buyMaxAntiAxis(caps) {
 	}
 	if (g.antiSAxis.gt(c.d0)) g.ach525possible=false;
 	addAchievements("axisBuy");
+	if (manual&&(achievement.maxForLocks.axis[g.achOnProgressBar]!==undefined)&&achievement.locking(g.achOnProgressBar)&&axisCodes.map(x=>g["anti"+x+"Axis"]).sumDecimals().eq(total)) {achievement.lockPopup();}
 }
 function antiAxisDimBoostPower(type){
 	let out = c.d1

@@ -8,7 +8,7 @@ const study13 = {
 		if (lvExcl25===56) {return g.study13Bindings[25]?"Sea of Disgraced Reflections (112)":"The Amazing Mirror (56)"}
 		if (lvExcl25===96) {return g.study13Bindings[25]?"Fallen Achievement 〜 Tenth Circle of Hell (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
 		if (lvExcl25===144) {return g.study13Bindings[25]?"Study of Obscenities (200)":"Study of Triads (144)"}
-		if (lvExcl25===200) {return g.study13Bindings[25]?"Entrusting the Game to Machines 〜 Development Hell (256)":"Thirteenth Hell 〜 Development Hell (200)"}
+		if (lvExcl25===200) {return g.study13Bindings[25]?(g.playerName+"'s Device 〜 Shattering Matrix (256)"):"Thirteenth Hell 〜 Development Hell (200)"}
 		let used = []
 		function bindingRank(id) {return (id===25)?Infinity:(Math.floor(id/10)*100+Math.min(id%10,10-(id%10))*9+study13.bindings[id].lv*11+Math.sin(id))} // use this to identify the strongest bindings
 		while ((available.length>0)&&(used.length<3)) { // we will only ever use 3 so use an O(n) method instead of sorting which is O(n^2)
@@ -920,7 +920,7 @@ const study13 = {
 					if (study13.bound(323)) {out = out.mul(study13.bindingEff(323))}
 					return out.add(c.d1)
 				},
-				desc:function(curr,prev){return "The effects of the first seven normal axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3,3,false))+" stronger"},
+				desc:function(curr,prev){return "The effects of the first seven normal axis are "+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x),3,false))+" stronger"},
 			},
 			dmBoost:{
 				name:"Dark Reactor",
@@ -1005,7 +1005,7 @@ const study13 = {
 					},
 					desc:function(curr,prev){
 						if (curr===0) {return "All Bindings are fully powered"}
-						return "Certain Bindings are weakened:<br>"+Object.entries(this.eff(curr)).filter(b=>b[1].neq(c.d1)).map(b=>"<div style=\"height:20px;width:225px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+b[0]+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrDiv(this.eff(x)[b[0]]))+"</span></div>").join("")
+						return "Certain Bindings are weakened:<br>"+Object.entries(this.eff(curr)).filter(b=>b[1].neq(c.d1)).map(b=>"<div style=\"height:16px;font-size:12px;width:225px;border-style:solid;border-radius:4px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+b[0]+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrDiv(this.eff(x)[b[0]]))+"</span></div>").join("")
 					}
 				}
 				out.allAffected = Object.keys(out.eff(out.breakpoints.length)).map(x=>Number(x))
@@ -1065,9 +1065,9 @@ const study13 = {
 			},
 			particleLab2:{
 				name:"Stat Mark's Eternal Decay Chain",
-				breakpoints:[144,168,200,240],
+				breakpoints:[144,168,200,224,240],
 				type:"composite",
-				desc:function(lv){return "Unlock research "+(lv+28)+"-4 and "+(lv+28)+"-12"}
+				desc:function(lv){return (lv===5)?"Unlock ":("Unlock research "+(lv+28)+"-4 and "+(lv+28)+"-12")}
 			},
 			forge:{
 				name:"Titans' Furnace",
@@ -1103,7 +1103,7 @@ const study13 = {
 					},
 					desc:function(curr,prev){
 						if (curr===0) {return "No Research is boosted"}
-						return "Certain Research is strengthened:<br>"+Object.entries(this.eff(curr)).filter(r=>r[1].neq(c.d1)).map(r=>"<div style=\"height:20px;width:225px;border-style:solid;border-radius:10px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+researchOut(r[0])+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x)[r[0]],2,true))+"</span></div>").join("")
+						return "Certain Research is strengthened:<br>"+Object.entries(this.eff(curr)).filter(r=>r[1].neq(c.d1)).map(r=>"<div style=\"height:16px;font-size:12px;width:225px;border-style:solid;border-radius:4px;border-width:2px;border-color:var(--binding);margin:4px;padding:4px;\"><span style=\"float:left\">"+researchOut(r[0])+"</span><span style=\"float:right\">"+scaleFormat(curr,prev,x=>percentOrMult(this.eff(x)[r[0]],2,true))+"</span></div>").join("")
 					}
 				}
 				out.allAffected = Object.keys(out.eff(out.breakpoints.length))
@@ -1116,15 +1116,39 @@ const study13 = {
 				eff:function(lv=study13.rewardLevels.purifier){return {e:Decimal.FC_NN(1,0,1+lv/5-lv**2/100),d:Decimal.FC_NN(1,0,1+lv**2/100)}},
 				desc:function(curr,prev){return "Normal Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).e.noLeadFormat(2))+" later<br>Dark Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).d.noLeadFormat(2))+" later"}
 			},
-			spiritSurge:{
-				name:"Mailbreaker III 〜 Sinister Spirits",
-				breakpoints:[],
+			hyperdrive:{
+				name:"Chromatic Hyperdrive",
+				breakpoints:betaActive?[200,208,216,223,230,236,242,247,252,256]:[],
+				type:"scaling",
+				eff:function(lvs=study13.rewardLevels.hyperdrive,lvp=g.prismaticUpgrades.chromaOverdrive){return (lvs===0)?c.d1:lvp.add(c.d1).log10().mul((Math.log10(lvs)+1)**2/400).add(c.d1)},
+				desc:function(curr,prev){return "Chroma gain is raised to the power of "+scaleFormat(curr,prev,x=>showFormulas?formulaFormat("1 + log(λ + 1)"+formulaFormat.mult((x===0)?c.d0:N((Math.log10(x)+1)**2/400))):this.eff(x).noLeadFormat(4))+" (based on "+prismaticUpgradeName("chromaOverdrive")+" level)"}
+			},
+			trinity3:{
+				name:"Trinitarian Synergy",
+				breakpoints:[243],
 				type:"single",
-				desc:function(){""}
+				eff:function(){return [g.luckShards,g.prismatic,g.antimatter].map(x=>x.add(c.d10).log10().log10()).productDecimals().div(c.e4).add(c.d1)},
+				desc:function(){return "Luck shard, prismatic and antimatter gain are raised to the power of "+(showFormulas?formulaFormat("1 + log<sup>[2]</sup>(LS + 10) × log<sup>[2]</sup>(P + 10) × log<sup>[2]</sup>(AM + 10) ÷ 10,000"):this.eff().noLeadFormat(4))+" (based on luck shards, prismatic, antimatter)"}
+			},
+			particleLab4:{
+				name:"Stat Mark's World of High and Low Structures",
+				breakpoints:[243],
+				type:"single",
+				eff:function(){
+					let uD = unspentDiscoveries();
+					if (uD.eq(c.d0)) {return c.d0;}
+					let tD = g.totalDiscoveries;
+					let t_u = tD.div(uD);
+					return tD.div(Decimal.pow(t_u,t_u)).pow(c.d10).max(c.d10).log10().log10().pow(c.d2)
+				},
+				desc:function(){return "The knowledge effect limit is increased by "+(showFormulas?formulaFormat("log<sup>[2]</sup>(max(ΣD ÷ (ΣD ÷ υD) ⇈ 2)<sup>10</sup>, 10))<sup>2</sup>"):this.effect().format(3))+" percentage points (based on unspent and total Discoveries)"}
+			},
+			matrix:{
+				get name(){return g.playerName+"'s Device 〜 \"Not Responding\""},
+				breakpoints:[256],
+				type:"single",
+				desc:function(){return "Unlock the ability to create a new Matrix"}
 			}
-			// trinity 4
-			// stat mark 4
-			// matrix
 		}
 	})(),
 	rewardSelected:undefined,
@@ -1144,7 +1168,7 @@ const study13 = {
 	rewardLabel:function(id,lv){return "Study XIII Reward \""+study13.rewards[id].name+"\""+((lv===undefined)?"":(" Level "+lv))}
 }
 study13.allBindings = Object.keys(study13.bindings).map(x=>Number(x))
-d.innerHTML("span_study13MaxCompletions",study13.allBindings.map(x=>study13.bindings[x].lv).sum())
+d.innerHTML("span_study13MaxCompletions",betaActive?256:200)
 study13.bindingRows = Math.floor(study13.allBindings.reduce((x,y)=>Math.max(x,y))/10)
 study13.allRewards = Object.keys(study13.rewards)
 if (!betaActive) {for (let i of study13.allRewards) {study13.rewards[i].breakpoints = study13.rewards[i].breakpoints.filter(x=>x<=200)}}

@@ -1,6 +1,6 @@
 function howToPlay(x) {
 	let htp = HTPtexts[HTPtexts.map(x => x.name).indexOf(x)]
-	let text = "<h1>"+(htp.name==="Galaxies"?"<span onClick=\"secretAchievementList[31].click()\">The Hitchhiker's Guide to the Galaxies</span>":htp.name)+"</h1>"+htp.paragraphs.map(x => "<p>"+x+"</p>").join("")
+	let text = "<h1>"+((htp.name==="Galaxies")?"<span onClick=\"secretAchievementList[31].click()\">The Hitchhiker's Guide to the Galaxies</span>":htp.name)+"</h1>"+htp.paragraphs.map(x => "<p>"+x+"</p>").join("")
 	if (htp.dynamics !== undefined) for (let i=0;i<htp.dynamics.length;i++) text = text.replace("{"+i+"}",htp.dynamics[i]())
 	popup({
 		text:text,

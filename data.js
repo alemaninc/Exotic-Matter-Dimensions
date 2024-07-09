@@ -60,7 +60,7 @@ studies[2] = {
 		}
 		popup({text:table(normal,"Normal")+table(bound,"In Study"),buttons:[["Close",""]]})
 	},
-	description:function() {return ["Star costs increase much faster.","Stars must be purchased in a different order.<button class=\"information\" style=\"border-color:inherit;color:inherit;\" onClick=\"studies[2].binding2Info()\">?</button>","Each unspent star acts as a free dark star."]},
+	description:function() {return ["Star costs increase much faster.","Stars must be purchased in a different order.<button class=\"information\" style=\"border-color:inherit;color:inherit;\" onMouseDown=\"studies[2].binding2Info()\">?</button>","Each unspent star acts as a free dark star."]},
 	research:"r5_9",
 	goal:function(comp=studyPower(2)) {return [c.d800,c.d950,c.d1100,N(2100)][comp];},
 	reward:function(num,comp=g.studyCompletions[2]) {
@@ -210,7 +210,7 @@ studies[8] = {
 		if ((g.activeStudy===10)&&(studyPower(10)===1)) {out = out.mul(Decimal.add(g.truetimeThisWormholeReset.add1Log(c.d10).add1Log(c.d10),g.truetimeThisWormholeReset.add1Log(c.d10).add1Log(c.d10).pow(c.d2)))}
 		return out
 	},
-	darkAxisMaxCost:function(){return g.masteryPower.aps(this.darkAxisMaxCostExp())},
+	darkAxisMaxCost:function(){return g.masteryPower.add1PowSub1(this.darkAxisMaxCostExp())},
 	description:function(){return ["All effects which allow you to activate more than 1 Mastery from each row are disabled.","Dark axis cannot be purchased if their cost is greater than <i>(MP + 1)<sup>"+studies[8].darkAxisMaxCostExp().noLeadFormat(4)+"</sup> - 1</i>"]},
 	research:"r18_8",
 	goal:function(comp=studyPower(8)){return [N(5888),N(7888),N(15288),N(16888)][comp]},
@@ -889,6 +889,7 @@ const corruption = {
 	list:{
 		axis:{
 			name:"Axis Corruption",
+			description:"Base axis costs increase faster beyond this point",
 			start:function(){
 				let out = c.ee15
 				out = out.pow(study13.rewards.purifier.eff().e)
@@ -896,7 +897,7 @@ const corruption = {
 			},
 			power:function(){return c.d1},
 			effPower:function(){return c.d256.pow(this.power())},
-			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
+			formula:"{s} ^ (log({x}) ÷ log({s})) ^ {p}",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
 			isCorrupted:function(type){return axisCost(type).mul(realAxisCostDivisor(type)).root(realAxisCostExponent(type)).gt(this.start())},
@@ -907,6 +908,7 @@ const corruption = {
 		},
 		darkAxis:{
 			name:"Dark Axis Corruption",
+			description:"Base dark axis costs increase faster beyond this point",
 			start:function(){
 				let out = c.ee12
 				out = out.pow(study13.rewards.purifier.eff().d)
@@ -914,7 +916,7 @@ const corruption = {
 			},
 			power:function(){return c.d1},
 			effPower:function(){return c.d64.pow(this.power())},
-			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
+			formula:"{s} ^ (log({x}) ÷ log({s})) ^ {p}",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
 			isCorrupted:function(type){return darkAxisCost(type,g["dark"+type+"Axis"],true).mul(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type)).gt(this.start())},
@@ -925,10 +927,11 @@ const corruption = {
 		},
 		antiAxis:{
 			name:"Anti-Axis Corruption",
+			description:"Base anti-axis costs increase faster beyond this point",
 			start:function(){return c.ee9},
 			power:function(){return c.d1},
 			effPower:function(){return c.d16.pow(this.power())},
-			formula:"{s} ^ (log({x} ÷ {s}) ^ {p})",
+			formula:"{s} ^ (log({x}) ÷ log({s})) ^ {p}",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
 			isCorrupted:function(type){return antiAxisCost(type).mul(realAntiAxisCostDivisor(type)).root(realAntiAxisCostExponent(type)).gt(this.start())},

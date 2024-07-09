@@ -2918,7 +2918,7 @@ for (var i = 0; i < 10; ++i)
 			return N(safeguard.slog(x)).slog_coefficient(x);
 		};
 
-		Decimal.prototype.aps = function(p) { // (x + 1) ^ p - 1 that works for low values
+		Decimal.prototype.add1PowSub1 = function(p) { // (x + 1) ^ p - 1 that works for low values
 			if (p.eq(1)) return this
 			if (this.mul(p).lt(1e-10)) return this.mul(p)
 			return this.add(1).pow(p).sub(1)

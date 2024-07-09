@@ -41,6 +41,7 @@ function unbreak(str) {
 function arrowJoin(a,b) {return a+"&nbsp;→&nbsp;"+b}
 Object.defineProperty(Array.prototype,"remove",{
   value:function remove(item){
+		if (!this.includes(item)) {return this}
     let out = this
     out.splice(this.indexOf(item),1)
     return out
@@ -233,7 +234,7 @@ function blackOrWhiteContrast(color) {
 function viewportHeight(){return window.innerHeight}
 function viewportWidth(){return window.innerWidth}
 const viewportDiagonalLength = Math.sqrt(viewportHeight()**2+viewportWidth()**2)
-function tableGenerator(array,tableStyle="",trStyle="",tdStyle="") {return "<table style=\""+tableStyle+"\">"+array.map(row=>"<tr style=\""+trStyle+"\">"+row.map(col=>"<td style=\""+tdStyle+"\">"+col+"</td>").join("")+"</tr>").join("")+"</table>"}
+function tableGenerator(array,tableStyle="",trStyle=tableStyle,tdStyle=trStyle) {return "<table style=\""+tableStyle+"\">"+array.map(row=>"<tr style=\""+trStyle+"\">"+row.map(col=>"<td style=\""+tdStyle+"\">"+col+"</td>").join("")+"</tr>").join("")+"</table>"}
 function checkTypo(str1,str2){
 	let diff = 0
 	let f1 = checkTypo.wordFreq(str1)

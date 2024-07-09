@@ -43,7 +43,8 @@ const researchGroupList = {
 		let out = {}
 		for (let i=1;i<13;i++) out["finality"+i] = {label:"Finality-"+roman(i),description:"Each Finality-"+roman(i)+" research multiplies the cost of all other Finality-"+roman(i)+" research by "+(0.05*i**2+0.15*i+1).toFixed(1),color:{light:"rgb("+Math.round(51*(34-i)/11)+",0,"+Math.round(85*(34-i)/11)+")",dark:Math.round(51*(34-i)/55)+",0,"+Math.round(85*(34-i)/55)},icon:"F<sub>"+i+"</sub>"}
 		return out
-	})()
+	})(),
+	binding:{label:"Mailbreaker",description:"Each Mailbreaker research owned doubles the cost of all other Mailbreaker research.",color:{light:"var(--binding)",dark:"47,36,25"},icon:"B"}
 }
 const research = (function(){
 	function studyReq(i,num) {return {check:function(){return g.studyCompletions[i]>=num},text:function(){return g.studyCompletions[i]+" / "+num+" Study "+((i===10)?"of Studies":roman(i))+" completions"}}}
@@ -267,6 +268,17 @@ const research = (function(){
 			icon:icon.discovery+icon.arr+icon.stardust+icon.arrl+icon.hr,
 			effect:function(power){return Decimal.logarithmicSoftcap(g.totalDiscoveries,c.e7,c.d1).div(c.e3).add(c.d1).pow(c.d0_25).sub(c.d1).mul(power)}
 		},
+		r2_11:{
+			description:function(){return "<b>In Study XIII</b><br>Binding 234 is "+percentOrDiv(researchEffect(2,11).i)+" weaker<br><br><b>Outside Study XIII</b><br>Gain "+researchEffect(2,11).o.format(2)+"× mastery power"},
+			adjacent_req:["r1_10","r1_11"],
+			condition:particleLab2Condition(5),
+			visibility:function(){return study13.rewardLevels.particleLab2>=5},
+			type:"normal",
+			basecost:N(1e7),
+			icon:"<span style=\"color:var(--binding)\">B<sub>234</sub></span><br>"+icon.masteryPower+icon.plus,
+			effect:function(power){return {i:c.d0_9.pow(power),o:c.e100.pow(power)}},
+			group:"binding"
+		},
 		r2_12:{
 			description:function(){return "Increase the X Axis effect by "+researchEffect(2,12).noLeadFormat(2)+"% per total Discovery (current total: "+researchEffect(2,12).mul(g.totalDiscoveries).noLeadFormat(2)+"%)";},
 			adjacent_req:["r1_13"],
@@ -344,7 +356,7 @@ const research = (function(){
 		},
 		r3_11:{
 			description:function(){return "Raise the dark S Axis cost to the power of "+researchEffect(3,11).noLeadFormat(3);},
-			adjacent_req:["r2_12"],
+			adjacent_req:["r2_11","r2_12"],
 			condition:[],
 			visibility:function(){return true;}, 
 			type:"normal",
@@ -1618,7 +1630,7 @@ const research = (function(){
 			icon:icon.antiUAxis+icon.arr+icon.antiWAxis
 		},
 		r25_1:{
-			description:function(){return "The third reward of Study VII is "+researchEffect(25,1)+"× stronger"},
+			description:function(){return "The third reward of Study VII is "+researchEffect(25,1).noLeadFormat(3)+"× stronger"},
 			adjacent_req:["r24_2","r25_2","r26_2"],
 			condition:[studyReq(10,1)],
 			visibility:function(){return g.studyCompletions[10]>0},
@@ -2381,7 +2393,6 @@ function showResearchInfo(row,col) {
 	let id="r"+row+"_"+col
 	selections.research=id
 	let res=research[id];
-	if (row===6&&col===9&&(!g.research.r6_9)) return;
 	let out = "";
 	let smallHeader = [];
 	let researchName = "Research "+row+"-"+col
@@ -2469,8 +2480,7 @@ function buyMaxObservations(type) {
 	if (newvalue.lte(g.observations[type])) return;
 	g.observations[type]=newvalue;
 }
-function discoveriesFromKnowledge(x) {
-	x=(x===undefined)?g.knowledge:N(x);
+function discoveriesFromKnowledge(x=g.knowledge) {
 	let base = g.knowledge.lt(c.d1)?c.d0:g.knowledge.log10();
 	return base.add(stat.extraDiscoveries_add).mul(stat.extraDiscoveries_mul).max(c.d0);
 }
@@ -2500,7 +2510,7 @@ function allParentResearch(row,col) {		// This returns all "parent" research; i.
 		else out = nextOut;
 	}
 }
-function buySingleResearch(row,col,force=false) {
+function buySingleResearch(row,col,force=false,manual=false) {
 	let id = "r"+row+"_"+col;
 	let data = research[id]
 	if (data===undefined) return;																						// research does not exist
@@ -2512,8 +2522,8 @@ function buySingleResearch(row,col,force=false) {
 		if (cost.gt(g.totalDiscoveries)) return;															// not enough discoveries
 		totalResearch.permanent++
 	} else {
-		if (achievement.locking(616)&&cost.neq(c.d0)) {return;}								// Achievement 616 "Pseudoscience" lock
-		if (achievement.maxForLocks.research.includes(g.achOnProgressBar)&&achievement.locking(g.achOnProgressBar)&&(data.type==="normal")) {return;}				// Achievement locks preventing all temporary research
+		if (achievement.maxForLocks.discoveries.includes(Number(g.achOnProgressBar))&&achievement.locking(g.achOnProgressBar)&&cost.neq(c.d0)) {if (manual) {achievement.lockPopup();}return;}							// Achievement locks preventing Discovery spending
+		if (achievement.maxForLocks.research.includes(Number(g.achOnProgressBar))&&achievement.locking(g.achOnProgressBar)&&(data.type==="normal")) {if (manual) {achievement.lockPopup();}return;}					// Achievement locks preventing all temporary research
 		if (cost.gt(unspentDiscoveries())) return;														// research too expensive
 		o.add("spentDiscoveries",cost);
 		if ((id!=="r6_9")&&(data.type==="normal")) totalResearch.temporary++	// exclude study research
@@ -2536,7 +2546,7 @@ function buySingleResearch(row,col,force=false) {
 	for (let ach of secretAchievementEvents.researchBuy) addSecretAchievement(ach);
 	return regenerateCanvas;
 }
-function asceticMaxBuyResearch(id,updateTree=true) { // buys only 1 adjacent research and only if one is not already owned
+function asceticMaxBuyResearch(id,updateTree=true,manual=false) { // buys only 1 adjacent research and only if one is not already owned
 	if (g.research[id]) return
 	let list = [id]
 	let visible = visibleResearch()
@@ -2548,7 +2558,7 @@ function asceticMaxBuyResearch(id,updateTree=true) { // buys only 1 adjacent res
 	list.reverse()
 	list = list.filter((x,i)=>(x.type!=="study")||(i===(list.length-1)))
 	let regen = false
-	for (let i of list) regen ||= buySingleResearch(researchRow(i),researchCol(i))
+	for (let i of list) regen ||= buySingleResearch(researchRow(i),researchCol(i),undefined,manual)
 	if (updateTree) {
 		updateResearchTree()
 		if (regen) generateResearchCanvas()
@@ -2557,20 +2567,20 @@ function asceticMaxBuyResearch(id,updateTree=true) { // buys only 1 adjacent res
 function tryBuyResearch(x) {
 	if (g.confirmations.doubleClickToBuy) {
 		if (selections.researchClick===x) {
-			buyResearch(researchRow(x),researchCol(x))
+			buyResearch(researchRow(x),researchCol(x),undefined,true)
 		}
 	} else {
-		buyResearch(researchRow(x),researchCol(x))
+		buyResearch(researchRow(x),researchCol(x),undefined,true)
 	}
 	selections.researchClick = x
 }
-function buyResearch(row,col,max=g.buyMaxResearch) {
+function buyResearch(row,col,max=g.buyMaxResearch,manual=false) {
 	let regenerateCanvas = false
 	if (max) {
 		let toBePurchased = allParentResearch(row,col).filter(x => (!g.research[x] && research[x].type === "normal") || (x === "r"+row+"_"+col));
-		for (let i of toBePurchased) regenerateCanvas = regenerateCanvas || buySingleResearch(researchRow(i),researchCol(i));
+		for (let i of toBePurchased) regenerateCanvas = regenerateCanvas || buySingleResearch(researchRow(i),researchCol(i),undefined,manual);
 	} else {
-		regenerateCanvas = asceticMaxBuyResearch("r"+row+"_"+col)
+		regenerateCanvas = asceticMaxBuyResearch("r"+row+"_"+col,true,manual)
 	}
 	updateResearchTree();
 	if (regenerateCanvas) generateResearchCanvas();
@@ -2668,7 +2678,11 @@ const researchLoadouts = {
 	},
 	load:function(){
 		showingResearchLoadouts=false
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) {let r=researchRow(i),c=researchCol(i);availableResearch(r,c)?buySingleResearch(r,c):asceticMaxBuyResearch(i,false)}
+		let res = structuredClone(g.researchLoadouts[researchLoadoutSelected-1].savedResearch)
+		loop: while (true) {
+			for (let i=res.length-1;i>=0;i--) {}
+		}
+		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) {let r=researchRow(i),c=researchCol(i);availableResearch(r,c)?buySingleResearch(r,c,false,true):asceticMaxBuyResearch(i,false,true)}
 		updateResearchTree()
 		generateResearchCanvas()
 		notify("Successfully loaded!","var(--research)")
@@ -2695,7 +2709,7 @@ function processResearchImport() {
 	while ((!"0123456789".includes(string.substring(string.length-1)))&&(string.length>0)) {string = string.substring(0,string.length-1)} // remove non-numeric characters from end (all research ids end with a number)
 	try {
 		let researchBuild = string.split(",")
-		for (let i of researchBuild) {asceticMaxBuyResearch(i,false)};
+		for (let i of researchBuild) {asceticMaxBuyResearch(i,false,true)};
 		updateResearchTree();
 		generateResearchCanvas()
 	} catch {notify('Invalid import.','var(--research)')}

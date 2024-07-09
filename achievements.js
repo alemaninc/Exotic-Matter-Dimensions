@@ -8,7 +8,7 @@ achievement.tierColors = {
 	2:{dark:"#804c00",light:"#ff9900"},
 	3:{dark:"#330033",light:"#990099"},
 	4:{dark:"#009999",light:"#00ffff"},
-	5:{dark:"#000066",light:"#0000ff"},
+	5:{dark:"#000033",light:"#0000ff"},
 	6:{dark:"#000000",light:"#ffffff"},
 	7:{dark:"#666600",light:"#bbbb00"},
 	8:{dark:"#008855",light:"#00ff99"},
@@ -58,9 +58,10 @@ achievement.nextTier = function(){
 achievement.selectForProgressBar = function(){
 	if (g.achOnProgressBar==="N") {
 		let available = achievement.all.filter(x=>achievement.visible(x)&&((!g.achievement[x])||((achievement(x).maxMilestones===undefined)?false:(achievement(x).milestones()<achievement(x).maxMilestones))))
+		let showDisclaimer = available.map(x=>achievement(x).failed===undefined).includes(false)
 		if (available.length>0) {popup({
-			text:"Which achievement to show?",
-			buttons:available.map(x=>[x+"<br>\""+achievement(x).name+"\"","g.achOnProgressBar='"+x+"'"]),
+			text:"Which achievement to show?"+(showDisclaimer?"<br><i>(achievements with ID's marked with a * asterisk become impossible to fail when shown on the progress bar.)</i>":""),
+			buttons:available.map(x=>[x+((achievement(x).failed===undefined)?"":"<b>*</b>")+"<br>\""+achievement(x).name+"\"","g.achOnProgressBar='"+x+"'"]),
 			buttonSize:2
 		})} else {popup({
 			text:"There are no achievements to show.",
@@ -69,12 +70,15 @@ achievement.selectForProgressBar = function(){
 	} else {g.achOnProgressBar = "N"}
 }
 achievement.wormholeProgress = function(){return achievement.percent(stat.totalDarkAxis,stat.wormholeDarkAxisReq,0)}
-achievement.locking = function(x){return (g.achOnProgressBar===x)?achievement(x).failed():false}
+achievement.locking = function(x){return (g.achOnProgressBar==x)?(!achievement(x).failed()):false}
 achievement.lockPopup = function() {
 	if (g.achOnProgressBar==="N") {return}
 	popup({
 		text:"This action would cause you to fail "+achievement.label(g.achOnProgressBar)+". Remove it from the progress bar to perform this action.",
-		buttons:[["Close",""]]
+		buttons:[
+			["Remove","g.achOnProgressBar='N'"],
+			["Close",""]
+		]
 	})
 }
 achievement.maxForLocks = {
@@ -84,15 +88,17 @@ achievement.maxForLocks = {
 		204:{Y:c.d0},
 		205:{X:c.d0},
 		217:{X:c.d1,Y:c.d3,Z:c.d3,W:c.d7},
-		303:{X:c.d1,Y:c.d1,Z:c.d1,W:c.d1,V:c.d1,U:c.d1,T:c.d1,S:c.d1},
-		304:{X:c.d3,Y:c.d3,Z:c.d3,W:c.d3,V:c.d3,U:c.d3,T:c.d3,S:c.d3},
-		305:{X:c.d5,Y:c.d5,Z:c.d5,W:c.d5,V:c.d5,U:c.d5,T:c.d5,S:c.d5},
+		303:Object.fromEntries(axisCodes.slice(0,8).map(x=>[x,c.d1])),
+		304:Object.fromEntries(axisCodes.slice(0,8).map(x=>[x,c.d3])),
+		305:Object.fromEntries(axisCodes.slice(0,8).map(x=>[x,c.d5])),
 		525:{S:c.d0,darkS:c.d0},
-		526:{X:c.d0,Y:c.d0,Z:c.d0,W:c.d0,V:c.d0,U:c.d0,T:c.d0,S:c.d0,R:c.d0,Q:c.d0,P:c.d0,O:c.d0},
-		get 527(){return (axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()===3)},
+		526:Object.fromEntries(axisCodes.map(x=>[x,c.d0])),
+		get 527(){return Object.fromEntries(axisCodes.map(x=>["dark"+x,((axisCodes.map(x => g["dark"+x+"Axis"].eq(c.d0)?0:1).sum()===3)&&g["dark"+x+"Axis"].eq(c.d0))?c.d0:c.maxvalue]))},
 		707:{X:c.d0,Y:c.d0,Z:c.d0,W:c.d0,V:c.d0,U:c.d0,T:c.d0,S:c.d0,R:c.d0,Q:c.d0,P:c.d0,O:c.d0},
+		813:Object.fromEntries(axisCodes.map(x=>[x,"dark"+x]).flat().map(x=>[x,c.d0])),
 		get 825(){return Object.fromEntries(axisCodes.map(x=>[x,"dark"+x]).flat().map(x=>[x,achievement(825).maxAxisToNotFail(calcStatUpTo("free"+x+"Axis","Softcap"))]))}
 	},
+	mastery:[524,707,908],
 	stardustReset:{
 		get 502(){return true},
 		get 503(){return true},
@@ -100,14 +106,24 @@ achievement.maxForLocks = {
 		get 505(){return true},
 		get 506(){return true},
 		get 707(){return true},
-		get 715(){return g.TotalStardustResets<2},
+		get 715(){return g.TotalStardustResets===1},
+	},
+	specificStardustUpgrades:{
+		521:{5:5},
+		522:{5:3},
+		523:{5:1}
+	},
+	totalStardustUpgrades:{
+		520:15,
+		707:6,
+		915:6
 	},
 	stars:{
 		516:0,
 		528:0,
 		609:0,
 		707:0,
-		get 711(){return 40-achievement(711).milestones()},
+		get 711(){return Math.min(39-achievement(711).milestones(),40)},
 	},
 	darkstars:{
 		get 512(){return N(g.stars)},
@@ -116,8 +132,12 @@ achievement.maxForLocks = {
 		get 813(){return (achievement.ownedInTier(5)<7)?c.d0:c.maxvalue},
 		914:c.d0,
 	},
+	discoveries:{
+		get 616(){return true},
+		get 817(){return true}
+	},
 	discoveries:[616,817],
-	research:[707,812,915]
+	research:[502,503,504,505,506,707,812,915]
 }
 /*
 	name									the name of the achievement
@@ -502,11 +522,11 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return this.valence()?achievement.percent(g.exoticmatter,c.inf,1):"Failed";},
 			failed:function(){
-				for (let i=1;i<10;i++) {
-					if (maxStars(i)===4) {continue}
-					for (let j=1;j<5;j++) {if (g.star[i*10+j]) {return false}}
+				loop: for (let i=1;i<10;i++) {
+					if (maxStars(i)===4) {continue loop}
+					for (let j=1;j<5;j++) {if (g.star[i*10+j]) {return true}}
 				}
-				return true
+				return false
 			},
 			get reward(){return "+30.8% dark matter per unassigned star (total: "+percentOrMult(N(1.308).pow(unspentStars()),2,true)+")"},
 			flavor:"I made a noble gas joke, sadly nobody reacted",
@@ -977,7 +997,7 @@ const achievementList = {
 			description:"Buy a dark X axis without buying normal axis in the current Wormhole reset",
 			check:function(){return g.ach526possible&&g.darkXAxis.gt(c.d0)&&unlocked("Hawking Radiation");},
 			event:"axisBuy",
-			progress:function(){return g.ach526possible?achievement.percent(g.darkmatter,darkAxisCost("X"),0):"Failed";},
+			progress:function(){return g.ach526possible?{percent:achievement.percent(g.darkmatter,darkAxisCost("X"),0),text:"Not Completed!"}:"Failed";},
 			failed:function(){return !g.ach526possible},
 			prevReq:[525],
 			get reward(){return "The "+achievement.label(525)+" reward is {}% stronger (based on total normal axis)";},
@@ -1208,8 +1228,8 @@ const achievementList = {
 		},
 		614:{
 			name:"Redstone Clock",
-			description:"Have each of the last 10 Wormhole resets be less than 1 second long",
-			check:function(){return (g.previousWormholeRuns.last10.length===10)&&(!g.previousWormholeRuns.last10.map(x=>x.time<1).includes(false))},
+			description:"Have each of the last 10 Wormhole resets be less than or equal to 1 second long",
+			check:function(){return (g.previousWormholeRuns.last10.length===10)&&(!g.previousWormholeRuns.last10.map(x=>x.time<=1).includes(false))},
 			prevReq:[510],
 			event:"wormholeResetAfter",
 			progress:function(){return (g.previousWormholeRuns.last10.length===10)?{percent:achievement.percent(N(this.time()),c.d1,x=>x.recip()),text:"Slowest run is "+timeFormat(this.time())}:("Do 10 Wormhole resets first (currently: "+g.previousWormholeRuns.last10.length+")")},
@@ -1405,7 +1425,7 @@ const achievementList = {
 			check:function(){return (g.activeStudy===4)&(g.studyCompletions[4]>2)&&(g.TotalStardustResets<2)},
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[4]<3)?"Complete Study IV 3 times first":(g.activeStudy!==4)?"Enter Study IV first":g.TotalStardustResets>1?"Failed":achievement.wormholeProgress()},
-			failed:function(){return (g.TotalStardustResets>1)},
+			failed:function(){return (g.studyCompletions[4]<3)||(g.activeStudy!==4)||(g.TotalStardustResets>1)},
 			reward:"The third reward of Study IV is 11.1% stronger",
 			flavor:"Nature abhors a vacuum, and if I can only walk with sufficient carelessness I am sure to be filled.",
 		},
@@ -1612,7 +1632,7 @@ const achievementList = {
 			check:function(){return (g.activeStudy===5)&&(g.studyCompletions[5]>2)&&(totalResearch.temporary===0)},
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[5]<3)?"Complete Study V 3 times first":(g.activeStudy!==5)?"Enter Study V first":totalResearch.temporary===0?achievement.wormholeProgress():"Failed"},
-			failed:function(){return totalResearch.temporary!==0},
+			failed:function(){return (g.studyCompletions[5]<3)||(g.activeStudy!==5)||(totalResearch.temporary!==0)},
 			reward:"The third reward of Study V is 11.1% stronger",
 			flavor:"We have progressed from the stone age and moved on to the age of stone hearted people.",
 		},
@@ -1688,7 +1708,7 @@ const achievementList = {
 			get reward(){return "Reduce the penalty of Luck and Antimatter research by {}"+(this.effect().lt(c.d0_1)?"×":"%")+" (based on prismatic), and Quatrefolium "+luckUpgrades.quatrefolium.prismatic.name+" is 2× stronger"},
 			effect:function(y=this.yellowValue){return g.prismatic.add(c.d1).log10().div(c.e3).add(c.d1).pow(y.pow10().neg())},
 			effectFormat:function(x){return this.effect().lt(c.d0_1)?x.recip().formatFrom1(4):c.d1.sub(x).mul(c.e2).noLeadFormat(3)},
-			formulaText:function(){let out = "(log(P + 1) ÷ 1,000 + 1)"+formulaFormat.exp(this.yellowValue.pow10(),false,4);if (this.effect().gte(c.d0_1)) {out = "(1 - "+out+") × 100"};return out},
+			formulaText:function(){let out = "(log(P + 1) ÷ 1,000 + 1)"+formulaFormat.exp(this.yellowValue.pow10().neg(),false,4);if (this.effect().gte(c.d0_1)) {out = "(1 - "+out+") × 100"};return out},
 			yellowBreakpoints:[c.d5e4,N(5e9),1],
 			flavor:"I won't look back, I won't look down, I'm going up, you better turn around",
 		},
@@ -1911,21 +1931,14 @@ const achievementList = {
 		},
 		913:{
 			name:"Axistential Dread",
-			description:"Have 200 effective S and O axis of all types without more than 1 purchase of any normal and dark axis except S and O",
-			check:function(){return this.possible()&&this.total().gte(c.d200)},
+			get description(){return "Make the product of the effective levels of all axis exceed "+BEformat(1e95)},
+			check:function(){return g.OAxis.neq(c.d0)&&g.darkOAxis.neq(c.d0)&&g.antiOAxis.neq(c.d0)&&this.value().gte(1e95)}, // first three conditions for lag prevention
 			event:"gameloop",
-			progress:function(){return this.possible()?achievement.percent(this.total(),c.d200,0):"Failed"},
+			progress:function(){return achievement.percent(this.value(),N(1e95),0)},
 			prevReq:[912],
-			get reward(){return "Unlock Study XIII Binding 25"},
+			reward:"Unlock Study XIII Binding 25",
 			flavor:"Fifteen birds in five firtrees,<br>their feathers were fanned in a fiery breeze!<br>But, funny little birds, they had no wings!<br>O what shall we do with the funny little things?<br>Roast 'em alive, or stew them in a pot;<br>fry them, boil them and eat them hot?",
-			possible:function(){
-				for (let i of axisCodes) {
-					if (["S","O"].includes(i)) {continue}
-					if (g[i+"Axis"].gt(c.d1)||g["dark"+i+"Axis"].gt(c.d1)) {return false}
-				}
-				return true
-			},
-			total:function(){return [stat.realSAxis,stat.realdarkSAxis,stat.realantiSAxis,stat.realOAxis,stat.realdarkOAxis,stat.realantiOAxis].sumDecimals()},
+			value:function(){return fullAxisCodes.map(x=>stat["real"+x+"Axis"]).productDecimals()},
 			beta:true
 		},
 		914:{
@@ -2099,11 +2112,11 @@ const achievementList = {
 		},
 		931:{
 			name:"The Shining Law of Conservation of Information",
-			description:"Activate all research",
+			description:"Activate all research simultaneously",
 			prevReq:[907,917],
-			check:function(){return totalResearch.overall()===350},
+			check:function(){return totalResearch.overall()===360},
 			event:"researchBuy",
-			progress:function(){return achievement.percent(N(totalResearch.overall()),N(350),0)},
+			progress:function(){return achievement.percent(N(totalResearch.overall()),N(360),0)},
 			reward:"All research in column 8 is {}% stronger (based on total Discoveries)",
 			effect:function(){return g.totalDiscoveries.add(c.d10).log10().log10().pow(c.d3)},
 			effectFormat:x=>x.format(3),
@@ -2459,7 +2472,7 @@ const secretAchievementList = {
 		description:"Click \"Read More\" twice in a row.",
 		check:function(){return newsSupport.readMoreIteration>1},
 		event:"readMore",
-		flavor:"Did you know that the developer is not in fact alemaninc, but in fact<br><b onClick=\"newsSupport.readMore()\">Read More</b>",
+		flavor:"Did you know that the developer is not in fact alemaninc, but in fact<br><b onMousedown=\"newsSupport.readMore()\">Read More</b>",
 		rarity:2
 	},
 	39:{
@@ -2696,7 +2709,7 @@ function showAchievementInfo(id) {
 	info.color = colors.light
 	info["border-color"] = colors.light
 	let ach = achievement(id)
-	let txt = ["<h3 style=\"margin:2px;\">"+ach.name+"</h3>","<b>Requirement</b><br>"+ach.description];
+	let txt = ["<h3 style=\"margin:2px;\">"+ach.name+"</h3>"+((achievement(id).failed===undefined)?"":"<div style=\"font-size:10px;white-space:break-spaces;\">(Showing this achievement on the progress bar will prevent it from being failed.)</div>"),"<b>Requirement</b><br>"+ach.description];
 	if (ach.reward !== undefined) {
 		let rewardText = [ach.effect===undefined?ach.reward:(showFormulas&&ach.formulaText!==undefined)?ach.reward.replaceAll("{}",formulaFormat(ach.formulaText())):yellowLight.affected.includes(String(id))?ach.reward.replaceAll("{}",yellowLight.effectHTML(id,c.d0,achievement(id).yellowValue)):(ach.effectFormat===undefined)?ach.reward:ach.reward.replaceAll("{}",ach.effectFormat(ach.effect()))]
 		if ((ach.yellowBreakpoints!==undefined)&&(lightTiersUnlocked()>1)) {if(ach.yellowBreakpoints[0].lte(g.lumens[5])) {

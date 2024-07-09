@@ -44,13 +44,13 @@
 				<div class="subtab main" id="subtab_main_axis">
 					<button class="featureConfig main" onClick="openConfig['Axis']()"></button>
 					<p id="div_exoticmatter_disabledTop">You have <span id="span_exoticmatter_disabledTop" class="big _exoticmatter"></span> exotic matter<br>You are getting <span id="span_exoticmatterPerSec_disabledTop" class="big _exoticmatter"></span> exotic matter per second</p><br>
-					<button id="button_maxAxis" class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'))">Buy Max Axis (<span id="span_affordableAxis"></span>)</button><br>
+					<button id="button_maxAxis" class="maxaxisbutton" onClick="buyMaxAxis(Array(12).fill('u'),true)">Buy Max Axis (<span id="span_affordableAxis"></span>)</button><br>
 					<div id="div_normalAxisContainer" style="width:900px"></div><br>
 				</div>
 				<div class="subtab main" id="subtab_main_masteries" style="display:none">
 					<button class="featureConfig main" onClick="openConfig['Mastery']()"></button>
-					<p><span id="div_masteryPower_disabledTop">You have <span class="big _mastery" id="span_masteryPower_disabledTop"></span> mastery power.<br>You are getting <span class="big _mastery" id="span_masteryPowerPerSec_disabledTop"></span> mastery power per second (based on exotic matter and time since last Mastery unassignmnet)</span><br id="br_masteryPower_disabledTop">You can activate 1 Mastery from each row. Unassigning a Mastery will reset your mastery power.</p>
-					<button class="genericbutton size2" onClick="g.activeMasteries.fill(0);masteryReset()">Unassign all Masteries (this will reset mastery power)</button>
+					<p><span id="div_masteryPower_disabledTop">You have <span class="big _mastery" id="span_masteryPower_disabledTop"></span> mastery power.<br>You are getting <span class="big _mastery" id="span_masteryPowerPerSec_disabledTop"></span> mastery power per second (based on exotic matter and time since last Mastery unassignment)</span><br id="br_masteryPower_disabledTop">You can activate 1 Mastery from each row. Unassigning a Mastery will reset your mastery power.</p>
+					<button class="genericbutton size2" onClick="for (let i=1;i<=totalMasteryRows;i++) {unassignMasteryRow(i)}">Unassign all Masteries (this will reset mastery power)</button>
 					<div id="masteryContainerLegacy"></div><div id="masteryContainerModern"></div><br>
 					<div id="masteryInfo" class="tooltip" style="visibility:hidden;"></div>
 				</div>
@@ -398,18 +398,18 @@
 						Interval: <span id="span_starAutobuyerInterval"></span><br>
 						<button id="button_starAutobuyerUpgrade" class="autobuyerupgrade" onClick="upgradeAutobuyer('star')"></button><br>
 						<label for="starAutobuyerMax" style="font-weight:700;">Max stars to buy:</label><input id="starAutobuyerMax" type="text"></input><br>
-						<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="narrowbutton" onClick="inputStarAllocatorBuild()">Input build</button><br><button class="narrowbutton" onClick="importStarAllocatorBuild()">Import build</button><button class="narrowbutton" onClick="exportStarAllocatorBuild()">Export build</button><br>The star allocator runs on the same interval as the autobuyer.</span>
+						<span id="wormholeMilestone5"><hr><h3>Star Allocator</h3><button class="automatortoggleon" id="button_starAllocatorToggle" onClick="toggle('starAllocatorOn')"></button><br><button class="narrowbutton" onClick="inputStarAllocatorBuild.selectRow()">Edit build</button><br><button class="narrowbutton" onClick="importStarAllocatorBuild()">Import build</button><button class="narrowbutton" onClick="exportStarAllocatorBuild()">Export build</button><br>The star allocator runs on the same interval as the autobuyer.</span>
 					</div>
 					<div class="automatordiv" id="stardustAutomator" style="display:none">
 						<h3>Stardust Reset Automator</h3>
 						<button class="automatortoggle" id="button_stardustAutomatorToggle" onClick="toggle('stardustAutomatorOn')"></button><br>
-						<label for="stardustAutomatorMode">Setting:</label><button class="genericbutton size3" id="button_stardustAutomatorMode" onClick="selectOption('stardustAutomatorMode',countTo(4,true),'mode',x=>stardustAutomatorModes[x])"></button><br>
+						<label for="stardustAutomatorMode">Setting:</label><button class="genericbutton size3" id="button_stardustAutomatorMode" onClick="selectOption('stardustAutomatorMode',countTo(stardustAutomatorModes.length,true),'mode',x=>stardustAutomatorModes[x])"></button><br>
 						<input id="stardustAutomatorValue" type="text"></input>
 					</div>
 					<div class="automatordiv" id="wormholeAutomator" style="display:none">
 						<h3>Wormhole Reset Automator</h3>
 						<button class="automatortoggle" id="button_wormholeAutomatorToggle" onClick="toggle('wormholeAutomatorOn')"></button><br>
-						<label for="wormholeAutomatorMode">Setting:</label><button class="genericbutton size3" id="button_wormholeAutomatorMode" onClick="selectOption('wormholeAutomatorMode',countTo(4,true),'mode',x=>wormholeAutomatorModes[x])"></button><br>
+						<label for="wormholeAutomatorMode">Setting:</label><button class="genericbutton size3" id="button_wormholeAutomatorMode" onClick="selectOption('wormholeAutomatorMode',countTo(wormholeAutomatorModes.length,true),'mode',x=>wormholeAutomatorModes[x])"></button><br>
 						<input id="wormholeAutomatorValue" type="text"></input>
 					</div>
 					<div class="automatordiv" id="researchAutobuyer" style="display:none">
@@ -424,7 +424,7 @@
 			</div>
 			<div id="footer">
 				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
-				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://forms.gle/G9ixRuWv3yPZCQWT7" target="_blank">Contact</a> | <a href="credits.html" target="_blank">Credits</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <a href="https://forms.gle/aBpgH6z4qpLCiztVA" target="_blank" style="color:#00ffff;">Feedback</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://alemaninc.github.io/" target="_blank">More by alemaninc</a> | <a href="https://www.reddit.com/r/incremental_games/comments/178bccu/exotic_matter_dimensions_%F0%9D%95%8D14/" target="_blank">Reddit</a> | <a href="savebank.html" target="_blank">Saves</a> | Version <span id="span_currentVersion"></span><span id="span_footerEMDLevel"></span>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://forms.gle/G9ixRuWv3yPZCQWT7" target="_blank">Contact</a> | <a href="credits.html" target="_blank">Credits</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <a href="https://forms.gle/aBpgH6z4qpLCiztVA" target="_blank" style="color:#00ffff;">Feedback</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://alemaninc.github.io/" target="_blank">More by alemaninc</a> | <a href="https://www.reddit.com/r/incremental_games/comments/1dfx5hx/exotic_matter_dimensions_%F0%9D%95%8D1%CF%89/" target="_blank">Reddit</a> | <a href="savebank.html" target="_blank">Saves</a> | Version <span id="span_currentVersion"></span><span id="span_footerEMDLevel"></span>
 			</div>
 		</div>
 		<div id="div_fancyPopupScreen" class="popupScreen">

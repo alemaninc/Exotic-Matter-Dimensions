@@ -73,9 +73,9 @@ const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
 const specialGrade = {
 	"alemaninc":{class:"Ω",color:"#0000ff",title:"Lead Developer"},
 	"Celestial of Blob / hyperbolia":{class:"S+",color:"#fac112",title:"Absolute Celestial"},
-	"nicodium":{class:"S",color:"#4285f4",title:"Duality Celestial"},
+	"nicodium":{class:"S",color:"#4285f4",title:"Dual Celestial"},
 	"Stat Mark":{class:"S",color:"#00ffff",title:"Entropic Celestial"},
-	"xhwzwka":{class:"S",color:"#ff0000",title:"Indeterminate Celestial"}
+	"xhwzwka":{class:"S",color:"#ff0000",title:"Enigmatic Celestial"}
 }
 function contributorColor(name){return (specialGrade[name]===undefined)?"inherit":specialGrade[name].color}
 /*
@@ -116,7 +116,8 @@ const contributions = {
 	// ![A-Z]
 	"10mart10":{
 		"Disinsection Crew":[
-			{text:"Pointed out Study V breaking the game",EMDLevel:6,class:"B/C"}
+			{text:"Pointed out Study V breaking the game",EMDLevel:6,class:"B/C"},
+			{text:"Pointed out research 6-9 not existing",EMDLevel:5,class:"D"}
 		]
 	},
 	// A
@@ -162,15 +163,22 @@ const contributions = {
 			{text:"Pointed out when alemaninc made Research invisible (shared with "+person("Dragonus")+", "+person("Hori")+" and "+person("Titus")+")",EMDLevel:5,class:"D"}
 		]
 	},
+	"bestfweinds":{
+		"Exowriter":[
+			{text:"Pointed out \"Mastery unassignmnet\"",EMDLevel:1,class:"E"}
+		]
+	},
 	"b<sub>la</sub>c<sub>k hole</sub>":{
 		"Disinsection Crew":[
 			{text:"\"You currently have Tier 5 achievements\"",EMDLevel:5,class:"D"}
 		],
 		"Exowriter":[
-			{text:"The 𝕍1.1.16 entry having \"undefined\"",EMDLevel:1,class:"E"}
+			{text:"Identified the 𝕍1.1.16 entry having \"undefined\" as an entry",EMDLevel:1,class:"E"},
+			{text:"Pointed out \"the\" being misspelled as \"theu\" in the 𝕍1.3 entry's first BALANCE",EMDLevel:6,class:"E"}
 		],
 		"Village Elder":[
-			{text:"Added FredBoat to the Discord (does anyone even use this?)",EMDLevel:1,class:"E"}
+			{text:"Added FredBoat to the Discord (does anyone even use this?)",EMDLevel:1,class:"E"},
+			{text:"Suggested the Discord #bot-commands channel (which no one seems to use either)",EMDLevel:1,class:"E"}
 		],
 		"Worldbuilder":[
 			{text:"Suggested the news ticker",EMDLevel:1,class:"B"}
@@ -187,7 +195,9 @@ const contributions = {
 	// C
 	"Celestial of Blob / hyperbolia":{
 		"Disinsection Crew":[
-			{text:"Identified Scientific notation not working.<br>How does alemaninc break what is literally the notation used by half the playerbase and release it to production?",EMDLevel:1,class:"C"}
+			{text:"Identified Scientific notation not working.<br>How does alemaninc break what is literally the notation used by half the playerbase and release it to production?",EMDLevel:1,class:"C"},
+			{text:"Identified attempting to change the footer display crashing the game",EMDLevel:1,class:"C/D"},
+			{text:"Identified it being possible to have an amount of dilated time on the femtosecond level",EMDLevel:1,class:"D"}
 		],
 		"Game Changer":[
 			{text:"Suggested Study XI",EMDLevel:8,class:"B"},
@@ -246,7 +256,7 @@ const contributions = {
 	},
 	"ducdat0507 / duducat":{
 		"Stylist":[
-			{text:"One of many Tier 5 color changes",EMDLevel:5,class:"D"}
+			{text:"Suggested one of many Tier 5 color changes",EMDLevel:5,class:"D"}
 		]
 	},
 	// E
@@ -265,6 +275,11 @@ const contributions = {
 		]
 	},
 	// F
+	"FeynHS":{
+		"Disinsection Crew":[
+			{text:"Pointed out game being impossible to open if never played before (shared with "+person("Lanie Carmelo")+" and "+person("reshrom")+")",EMDLevel:1,class:"C/D"}
+		]
+	},
 	"FIQ":{
 		"Game Changer":[
 			{text:"Suggested reset automator settings that use previous gain rather than current amount",EMDLevel:5,class:"B"},
@@ -272,10 +287,15 @@ const contributions = {
 			{text:"Suggested for Research 17-8 to make Time research show the unchanged effect",EMDLevel:8,class:"E"}
 		],
 		"Exowriter":[
-			{text:"Pointed out that Achievement 501 \"Wormhole to Somewhere\" does not have a softcap like Wormhole Upgrade 5 \"More Achievement\" would suggest<br>(the softcap is actually on Mastery 101)",EMDLevel:8,class:"C"}
+			{text:"Pointed out that Achievement 501 \"Wormhole to Somewhere\" does not have a softcap like Wormhole Upgrade 5 \"More Achievement\" would suggest<br>(the softcap is actually on Mastery 101)",EMDLevel:8,class:"C"},
+			{text:"Pointed out that Achievement 302 \"Valence\" is not mentioned in the Stat Breakdown",EMDLevel:3,class:"D"},
+			{text:"Pointed out that Achievement 819 \"Power of a Unicorn\" has an incorrect formula",EMDLevel:8,class:"D"}
 		]
 	},
 	"FreeLancer":{
+		"Disinsection Crew":[
+			{text:"Identified the secret research achievement being awarded for buying any research",EMDLevel:5,class:"C/D"}
+		],
 		"Exowriter":[
 			{text:"Identified Stardust story entry showing that 0 stardust was produced",EMDLevel:2,class:"D"}
 		]
@@ -329,12 +349,13 @@ const contributions = {
 			{text:"Identified Study V being impossible to abort even after "+person("WhattayaBrian")+" reported it",EMDLevel:6,class:"C"}
 		],
 		"Exowriter":[
-			{text:"Pointed out that \"Abort Study\" does not change to \"Complete Study\"",EMDLevel:5,class:"D"}
+			{text:"Pointed out that \"Abort Study\" does not change to \"Complete Study\" when a goal is reached",EMDLevel:5,class:"D"}
 		]
 	},
 	"InfoHazard":{
 		"Disinsection Crew":[
-			{text:"Identified one of many cases of research loadouts not working correctly (this particular case is shared with "+person("lexicalpedant")+")",EMDLevel:5,class:"C/D"}
+			{text:"Identified one of many cases of research loadouts not working correctly (this particular case is shared with "+person("lexicalpedant")+")",EMDLevel:5,class:"C/D"},
+			{text:"Identified Scientific notation <i>still</i> not working even after "+person("Celestial of Blob / hyperbolia")+" reported it",EMDLevel:5,class:"C"}
 		]
 	},
 	"Ingibergur":{
@@ -367,11 +388,11 @@ const contributions = {
 		]
 	},
 	"Kaffe-work / IRAD":{
-		"Exowriter":[
-			{text:"Added a comma in the changelog",EMDLevel:1,class:"D"}
-		],
 		"Game Changer":[
 			{text:"Suggested ascetic research multi-buy",EMDLevel:8,class:"A/B"}
+		],
+		"Scripter":[
+			{text:"Added a comma in the changelog",EMDLevel:1,class:"E"}
 		],
 		"Village Elder":[
 			{text:"Named the Matrices",EMDLevel:10,class:"A"},
@@ -383,6 +404,14 @@ const contributions = {
 		]
 	},
 	"kumamushi":{
+		"Disinsection Crew":[
+			{text:"Dark star bulk buy getting disabled on game load",EMDLevel:3,class:"C"},
+			{text:"Identified several of many cases of research loadouts not working correctly",EMDLevel:5,class:"C"},
+			{text:"One of many reports of unresponsive prestige buttons",EMDLevel:2,class:"D"}
+		],
+		"Exowriter":[
+			{text:"Pointed out \"Show Star/Mastery builds builds\"",EMDLevel:2,class:"D"}
+		],
 		"Game Changer":[
 			{text:"Suggested memory of which tabs were open when game was closed",EMDLevel:1,class:"B"},
 			{text:"Suggested single row Luck Upgrade respec",EMDLevel:8,class:"B"}
@@ -390,6 +419,9 @@ const contributions = {
 	},
 	// L
 	"Lanie Carmelo":{
+		"Disinsection Crew":[
+			{text:"Pointed out game being impossible to open if never played before (shared with "+person("reshrom")+" and "+person("FeynHS")+")",EMDLevel:1,class:"C/D"}
+		],
 		"Game Changer":[
 			{text:"Suggested accessibility features for screen readers",EMDLevel:1,class:"B"}
 		]
@@ -399,7 +431,17 @@ const contributions = {
 			{text:"Identified one of many cases of research loadouts not working correctly (this particular case is shared with "+person("InfoHazard")+")",EMDLevel:5,class:"C/D"}
 		]
 	},
+	"Lulero":{
+		"Stylist":[
+			{text:"One of many Tier 5 color changes",EMDLevel:5,class:"D"}
+		]
+	},
 	// M
+	"Mark":{
+		"Disinsection Crew":[
+			{text:"Identified dark star bulk buy not working",EMDLevel:3,class:"C"}
+		]
+	},
 	"MaxFrost":{
 		"Stylist":[
 			{text:"Suggested display of footer in all tabs",EMDLevel:1,class:"A/B"}
@@ -407,7 +449,7 @@ const contributions = {
 	},
 	"Mixelz":{
 		"Disinsection Crew":[
-			{text:"Helped make alemaninc see that half the game was basically unplayable for six months. Why was alemaninc in need of this in the first place?",EMDLevel:1,class:"A"}
+			{text:"Helped make alemaninc see that half the game was basically unplayable for six months. Why was alemaninc in need of this in the first place?",EMDLevel:1,class:"A/B"}
 		]
 	},
 	"MundM2007":{
@@ -419,6 +461,9 @@ const contributions = {
 	"nicodium":{
 		"Disinsection Crew":[
 			{text:"Research section of 'How to play' not showing anything",EMDLevel:5,class:"D"}
+		],
+		"Exowriter":[
+			{text:"Suggested a comma in the changelog",EMDLevel:1,class:"D"}
 		],
 		"Game Changer":[
 			{text:"Suggested Study completion without research respec",EMDLevel:5,class:"B"}
@@ -454,7 +499,15 @@ const contributions = {
 	},
 	// Q
 	// R
+	"reshrom":{
+		"Disinsection Crew":[
+			{text:"Pointed out game being impossible to open if never played before (shared with "+person("FeynHS")+" and "+person("Lanie Carmelo")+")",EMDLevel:1,class:"C/D"}
+		]
+	},
 	"ResidualToast":{
+		"Disinsection Crew":[
+			{text:"Identified visual weirdness with Studies",EMDLevel:5,class:"C/D"}
+		],
 		"Game Changer":[
 			{text:"Indirectly suggested Achievement 817 \"The Knowing Existence\" reward",EMDLevel:8,class:"B"}
 		],
@@ -491,15 +544,23 @@ const contributions = {
 	},
 	"Stat Mark":{
 		"Special":[
-			{text:"Named the project",EMDLevel:1,class:"S"}
+			{text:"Named the project",EMDLevel:1,class:"S"},
 		],
 		"Game Changer":[
+			{text:"Named the Wormholes",EMDLevel:5,class:"A"},
 			{text:"Suggested normal T axis effect",EMDLevel:2,class:"B"}
 		]
 	},
-	"st0ck53y":{
+	"Steiny":{
 		"Disinsection Crew":[
-			{text:"Revealed that Achievement 801 was harmful",EMDLevel:7,class:"A"}
+			{text:"Identified one of many issues with Study V",EMDLevel:6,class:"B/C"},
+			{text:"Identified one of many cases of <code>NaN</code> galaxies",EMDLevel:7,class:"B/C"},
+			{text:"Identified save load not resetting lumen effects (as well as a host of other things)",EMDLevel:6,class:"C"}
+		]
+	},
+	"st0ck53y":{
+		"Scripter":[
+			{text:"Revealed that Achievement 801 was harmful.<br>(The pull request never did get accepted as alemaninc had to change the reward.)",EMDLevel:7,class:"A"}
 		]
 	},
 	// T
@@ -539,7 +600,10 @@ const contributions = {
 	},
 	"Tom":{
 		"Disinsection Crew":[
-			{text:"Identified \"Unassign Row <i>X</i> Masteries\" not working (shared with "+person("Spacekiwi_")+")",EMDLevel:1,class:"C/D"}
+			{text:"Identified one of many cases of <code>NaN</code> galaxies",EMDLevel:7,class:"B/C"},
+			{text:"Identified tickspeed overwriting chroma gain rather than multiplying it",EMDLevel:6,class:"B/C"},
+			{text:"Identified \"Unassign Row <i>X</i> Masteries\" not working (shared with "+person("Spacekiwi_")+")",EMDLevel:1,class:"C/D"},
+			{text:"News item #242 having an incorrect link",EMDLevel:1,class:"D/E"}
 		]
 	},
 	// U
@@ -557,7 +621,9 @@ const contributions = {
 	},
 	"WhattayaBrian":{
 		"Disinsection Crew":[
-			{text:"Identified Study V being impossible to abort",EMDLevel:6,class:"C"}
+			{text:"Identified certain Research not lighting up when purchasable",EMDLevel:5,class:"C"},
+			{text:"Identified Study V being impossible to abort",EMDLevel:6,class:"C"},
+			{text:"One of many reports of unresponsive prestige buttons",EMDLevel:2,class:"D"}
 		],
 		"Stylist":[
 			{text:"Suggested \"See all effects\" for yellow lumens",EMDLevel:6,class:"B"}
@@ -574,7 +640,8 @@ const contributions = {
 	// X
 	"xhwzwka":{
 		"Special":[
-			{text:"Taught alemaninc how to do this",EMDLevel:1,class:"S"}
+			{text:"Made a JavaScript tutorial which alemaninc used",EMDLevel:1,class:"S"},
+			{text:"Informed alemaninc that <i>GitHub Pages</i> is a thing that exists",EMDLevel:1,class:"S"}
 		],
 		"Stylist":[
 			{text:"Suggested modern star UI",EMDLevel:2,class:"B"},

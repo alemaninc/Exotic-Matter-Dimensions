@@ -86,7 +86,7 @@ function hidePopup() {
 	newsSupport.readMoreIteration=0
 }
 function popupInput() {return d.element("span_fancyPopupInput").value}
-function functionError(functionName,argumentList) {error("Cannot access "+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")")}
+function functionError(functionName,argumentList) {error("Cannot access <code>"+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")</code>")}
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
 function BEformat(value,precision=0,highPrecision=2) {return gformat(value,precision,g.notation,g.notation,highPrecision).replaceAll(" ","&nbsp;");}
 function timeFormat(x) {

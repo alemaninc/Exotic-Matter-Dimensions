@@ -524,7 +524,7 @@ function updateHTML() {
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10)"+formulaFormat.mult(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
 			d.innerHTML("span_knowledgePerSec",stat.knowledgePerSec.format(2));
 			d.element("researchContainer").style["padding-bottom"] = d.element("discoveryPanel").clientHeight+"px"
-			if (selections.research===undefined) {
+			if ((selections.research===undefined)||((selections.research==="r6_9")&&(!g.research.r6_9))) {
 				d.element("researchInfo").style.visibility = "hidden"
 			} else {
 				d.element("researchInfo").style.visibility = "visible"
@@ -797,8 +797,9 @@ function updateHTML() {
 					let prevLv = study13.prevRewardLevels[selected]
 					let currLv = study13.rewardLevels[selected]
 					let out = "<h5 style=\"font-size:20px;margin:0px;\">"+data.name+"</h5><br>"
-					if (data.type==="composite") {out += "<table style=\"text-align:left\"><colgroup><col style=\"width:140px\"><col style=\"width:340px\"></colgroup>"+countTo(currLv).map(x=>"<tr"+((x<=prevLv)?"":" style=\"color:var(--binding_light)\"")+"><td style=\"vertical-align:top;\">Level "+x+" ("+data.breakpoints[x-1]+")</td><td style=\"vertical-align:top;\">"+data.desc(x)+"</td></tr>").join("")+"</table>"}
+					if (data.type==="composite") {out += "<table style=\"text-align:left\"><colgroup><col style=\"width:96px\"><col style=\"width:384px\"></colgroup>"+countTo(currLv).map(x=>"<tr style=\"color:"+((x<=prevLv)?"inherit":"var(--binding_light)")+";padding-bottom:3px;\"><td style=\"vertical-align:top;padding-bottom:3px;\">Level "+x+"</td><td style=\"vertical-align:top;padding-bottom:3px;\">"+data.desc(x)+"</td></tr>").join("")+"</table>"}
 					else {out += data.desc(currLv,prevLv)}
+					out += "<div style=\"position:absolute;bottom:10px;left:10px;font-size:10px;width:calc(100% - 20px);text-align:center;\">"+((data.type==="single")?("Level threshold: "+data.breakpoints[0]):("Level thresholds:<br>"+data.breakpoints.slice(0,study13.rewardLevels[selected]).map((x,i)=>"<div style=\"height:25px;width:60px;display:inline-block;color:"+((i<prevLv)?"inherit":"var(--binding_light)")+"\">Level "+(i+1)+"<br>"+x+"</div>").join("")))+"</div>"
 					d.innerHTML("study13RewardInfo",out)
 				}
 			}
@@ -872,7 +873,7 @@ function tick(time) {																																		 // The game loop, which 
 
 	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
 		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
-			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onClick=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
+			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onMousedown=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
 			newsSupport.newsletter.spamStart=Date.now()+3000
 		} else if (Math.random()<deltatime/(newsSupport.newsletter.remaining.length/8)) {notify(Array.random(newsSupport.spamCompendium),"hsl("+ranint(0,359)+" 80% 40%)","#000000")}
 	}
@@ -947,12 +948,12 @@ function tick(time) {																																		 // The game loop, which 
 	}
 	if (achievement.ownedInTier(5)>=3 && g.stardustUpgradeAutobuyerOn) stardustUpgradeAutobuyerProgress+=time/autobuyerMeta.interval("stardustUpgrade");
 	if (stardustUpgradeAutobuyerProgress > 1) {
-		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]==="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))) buyStardustUpgrade(i)
+		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]==="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))&&(!((((achievement.maxForLocks.specificStardustUpgrades[g.achOnProgressBar]?.[i]??Infinity)===g.stardustUpgrades[i-1])||((achievement.maxForLocks.totalStardustUpgrades[g.achOnProgressBar]??Infinity)===effectiveStardustUpgrades()))&&achievement.locking(g.achOnProgressBar)))) buyStardustUpgrade(i)
 		stardustUpgradeAutobuyerProgress%=1;
 	}
 	if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");
 	if (starAutobuyerProgress > 1) {
-		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap))) buyStar(false);}
+		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&(g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap)))&&(!((g.stars===achievement.maxForLocks.stars[g.achOnProgressBar])&&achievement.locking(g.achOnProgressBar)))) buyStar(false);}
 		if (unspentStars()>0&&g.starAllocatorOn&&(totalStars<g.starAllocatorBuild.length)) for (let i of g.starAllocatorBuild) buyStarUpgrade(i);
 		starAutobuyerProgress%=1;
 	}
@@ -986,19 +987,21 @@ function tick(time) {																																		 // The game loop, which 
 	g.wormholeAutomatorValue=d.element("wormholeAutomatorValue").value;
 	if (autobuyers.research.unlockReq() && g.researchAutobuyerOn) researchAutobuyerProgress+=time/autobuyerMeta.interval("research");
 	if (researchAutobuyerProgress > 1) {
-		let bought = false // check if anything was bought
-		if (g.researchAutobuyerMode===0) { // free research
-			let clock = Date.now()+1000
-			while (true) {
-				let buyable = buyableResearch.filter(x=>(research[x].type==="normal")&&researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9")&&((research[x].group===undefined)?true:canAffordAllInResearchGroup(research[x].group)))
-				if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
-				if (Date.now()>clock) {error("Infinite Loop");break}
-				for (let i of buyable) {if (researchCost(i).eq(c.d0)) {buySingleResearch(researchRow(i),researchCol(i))}} // check again for research with changing costs
-				updateBuyableResearch()
-				bought=true
-			}
-		} else {g.researchAutobuyerMode=0} // error detection
-		if (bought) {updateResearchTree();generateResearchCanvas()}
+		if (!(achievement.maxForLocks.research.includes(Number(g.achOnProgressBar))&&achievement.locking(g.achOnProgressBar))) {
+			let bought = false // check if anything was bought
+			if (g.researchAutobuyerMode===0) { // free research
+				let clock = Date.now()+1000
+				while (true) {
+					let buyable = buyableResearch.filter(x=>(research[x].type==="normal")&&researchCost(x).eq(c.d0)&&availableResearch(researchRow(x),researchCol(x))&&researchConditionsMet(x)&&(x!=="r6_9")&&((research[x].group===undefined)?true:canAffordAllInResearchGroup(research[x].group)))
+					if (buyable.length===0) {break} // if any free research are bought, the buyable research list will update so must repeat
+					if (Date.now()>clock) {error("Infinite Loop");break}
+					for (let i of buyable) {if (researchCost(i).eq(c.d0)) {buySingleResearch(researchRow(i),researchCol(i))}} // check again for research with changing costs
+					updateBuyableResearch()
+					bought=true
+				}
+			} else {g.researchAutobuyerMode=0} // error detection
+			if (bought) {updateResearchTree();generateResearchCanvas()}
+		}
 		researchAutobuyerProgress%=1;
 	}
 

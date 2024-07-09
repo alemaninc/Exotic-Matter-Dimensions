@@ -58,7 +58,7 @@ td {
 const save = JSON.parse(localStorage.getItem("save"))
 const notation = (save===null)?"Mixed scientific":(save.notation??"Mixed Scientific")
 function format(x,p=0){return gformat(N(x),p,notation)}
-const EMDLevel = (save===null)?4:(save.EMDLevel??Infinity)
+const EMDLevel = (save===null)?Infinity:(save.EMDLevel??Infinity)
 const contributors = {
 	"Hedrauta":"#00cc00",
 	"IRAD":"#ff9933",
@@ -69,12 +69,37 @@ const contributors = {
 const logEntries = [
 	/*
 	next major:
-
+	{num:"",date:"",changes:[
+		[9,"BALANCE","Added an additional Study XIII reward at 200 completions"]
+	]},
 	blank entry:
 	{num:"",date:"",changes:[
 
 	]},
 	*/
+	{num:"𝕍1ω.8",date:"2024-07-09",name:"United as Nine",changes:[
+		[4,"BALANCE","Stars 61, 62 and 63 are weaker below "+format(Decimal.FC_NN(1,1,50+Math.log10(2)*2650))+" exotic matter"],
+		[6,"BALANCE","Achievement 614 \"Redstone Clock\" is no longer nitpicky when the slowest time is <i>exactly</i> 1 second"],
+		[1,"BUGFIX","Unassigning all Mastery rows resetting mastery power even if no Masteries were assigned before"],
+		[1,"BUGFIX","The complex achievement QOL added to the 𝕍1ω.5 changelog should now actually work instead of causing catastrophic errors"],
+		[5,"BUGFIX","Star allocator assignment not working at all"],
+		[5,"BUGFIX","Research 6-9 tooltip behaving strangely"],
+		[5,"INTERFACE","Tier 5 achievement backgrounds are darker"],
+		[8,"INTERFACE","The knowledge effect cap is now shown in the Stat Breakdown if Study VIII is completed"],
+		[8,"INTERFACE","Ontological Triad Study selection buttons are smaller, and use Roman rather than Arabic numerals"],
+		[9,"INTERFACE","Study XIII Rewards \"Mailbreaker\" and \"Stat Mark's Cellular Game of Rising\" now use smaller font"],
+		[9,"INTERFACE","Study XIII rewards now show their level thresholds at the bottom of the reward <code>div</code>"],
+		[1,"QOL","Achievements which cannot be failed while on the progress bar now mention that they behave like this"],
+		[5,"QOL","Iron Will Stardust reset confirmation is now switched off by default (related to the above BUGFIX)"],
+		[5,"QOL","Star allocator is now easier to use"],
+		[1,"TEXTFIX","Reddit link leading to the 𝕍1.4 post rather than the 𝕍1ω post"],
+		[1,"TEXTFIX","\"Mastery unassignmnet\""],
+		[2,"TEXTFIX","Stardust reset popup mentioning energy if this is not unlocked"],
+		[9,"TEXTFIX","Study XIII Reward \"Exo Reactor\" no longer has a <code>+</code> sign in its effect description"],
+		[9,"TEXTFIX","The Research 25-1 effect is no longer unformatted once boosted"],
+		[9,"TEXTFIX","Study XIII displaying 256 as the maximum number of completions.<br>That is not a Freudian slip."],
+		[1,"WHAT","Added the missing QOL to the 𝕍1ω.5 changelog"]
+	]},
 	{num:"𝕍1ω.7",date:"2024-06-21",changes:[
 		[1,"BUGFIX","Buying a single axis crashing the game"],
 		[1,"What a way to scare <i>all</i> new arrivals off..."]
@@ -88,6 +113,7 @@ const logEntries = [
 		[7,"BUGFIX","Achievement 707 \"Master of the Void\" awarding even if stars or stardust upgrades are owned"],
 		[9,"BUGFIX","Ontological Triad including Study IX completely disabling all Bindings on experientia reset"],
 		[1,"INTERFACE","EMD Level is now shown on footer by default"],
+		[1,"QOL","Setting an achievement to the progress bar will now prevent its failure"],
 		[8,"TEXTFIX","Research 17-8 makes Time research show the unchanged effect"],
 		[8,"TEXTFIX","Wormhole Upgrade 5 \"More Achievement\" now correctly refers to Mastery 101 instead of Achievement 501 \"Wormhole to Somewhere\""],
 		[9,"TEXTFIX","Study XIII Reward \"Master's Encyclopædia of Integer Sequences®\" Levels 4 and 5 now state that they are multiplicative with Levels 1 and 2, and correctly uses old spelling as is customary for Study XIII rewards"],

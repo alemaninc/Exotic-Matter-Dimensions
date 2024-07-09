@@ -5,6 +5,13 @@ const statList = [
 		styles:{light:{style:"color:#3399ff;"},dark:{style:"background-color:#113355;border-color:#336699;"}},
 		entries:[
 			{
+				text:function(){return "Player Name:<br>{0}<br><br><button onMousedown=\"changePlayerName()\" class=\"genericbutton size4\">Change</button>"},
+				visible:function(){return true},
+				variables:{
+					0:{value:function(){return g.playerName},classes:"_exoticmatter"}
+				}
+			},
+			{
 				text:function(){return "{0} achievements earned<br><br>(+ {1} secret)"},
 				visible:function(){return true},
 				variables:{
@@ -38,7 +45,7 @@ const statList = [
 				}
 			},
 			{
-				text:function(){return "EMD Level {0}<br>(Score: {1})<br><button class=\"information\" onClick=\"EMDScore(true)\" style=\"color:inherit;border-color:inherit;\">i</button>"},
+				text:function(){return "EMD Level {0}<br>(Score: {1})<br><button class=\"information\" onMousedown=\"EMDScore(true)\" style=\"color:inherit;border-color:inherit;\">i</button>"},
 				visible:function(){return true},
 				variables:{
 					0:{value:function(){return g.EMDLevel}},
@@ -699,6 +706,12 @@ const statTemplates = {
 			color:"var(--binding)"
 		}}
 		functionError("statTemplates.binding225",arguments)
+	},
+	trinity3:{
+		label:study13.rewardLabel("trinity3"),
+		func:function(prev){return ((study13.rewardLevels.trinity3===1)&&prev.gt(c.d1))?prev.add1PowSub1(study13.rewards.trinity3.eff()):prev},
+		text:function(){return "^ "+study13.rewards.trinity3.eff().noLeadFormat(4)},
+		show:function(){return study13.rewardLevels.trinity3===1}
 	}
 }
 function statFormat(formulaShown,formulaHidden,className) {
@@ -1106,7 +1119,7 @@ miscStats.darkmatterPerSec={
 		},
 		{
 			label:"Dark Stars",
-			func:function(prev){return prev.aps(darkStarEffect1())},
+			func:function(prev){return prev.add1PowSub1(darkStarEffect1())},
 			text:function(){return "(<i>x</i> + 1) ^ "+darkStarEffect1().noLeadFormat(3)+" - 1"},
 			dependencies:["realDarkStars","redLightEffect",...bindingDependencies(245)],
 			show:function(){return stat.realDarkStars.neq(c.d0)}
@@ -1433,10 +1446,10 @@ miscStats.baseMasteryPowerExponent={
 		},
 		statTemplates.researchAdd("r19_7"),
 		{
-			label:"<span onMouseover=\"addSecretAchievement(9)\">Secret Achievements</span>",
+			label:"<span onMousedown=\"addSecretAchievement(9)\">Secret Achievements</span>",
 			mod:function(){return secretAchievementPoints/1e16},
 			func:function(prev){return prev}, // the reward is a lie! how cruel of alemaninc.
-			text:function(){return "<span onClick=\"addSecretAchievement(9)\">+ "+this.mod().toFixed(16)+"</span>";},
+			text:function(){return "<span onMousedown=\"addSecretAchievement(9)\">+ "+this.mod().toFixed(16)+"</span>";},
 			show:function(){return secretAchievementPoints>0;},
 			color:"#808080"
 		}
@@ -3120,7 +3133,7 @@ miscStats.knowledgePerSec={
 		// observations
 		{
 			label:"Observations",
-			func:function(prev){return prev.aps(stat.observationEffect);},
+			func:function(prev){return prev.add1PowSub1(stat.observationEffect);},
 			text:function(){return unbreak("(<i>x</i> + 1)")+" ^ "+stat.observationEffect.noLeadFormat(3)+" - 1"},
 			dependencies:["observationEffect"],
 			show:function(){return stat.observationEffect.neq(c.d1)},
@@ -3201,6 +3214,33 @@ miscStats.observationEffect={
 			dependencies:["antiTAxisEffect","realantiTAxis"],
 			show:function(){return stat.antiTAxisEffect.neq(c.d1)&&stat.realantiTAxis.neq(c.d0)}
 		},
+	]
+}
+miscStats.knowledgeEffectCap={
+	type:"breakdown",
+	label:"Knowledge effect cap",
+	visible:function(){return stat.knowledgeEffectCap.neq(c.d50)},
+	category:"Knowledge",
+	precision:3,
+	modifiers:[
+		{
+			label:"Base",
+			func:function(){return c.d50},
+			text:function(){return "50"},
+			show:function(){return true}
+		},
+		{
+			label:"Study VIII reward 1",
+			func:function(){return studies[8].reward(1)},
+			text:function(){return studies[8].reward(1).noLeadFormat(2)},
+			show:function(){return g.studyCompletions[8]>0}
+		},
+		{
+			label:study13.rewardLabel("particleLab4"),
+			func:function(prev){return (study13.rewardLevels.particleLab4===1)?prev.add(study13.rewards.particleLab4.eff()):prev},
+			text:function(){return "+ "+study13.rewards.particleLab4.eff().noLeadFormat(3)},
+			show:function(){return study13.rewardLevels.particleLab4===1}
+		}
 	]
 }
 miscStats.chromaPerSec={
@@ -3287,6 +3327,12 @@ miscStats.chromaPerSec={
 			show:function(){return g.achievement[918]}
 		},
 		// exponents
+		{
+			label:study13.rewardLabel("hyperdrive"),
+			func:function(prev){return prev.gt(c.d1)?prev.pow(study13.rewards.hyperdrive.eff()):prev},
+			text:function(){return "^ "+study13.rewards.hyperdrive.eff().noLeadFormat(4)},
+			show:function(){return study13.rewards.hyperdrive.eff().neq(c.d1)}
+		},
 		// tickspeed
 		{
 			label:achievement.label(815),
@@ -3365,6 +3411,7 @@ miscStats.luckShardsPerSec={
 			dependencies:["luckUpgLevel_cinquefolium_luck"],
 			show:function(){return stat.luckUpgLevel_cinquefolium_luck.neq(c.d0)}
 		},
+		statTemplates.trinity3,
 		// tickspeed
 		statTemplates.tickspeed()
 	]
@@ -3438,7 +3485,7 @@ miscStats.prismaticPerSec={
 		// base exponents
 		{
 			label:"Galaxy Boost 4",
-			func:function(prev){return prev.aps(galaxyEffects[4].boost.value())},
+			func:function(prev){return prev.add1PowSub1(galaxyEffects[4].boost.value())},
 			text:function(){return "(<i>x</i> + 1) ^ "+galaxyEffects[4].boost.value().noLeadFormat(4)+" - 1"},
 			show:function(){return g.galaxies>=galaxyEffects[4].req}
 		},
@@ -3468,6 +3515,8 @@ miscStats.prismaticPerSec={
 		},
 		statTemplates.achievementMul(905),
 		statTemplates.study13SacNum1,
+		// exponents
+		statTemplates.trinity3,
 		// tickspeed
 		statTemplates.tickspeed()
 	]
@@ -3524,6 +3573,7 @@ miscStats.antimatterPerSec={
 			dependencies:["realAntimatterGalaxies"],
 			show:function(){return stat.realAntimatterGalaxies.neq(c.d0)}
 		},
+		statTemplates.trinity3,
 		// layer functions
 		{
 			label:"Study IX reward 1",
@@ -4183,7 +4233,6 @@ miscStats.knowledgeEffectPower={type:"combined",value:function(){
 	if (study13.bound(348)) {out = out.mul(study13.bindingEff(348))}
 	return out
 },dependencies:[...bindingDependencies(348)]}
-miscStats.knowledgeEffectCap={type:"combined",value:function(){return studies[8].reward(1)}}
 miscStats.extraDiscoveries_add={type:"combined",value:function(){
 	let out = c.d0
 	if (g.achievement[604]) out = out.add(achievement(604).effValue())

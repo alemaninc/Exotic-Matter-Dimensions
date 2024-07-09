@@ -36,12 +36,16 @@ const subtabProperties = {
 		axis:{
 			glow:function(){
 				if ((autobuyerMeta.interval("axis")<=0.1)&&g.axisAutobuyerOn) return false;
-				if (g.glowOptions.buyAxis) {for (let i=0;i<12;i++) {if (g.exoticmatter.gt(axisCost(axisCodes[i]))&&(stat.axisUnlocked>i)) {return true}}};
+				if (g.glowOptions.buyAxis) {for (let i=0;i<12;i++) {if (g.exoticmatter.gt(axisCost(axisCodes[i]))&&(stat.axisUnlocked>i)&&Decimal.neq(g[axisCodes[i]+"Axis"],maxAxisForAchievement(i))) {return true}}};
 			}
 		},
 		masteries:{
 			visible:function(){return unlocked("Masteries")},
-			glow:function(){if (g.glowOptions.emptyMasteryRow) {for (let i=1;i<=totalMasteryRows;i++) {if ((g.activeMasteries[i]===0)&&(stat["masteryRow"+i+"Unlocked"])) {return true}}};}
+			glow:function(){if (g.glowOptions.emptyMasteryRow) {
+				if (!(achievement.maxForLocks.mastery.includes(Number(g.achOnProgressBar))&&achievement.locking(g.achOnProgressBar))) {
+					for (let i=1;i<=totalMasteryRows;i++) {if ((g.activeMasteries[i]===0)&&(stat["masteryRow"+i+"Unlocked"])) {return true}}};
+				}
+			}
 		},
 		offlineTime:{
 			glow:function(){return ((timeState===1)&&g.glowOptions.overclock)}
