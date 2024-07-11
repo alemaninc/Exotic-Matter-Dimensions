@@ -2564,6 +2564,23 @@ function asceticMaxBuyResearch(id,updateTree=true,manual=false) { // buys only 1
 		if (regen) generateResearchCanvas()
 	}
 }
+function buyResearchList(res) {
+	loop: while (true) {
+		let lenBefore = res.length
+		for (let i=res.length-1;i>=0;i--) {
+			let id = res[i]
+			let row = researchRow(id)
+			let col = researchCol(id)
+			if (availableResearch(row,col)&&researchConditionsMet(id)) {buySingleResearch(row,col);res.remove(id)}
+			console.log([id,availableResearch(row,col),researchConditionsMet(id)])
+		}
+		let lenAfter = res.length
+		if (lenBefore===lenAfter) {
+			notify((lenAfter===0)?"Successfully loaded!":("Research "+res.map(x=>researchOut(x)).joinWithAnd()+" could not be purchased"),"var(--research)")
+			break loop
+		}
+	}
+}
 function tryBuyResearch(x) {
 	if (g.confirmations.doubleClickToBuy) {
 		if (selections.researchClick===x) {
@@ -2655,10 +2672,10 @@ const researchLoadouts = {
 		console.log(string)
 		let parts = string.split("|")
 		if (parts.length===1) {
-			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = string.split(",")
+			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = string.split(",").sort((a,b)=>(researchRow(a)*100+researchCol(a))-(researchRow(b)*100+researchCol(b)))
 		} else if (parts.length===2) {
 			researchLoadouts.rename(parts[0])
-			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = parts[1].split(",")
+			g.researchLoadouts[researchLoadoutSelected-1].savedResearch = parts[1].split(",").sort((a,b)=>(researchRow(a)*100+researchCol(a))-(researchRow(b)*100+researchCol(b)))
 		} else {
 			notify("Invalid import.","var(--research)")
 		}
@@ -2678,14 +2695,9 @@ const researchLoadouts = {
 	},
 	load:function(){
 		showingResearchLoadouts=false
-		let res = structuredClone(g.researchLoadouts[researchLoadoutSelected-1].savedResearch)
-		loop: while (true) {
-			for (let i=res.length-1;i>=0;i--) {}
-		}
-		for (let i of g.researchLoadouts[researchLoadoutSelected-1].savedResearch) {let r=researchRow(i),c=researchCol(i);availableResearch(r,c)?buySingleResearch(r,c,false,true):asceticMaxBuyResearch(i,false,true)}
+		buyResearchList(structuredClone(g.researchLoadouts[researchLoadoutSelected-1].savedResearch).filter(x=>!g.research[x]).reverse())
 		updateResearchTree()
 		generateResearchCanvas()
-		notify("Successfully loaded!","var(--research)")
 		hidePopup()
 	}
 }
@@ -2709,7 +2721,7 @@ function processResearchImport() {
 	while ((!"0123456789".includes(string.substring(string.length-1)))&&(string.length>0)) {string = string.substring(0,string.length-1)} // remove non-numeric characters from end (all research ids end with a number)
 	try {
 		let researchBuild = string.split(",")
-		for (let i of researchBuild) {asceticMaxBuyResearch(i,false,true)};
+		buyResearchList(researchBuild);
 		updateResearchTree();
 		generateResearchCanvas()
 	} catch {notify('Invalid import.','var(--research)')}

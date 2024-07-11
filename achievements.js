@@ -817,7 +817,7 @@ const achievementList = {
 			description:"Destroy the universe without stardust-resetting or having research in the current universe",
 			check:function(){return stat.ironWill;},
 			event:"wormholeResetBefore",
-			progress:function(){return stat.ironWill?"Still possible":"Failed";},
+			progress:function(){return stat.ironWill?achievement.wormholeProgress():"Failed";},
 			failed:function(){return !stat.ironWill},
 			prevReq:[505],
 			reward:"Hawking radiation gain ^1.1",
@@ -979,7 +979,7 @@ const achievementList = {
 			failed:function(){return !g.ach524possible;},
 			reward:"Unlock a new row of Masteries",
 			flavor:"Now with 270% more accidents involving falling objects",
-			active:function(){return !g.activeMasteries.map(x=>x===0).includes(false);}
+			active:function(){return !g.activeMasteries.slice(1).map(x=>x===0).includes(false);}
 		},
 		525:{
 			name:"You didn't need it anyway",

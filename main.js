@@ -311,7 +311,7 @@ function gameClick() {
 // Options & Display
 function changePlayerName() {
 	popup({
-		text:"Input your player name:<br><i>(you can change this in Options later.)</i>",
+		text:"Input your player name:",
 		input:g.playerName,
 		buttons:[["Confirm","g.playerName=popupInput()"]]
 	})
@@ -1436,7 +1436,7 @@ function buyStarUpgrade(x,manual=false) {
 	if (g.darkstars.gt(g.stars)) g.shiningBrightTonight = false;
 	addAchievement(412);
 }
-function respecStars() {
+function respecStars(manual=false) {
 	if (achievement.maxForLocks.stardustReset[g.achOnProgressBar]??false) {if (manual) {achievement.lockPopup()}; return}
  	if (StudyE(12)) {notify("Stardust reset is disabled in Study XII","#990000","#ffffff"); return}
 	stardustReset();
@@ -1976,7 +1976,7 @@ function wormholeReset(showPopups=false) {
 			g.studyCompletions[g.activeStudy] = (g.activeStudy===13)?Math.max(studyPower(13),g.studyCompletions[13]):Math.min(studyPower(g.activeStudy)+1,4); // study X proof - no completions from doing Stellar Triad 4 times!
 			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(research[x].type!=="study"))
 			if (g.activeStudy===13) {study13.updateRewardLevels()} else {respecResearch()};
-			if (g.restoreResearchAfterStudy) {for (let i of resbuild) {asceticMaxBuyResearch(i,false,showPopups)}}
+			if (g.restoreResearchAfterStudy) {buyResearchList(resbuild)}
 			updateResearchTree();
 			generateResearchCanvas();
 			if ((g.activeStudy===10)&&(studyPower(10)===3)) {for (let i of g.study10Options) {g.ach920Completions |= 2**(i-1)}}

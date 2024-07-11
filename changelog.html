@@ -77,6 +77,14 @@ const logEntries = [
 
 	]},
 	*/
+	{num:"𝕍1ω.9",date:"2024-07-11",changes:[
+		[5,"BUGFIX","Research import and loadout load no longer target unwanted research"],
+		[5,"BUGFIX","Research loadout load no longer freezes the browser"],
+		[5,"BUGFIX","Star respec no longer crashes the game when used while an achievement is preventing Stardust reset"],
+		[5,"BUGFIX","Achievement 524 \"Mastery is not a trivial monster\" is no longer impossible"],
+		[1,"TEXTFIX","Removed an erroneous \"You can change this in Options later\" text from the modal to change the player name"],
+		[1,"TEXTFIX","The stat breakdown no longer thinks "+format(N(3e15+3))+" is a femtillion"]
+	]},
 	{num:"𝕍1ω.8",date:"2024-07-09",name:"United as Nine",changes:[
 		[4,"BALANCE","Stars 61, 62 and 63 are weaker below "+format(Decimal.FC_NN(1,1,50+Math.log10(2)*2650))+" exotic matter"],
 		[6,"BALANCE","Achievement 614 \"Redstone Clock\" is no longer nitpicky when the slowest time is <i>exactly</i> 1 second"],
@@ -89,6 +97,7 @@ const logEntries = [
 		[8,"INTERFACE","Ontological Triad Study selection buttons are smaller, and use Roman rather than Arabic numerals"],
 		[9,"INTERFACE","Study XIII Rewards \"Mailbreaker\" and \"Stat Mark's Cellular Game of Rising\" now use smaller font"],
 		[9,"INTERFACE","Study XIII rewards now show their level thresholds at the bottom of the reward <code>div</code>"],
+		[1,"MISCELLANEOUS","Added player names"],
 		[1,"QOL","Achievements which cannot be failed while on the progress bar now mention that they behave like this"],
 		[5,"QOL","Iron Will Stardust reset confirmation is now switched off by default (related to the above BUGFIX)"],
 		[5,"QOL","Star allocator is now easier to use"],

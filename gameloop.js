@@ -962,8 +962,10 @@ function tick(time) {																																		 // The game loop, which 
 		let mode = g.stardustAutomatorMode
 		if (mode === 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)} // at X stardust
 		else if (mode === 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)} // at X seconds
-		else if (mode === 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))} // multiply stardust by X
-		else if (mode === 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))} // power stardust by X
+		else if (mode === 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))} // multiply current stardust by X
+		else if (mode === 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))} // power current stardust by X
+		else if (mode === 4) {doReset = stat.pendingstardust.gte((g.previousStardustRuns.last10.length===0)?c.d0:N(g.previousStardustRuns.last10[0].gain).mul(g.stardustAutomatorValue))} // multiply previous stardust by X
+		else if (mode === 5) {doReset = stat.pendingstardust.gte((g.previousStardustRuns.last10.length===0)?c.d0:N(g.previousStardustRuns.last10[0].gain).pow(g.stardustAutomatorValue))} // power previous stardust by X
 		else {
 			if (achievement.ownedInTier(5)>=8) {popup({text:"Due to an error, stardust automator mode was reverted to the default value of amount of stardust."})}
 			g.stardustAutomatorMode = 0
@@ -978,6 +980,8 @@ function tick(time) {																																		 // The game loop, which 
 		else if (mode === 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)} // at X seconds
 		else if (mode === 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))} // multiply HR by X
 		else if (mode === 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))} // power HR by X
+		else if (mode === 4) {doReset = stat.pendinghr.gte((g.previousWormholeRuns.last10.length===0)?c.d0:N(g.previousWormholeRuns.last10[0].gain).mul(g.wormholeAutomatorValue))} // multiply previous HR by X
+		else if (mode === 5) {doReset = stat.pendinghr.gte((g.previousWormholeRuns.last10.length===0)?c.d0:N(g.previousWormholeRuns.last10[0].gain).pow(g.wormholeAutomatorValue))} // power previous HR by X
 		else {
 			if (achievement.ownedInTier(5)>=12) {popup({text:"Due to an error, wormhole automator mode was reverted to the default value of amount of HR."})}
 			g.wormholeAutomatorMode = 0

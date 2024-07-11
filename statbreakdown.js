@@ -305,7 +305,7 @@ const largeNumberVisualizationNumbers = [
 	{value:c.e10,name:"dialogue"},
 	{value:c.inf,name:"double floating-point Infinity"},
 	{value:N(17*2**259),name:"Eddington number"},
-	{value:N(3e15+3),name:"femtillion"},
+	{value:N(3e15+3).pow10(),name:"femtillion"},
 	{value:c.e100,name:"googol"},
 	{value:N("ee100"),name:"googolplex"},
 	{value:c.d2.pow(276709),name:"Hitchhiker's number"},
