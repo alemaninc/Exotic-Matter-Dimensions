@@ -150,36 +150,16 @@ function dictionary(key,dict) {
 function halfFunction(x) {
 	return (typeof x === "function")?x():x;
 }
-const numwordIllionsDictionary = ["thousand",...["m","b","tr","quadr","quint","sext","sept","oct","non"].map(x=>x+"illion"),...(()=>{
-	let out = []
-	for (let i=0;i<92;i++) out.push(["","un","duo","tre","quattuor","quin","sex","septem","octo","novem"][i%10]+["dec","vigint","trigint","quadragint","quinquagint","sexagint","septuagint","octogint","nonagint","cent"][Math.floor(i/10)]+"illion")
-	return out
-})()]
 function numword(num,precision=3) {
 	if (num===0) return "zero"
 	let out = (num>0?"":"minus ")
 	num=Math.abs(num)
-	// for 1-999
-	function smallInteger(x) {
-		let smallIntOutput = ""
-		if (x>99) {
-			smallIntOutput = ["one","two","three","four","five","six","seven","eight","nine"][Math.floor(x/100-1)]+" hundred"+(x%100===0?"":" and ")
-			x=x%100
-		}
-		if (x>19) {
-			smallIntOutput += ["twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"][Math.floor(x/10)-2]
-			if (x%10>0) smallIntOutput += "-"+["one","two","three","four","five","six","seven","eight","nine"][x%10-1]
-		} else if (x>0) {
-			smallIntOutput += ["one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"][x-1]
-		}
-		return smallIntOutput
-	}
 	let illionOut = []
 	for (let illion=101;illion>-2;illion--) {
 		let illionValue = 1e3**(illion+1)
 		let amount = Math.floor(num/illionValue)
 		if (amount>0) {
-			illionOut.push(smallInteger(amount)+(illion===-1?"":(" "+numwordIllionsDictionary[illion])))
+			illionOut.push(numword.smallInteger(amount)+(illion===-1?"":(" "+numword.illionsDictionary[illion])))
 			num -= amount*illionValue
 		}
 	}
@@ -190,6 +170,25 @@ function numword(num,precision=3) {
 		out+=" point "+decimals.map(x=>["zero","one","two","three","four","five","six","seven","eight","nine"][x]).join(" ")
 	}
 	return out
+}
+numword.illionsDictionary = ["thousand",...["m","b","tr","quadr","quint","sext","sept","oct","non"].map(x=>x+"illion"),...(()=>{
+	let out = []
+	for (let i=0;i<92;i++) out.push(["","un","duo","tre","quattuor","quin","sex","septem","octo","novem"][i%10]+["dec","vigint","trigint","quadragint","quinquagint","sexagint","septuagint","octogint","nonagint","cent"][Math.floor(i/10)]+"illion")
+	return out
+})()]
+numword.smallInteger = function(x) { // for 1-99
+	let smallIntOutput = ""
+	if (x>99) {
+		smallIntOutput = ["one","two","three","four","five","six","seven","eight","nine"][Math.floor(x/100-1)]+" hundred"+(x%100===0?"":" and ")
+		x=x%100
+	}
+	if (x>19) {
+		smallIntOutput += ["twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"][Math.floor(x/10)-2]
+		if (x%10>0) smallIntOutput += "-"+["one","two","three","four","five","six","seven","eight","nine"][x%10-1]
+	} else if (x>0) {
+		smallIntOutput += ["one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"][x-1]
+	}
+	return smallIntOutput
 }
 function pluralize(num,word,plural=word+"s") {
 	if (num===1) return "one "+word

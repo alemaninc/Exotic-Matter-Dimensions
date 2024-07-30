@@ -111,7 +111,7 @@ const categories = {
 	"Worldbuilder":"For those who added flair to the game"
 }
 function news(id,txt,lv,grd) {return {text:"#"+id+" \""+txt+"\"",EMDLevel:lv,class:grd}}
-function person(name){return "<span onClick=\"showContributions('"+name+"')\">"+name+"</span>"}
+function person(name){return "<button style=\"background-color:#000000;border-style:solid;border-width:1px;border-radius:10px;border-color:"+contributorColor(name)+";color:"+contributorColor(name)+";height:20px;\" onClick=\"showContributions('"+name+"')\">"+name+"</button>"}
 const contributions = {
 	// ![A-Z]
 	"10mart10":{
@@ -195,16 +195,20 @@ const contributions = {
 	// C
 	"Celestial of Blob / hyperbolia":{
 		"Disinsection Crew":[
+			{text:"Identified that limited prismatic upgrades are not actually limited (shared with "+person("Orrery")+")",EMDLevel:8,class:"B"},
 			{text:"Identified Scientific notation not working.<br>How does alemaninc break what is literally the notation used by half the playerbase and release it to production?",EMDLevel:1,class:"C"},
 			{text:"Identified attempting to change the footer display crashing the game",EMDLevel:1,class:"C/D"},
 			{text:"Identified it being possible to have an amount of dilated time on the femtosecond level",EMDLevel:1,class:"D"}
+		],
+		"Exowriter":[
+			{text:"Suggested for "+person("Kaffe-work / IRAD")+" to add a comma in the changelog",EMDLevel:1,class:"E"}
 		],
 		"Game Changer":[
 			{text:"Suggested Study XI",EMDLevel:8,class:"B"},
 			{text:"Indirectly suggested Study of Studies having 4 different research",EMDLevel:8,class:"B/C"}
 		],
 		"Journalist":[
-			{text:"Inspired news item #326 \"Triad Studies and Study of Studies\"",EMDLevel:8,class:"D"}
+			{text:"Inspired news item #326",EMDLevel:8,class:"E"}
 		],
 		"Scripter":[
 			{text:"Wrote one line of code to fix a bug critical to those at Level 8 endgame",EMDLevel:8,class:"C"}
@@ -323,6 +327,11 @@ const contributions = {
 			{text:"Added Engineering notation",EMDLevel:1,class:"B"}
 		]
 	},
+	"hello.":{
+		"Disinsection Crew":[
+			{text:"Identified one of many cases of opening a specific tab crashing the game (in this case, 'Hidden Statistics')",EMDLevel:1,class:"D"}
+		]
+	},
 	"HollowX913":{
 		"Disinsection Crew":[
 			{text:"Identified Studies being impossible to complete if \"respec Research after Study\" is switched off",EMDLevel:5,class:"C"}
@@ -330,7 +339,7 @@ const contributions = {
 	},
 	"Hori":{
 		"Disinsection Crew":[
-			{text:"Studies being impossible to enter",EMDLevel:5,class:"C"},
+			{text:"Identified Studies being impossible to enter",EMDLevel:5,class:"C"},
 			{text:"Pointed out when alemaninc made Research invisible (shared with "+person("badzad31(Davin)")+", "+person("Dragonus")+" and "+person("Titus")+")",EMDLevel:5,class:"D"}
 		]
 	},
@@ -487,6 +496,11 @@ const contributions = {
 		]
 	},
 	// O
+	"Orrery":{
+		"Disinsection Crew":[
+			{text:"Identified that limited prismatic upgrades are not actually limited (shared with "+person("Celestial of Blob / hyperbolia")+")",EMDLevel:8,class:"B"}
+		]
+	},
 	// P
 	"Pickle Rick Sanchez":{
 		"Disinsection Crew":[
@@ -614,6 +628,7 @@ const contributions = {
 		"Disinsection Crew":[
 			{text:"Identified one of many cases of <code>NaN</code> galaxies",EMDLevel:7,class:"B/C"},
 			{text:"Identified tickspeed overwriting chroma gain rather than multiplying it",EMDLevel:6,class:"B/C"},
+			{text:"Identified ray chroma showing up even when not unlocked if Research 11-8 is owned",EMDLevel:6,class:"C"},
 			{text:"Identified \"Unassign Row <i>X</i> Masteries\" not working (shared with "+person("Spacekiwi_")+")",EMDLevel:1,class:"C/D"},
 			{text:"News item #242 having an incorrect link",EMDLevel:1,class:"D/E"}
 		]
@@ -645,12 +660,18 @@ const contributions = {
 		"Disinsection Crew":[
 			{text:"Identified stardust exponents below "+format("2^-53")+" behaving like 0 regardless of the true value",EMDLevel:5,class:"C"}
 		],
+		"Exowriter":[
+			{text:"Suggested for "+person("Kaffe-work / IRAD")+" to add a comma in the changelog",EMDLevel:1,class:"E"}
+		],
 		"Stylist":[
 			{text:"Suggested white/black/gray chromas having very slightly different colors",EMDLevel:6,class:"B"}
 		]
 	},
 	// X
 	"xhwzwka":{
+		"Journalist":[
+			{text:"Wrote news item #267 (and later had to correct the part that was \"already formatted\" except it wasn't)",EMDLevel:1,class:"D"},
+		],
 		"Special":[
 			{text:"Made a JavaScript tutorial which alemaninc used",EMDLevel:1,class:"S"},
 			{text:"Informed alemaninc that <i>GitHub Pages</i> is a thing that exists",EMDLevel:1,class:"S"}

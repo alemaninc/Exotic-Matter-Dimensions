@@ -3006,7 +3006,7 @@ Object.defineProperty(Array.prototype,"decimalPowerTower",{value:function decima
 	return this.reduceRight((x,y) => y.pow(x));
 }})
 const notationSupport = {
-	formatSmall:function(x,p){
+	formatSmall:function(x,p=2){
 		let y=Math.max(0,p-Math.floor(x.max(constant.em10).min(constant.e10).log(constant.d10).toNumber()));
 		if (x.lt(1000)) return x.toNumber().toFixed(y);
 		if (x.lt(1000000)) return (Math.round(x.toNumber()*10**y)/10**y).toLocaleString("en-US");
@@ -3034,6 +3034,20 @@ const notationSupport = {
 			}
 			return out
 		}
+	},
+	defaultPrecision:{
+		"Alemaninc Ordinal":0,
+		"BE Default":3,
+		"Engineering":2,
+		"Hyperand":3,
+		"Hyper-E":3,
+		"Infinity":0,
+		"Logarithm":3,
+		"Mixed scientific":2,
+		"Scientific":2,
+		"Standard":2,
+		"Tetration":0,
+		"Time":0
 	}
 }
 const notations = {
@@ -3044,19 +3058,24 @@ const notations = {
 		let precision=constant.e4.div(number).log(constant.d10).floor().max(constant.d0).pow10();
 		return ["α","β","γ","δ","ε","ζ","η","θ","ι","κ","λ","μ","ν","ξ","ο","π","ρ","σ","τ","υ","φ","χ","ψ","ω"][output.floor().toNumber()]+"<sub>"+number.mul(precision).floor().div(precision).toNumber().toLocaleString("en-US")+"</sub>";
 	},
-	"BE Default":function(x){return x.toExponential(3)},
+	"BE Default":function(x,sub=undefined,p=3){return x.toExponential(p)},
 	"Engineering":function(x,sub="Engineering",p=2){
 		if (x.gte("eeeee6")) {return notations["Hyper-E"](x,sub)}
 		let leadingEs = notationSupport.leadingEs(x)
 		if (leadingEs===0) {x=x.mul(1.0000001);return x.log10().mod(constant.d3).pow10().toPrecision(p+1)+"e"+x.log10().div(constant.d3).floor().mul(constant.d3).toNumber().toLocaleString("en-US")}
 		return Array(leadingEs+1).join("e")+notations["Engineering"](x.layerplus(-leadingEs),sub,p+1)
 	},
+	"Hyperand":function(x,sub="Hyperand",p=3) {
+		if (x.gte("eeeee6")) {return "A² "+notations["Hyperand"](x.quad_slog(c.d10),sub,p+1)}
+		let leadingEs = notationSupport.leadingEs(x)+1
+		return ((leadingEs===0)?"":(leadingEs===1)?"A ":(leadingEs+"A "))+notationSupport.formatSmall(x.layerplus(-leadingEs),p)
+	},
 	"Hyper-E":function(x,sub="Hyper-E",p=3){
 		let height = Math.floor(x.slog().toNumber())
 		if (height>1e6) {return "E#"+notations[sub](N(height),sub)}
 		return "E"+((x.mag>=1e10)?Math.log10(Math.log10(x.mag)):Math.log10(x.mag)).toFixed(p)+"#"+height.toLocaleString("en-US")
 	},
-	"Infinity":function(x,sub="Infinity"){
+	"Infinity":function(x){
 		if (x.gte("eeeee6")) {return (Math.log2(x.quad_slog(constant.d10).toNumber())/1024).toFixed(6)+"Ω"}
 		let infinities = 0
 		while (x.gte(c.e6)) {
@@ -3116,7 +3135,7 @@ const notations = {
 		return [hours,minutes,seconds].map(x=>x.floor().toString().padStart(2,"0")).join(":")+"<sub>"+milliseconds.floor().toString().padStart(3,"0")+"</sub>"
 	}
 }
-function gformat(value,precision=0,notation="Scientific",subnotation=notation,highPrecision=2) {
+function gformat(value,precision=0,notation="Scientific",subnotation=notation,highPrecision=0) {
 	if ([value,precision,notation,subnotation].includes(undefined)) functionError("gformat",arguments)
 	let x=N(value);
 	if (x.sign===-1) return "-"+gformat(x.abs(),precision,notation,subnotation);
@@ -3126,7 +3145,7 @@ function gformat(value,precision=0,notation="Scientific",subnotation=notation,hi
 	if (x.eq(constant.d0)) return "0";
 	if (x.lt(constant.em5)) return "(1 ÷ "+gformat(x.recip(),precision,notation,subnotation)+")";
 	if (x.lt(constant.e6)) return notationSupport.formatSmall(x,precision)
-	return notations[notation](x,subnotation,highPrecision)
+	return notations[notation](x,subnotation,highPrecision+notationSupport.defaultPrecision[notation])
 }
 function decimalStructuredClone(obj) {
 	if (typeof obj === "object") {

@@ -869,7 +869,7 @@ const research = (function(){
 			group:"energy"
 		},
 		r9_5:{
-			description:function(){return "Research 6-5, 6-6, 7-5 and 8-5 are "+percentOrMult(researchEffect(9,5),2,false)+" stronger per achievement (current total: "+percentOrMult(researchEffect(9,5).pow(totalAchievements),2,true)+")"},
+			description:function(){return "Research 6-5, 6-6, 7-5 and 8-5 are multiplicatively "+percentOrMult(researchEffect(9,5),2,false)+" stronger per achievement (current total: "+percentOrMult(researchEffect(9,5).pow(totalAchievements),2,true)+")"},
 			adjacent_req:["r8_5"],
 			condition:[studyReq(10,1)],
 			visibility:function(){return g.studyCompletions[10]>0},
@@ -1863,7 +1863,7 @@ const research = (function(){
 		r32_2:luckResearch("trifolium","antiAxis","r32_2",icon.antimatter),
 		r32_3:luckResearch("cinquefolium","luck","r32_3",icon.luckShard),
 		r32_4:{
-			description:function(){return "Increase the effective level of each Luck Upgrade by "+researchEffect(32,4).mul(c.e2).noLeadFormat(3)+"%, multiplied by the purchased level"},
+			description:function(){return "Increase the effective level of each Luck Upgrade by "+researchEffect(32,4).mul(c.e2).noLeadFormat(3)+"%, multiplied by its purchased level"},
 			adjacent_req:["r31_4","r32_3"],
 			condition:particleLab2Condition(4),
 			visibility:function(){return study13.rewardLevels.particleLab2>=4},
@@ -2422,7 +2422,7 @@ function showResearchInfo(row,col) {
 	out += "<hr>"
 	out += ((res.type==="study")&&(res.description===undefined))?fullStudyNames[studies.map(x=>x.research).indexOf(id)]:res.description();
 	if (res.type === "permanent") {out += "<hr>Need "+researchCost(id).format()+" total Discover"+(researchCost(id).eq(c.d1)?"y":"ies")}
-	else {out += "<hr>Cost: "+researchCost(id).format()+" Discover"+(researchCost(id).eq(c.d1)?"y":"ies")}
+	else {out += "<hr>Cost: "+researchCost(id).format()+" Discover"+(researchCost(id).eq(c.d1)?"y":"ies")+((study13.bindings[225]&&Decimal.lte(g.spentDiscoveries,study13.bindings[225].spendableDiscoveries())&&Decimal.gt(g.spentDiscoveries.add(researchCost(id)),study13.bindings[225].spendableDiscoveries()))?"<span style=\"color:var(--binding);\"> (will exceed Binding 225 limit)</span>":"")}
 	if (res.condition.length>0) {
 		out += "<br><span style=\"font-size:12px\"><span style=\"color:"+(researchConditionsMet(id)?"#00cc00":"#cc0000")+"\">Need</span> "
 		for (let i=0;i<res.condition.length;i++) {
@@ -2565,6 +2565,7 @@ function asceticMaxBuyResearch(id,updateTree=true,manual=false) { // buys only 1
 	}
 }
 function buyResearchList(res) {
+	res = res.filter(x=>!g.research[x])
 	loop: while (true) {
 		let lenBefore = res.length
 		for (let i=res.length-1;i>=0;i--) {
@@ -2572,7 +2573,6 @@ function buyResearchList(res) {
 			let row = researchRow(id)
 			let col = researchCol(id)
 			if (availableResearch(row,col)&&researchConditionsMet(id)) {buySingleResearch(row,col);res.remove(id)}
-			console.log([id,availableResearch(row,col),researchConditionsMet(id)])
 		}
 		let lenAfter = res.length
 		if (lenBefore===lenAfter) {

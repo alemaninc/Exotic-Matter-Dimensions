@@ -8,7 +8,7 @@ const study13 = {
 		if (lvExcl25===56) {return g.study13Bindings[25]?"Sea of Disgraced Reflections (112)":"The Amazing Mirror (56)"}
 		if (lvExcl25===96) {return g.study13Bindings[25]?"Fallen Achievement 〜 Tenth Circle of Hell (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
 		if (lvExcl25===144) {return g.study13Bindings[25]?"Study of Obscenities (200)":"Study of Triads (144)"}
-		if (lvExcl25===200) {return g.study13Bindings[25]?(g.playerName+"'s Device 〜 Shattering Matrix (256)"):"Thirteenth Hell 〜 Development Hell (200)"}
+		if (lvExcl25===200) {return g.study13Bindings[25]?("Approach It Not, Gaze Not Upon It; Heaven Lies Hidden Inside the Portal to Nothing 〜 "+g.playerName+"'s Device (256)"):"Thirteenth Hell 〜 Development Hell (200)"}
 		let used = []
 		function bindingRank(id) {return (id===25)?Infinity:(Math.floor(id/10)*100+Math.min(id%10,10-(id%10))*9+study13.bindings[id].lv*11+Math.sin(id))} // use this to identify the strongest bindings
 		while ((available.length>0)&&(used.length<3)) { // we will only ever use 3 so use an O(n) method instead of sorting which is O(n^2)
@@ -128,11 +128,13 @@ const study13 = {
 					nameMod:["Stars","Stellar","Blazing"]
 				},
 				25:{
-					description:function(){return "The Normal and Dark Axis corruptions start at ^"+study13.bindingEff(25).noLeadFormat(3)+" of their usual values"},
+					numDesc:function(){return study13.bindingEff(25).noLeadFormat(4)},
+					formulaDesc:function(){return "10<sup>max((B + 1800) ÷ 200, (B + 360) ÷ 56)</sup>"},
+					description:function(){return "The starting points of the Exotic and Dark Axis Corruptions are lowered to the "+study13.bindingEff(25).noLeadFormat(3)+(study13.bindingEff(25).lte(c.e10)?ordinal(study13.bindingEff(25).toNumber()).replaceAll(/[0-9]/g,""):"th")+" root (based on total binding levels)"},
 					adjacent_req:[],
 					icon:"<span style=\"color:rgba(255,153,255,0.6);\">C</span><sup>+++</sup>",
 					lv:56,
-					effect:function(power){return c.em10.pow(power)},
+					effect:function(power){let x = studyPower(13);x = Math.max((x+1800)/200,(x+360)/56);return N(x).mul(power).pow10()},
 					// Binding 25 does not affect names in the normal way
 				},
 				26:{
@@ -534,11 +536,12 @@ const study13 = {
 				225:{
 					numDesc:function(){return study13.bindingEff(225).noLeadFormat(3)},
 					formulaDesc:function(){return "min(log<sub>"+this.discoveryReq(study13.bindingPower(225)).noLeadFormat(3)+"</sub>(υD ÷ "+g.totalDiscoveries.format()+"), 1)"},
-					description:function(){return "You can only spend a maximum of "+this.discoveryReq(study13.bindingPower(225)).mul(c.e2).noLeadFormat(3)+"% of your Discoveries ("+g.spentDiscoveries.format(0,3)+" / "+this.discoveryReq(study13.bindingPower(225)).mul(g.totalDiscoveries).ceil().format(0,3)+").<br><br>If you spend more than this, exotic matter, stardust, dark matter and mastery power gain are significantly reduced (currently: "+arrowJoin("x","10<sup>log(x)<sup>"+numOrFormula(225)+"</sup></sup>")+")"},
+					description:function(){return "You can only spend a maximum of "+this.discoveryReq(study13.bindingPower(225)).mul(c.e2).noLeadFormat(3)+"% of your Discoveries ("+g.spentDiscoveries.format(0,3)+" / "+this.spendableDiscoveries().format(0,3)+").<br><br>If you spend more than this, exotic matter, stardust, dark matter and mastery power gain are significantly reduced (currently: "+arrowJoin("x","10<sup>log(x)<sup>"+numOrFormula(225)+"</sup></sup>")+")"},
 					adjacent_req:[192,198,204,206],
 					icon:studyIcon(5),
 					lv:4,
 					discoveryReq:function(power){return c.d0_25.pow(power)},
+					spendableDiscoveries:function(){return this.discoveryReq(study13.bindingPower(225)).mul(g.totalDiscoveries).floor()},
 					effect:function(power){let p = g.totalDiscoveries.eq(c.d0)?c.d0:Decimal.div(g.spentDiscoveries,g.totalDiscoveries),r=this.discoveryReq(power);return p.gt(r)?p.log(r):c.d1},
 					nameMod:["Science","Illiterate","Medieval"]
 				},
@@ -1120,8 +1123,8 @@ const study13 = {
 				name:"Chromatic Hyperdrive",
 				breakpoints:betaActive?[200,208,216,223,230,236,242,247,252,256]:[],
 				type:"scaling",
-				eff:function(lvs=study13.rewardLevels.hyperdrive,lvp=g.prismaticUpgrades.chromaOverdrive){return (lvs===0)?c.d1:lvp.add(c.d1).log10().mul((Math.log10(lvs)+1)**2/400).add(c.d1)},
-				desc:function(curr,prev){return "Chroma gain is raised to the power of "+scaleFormat(curr,prev,x=>showFormulas?formulaFormat("1 + log(λ + 1)"+formulaFormat.mult((x===0)?c.d0:N((Math.log10(x)+1)**2/400))):this.eff(x).noLeadFormat(4))+" (based on "+prismaticUpgradeName("chromaOverdrive")+" level)"}
+				eff:function(lvs=study13.rewardLevels.hyperdrive,lvp=g.prismaticUpgrades.chromaOverdrive){return (lvs===0)?c.d1:lvp.add(c.d1).log10().mul((Math.log10(lvs)+1)**2/100).add(c.d1)},
+				desc:function(curr,prev){return "Chroma gain is raised to the power of "+scaleFormat(curr,prev,x=>showFormulas?formulaFormat("1 + log(λ + 1)"+formulaFormat.mult((x===0)?c.d0:N((Math.log10(x)+1)**2/100))):this.eff(x).noLeadFormat(4))+" (based on "+prismaticUpgradeName("chromaOverdrive")+" level)"}
 			},
 			trinity3:{
 				name:"Trinitarian Synergy",

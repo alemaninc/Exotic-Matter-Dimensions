@@ -10,3 +10,7 @@ html, body {
 	color: #39f;
 	background: #190033;
 }
+button, div {
+	vertical-align:top;
+	display:inline-block;
+}

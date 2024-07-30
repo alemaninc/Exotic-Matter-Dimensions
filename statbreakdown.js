@@ -257,6 +257,14 @@ const statList = [
 					1:{value:function(){return starScalePower().mul(c.e2).noLeadFormat(4)},classes:"_stars"}
 				}
 			},
+			{
+				text:function(){return "<b>Dark Star Scaling</b><br><br><table style=\"table-layout:fixed;\"><tr><td style=\"text-align:left;width:60px;\">Start</td><td style=\"text-align:right;width:150px;\">{0}</td></tr><tr><td style=\"text-align:left;width:60px;\">Power</td><td style=\"text-align:right;width:150px;\">{1}%</td></tr></table>"},
+				visible:function(){return unlocked("Hawking Radiation")||g.darkstars.gte(stat.darkStarScalingStart)},
+				variables:{
+					0:{value:function(){return stat.darkStarScalingStart.noLeadFormat(3)},classes:"_darkmatter"},
+					1:{value:function(){return stat.darkStarScalingPower.mul(c.e2).noLeadFormat(4)},classes:"_darkmatter"}
+				}
+			},
 		]
 	},
 	{
@@ -2044,7 +2052,7 @@ for (let group of ["","dark","anti"]) {
 		]
 		// multipliers
 		if (["","dark"].includes(group)) out.push({
-			label:"Anti-"+type+" Axis",
+			label:"Anti-"+type+" Dimension Boost",
 			func:function(prev){return prev.mul(antiAxisDimBoost(type))},
 			text:function(){return "× "+antiAxisDimBoost(type).noLeadFormat(4)},
 			dependencies:[...researchDependencies(["r26_14",researchList.antimatter[type+"1"]]),...bindingDependencies(244)],

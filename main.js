@@ -1,5 +1,4 @@
 "use strict";
-// Constants
 const basesave = {
 	playerName:"EMD"+String(ranint(0,9999)).padStart(4,"0"),
 	exoticmatter:c.d0,
@@ -262,7 +261,8 @@ const basesave = {
 	ach920Completions:0,  // stored as bitfield: 1-bit = I, 2-bit = II, 4-bit = III, 8-bit = IV, etc.
 	baselessMilestones:Array(5).fill(1), // for achievements 921-925
 	study13Bindings:Object.fromEntries(study13.allBindings.map(x=>[x,false])),
-	study13ShowParentBindings:false
+	study13ShowParentBindings:false,
+	corruptionsUnlocked:0,
 };
 var g = decimalStructuredClone(basesave); // "game"}
 const empowerableAxis = {
@@ -313,7 +313,7 @@ function changePlayerName() {
 	popup({
 		text:"Input your player name:",
 		input:g.playerName,
-		buttons:[["Confirm","g.playerName=popupInput()"]]
+		buttons:[["Confirm","if (popupInput().length>40) {notify('Maximum of 40 characters for player names')} else {g.playerName=popupInput()}"]]
 	})
 }
 function availableThemes() {
@@ -591,7 +591,7 @@ const storyEntries = (()=>{
 		"Luck":{dt:6300,text:function(){return "<p>In the beginning it was so easy to create <span class=\"_exoticmatter\">space</span>, to form <span class=\"_stars\">stars</span> and <span class=\"_research\">discover</span> the universe.</p><p>What has happened now? What was once enough exotic matter to create "+g.totalexoticmatter.mul(realAxisCostDivisor("X")).root(realAxisCostExponent("X")).div(c.d5).log(c.d6).floor().add(c.d1).format()+" metres of X axis now only provides "+maxAffordableAxis("X").format()+"; new observations come rarely, if at all. A galaxy of 61 stars will now never come to be, no matter how long you wait.</p><p>It's almost as if an <span class=\"blue\">invisible blue hand</span> is putting 'diminishing returns for balance' in your way to annoy you. But perhaps, if <span class=\"_luck\">luck</span> is not on your side, you can create your own?</p>"+EMDLevelIncrement(8)}},
 		"Prismatic":{dt:7200,text:function(){function c(x){return "<span class=\""+x+"\">"+x+"</span>"};return "<p>The exotic matter is now "+c("green")+"; Hawking radiation is "+c("blue")+"; the stars are "+c("white")+" specks in the distance surrounded by nebulae of "+c("cyan")+" research papers. At the far end of the universe are dark "+c("red")+" rifts to the "+numword(visibleStudies().length)+" Study dimensions you've discovered, all against a backdrop of "+c("magenta")+" and "+c("yellow")+" crafted from the essence of pure achievement.</p><p>This is such an eyesore! It looks almost like something out of a coloring book... you feel determined to blend the <span class=\"_prismatic\">colors</span> together to create a beautiful universe, though you don't see how that will help you.</p>"+EMDLevelIncrement(8)}},
 		"Antimatter":{dt:8100,text:function(){return "<p>The universe is perfectly balanced, the exotic matter pulling everything apart and the dark matter holding it together.</p><p>How long has it been this way? A year? Ten years? "+timeFormat(g.truetimePlayed)+"?</p><p>For as long as you remember, you've been drifting through this void of sixteen dimensions, creating space and filling it with stars and galaxies... but what is it all for? Is there something watching you? Are you a part of some callous celestial experiment?</p><p>Surely that can't be true... either way, you resolve to tear your way out of this place and you won't let anything stop you. Perhaps disrupting the balance with a <span class=\"_antimatter\">new substance</span> is a good start?</p>"+EMDLevelIncrement(8)}},
-		"Corruption":{dt:2700,text:function(){let corrupt = corruption.list.axis.visible()?axisCodes.filter(x=>corruption.list.axis.isCorrupted(x))[0]:corruption.list.darkAxis.visible()?("dark "+axisCodes.filter(x=>corruption.list.darkAxis.isCorrupted(x))[0]):corruption.list.antiAxis.visible()?("anti-"+axisCodes.filter(x=>corruption.list.antiAxis.isCorrupted(x))[0]):"<span style=\"color:#ff0000\">error</span>";return "<p>What's this? Some sort of wall? It's almost as if the "+corrupt+" axis is actively resisting expansion...</p><p>Something is clearly trying to stop you now.</p>"}},
+		"Corruption":{dt:2700,text:function(){let corrupt = corruption.unlocked("axis")?axisCodes.filter(x=>corruption.list.axis.isCorrupted(x))[0]:corruption.unlocked("darkAxis")?("dark "+axisCodes.filter(x=>corruption.list.darkAxis.isCorrupted(x))[0]):corruption.unlocked("antiAxis")?("anti-"+axisCodes.filter(x=>corruption.list.antiAxis.isCorrupted(x))[0]):"<span style=\"color:#ff0000\">error</span>";return "<p>What's this? Some sort of wall? It's almost as if the "+corrupt+" axis is actively resisting expansion...</p><p>Something is clearly trying to stop you now.</p>"}},
 		"Study XIII":{dt:23400,text:function(){return "<p>A new <span style=\"color:#cc0000\">Study</span> subverse flickers into existence, but this one seems different...</p><p>All the ones before this one were already filled with bindings and knowledge to be harnessed, named and protected by a barrier. This one, however, seems to have neither a name nor any bindings, there are no visible paradigms to be salvaged from within and the barrier which must normally be weakened with resources to enter seems to be broken.</p><p>It's almost as if you've stumbled upon a blank universe... did you just create this yourself? Perhaps you can create your own bindings and rewards as well...</p>"+EMDLevelIncrement(9)}},
 		"":{dt:900,text:function(){return }}
 	}
@@ -867,8 +867,8 @@ function masteryEffect(x) {
 		if (g.research.r19_9) out = out.pow(researchEffect(19,9))
 		return out
 	}
-	if (x===61) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d10).log10().pow(c.d0_1).sub(c.d1),c.d9,c.d2).mul(masteryBoost(61)).add(c.d1);
-	if (x===62) return Decimal.logarithmicSoftcap(g.masteryPower.add(c.d10).log10().pow(c.d0_04),c.d2,c.d1).pow(masteryBoost(62).neg());
+	if (x===61) return g.masteryPower.add(c.d10).log10().pow(c.d0_1).sub(c.d1).mul(masteryBoost(61)).add(c.d1);
+	if (x===62) return g.masteryPower.add(c.d10).log10().pow(masteryBoost(62).mul(-0.04));
 	if (x===63) return g.masteryPower.add1Log(c.d10).pow(c.d0_8).mul(masteryBoost(63));
 	if (x===71) return g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().pow(masteryBoost(71));
 	if (x===72) return Decimal.logarithmicSoftcap(g.masteryPower.pow(c.d1_25).add(c.e10).log10().log10().pow(c.d0_5).sub(c.d1),c.d1,c.d5).mul(masteryBoost(72)).add(c.d1);
@@ -997,15 +997,10 @@ function masteryFormula(x) {
 		return out
 	}
 	if (x===61) {
-		if (masteryBoost(61).eq(c.d1)&&masteryEffect(61).lte(c.d10)) return "log(MP+10)<sup>0.1</sup>"
-		let out = "log(MP+10)<sup>0.1</sup> - 1"
-		if (g.masteryPower.gte(c.ee10)) out = "ln(("+out+") ÷ 9) × 2 + 1)<sup>0.5</sup>"
-		return "("+out+") × "+(g.masteryPower.gte(c.ee10)?masteryBoost(61).mul(c.d9):masteryBoost(61)).noLeadFormat(3)+" + 1"
+		if (masteryBoost(61).eq(c.d1)&&masteryEffect(61).lte(c.d10)) return "log(MP + 10)<sup>0.1</sup>"
+		return "(log(MP + 10)<sup>0.1</sup> - 1)"+formulaFormat.mult(masteryBoost(61))+" + 1"
 	}
-	if (x===62) {
-		if (g.masteryPower.gte("e33554432")) return "((ln(log(MP + 10)<sup>0.04</sup> ÷ 2) + 1) × 2)<sup>"+masteryBoost(62).neg().noLeadFormat(3)+"</sup>"
-		return "log(MP+10)<sup>"+masteryBoost(62).mul(-0.04).noLeadFormat(3)+"</sup>"
-	}
+	if (x===62) {return "log(MP + 10)"+formulaFormat.exp(masteryBoost(62).mul(-0.04))}
 	if (x===63) return "log(MP+1)<sup>0.8</sup>"+formulaFormat.mult(masteryBoost(63))
 	if (x===71) return "log<sup>[2]</sup>(MP<sup>1.25</sup> + "+c.e10.format()+")"+formulaFormat.exp(masteryBoost(71))
 	if (x===72) return formulaFormat.logSoftcap("log<sup>[2]</sup>(MP + "+c.e10.format()+")<sup>0.5</sup> - 1",c.d1,c.d5,g.masteryPower.gt(c.ee4))+formulaFormat.mult(masteryBoost(72))+" + 1"
@@ -1035,9 +1030,9 @@ function masteryBaseText(x) {
 	if ([21,22].includes(x)) return "Multiply the "+["X","Y"][x-21]+" axis effect by {}";
 	if (x===31) return "Gain {} free Z axis that do not increase the cost";
 	if (x===32) return "Gain {} free W axis that do not increase the cost";
-	if (x===41) return "Increase the effect of masteries 11, 21 and 31 by {}";
+	if (x===41) return "Increase the effect of Masteries 11, 21 and 31 by {}";
 	if (x===42) return "Multiply stardust gain by {}";
-	if (x===43) return "Increase the effect of masteries 12, 22 and 32 by {}";
+	if (x===43) return "Increase the effect of Masteries 12, 22 and 32 by {}";
 	if (x===51) return "Gain {} free X axis";
 	if (x===52) return "Raise the effects of the first row Masteries to the power of {}";
 	if (x===61) return "Dark X axis are {} stronger";
@@ -1047,7 +1042,7 @@ function masteryBaseText(x) {
 	if (x===72) return "Energy effects are {} stronger";
 	if ([81,82,83,84].includes(x)) return "Multiply mastery power gain by {} (based on "+["X axis","exotic matter","dark matter","stardust"][x-81]+")";
 	if (x===85) return "Add {} to the base mastery power gain exponent<br><span class=\"small\">(currently a "+stat.masteryTimer.pow(masteryEffect(85)).format(2)+"× multiplier)</span>";
-	if ([91,92].includes(x)) return "Row 8 masteries are {} stronger ("+["in","de"][x-91]+"creases over time in this Stardust reset)";
+	if ([91,92].includes(x)) return "Row 8 Masteries are {} stronger ("+["in","de"][x-91]+"creases over time in this Stardust reset)";
 	if (x===101) return "The "+achievement.label(501)+" reward is raised to the power of {}"+(achievement(501).effectExp(false).eq(c.d1)?"":("<br><span class=\"small\">(if inactive: "+achievement(501).effectExp(false).format(3)+")</span>"));
 	if (x===102) return "Multiply Hawking radiation gain by {}";
 	if (x===103) return "Multiply knowledge gain by {}";
@@ -1204,9 +1199,6 @@ const showStardustBoostFormula = {
 function stardustBoost7Exp(x) {
 	x=(x===undefined)?g.truetimeThisStardustReset:N(x)
 	return Decimal.logarithmicSoftcap(x.pow(c.d0_5),c.e3,c.d4,c.d1)
-}
-function stardustBoost7IsSoftcapped(){
-	return g.truetimeThisStardustReset.gt(c.e6)
 }
 
 // Stardust Upgrades
@@ -1879,6 +1871,7 @@ function energyEffect(x) {
 	let eff=((type.gt(resource))&&(resource.gt(c.d1))) ? type.log(resource).log10().mul(StudyE(3)?c.d1:stat.energyEffectBoost).mul(inc).add(c.d1) : c.d1;
 	if (eff.gt(softcap.add(c.d1))&&(!StudyE(3))) {eff=softcap.mul(eff.sub(c.d1).div(softcap).ln().div(energySoftcapStrength(x)).add(c.d1)).add(c.d1);}
 	if (x>=energyTypesUnlocked()) {eff = c.d1;}
+
 	if (study13.bound(52)&&(!StudyE(3))) {eff = eff.sub(study13.bindingEff(52)).max(c.minvalue)}
 	if (x===8) {eff = eff.recip();}
 	return StudyE(3)?eff.pow(studies[3].energyPowerConstant()):eff;
@@ -2667,7 +2660,7 @@ function affordablePrismaticUpgrades(upg) {
 		if (g.prismaticSpendFactor.eq(c.d0)) return available.gt(data.scale.pow(owned).mul(data.baseCost))?c.d1:c.d0
 		return Decimal.affordGeometricSeries(available,data.baseCost,data.scale,owned)
 	} else { // limited
-		if (g.prismaticSpendFactor.eq(c.d0)) return available.gt(data.cost())?c.d1:c.d0
+		if (g.prismaticSpendFactor.eq(c.d0)) return (available.gt(data.cost())&&Decimal.lt(owned,data.max))?c.d1:c.d0
 		if (singlePrismaticUpgradeCost(upg).gt(g.prismatic)) return c.d0 // avoid laggy binary search
 		// binary search to find the highest buyable level
 		let lower = c.d0
@@ -2689,7 +2682,7 @@ function affordablePrismaticUpgrades(upg) {
 			return available.gte(spent)
 		}
 		while (middle.gt(owned)&&(!canAfford(middle))) {middle = middle.sub(c.d1)}
-		return middle.sub(owned)
+		return Decimal.min(middle,data.max).sub(owned)
 	}
 }
 function prismaticUpgradeCost(upg,amount){

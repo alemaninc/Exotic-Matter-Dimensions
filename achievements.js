@@ -116,7 +116,8 @@ achievement.maxForLocks = {
 	totalStardustUpgrades:{
 		520:15,
 		707:6,
-		915:6
+		915:6,
+		932:7
 	},
 	stars:{
 		516:0,
@@ -989,7 +990,11 @@ const achievementList = {
 			progress:function(){return g.ach525possible?achievement.wormholeProgress():"Failed";},
 			failed:function(){return !g.ach525possible},
 			get reward(){return "+"+this.effect().noLeadFormat(3)+" normal and dark S axis effect"},
-			effect:function(){return (g.achievement[526]?achievement(526).effect():c.d1).div(c.e4)},
+			effect:function(){
+				let out = (g.achievement[526]?achievement(526).effect():c.d1).div(c.e4)
+				if (betaActive) {out = out.mul(studies[12].reward(3).add(c.d1))}
+				return out
+			},
 			flavor:"Minimalism at its finest"
 		},
 		526:{
@@ -1002,7 +1007,12 @@ const achievementList = {
 			prevReq:[525],
 			get reward(){return "The "+achievement.label(525)+" reward is {}% stronger (based on total normal axis)";},
 			flavor:"",		// intentionally left blank
-			effect:function(){return Decimal.convergentSoftcap(stat.totalNormalAxis.add(c.d1).log10(),c.d4,c.d9).mul(studies[12].reward(3).add(c.d1)).add(c.d1)},
+			effect:function(){
+				let out = Decimal.convergentSoftcap(stat.totalNormalAxis.add(c.d1).log10(),c.d4,c.d9)
+				if (!betaActive) {out = out.mul(studies[12].reward(3).add(c.d1))}
+				out = out.add(c.d1)
+				return out
+			},
 			effectFormat:x=>x.sub(c.d1).mul(c.e2).noLeadFormat(3),
 			formulaText:function(){
 				let mult = studies[12].reward(3).add(c.d1)
@@ -1292,9 +1302,9 @@ const achievementList = {
 			progress:function(){return achievement.percent(N(g.galaxies),c.d3,0)},
 			reward:"Star Scaling starts at {} instead of 25 (based on Hawking radiation)",
 			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"file:///C:/Users/\" target=\"_blank\">C:/Users/ale</a>-- okay, maybe not that one...",
-			effect:function(){return Decimal.convergentSoftcap(g.hawkingradiation.add(c.e10).log10().log10(),c.d8,c.d16).add(c.d24)},
+			effect:function(){return g.hawkingradiation.add(c.e10).log10().log10().add(c.d24)},
 			effectFormat:x=>x.noLeadFormat(4),
-			formulaText:()=>g.hawkingradiation.gt(c.ee8)?"40 - 64 ÷ log<sup>[2]</sup>(HR)":("log<sup>[2]</sup>(HR + "+c.e10.format()+") + 24")
+			formulaText:()=>"log<sup>[2]</sup>(HR + "+c.e10.format()+") + 24"
 		},
 		704:{
 			name:"Five-finger discount",
@@ -1664,7 +1674,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return achievement.percent(stat.chromaPerSec,c.ee3,1)},
 			flavor:"From eternity's point of view, you are but a mere instant.",
-			reward:"Unlock an option to generate all types of chroma at once without them costing anything. However, chroma generation is reduced based on the chroma cost multiplier when this is active. (currently: ×{})",
+			get reward(){return "Unlock an option to generate all types of chroma at once without them costing anything. However, chroma generation is reduced based on the chroma cost multiplier when this is active. (currently: ×{})"+(((study13.rewardLevels.hyperdrive!==0)||unlocked("Matrix"))?"<br><br><i>(This is a pure multiplier, meaning it is unaffected by exponents, dilations or layer functions)</i>":"")},
 			effect:function(){return c.d1.sub(stat.chromaCostMultiplier).max(c.d0)},
 			effectFormat:x=>x.noLeadFormat(3),
 			formulaText:()=>"max(1 - m, 0)",
@@ -1931,14 +1941,14 @@ const achievementList = {
 		},
 		913:{
 			name:"Axistential Dread",
-			get description(){return "Make the product of the effective levels of all axis exceed "+BEformat(1e95)},
-			check:function(){return g.OAxis.neq(c.d0)&&g.darkOAxis.neq(c.d0)&&g.antiOAxis.neq(c.d0)&&this.value().gte(1e95)}, // first three conditions for lag prevention
+			get description(){return "Make the product of the effective levels of all exotic axis exceed "+BEformat(1e40)},
+			check:function(){return g.OAxis.neq(c.d0)&&g.darkOAxis.neq(c.d0)&&g.antiOAxis.neq(c.d0)&&this.value().gte(1e40)}, // first three conditions for lag prevention
 			event:"gameloop",
 			progress:function(){return achievement.percent(this.value(),N(1e95),0)},
 			prevReq:[912],
 			reward:"Unlock Study XIII Binding 25",
 			flavor:"Fifteen birds in five firtrees,<br>their feathers were fanned in a fiery breeze!<br>But, funny little birds, they had no wings!<br>O what shall we do with the funny little things?<br>Roast 'em alive, or stew them in a pot;<br>fry them, boil them and eat them hot?",
-			value:function(){return fullAxisCodes.map(x=>stat["real"+x+"Axis"]).productDecimals()},
+			value:function(){return axisCodes.map(x=>stat["real"+x+"Axis"]).productDecimals()},
 			beta:true
 		},
 		914:{
@@ -2012,7 +2022,7 @@ const achievementList = {
 			get reward(){return "Study XIII Bindings "+this.rewardAffects.joinWithAnd()+" are {}% weaker (based on total autobuyer levels)"},
 			effect:function(){return Decimal.convergentSoftcap(N(1-autobuyerMeta.totalLevels()*0.00035),c.d0_5,c.d0)},
 			effectFormat:x=>c.d1.sub(x).mul(c.e2).noLeadFormat(3),
-			formulaText:()=>(autobuyerMeta.totalLevels()>=2500)?"100 - 2500 ÷ Σλ":"Σλ ÷ 50",
+			formulaText:()=>(autobuyerMeta.totalLevels()>=2500)?"100 - 71,428 ÷ Σλ":"Σλ × 0.035",
 			flavor:"There is nothing so useless as doing efficiently what should not be done at all."
 		},
 		920:{
@@ -2131,6 +2141,7 @@ const achievementList = {
 			check:function(){return (g.activeStudy===12)&&(g.studyCompletions[12]>2)&&(effectiveStardustUpgrades()<=7)},
 			event:"wormholeResetBefore",
 			progress:function(){return (g.studyCompletions[12]<3)?"Complete Study XII 3 times first":(g.activeStudy!==12)?"Enter Study XII first":(effectiveStardustUpgrades()>7)?"Failed":{percent:achievement.wormholeProgress(),text:(7-effectiveStardustUpgrades())+" upgrade"+((effectiveStardustUpgrades()===6)?"":"s")+" left"}},
+			failed:function(){return (g.activeStudy!==12)||(g.studyCompletions[12]<3)||(effectiveStardustUpgrades()>7)},
 			reward:"The third reward of Study XII is 11.1% stronger",
 			flavor:"You are now a chieftain of a zebra tribe.<br>(how is this even possible?)",
 			beta:true
@@ -2609,7 +2620,7 @@ const secretAchievementList = {
 	})(),
 	...(()=>{
 		let flavors = {
-			
+			1:""
 		}
 		let out = []
 		function countByRarity(rarity) {

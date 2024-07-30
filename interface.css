@@ -75,10 +75,6 @@ body {
 ._antimatter {color:var(--antimatter);}
 ._titanium {color:var(--titanium);}
 ._binding {color:var(--binding);}
-button, div {
-	vertical-align:top;
-	display:inline-block;
-}
 del {opacity:0.5}
 .underline {
 	text-decoration:underline
@@ -1440,14 +1436,14 @@ tab {
 	color:#000000;
 }
 .corruptionContainer {
-	height:150px;
+	height:200px;
 	width:400px;
-	background-color:#505;
-	color:rgba(255,153,255,0.6);
+	background-color:#303;
+	color:rgba(255,102,255,0.6);
 	border-style:solid;
 	border-width:3px;
 	border-radius:20px;
-	border-color:#303;
+	border-color:#190019;
 	padding:10px;
 	margin:10px;
 }

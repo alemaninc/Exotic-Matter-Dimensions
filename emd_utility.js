@@ -1,10 +1,28 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1ω.9",
+	current:"𝕍1ω.10",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
-	nextProgress:[0],
+	nextProgress:[
+		0,0,       // Level 9 balance
+		0.5,       // Level 9 code
+		0,0,0,     // Level 10 balance
+		0,         // Realmstone code (basic)
+		0,         // Realmstone code (special)
+		0,         // Lifeblood code
+		0,         // Space code
+		0,         // Time code
+		0,         // Celestial 1 balance
+		0,         // Celestial 1 code
+		0,         // Celestial 2 balance
+		0,         // Celestial 2 code
+		0,         // Celestial 3 balance
+		0,         // Celestial 3 code
+		0,         // Celestial 4 balance
+		0,         // Celestial 4 code
+		0,0,0,0,0,0,0,0,0,0  // Interface fix
+	],
 	nextUpdateHint:"Machine medicine",
 }
 /*
@@ -53,9 +71,9 @@ const debug = {
 }
 var savecounter=0;
 
-Decimal.prototype.fix = function(x) {									 // If the input is not a number, returns x. The recommendation is to input the identity of that variable, so 0 if it gets added to something else or 1 if it gets multiplied or is an exponent or tetration height.
+Decimal.prototype.fix = function(x,crash=true) {									 // If the input is not a number, returns x. The recommendation is to input the identity of that variable, so 0 if it gets added to something else or 1 if it gets multiplied or is an exponent or tetration height.
 	if (this.isNaN()) {
-		error("A NaN error nearly occurred, but got flagged by alemaninc's systems")
+		if (crash) {error("A NaN error nearly occurred, but got flagged by alemaninc's systems")}
 		return N(x)
 	} else {
 		return this
@@ -88,7 +106,7 @@ function hidePopup() {
 function popupInput() {return d.element("span_fancyPopupInput").value}
 function functionError(functionName,argumentList) {error("Cannot access <code>"+functionName+"("+Object.values(argumentList).map(x=>JSON.stringify(x)).join(",")+")</code>")}
 function textFormat(text,className){return "<span class=\"big "+className+"\">"+text+"</span>"}
-function BEformat(value,precision=0,highPrecision=2) {return gformat(value,precision,g.notation,g.notation,highPrecision).replaceAll(" ","&nbsp;");}
+function BEformat(value,precision=0,highPrecision=0) {return gformat(value,precision,g.notation,g.notation,highPrecision).replaceAll(" ","&nbsp;");}
 function timeFormat(x) {
 	x = N(x);
 	if (x.eq(constant.d0)) return "0 seconds";
@@ -105,7 +123,7 @@ function timeFormat(x) {
 	if (x.lt(constant.d3600)) return x.div(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
 	if (x.lt(constant.d86400)) return x.div(constant.d3600).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
 	if (x.lt(constant.e9)) return x.div(constant.d86400).floor()+" day"+(x.gte(constant.d172800)?"s":"")+" "+x.div(constant.d3600).mod(constant.d24).digits(2)+":"+x.div(constant.d60).mod(constant.d60).digits(2)+":"+x.mod(constant.d60).digits(2);
-	return BEformat(x.div(constant.d31556926),2)+" years";
+	return BEformat(x.div(constant.d31556926),0)+" years";
 }
 function rateFormat(x) {
 	x = N(x);

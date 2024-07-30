@@ -56,7 +56,7 @@ const subtabProperties = {
 	},
 	stardust:{
 		stardustBoosts:{
-			glow:function(){if (g.glowOptions.buyStardustUpgrade) {for (let i=1;i<6;i++) {if (stat["stardustUpgrade"+i+"Cost"].lt(g.stardust)&&g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"]) {return true}}}}
+			glow:function(){if (g.glowOptions.buyStardustUpgrade&&(!(((achievement.maxForLocks.totalStardustUpgrades[g.achOnProgressBar]??Infinity)===effectiveStardustUpgrades())&&achievement.locking(g.achOnProgressBar)))) {for (let i=1;i<6;i++) {if (stat["stardustUpgrade"+i+"Cost"].lt(g.stardust)&&g.stardustUpgrades[i-1]<stat["stardustUpgrade"+i+"Cap"]) {return true}}}}
 		},
 		stars:{
 			glow:function(){

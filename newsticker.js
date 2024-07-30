@@ -704,13 +704,12 @@ var currentNewsItem
 var currentNewsOffset = 0
 var recentlyUsedNews = []
 function randomNewsItem() {
-	while (true) {
-		let next = Array.weightedRandom(countTo(newsList.length,true).map(x=>[x,newsList[x].frequency]))
-		if (recentlyUsedNews.includes(next)||(Math.random()>(newsList[next].weight??1))) {continue}
-		if (recentlyUsedNews.length===Math.floor(newsList.length*0.75)) {recentlyUsedNews.shift()}
-		recentlyUsedNews.push(next)
-		return next
-	}
+	let selectable = countTo(newsList.length,true).filter(x=>!recentlyUsedNews.includes(x)).map(x=>[x,newsList[x].frequency])
+	if (selectable.length===0) {recentlyUsedNews.splice(0,recentlyUsedNews.length/2);return randomNewsItem()}
+	let next = Array.weightedRandom(selectable)
+	if (recentlyUsedNews.length===Math.floor(newsList.length*0.75)) {recentlyUsedNews.shift()}
+	recentlyUsedNews.push(next)
+	return next
 }
 function initialNewsOffset() {return (currentNewsOffset<0)?(viewportWidth()+d.element("newsline").offsetWidth):0}
 function nextNewsItem(back=false,val=randomNewsItem()) {

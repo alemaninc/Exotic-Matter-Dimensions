@@ -393,7 +393,7 @@ studies[12] = {
 	reward_desc:function(){return [
 		"The rewards of "+achievement.label(502,4)+" are increased by "+studyRewardHTML(12,1,x=>N(x*100).noLeadFormat(2))+" percentage point"+((studies[12].reward(1)===0.01)?"":"s")+" each",
 		achievement.label(527)+" can now be boosted by yellow lumens (effect cap at "+studyRewardHTML(12,2,x=>x.add(c.d4).noLeadFormat(3))+")",
-		achievement.label(526)+" reward is "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% stronger and affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
+		achievement.label(betaActive?525:526)+" reward is "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% stronger and affects anti-S axis with "+studyRewardHTML(12,3,x=>x.mul(c.e2).noLeadFormat(3))+"% effect"
 	]}
 }
 studies[13] = { // we store only 'research' for ach604 and 'goal' for stat.wormholeDarkAxisReq, everything else is in study13.js
@@ -901,7 +901,7 @@ const corruption = {
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
 			isCorrupted:function(type){return axisCost(type).mul(realAxisCostDivisor(type)).root(realAxisCostExponent(type)).gt(this.start())},
-			visible:function(){
+			unlock:function(){
 				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false
 			}
@@ -920,7 +920,7 @@ const corruption = {
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
 			isCorrupted:function(type){return darkAxisCost(type,g["dark"+type+"Axis"],true).mul(realDarkAxisCostDivisor(type)).root(realDarkAxisCostExponent(type)).gt(this.start())},
-			visible:function(){
+			unlock:function(){
 				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false
 			}
@@ -930,15 +930,27 @@ const corruption = {
 			description:"Base anti-axis costs increase faster beyond this point",
 			start:function(){return c.ee9},
 			power:function(){return c.d1},
-			effPower:function(){return c.d16.pow(this.power())},
+			effPower:function(){return c.d64.pow(this.power())},
 			formula:"{s} ^ (log({x}) ÷ log({s})) ^ {p}",
 			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
 			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
 			isCorrupted:function(type){return antiAxisCost(type).mul(realAntiAxisCostDivisor(type)).root(realAntiAxisCostExponent(type)).gt(this.start())},
-			visible:function(){
+			unlock:function(){
 				for (let i of axisCodes.slice(0,8+study13.rewardLevels.slabdrill)) if (this.isCorrupted(i)) return true
 				return false
 			}
+		},
+		darkstar:{
+			name:"Dark Star Corruption",
+			description:"Base dark star costs increase faster beyond this point",
+			start:function(){return c.e9},
+			power:function(){return c.d1},
+			effPower:function(){return c.d16.pow(this.power())},
+			formula:"{s} ^ (log({x}) ÷ log({s})) ^ {p}",
+			func:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower()].decimalPowerTower()},
+			invertFunc:function(x){return [this.start(),Decimal.div(x.log10(),this.start().log10()),this.effPower().recip()].decimalPowerTower()},
+			isCorrupted:function(){return darkStarReq().add(darkStarPriceMod("sub")).mul(darkStarPriceMod("div")).pow(darkStarPriceMod("pow").recip()).gt(this.start())},
+			unlock:function(){return this.isCorrupted()}
 		}
 	},
 	value:function(name,val){
@@ -952,6 +964,9 @@ const corruption = {
 	formula:function(name){
 		let data = corruption.list[name]
 		return data.formula.replaceAll("{s}",data.start().format()).replaceAll("{x}","<i>x</i>").replaceAll("{p}",data.effPower().noLeadFormat(4))
+	},
+	unlocked:function(name){
+		return (g.corruptionsUnlocked & (2 ** corruption.all.indexOf(name))) !== 0
 	}
 }
 corruption.all = Object.keys(corruption.list)

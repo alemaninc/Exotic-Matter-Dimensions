@@ -152,11 +152,11 @@ function updateHTML() {
 			}
 		} else if (g.activeSubtabs.main==="corruption") {
 			for (let i of corruption.all) {
-				if (corruption.list[i].visible()) {
+				if (corruption.unlocked(i)) {
 					d.display("div_corruption_"+i,"inline-block")
 					d.innerHTML("span_corruption_"+i+"_start",corruption.list[i].start().format())
 					d.innerHTML("span_corruption_"+i+"_power",corruption.list[i].power().mul(c.e2).noLeadFormat(3)+"%")
-					d.innerHTML("span_corruption_"+i+"_formula",corruption.formula(i))
+					d.innerHTML("span_corruption_"+i+"_formula",formulaFormat(corruption.formula(i)))
 				} else {
 					d.display("div_corruption_"+i,"none")
 				}
@@ -360,7 +360,7 @@ function updateHTML() {
 			d.innerHTML("span_stardustBoost4Tooltip",g.masteryPower.add(c.d1).pow(stat.stardustBoost4).format(2));
 			d.innerHTML("span_stardustBoost5Tooltip",stat.stardustBoost5.pow(g.XAxis).format(2));
 			d.innerHTML("span_stardustBoost7Tooltip",stat.stardustBoost7.pow(stardustBoost7Exp()).format(2))
-			d.innerHTML("span_stardustBoost7FakeExp",stardustBoost7IsSoftcapped()?Decimal.log(stardustBoost7Exp(),g.truetimeThisStardustReset).format(4):"0.5");
+			d.innerHTML("span_stardustBoost7FakeExp",Decimal.log(stardustBoost7Exp(),g.truetimeThisStardustReset).fix(c.d0_5,false).noLeadFormat(4));
 			/* Stardust boost table */ for (let i=3;i<13;i++) d.display("div_stardustBoost"+i,((g.stardustUpgrades[2]>(i-3))?"inline-block":"none"));
 			/* Stardust upgrade buttons */
 			for (let i=1;i<6;i++) {
@@ -518,7 +518,7 @@ function updateHTML() {
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
 		if (g.activeSubtabs.wormhole==="research") {
 			let visible = visibleResearch()
-			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format(0,3)+" / "+g.totalDiscoveries.format(0,3));
+			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format(0,1)+" / "+g.totalDiscoveries.format(0,1)+((study13.bindings[225]&&Decimal.lte(g.spentDiscoveries,study13.bindings[225].spendableDiscoveries()))?(" <span class=\"small\" style=\"color:var(--binding);\">("+(study13.bindings[225].spendableDiscoveries().sub(g.spentDiscoveries).format(0,1)+" / "+study13.bindings[225].spendableDiscoveries().format(0,1)+")</span>")):""));
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10)"+formulaFormat.mult(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
@@ -686,9 +686,9 @@ function updateHTML() {
 					let affordable = affordablePrismaticUpgrades(upg)
 					let owned = g.prismaticUpgrades[upg]
 					let unlimited = ((typeof data.max) === "undefined")
-					d.innerHTML("span_prismaticUpgrade_"+upg+"_Purchased",(owned.format()+(unlimited?"":(" / "+data.max.format())))+"<br>(+"+affordable.max(c.d1).format()+")")
-					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost",Decimal.eq(owned,data.max??c.maxvalue)?"Maxed":("Cost: "+((showFormulas&&(data.max??c.maxvalue).gt(c.d1))?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format())))
 					let maxed = unlimited?false:Decimal.eq(owned,data.max)
+					d.innerHTML("span_prismaticUpgrade_"+upg+"_Purchased",(owned.format()+(unlimited?"":(" / "+data.max.format())))+(maxed?"":("<br>(+"+affordable.max(c.d1).format()+")")))
+					d.innerHTML("span_prismaticUpgrade_"+upg+"_Cost",Decimal.eq(owned,data.max??c.maxvalue)?"Maxed":("Cost: "+((showFormulas&&(data.max??c.maxvalue).gt(c.d1))?formulaFormat(unlimited?(data.scale.noLeadFormat(2)+"<sup>λ</sup> × "+data.baseCost.format()):data.costFormula()):prismaticUpgradeCost(upg,affordable.max(c.d1)).format())))
 					for (let i of data.variables) d.innerHTML("span_prismaticUpgrade_"+upg+"_"+i,(showFormulas&&(typeof data.formula[i]==="function"))?formulaFormat(data.formula[i]()):(maxed||(typeof data.formula[i]!=="function"))?data.format[i]():arrowJoin(data.format[i](),data.format[i](((data.variables.length===1)?data.eff:data.eff[i])(owned.add(affordable.max(c.d1))))))
 					let classList = ["prismaticUpgrade"]
 					if (data.refundable) {
@@ -832,7 +832,10 @@ function tick(time) {																																		 // The game loop, which 
 	if (StudyE(9)) {if (g.timeThisWormholeReset>=9) {studies[9].reset()}}
 	if (study13.bound(236)&&(g.timeThisWormholeReset>study13.bindingEff(236))) {popup({text:stat.totalDarkAxis.gt(stat.wormholeDarkAxisReq)?"You have automatically completed Study XIII through Binding 236.":("You failed Study XIII due to running out of time for Binding 236.<br>You reached "+stat.totalDarkAxis.format()+" / "+studies[13].goal().format()+" dark axis"),buttons:[["Close",""]]});wormholeReset()}
 	updateStats()
-	if (!unlocked("Corruption")) {for (let i of ["axis","darkAxis","antiAxis"]) {if (corruption.list[i].visible()) {unlockFeature("Corruption");addAchievement(930)}}} else if (!g.achievement[930]) {addAchievement(930)}
+	for (let i of corruption.all) {if (corruption.list[i].unlock()) {
+		g.corruptionsUnlocked |= 2 ** corruption.all.indexOf(i)
+	}}
+	if (g.corruptionsUnlocked!==0) {unlockFeature("Corruption");addAchievement(930)}
 
 
 	// Time section
@@ -870,7 +873,6 @@ function tick(time) {																																		 // The game loop, which 
 			}
 		}
 	}
-
 	if (newsSupport.newsletter.spamStart<Date.now()) { // Secret achievement 33 "Stat Mark"
 		if (Math.random()<(deltatime/100)*(1+(Date.now()-newsSupport.newsletter.spamStart)/1000)) {
 			(newsSupport.newsletter.remaining.length===0)?newsSupport.newsletter.finalNotify():notify("<span style=\"border-style:solid;border-radius:5px;border-width:1px;border-color:#000000\" onMousedown=\"newsSupport.newsletter.ask()\">VERIFICATION</span>","#009999","#00ffff")
