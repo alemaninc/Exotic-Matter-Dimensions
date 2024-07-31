@@ -518,7 +518,7 @@ function updateHTML() {
 		if (!g.topResourcesShown.hr) d.innerHTML("span_hr_disabledTop",g.hawkingradiation.format())
 		if (g.activeSubtabs.wormhole==="research") {
 			let visible = visibleResearch()
-			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format(0,1)+" / "+g.totalDiscoveries.format(0,1)+((study13.bindings[225]&&Decimal.lte(g.spentDiscoveries,study13.bindings[225].spendableDiscoveries()))?(" <span class=\"small\" style=\"color:var(--binding);\">("+(study13.bindings[225].spendableDiscoveries().sub(g.spentDiscoveries).format(0,1)+" / "+study13.bindings[225].spendableDiscoveries().format(0,1)+")</span>")):""));
+			d.innerHTML("span_discoveryDisplay",unspentDiscoveries().format(0,1)+" / "+g.totalDiscoveries.format(0,1)+((g.study13Bindings[225]&&Decimal.lte(g.spentDiscoveries,study13.bindings[225].spendableDiscoveries()))?(" <span class=\"small\" style=\"color:var(--binding);\">("+(study13.bindings[225].spendableDiscoveries().sub(g.spentDiscoveries).format(0,1)+" / "+study13.bindings[225].spendableDiscoveries().format(0,1)+")</span>")):""));
 			d.innerHTML("span_discoveryKnowledgeReq",showFormulas?formulaFormat("10<sup>(D + 1)"+formulaFormat.mult(stat.extraDiscoveries_mul.recip())+formulaFormat.add(stat.extraDiscoveries_add.neg())+"</sup>"):nextDiscovery().format());
 			d.innerHTML("span_knowledge",g.knowledge.format());
 			d.innerHTML("span_knowledgeEffect",showFormulas?formulaFormat(formulaFormat.convSoftcap("log<sup>[2]</sup>(K + 10)"+formulaFormat.mult(stat.knowledgeEffectPower),stat.knowledgeEffectCap.mul(c.d0_75),stat.knowledgeEffectCap,Decimal.div(stat.knowledgeEffect,stat.knowledgeEffectCap).gt(c.d0_75))):stat.knowledgeEffect.format(3));
