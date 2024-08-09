@@ -753,11 +753,12 @@ function updateHTML() {
 					text = text.replace("{}",showFormulas?formulaFormat(wormholeUpgrades[i].formula()):(Math.max(g.wormholeUpgrades[i],1)>=wormholeUpgrades[i].max)?wormholeUpgrades[i].format(wormholeUpgrades[i].eff()):arrowJoin(wormholeUpgrades[i].format(wormholeUpgrades[i].eff(g.wormholeUpgrades[i])),wormholeUpgrades[i].format(wormholeUpgrades[i].eff(g.wormholeUpgrades[i]+1))))
 				}
 				d.innerHTML("span_wormholeUpgrade"+i+"Text",text)
-				d.innerHTML("span_wormholeUpgrade"+i+"Cost",(Math.max(wormholeUpgrades[i].max,2)===g.wormholeUpgrades[i])?"Maxed":("Cost: "+wormholeUpgrades[i].cost.format()+" HR"))
+				d.innerHTML("span_wormholeUpgrade"+i+"Cost",(Math.max(wormholeUpgrades[i].max,2)===g.wormholeUpgrades[i])?"Maxed":("Cost: "+wormholeUpgrades[i].cost.format(0,[3,9].includes(i)?1:0)+" HR"))
 			}
 		} else if (g.activeSubtabs.wormhole==="study13") {
-			let p = studyPower(13), colors // [border, background, text]
-			let h = (p<24)?(p/24):(p<56)?((p+8)/32):(p<96)?((p+24)/40):(p<144)?((p+48)/48):(p<256)?((p+80)/56):((Math.floor(Date.now()/5000)+0.5+Math.sin(((Date.now()%5000)-2500)*Math.PI/5000)/2)%6)
+			let p = studyPower(13)-(g.study13Bindings[25]?56:0), colors // [border, background, text]
+			let h = ((p<24)?(p/24):(p<56)?((p+8)/32):(p<96)?((p+24)/40):(p<144)?((p+48)/48):(p<200)?((p+80)/56):5)+(g.study13Bindings[25]?1:0)
+			if (h===6) {h = ((Math.floor(Date.now()/5000)+0.5+Math.sin(((Date.now()%5000)-2500)*Math.PI/5000)/2)%6)}
 			if (h<1) {colors = ["rgba(51,"+(51*h)+",0,0.9)","rgba(102,"+(102*h)+",0,0.9)","rgb(204,"+(204*h)+",0)"]}
 			else if (h<2) {colors = ["rgba("+(51*(2-h))+",51,0,0.9)","rgba("+(102*(2-h))+",102,0,0.9)","rgb("+(204*(2-h))+",204,0)"]}
 			else if (h<3) {colors = ["rgba(0,51,"+(51*(h-2))+",0.9)","rgba(0,102,"+(102*(h-2))+",0.9)","rgb(0,204,"+(204*(h-2))+")"]}

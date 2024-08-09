@@ -2845,18 +2845,7 @@ for (var i = 0; i < 10; ++i)
 		};
 
 		Decimal.prototype.layerf = function (callback) {			// This is a function which changes the layer of a number according to a callback. For example, layerf(x => x**2) will square the layer. Therefore, N(1e10).layerf(x => x*1.5) returns 10^^3, because slog(1e10)=2 and 2*1.5=3.
-			let safeguard = Decimal.fromComponents(this.sign,this.layer,this.mag);
-			let x = safeguard.quad_slog().toNumber();
-			let height = callback(x);
-			if (height===x) return safeguard;
-			let neg_height = 0;					// The function breaks at negative heights
-			while (height<0) {
-				height++;
-				neg_height++;
-			}
-			let output = FC_NN(1,0,10).quad_tetr(height);
-			for (let i=0;i<neg_height;i++) output=output.log10();
-			return output;
+			return c.d10.quad_tetr(callback(this.quad_slog(c.d10).toNumber()))
 		};
 
 		Decimal.prototype.layerplus = function(x) {

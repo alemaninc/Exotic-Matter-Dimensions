@@ -18,7 +18,6 @@ const energyHyper = [3,3,3,2,3,3,3,3,3,2];
 const studies = [
 	{    // 0 is used for utilities
 		exactFrames:["All frames are exactly 50ms long in this Study; any excess time is converted to dilated time.",()=>true],
-		effectiveMaxCompletions:{},
 		roman:function(x){return (x===10)?"of Studies":roman(x)}
 	}
 ]
@@ -293,7 +292,7 @@ studies[10] = {
 	},
 	disclaimers:[
 		["When trapped in a Study, its effects are always applied at level 4, even if you do not have 3 completions yet.",()=>{for (let i of [[1,4,7],[2,5,8],[3,6,9],countTo(9)][studyPower(10)]) {if (g.studyCompletions[i]<3) {return true}}; return false}],
-		{get 0(){return "You are repeating a Triad which is already completed. Buy research "+researchOut(studies[10].researchList[g.studyCompletions[10]])+" to access the next level"},1:()=>(studyPower(10)<Math.min(g.studyCompletions[10],studies[0].effectiveMaxCompletions[10],3))}
+		{get 0(){return (g.studyCompletions[10]===4)?"":("You are repeating a Triad which is already completed. Buy research "+researchOut(studies[10].researchList[g.studyCompletions[10]])+" to access the next level")},1:()=>((studyPower(10)<Math.min(g.studyCompletions[10],3))&&(g.studyCompletions[10]<4))}
 	],
 	researchList:["r26_5","r25_8","r26_11","r27_8"],
 	get research(){return studies[10].researchList[studyPower(10)]},
@@ -473,7 +472,7 @@ const luckUpgrades = {
 			desc:"Anti-axis costs are raised to the power of {}",
 			eff:(x=stat.luckUpgLevel_trifolium_antiAxis)=>c.d99.div(c.d99.add(x).sub(x.div(c.d10).add(c.d1).ln().mul(c.d10))),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"99 ÷ (99 + λ - 10 × ln(1 + λ ÷ 10))",
+			formula:()=>"<span style=\"font-size:80%;\">99 ÷ (99 + λ - 10 × ln(1 + λ ÷ 10))</span>",
 			cascade:["star"],
 			unlocked:function(){return g.research.r26_3}
 		}
@@ -517,7 +516,7 @@ const luckUpgrades = {
 			},
 			eff:function(x=stat.luckUpgLevel_quatrefolium_prismatic){return x.add(c.d1).mul(c.e10).layerplus(-3).pow(c.d2).mul(this.power())},
 			format:(x=this.eff())=>x.noLeadFormat(4),
-			formula:function(){return this.power().noLeadFormat(3)+" × log<sup>[3]</sup>((λ + 1) × "+c.e10.format()+")<sup>2</sup>"},
+			formula:function(){return "<span style=\"font-size:90%;\">"+this.power().noLeadFormat(3)+" × log<sup>[3]</sup>((λ + 1) × "+c.e10.format()+")<sup>2</sup></span>"},
 			cascade:["antiAxis"],
 			unlocked:function(){return g.research.r26_3}
 		}
@@ -536,7 +535,7 @@ const luckUpgrades = {
 			desc:"Chroma gain is multiplied by {} (based on total lumens)",
 			eff:(x=stat.luckUpgLevel_cinquefolium_chroma)=>g.lumens.map(i=>i.add(c.d7).log(c.d7).pow(x.max(c.d1).ln().add(c.d1))).sumDecimals().mul(x.min(c.d1)).div(c.d7).pow10(),
 			format:(x=this.eff())=>x.noLeadFormat(3),
-			formula:()=>"10<sup>Σ<span class=\"xscript\"><sup>9</sup><sub>1</sub></span>(log<sub>7</sub>(L<sub>n</sub> + 7)<sup>ln(max(λ, 1)) + 1</sup>) × min(λ, 1) ÷ 7</sup>",
+			formula:()=>"<span style=\"font-size:60%;\">10<sup>Σ<span class=\"xscript\"><sup>9</sup><sub>1</sub></span>(log<sub>7</sub>(L<sub>n</sub> + 7)<sup>ln(max(λ, 1)) + 1</sup>) × min(λ, 1) ÷ 7</sup></span>",
 			cascade:["star","darkstar"]
 		},
 		axis:{
@@ -551,7 +550,7 @@ const luckUpgrades = {
 			name:"Radiation",
 			desc:"Hawking radiation gain is multiplied by {}",
 			eff:(x=stat.luckUpgLevel_cinquefolium_radiation)=>c.d1_5.pow(x).sub(c.d1).mul(c.d20).pow10(),
-			format:(x=this.eff())=>x.format(),
+			format:(x=this.eff())=>x.noLeadFormat(2),
 			formula:()=>"10<sup>20 × (1.5<sup>λ</sup> - 1)</sup>",
 			cascade:["synergism","prismatic"]
 		},
@@ -660,13 +659,18 @@ const prismaticUpgrades = {
 	},
 	lumenThresholdReduction3:{
 		name:"Illumenati III",
-		desc:"The threshold increases of the first six lumens are reduced by {x}%",
-		eff:(x=g.prismaticUpgrades.lumenThresholdReduction3)=>x.gt(c.e2)?x.log10().recip():x.gt(c.d25)?c.d250.sub(x).div(c.d300):c.d1.sub(x.div(c.e2)),
-		format:{x:(x=prismaticUpgrades.lumenThresholdReduction3.eff())=>c.d1.sub(x).mul(c.e2).noLeadFormat(x.gte(c.d50)?5:x.gte(c.d50)?4:3)},
-		formula:{x:(x=g.prismaticUpgrades.lumenThresholdReduction3)=>x.gte(c.e2)?"100 × (1 - 1 ÷ log(λ))":x.gte(c.d25)?"(λ + 50) ÷ 3":"λ"},
+		desc:"The threshold increases of the first six lumens are reduced by {x}% <div class=\"information\" style=\"border-color:#000000;color:#000000;\" onMousedown=\"prismaticUpgrades.lumenThresholdReduction3.info()\">?</div>",
+		eff:(x=g.prismaticUpgrades.lumenThresholdReduction3)=>x.gt(c.e10)?c.d0_1.div(x.quad_slog(c.d10).log(c.d2).pow(c.d2)):x.gt(c.e2)?x.log10().recip():x.gt(c.d25)?c.d250.sub(x).div(c.d300):c.d1.sub(x.div(c.e2)),
+		format:{x:(x=prismaticUpgrades.lumenThresholdReduction3.eff())=>c.d1.sub(x).mul(c.e2)[x.lt(c.d0_1)?"format":"noLeadFormat"](Math.floor(3-Math.log10(x.toNumber())))},
+		formula:{x:(x=g.prismaticUpgrades.lumenThresholdReduction3)=>x.gte(c.e10)?"100 - 10 ÷ log<sub>2</sub>(slog(λ))<sup>2</sup>":x.gte(c.e2)?"100 × (1 - 1 ÷ log(λ))":x.gte(c.d25)?"(λ + 50) ÷ 3":"λ"},
 		variables:"x",
 		baseCost:c.e6,
-		scale:c.e2
+		scale:c.e2,
+		info:function(){
+			let out = "Difference between initial multiplier per lumen and 1 is linearly reduced by the percentage stated.<br>At the current value of "+this.format.x()+"% this translates to:<br><br><table><tr><th style=\"width:15vw;\" class=\"tablecell\">Color</th><th style=\"width:20vw;\" class=\"tablecell\">Initial value</th><th style=\"width:20vw;\" class=\"tablecell\">Adjusted value</th></tr>"
+			for (let i=0;i<6;i++) {out += "<tr><td style=\"width:15vw;\" class=\"tablecell\">"+capitalize(lightNames[i])+"</td><td style=\"width:20vw;\" class=\"tablecell\">"+lightData[i].baseScale.noLeadFormat(4)+"×</td><td style=\"width:20vw;\" class=\"tablecell\">"+lightData[i].baseScale.sub(c.d1).mul(this.eff()).add(c.d1).formatFrom1(4)+"×</td></tr>"}
+			popup({text:out+"</table>"})
+		}
 	},
 	prismRune:{
 		name:"Prism Rune",
@@ -686,7 +690,7 @@ const prismaticUpgrades = {
 		},
 		formula:{
 			x:()=>"(1 + λ ÷ 7)"+formulaFormat.exp(prismaticUpgrades.prismRune.eff1Exp(),false,4),
-			y:()=>g.prismaticUpgrades.prismRune.gt(142)?"100 × log<sub>7</sub>(0.0953496 × λ - 6.621371)":"0.7 × λ"
+			y:()=>g.prismaticUpgrades.prismRune.gt(142)?"<span style=\"font-size:80%;\">100 × log<sub>7</sub>(0.0953496 × λ - 6.621371)</span>":"0.7 × λ"
 		},
 		variables:"xy",
 		baseCost:N(7.77e19),
@@ -790,7 +794,7 @@ const wormholeUpgrades = {
 		cost:Decimal.FC_NN(1,1,3000),
 		eff:function(){return Decimal.FC_NN(1,1,[20,25,32,40,50,64,80,100,125][countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[1]]*(x=>Math.max(x/20+1,x/10,x/5-4))([10,11,12].map(x=>g.wormholeUpgrades[x]).sum()))},
 		format:x=>x.format(),
-		formula:()=>"10<sup>dB(U<sub>NR</sub> + 14) × max("+countTo(3).map(x=>"U<sub>R</sub>"+formulaFormat.mult(N(2**x/40))+formulaFormat.add(N(2**(x-1)*(2-x)))).join(", ")+")"
+		formula:()=>"10<sup>dB(U<sub>NR</sub> + 12) × max("+countTo(3).map(x=>"U<sub>R</sub>"+formulaFormat.mult(N(2**x/40))+formulaFormat.add(N(2**(x-1)*(2-x)))).join(", ")+")"
 	},
 	2:{
 		name:"More Upgrades β",
@@ -798,7 +802,7 @@ const wormholeUpgrades = {
 		cost:Decimal.FC_NN(1,1,3300),
 		eff:function(){return Decimal.FC_NN(1,0,1+Math.log10(1+((countTo(9).map(x=>g.wormholeUpgrades[x]).sum()-g.wormholeUpgrades[2])/2)+([10,11,12].map(x=>g.wormholeUpgrades[x]).sum())/12)/100)},
 		format:x=>x.noLeadFormat(4),
-		formula:()=>"1 + log(1 + U<sub>NR</sub> ÷ 2 + U<sub>R</sub> ÷ 12) ÷ 100"
+		formula:()=>"1 + log(0.5 + U<sub>NR</sub> ÷ 2 + U<sub>R</sub> ÷ 12) ÷ 100"
 	},
 	3:{
 		name:"More Galaxies α",
@@ -860,7 +864,7 @@ const wormholeUpgrades = {
 		name:"More Galaxies β",
 		text:function(){return "Star costs are raised to the power of {}"},
 		get cost(){return repeatableWormholeUpgradeCost(N(4500),N(2e6),25,g.wormholeUpgrades[11])},
-		eff:function(x=g.wormholeUpgrades[11]){return Decimal.mul(Decimal.pow(c.d0_9,x),Decimal.pow(N(1.0011053698),N(x-1).simplex(2)))},
+		eff:function(x=g.wormholeUpgrades[11]){return (x===25)?c.d0_1:Decimal.mul(Decimal.pow(c.d0_9,x),Decimal.pow(N(1.001105369799546),N(x-1).simplex(2)))},
 		format:x=>x.noLeadFormat(3),
 		formula:()=>"0.9<sup>λ</sup> × (0.1 ÷ 0.9<sup>25</sup>)<sup>(λ<sup>2</sup> - λ) ÷ 600</sup>",
 		max:25

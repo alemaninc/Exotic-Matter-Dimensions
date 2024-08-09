@@ -521,7 +521,7 @@ const research = (function(){
 		r5_8:{
 			numDesc:function(){return (researchEffect(5,8).gte(c.d10)?researchEffect(5,8):researchEffect(5,8).sub(c.d1).mul(c.e2)).noLeadFormat(3)},
 			formulaDesc:function(){
-				let out = "((D + 1)<sup>2</sup> ÷ 100 + 1)"+formulaFormat.exp(researchPower(5,8))
+				let out = "(log(D + 1)<sup>2</sup> ÷ 100 + 1)"+formulaFormat.exp(researchPower(5,8))
 				if (researchEffect(5,8).lt(c.d10)) {out = "("+out+" - 1) × 100"}
 				return out
 			},
@@ -2026,7 +2026,7 @@ const research = (function(){
 			return out
 		})(),
 		r44_8:{
-			description:function(){return (studyPower(13)===0)?"Study XIII":("Study XIII \""+study13.name()+"\"")},
+			description:function(){return (studyPower(13)===0)?"Study XIII":("Study XIII \""+study13.name().replaceAll("\"","-")+"\"")},
 			adjacent_req:Object.values(researchList.finality).map(x=>x[12]),
 			condition:[{check:function(){return true},text:function(){return "<br>"+this.req()},req:function(){
 				let randomIndex = Math.floor(Date.now()/25000)

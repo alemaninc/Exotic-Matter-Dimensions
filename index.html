@@ -9,7 +9,7 @@
 	</head>
 	<body onClick="gameClick()">
 		<div id="game" class="topleveldiv" style="display:none;padding-bottom:44px">
-			<div id="newsticker" style="display:none"><span id="newsline"></span></div>
+			<div id="newsticker" style="display:inline-block;"><span id="newsline"></span></div>
 			<table>
 				<tr>
 					<td class="toptable" id="resourceModal" style="width:calc(100vw - 280px)"></td>
@@ -210,7 +210,7 @@
 					<button class="featureConfig wormhole" onClick="openConfig['Luck']()"></button>
 					<p>You have <span class="big _luck" id="span_luckShards"></span> luck shards.<br>
 					You are generating <span class="big _luck" id="span_luckShardsPerSec"></span> luck shards per second.<br>
-					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down the normal and dark axis cost superscaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
+					Your luck shards are giving you <span class="big _luck" id="span_luckShardEff1"></span> free dark Y axis and slowing down Exotic and Dark Axis Superscaling by <span class="big _luck" id="span_luckShardEff2"></span><span id="span_luckShardEff2Sign"></span></p>
 					<table id="table_luckUpgrades"></table>
 					<div style="float:right;text-align:right;margin-right:20px;" id="div_luckSpendOptions" style="text-align:right;"></div>
 					<button style="float:right" onClick="respecLuckUpgrades()" class="genericbutton size2" id="button_respecLuckUpgrades">Respec Luck Upgrades (forces a Wormhole reset)</button>
@@ -424,7 +424,7 @@
 			</div>
 			<div id="footer">
 				<div id="gameprogress" class="progress" onClick="progressBarOnClick()"></div>
-				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://forms.gle/G9ixRuWv3yPZCQWT7" target="_blank">Contact</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <a href="https://forms.gle/aBpgH6z4qpLCiztVA" target="_blank" style="color:#00ffff;">Feedback</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://alemaninc.github.io/" target="_blank">More by alemaninc</a> | <a href="https://www.reddit.com/r/incremental_games/comments/1dfx5hx/exotic_matter_dimensions_%F0%9D%95%8D1%CF%89/" target="_blank">Reddit</a> | <a href="savebank.html" target="_blank">Saves</a> | Version <span id="span_currentVersion"></span><span id="span_footerEMDLevel"></span>
+				<a href="changelog.html" target="_blank">Changelog</a> | <a href="https://forms.gle/G9ixRuWv3yPZCQWT7" target="_blank">Contact</a> | <a id="span_footerDiscord" target="_blank">Discord</a> | <button class="howtoplay" onClick="htpNavigation()">How to play</button> | <a href="https://alemaninc.github.io/" target="_blank">More by alemaninc</a> | <a href="https://www.reddit.com/r/incremental_games/comments/1dfx5hx/exotic_matter_dimensions_%F0%9D%95%8D1%CF%89/" target="_blank">Reddit</a> | <a href="savebank.html" target="_blank">Saves</a> | Version <span id="span_currentVersion"></span><span id="span_footerEMDLevel"></span>
 			</div>
 		</div>
 		<div id="div_fancyPopupScreen" class="popupScreen">

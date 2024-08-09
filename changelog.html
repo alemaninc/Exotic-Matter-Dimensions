@@ -78,9 +78,22 @@ const logEntries = [
 
 	]},
 	*/
+	{num:"𝕍1ω.12",date:"2024-08-09",changes:[
+		[2,"BUGFIX","Setting axis autobuyer caps to invalid values no longer breaks the game"],
+		[9,"BUGFIX","Study XIII completion will no longer show a \"Successfully loaded!\" popup"],
+		[9,"BUGFIX","Study XIII Binding 275 crashing the game if its effect formula is viewed"],
+		[9,"BUGFIX","Buying Research 26-5, 25-8 or 26-11 then entering the Studies tab with 4 Study of Studies completions no longer crashes the game"],
+		[1,"INTERFACE","Removed the feedback form which closed over two weeks ago from the footer"],
+		[5,"INTERFACE","When using the Compact style for Studies, the information panel will no longer show a number of completions as this is already displayed on the Study selector"],
+		[[5,8],"INTERFACE","When using the Detailed style for Studies, the information divs are now very slightly larger to prevent text overflow for "+((EMDLevel>=8)?"Study of Studies":"a lategame Study")],
+		[1,"MISCELLANEOUS","News ticker frequency now works correctly once more<br>(did it ever work to begin with? 🤔)"],
+		[8,"QOL","Added a button to Prismatic Upgrade 6 \"Illumenati III\" that shows what it actually does"],
+		[[6,9],"TEXTFIX","Achievement 611 \"Pieces of Eight\" now specifically refers to purchased dark stars"+((EMDLevel>=9)?", and Achievement 918 \"Where is that Infinite Galaxy Now?\" to effective":"")],
+		[1,"TEXTFIX","Innumerable corrections of incorrect formulae"]
+	]},
 	{num:"𝕍1ω.11",date:"2024-07-31",changes:[
 		[2,"TEXTFIX","Fixed Stardust story entry going along the lines of \"Stardust creation consumed all exotic matter <i>and stardust</i>\""],
-		[[5,9],"TEXTFIX",(EMDLevel>=9)?"The Study XIII Binding 225 text next to Discoveries no longer appears if Binding 225 is not active (or if Study XIII isn't even unlocked)":"There is no longer a brown text next to the Discovery count showing how many Discoveries would be unspent if the total amount was a quarter of its true value"]
+		[[5,9],"TEXTFIX",(EMDLevel>=9)?"The Study XIII Binding 225 text next to Discoveries no longer appears if Binding 225 is not active (or if Study XIII isn't even unlocked)":"There is no longer a brown text next to the Discovery count showing how many Discoveries would be unspent if the total amount was a quarter of its true value"],
 	]},
 	{num:"𝕍1ω.10",date:"2024-07-30",name:"My Local Version of EMD Got Corrupted and I’m Not Entirely Sure if It’s Fixed Hopefully Nothing Goes Horribly Wrong 😀",changes:[
 		[9,"BALANCE","Anti-axis corruption is now 50% stronger.<br>If this actually affects you at this point within development please let alemaninc know if you have not already."],

@@ -1,12 +1,12 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1ω.11",
+	current:"𝕍1ω.12",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[
-		0,0,       // Level 9 balance
-		0.5,       // Level 9 code
+		0.15,0.15,       // Level 9 balance
+		1,       // Level 9 code
 		0,0,0,     // Level 10 balance
 		0,         // Realmstone code (basic)
 		0,         // Realmstone code (special)

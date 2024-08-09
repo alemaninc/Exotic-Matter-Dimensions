@@ -11,13 +11,6 @@ const initSteps = [
 		for(let stat of Object.keys(miscStats).filter(x=>miscStats[x].type==="breakdown")){for(let i=0;i<miscStats[stat].modifiers.length;i++){if(typeof miscStats[stat].modifiers[i].show!=="function"){error("miscStats."+stat+".modifiers["+i+"].show is undefined")}}}
 	}}},
 	{function:function(){load(JSON.parse(localStorage.getItem("save")));}},
-	{function:function(){
-		for (let i=1;i<13;i++) {
-			let max = 0
-			for (let j=3;j>=0;j--) if (studies[i].goal(j).neq(c.e100)) {max = j+1;break}
-			studies[0].effectiveMaxCompletions[i] = max
-		}
-	}},
 	{function:function(){HTMLGenerator()}},
 	{function:function(){
 		d.innerHTML("span_currentVersion",version.current+(betaActive?(" "+version.percentage()):""))
@@ -70,9 +63,12 @@ const initSteps = [
 		for (let i of Object.keys(g.activeSubtabs)) openSubTab(i,g.activeSubtabs[i])
 	},onImport:true},
 	{function:function(){
+		openTopLevelDiv("game")
 		for (let i=0;i<newsList.length;i++) {
 			d.innerHTML("newsline",newsList[i].text)
-			newsList[i].frequency = 1/(viewportWidth()+d.element("newsline").offsetWidth)}
+			newsList[i].frequency = 1/(viewportWidth()+d.element("newsline").offsetWidth)
+		}
+		openTopLevelDiv("loadScreen")
 	}},
 	{function:function(){
 		updateHTML();

@@ -660,8 +660,9 @@ const axisEffectHTML = {
 };
 function realAxisCostDivisor(type) {
 	let output = stat.axisCostDivisor;
-	if (type==="X") output=output.mul(stat.stardustBoost5.pow(g.XAxis));
-	if (type==="Y"&&g.achievement[312]) output=output.mul(stat.stardustBoost5.pow(g.YAxis.mul(c.d0_04)));
+	if (type==="X") {output=output.mul(stat.stardustBoost5.pow(g.XAxis));}
+	if (type==="Y"&&g.achievement[312]) {output=output.mul(stat.stardustBoost5.pow(g.YAxis.mul(c.d0_04)));}
+	if (study13.bound(25)) {output=output.layerf(x=>Math.max(x-study13.bindingEff(25).toNumber(),-1)).max(c.minvalue);}
 	return output;
 }
 function realAxisCostExponent(type) {
@@ -753,7 +754,7 @@ function buyMaxAxis(caps,manual=false) {
 	let totalBefore = stat.totalNormalAxis;
 	axis: for (let j=0; j<stat.axisUnlocked; j++) {
 		for (let i=0;i<4;i++) {if ((g.achOnProgressBar===(202+i))&&(i===j)) {continue axis}}
-		let amount = caps[j]==="u"?maxAffordableAxis(axisCodes[j]):Decimal.min(maxAffordableAxis(axisCodes[j]),N(caps[j]));
+		let amount = caps[j]==="u"?maxAffordableAxis(axisCodes[j]):Decimal.min(maxAffordableAxis(axisCodes[j]),N(caps[j]).fix(c.d0,false));
 		if (amount==="NA") continue;
 		if (amount.lte(g[axisCodes[j]+"Axis"])) continue;
 		amount = amount.min(maxAxisForAchievement(axisCodes[j]))
@@ -1305,7 +1306,7 @@ const inputStarAllocatorBuild = {
 	editRow:function(row){
 		let tableStyle = "border-style:solid;border-color:#00ff00;border-collapse:collapse;border-width:1px;"
 		popup({
-			text:"<table style=\"vertical-align:bottom;\"><tr><td style=\"width:160px\">Current selection:</td>"+countTo(4,true).map(x=>"<td style=\"width:50px\">"+(inputStarAllocatorBuild.order[x]??((x===0)?"<i>None</i>":""))+"</td>").join("")+"</tr></table><br><br>"+((inputStarAllocatorBuild.order.length===4)?"Is this correct?":("Options are:<br>"+tableGenerator([countTo(4).map(x=>row*10+x),countTo(4).map(x=>starText(row*10+x).replace("{x}",dynamicStars.includes(row*10+x)?formatStarEffect(row*10+x):null))],tableStyle,tableStyle,tableStyle+"width:25%;padding:8px;")+"<br><br>Select next or save current selection:")),
+			text:"<table style=\"vertical-align:bottom;\"><tr><td style=\"width:160px\">Current selection:</td>"+countTo(4,true).map(x=>"<td style=\"width:50px\">"+(inputStarAllocatorBuild.order[x]??((x===0)?"<i>None</i>":""))+"</td>").join("")+"</tr></table><br><br>"+((inputStarAllocatorBuild.order.length===4)?"Is this correct?":("Options are:<br>"+tableGenerator([countTo(4).map(x=>row*10+x),countTo(4).map(x=>starText(row*10+x).replace("{x}",dynamicStars.includes(row*10+x)?formatStarEffect(row*10+x):null))],tableStyle,tableStyle,tableStyle+"width:25%;padding:8px;",false)+"<br><br>Select next or save current selection:")),
 			buttons:[...countTo(4).map(x=>10*row+x).filter(x=>!inputStarAllocatorBuild.order.includes(x)).map(x=>[x,"inputStarAllocatorBuild.order.push("+x+");inputStarAllocatorBuild.editRow("+row+")"]),["Save","inputStarAllocatorBuild.setRow("+row+")"],["Cancel",""]],
 			buttonSize:4
 		})
@@ -1629,7 +1630,7 @@ function buyDarkAxis(x,manual=false) {
 function buyMaxDarkAxis(caps,manual=false) {
 	let total = axisCodes.map(x=>g["dark"+x+"Axis"]).sumDecimals()
 	for (let j=0; j<4+g.stardustUpgrades[0]; j++) {
-		let amount = caps[j]==="u"?maxAffordableDarkAxis(axisCodes[j]):Decimal.min(maxAffordableDarkAxis(axisCodes[j]),N(caps[j]));
+		let amount = caps[j]==="u"?maxAffordableDarkAxis(axisCodes[j]):Decimal.min(maxAffordableDarkAxis(axisCodes[j]),N(caps[j]).fix(c.d0,false));
 		if (amount==="NA") continue;
 		if (amount.lte(g["dark"+axisCodes[j]+"Axis"])) continue;
 		amount = amount.min(maxAxisForAchievement("dark"+axisCodes[j]))
@@ -1685,6 +1686,7 @@ function realDarkAxisSuperscalePower(type){
 function realDarkAxisCostDivisor(type) {
 	if (StudyE(12)) {return c.d1}
 	let output = stat.darkAxisCostDivisor;
+	if (study13.bound(25)) {output=output.layerf(x=>Math.max(x-study13.bindingEff(25).toNumber(),-1)).max(c.minvalue);}
 	return output;
 }
 function realDarkAxisCostExponent(type) {
@@ -1967,9 +1969,13 @@ function wormholeReset(showPopups=false) {
 	if (g.activeStudy!==0) {
 		if (stat.totalDarkAxis.gte(studies[g.activeStudy].goal())) {
 			g.studyCompletions[g.activeStudy] = (g.activeStudy===13)?Math.max(studyPower(13),g.studyCompletions[13]):Math.min(studyPower(g.activeStudy)+1,4); // study X proof - no completions from doing Stellar Triad 4 times!
-			let resbuild = Object.keys(research).filter(x=>g.research[x]&&(research[x].type!=="study"))
-			if (g.activeStudy===13) {study13.updateRewardLevels()} else {respecResearch()};
-			if (g.restoreResearchAfterStudy) {buyResearchList(resbuild)}
+			if (g.activeStudy===13) {
+				study13.updateRewardLevels()
+			} else {
+				let resbuild = Object.keys(research).filter(x=>g.research[x]&&(research[x].type!=="study"))
+				respecResearch()
+				if (g.restoreResearchAfterStudy) {buyResearchList(resbuild)}
+			};
 			updateResearchTree();
 			generateResearchCanvas();
 			if ((g.activeStudy===10)&&(studyPower(10)===3)) {for (let i of g.study10Options) {g.ach920Completions |= 2**(i-1)}}
@@ -2138,7 +2144,7 @@ function visibleStudies() {
 	let out = [];
 	for (let i=1;i<13;i++) {
 		if (!g.research[(i===10)?studies[10].research[0]:studies[i].research]) {
-			if ((g.studyCompletions[i]===studies[0].effectiveMaxCompletions[i])&&(!g.completedStudiesShown)&&(g.studyContainerStyle==="Detailed")) {continue}
+			if ((g.studyCompletions[i]===4)&&(!g.completedStudiesShown)&&(g.studyContainerStyle==="Detailed")) {continue}
 			if (!((g.studyCompletions[i]>0)||g.researchVisibility.includes(studies[i]["research"])||StudyE(i))) {continue}
 		}
 		out.push(Number(i))
@@ -2195,7 +2201,7 @@ function updateStudyDiv(HTMLnum,studyNum,follow) {
 	d.innerHTML("span_study"+HTMLnum+"Num"+follow,studies[0].roman(studyNum))
 	d.innerHTML("span_study"+HTMLnum+"Name"+follow,(studyNum===10)?(["Stellar","Decisive","Temporal","Ontological"][studyPower(10)]+" Triad"):studies[studyNum].name)
 	d.innerHTML("button_study"+HTMLnum+follow,studyButtons.text(studyNum))
-	d.innerHTML("span_study"+HTMLnum+"Goal"+follow,(studyPower(studyNum)===studies[0].effectiveMaxCompletions[studyNum])?"Infinite":BEformat(studies[studyNum].goal()));
+	d.innerHTML("span_study"+HTMLnum+"Goal"+follow,studies[studyNum].goal().format());
 	d.innerHTML("span_study"+HTMLnum+"Description"+follow,(studies[studyNum].description().length===1)?studies[studyNum].description()[0]:("<table>"+studies[studyNum].description().map((x,i)=>"<tr><td style=\"vertical-align:top;text-align:left;width:20px;\">"+(i+1)+"</td><td style=\"vertical-align:top;text-align:left;\">"+x+"</td>").join("")+"</table>"))
 	if (studies[studyNum].disclaimers===undefined) {
 		d.tr("span_study"+HTMLnum+"Disclaimers"+follow,false)
@@ -2208,8 +2214,7 @@ function updateStudyDiv(HTMLnum,studyNum,follow) {
 			d.innerHTML("span_study"+HTMLnum+"Disclaimers"+follow,"<i>"+disclaimers.map(x=>"NB: "+x).join("<br>")+"</i>")
 		}
 	}
-	d.innerHTML("span_study"+HTMLnum+"Completions"+follow,g.studyCompletions[studyNum]);
-	d.innerHTML("span_study"+HTMLnum+"MaxCompletions"+follow,studies[0].effectiveMaxCompletions[studyNum]);
+	if (follow!=="CompactView") {d.innerHTML("span_study"+HTMLnum+"Completions"+follow,g.studyCompletions[studyNum]);}
 	d.innerHTML("span_study"+HTMLnum+"Reward"+follow,"<table>"+studies[studyNum].reward_desc().map((x,i)=>"<tr><td style=\"vertical-align:top;text-align:left;width:20px;\">"+(i+1)+"</td><td style=\"vertical-align:top;text-align:left;\">"+x+"</td>").join("")+"</table>");	
 	d.class("button_study"+HTMLnum+follow,"studyButton "+studyButtons.class(studyNum))
 }
@@ -2218,7 +2223,7 @@ function studyRewardHTML(studyNum,rewardNum,precisionOrCallback=2,completions=g.
 	function format(n) {return (typeof precisionOrCallback==="number")?n.noLeadFormat(precisionOrCallback):precisionOrCallback(n)}
 	let curr = N(studies[studyNum].reward(rewardNum,completions))
 	let next = N(studies[studyNum].reward(rewardNum,Math.min(completions+1,4)))
-	if ((completions === studies[0].effectiveMaxCompletions[studyNum]) || Decimal.eq(curr,next)) return "<b>"+format(curr)+"</b>";
+	if ((completions === 4) || Decimal.eq(curr,next)) return "<b>"+format(curr)+"</b>";
 	return "<b>"+arrowJoin(format(curr),format(next))+"</b>";
 }
 function studyPower(x){
@@ -2333,7 +2338,7 @@ const lightEffect = [
 	{
 		value:function(x=g.lumens[0]){return Decimal.convergentSoftcap(x,c.e2,c.d200,3).div(c.e2).add(c.d1)},
 		format:function(x){return x.sub(c.d1).mul(c.e2).noLeadFormat(4)},
-		formula:function(){return g.lumens[0].gte(c.e2)?("Ξ<sup>[3]</sup>"+formulaFormat.convSoftcap("log<sup>[3]</sup>(L)",c.e2.layerplus(-3),c.d200.layerplus(-3),true)):"L"}
+		formula:function(){return g.lumens[0].gte(c.e2)?("<span style=\"font-size:95%;\">Ξ<sup>[3]</sup>"+formulaFormat.convSoftcap("log<sup>[3]</sup>(L)",c.e2.layerplus(-3),c.d200.layerplus(-3),true)+"</span>"):"L"}
 	},
 	{
 		value:function(x=g.lumens[1]){return c.d0_02.mul(x).add(c.d0_18).mul(x).add(c.d1)},
@@ -2841,7 +2846,7 @@ function buyMaxAntiAxis(caps,manual=false) {
 	for (let j=0;j<8+study13.rewardLevels.slabdrill;j++) {
 		let type = axisCodes[j]
 		if (!antiAxisUnlocked(type)) continue
-		let amount = caps[j]==="u"?maxAffordableAntiAxis(axisCodes[j]):Decimal.min(maxAffordableAntiAxis(axisCodes[j]),N(caps[j]));
+		let amount = caps[j]==="u"?maxAffordableAntiAxis(axisCodes[j]):Decimal.min(maxAffordableAntiAxis(axisCodes[j]),N(caps[j]).fix(c.d0,false));
 		if (amount==="NA") continue;
 		if (amount.lte(g["anti"+axisCodes[j]+"Axis"])) continue;
 		amount = amount.min(maxAxisForAchievement("anti"+axisCodes[j]))

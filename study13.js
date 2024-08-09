@@ -3,12 +3,12 @@ const study13 = {
 	name:function(){
 		let available = study13.allBindings.filter(x=>g.study13Bindings[x]&&(x!==25)).map(x=>Number(x))
 		let lvExcl25 = studyPower(13)-(g.study13Bindings[25]?56:0)
-		if (lvExcl25===0) {return g.study13Bindings[25]?"Pure Filth (56)":"The First Study (0)"}
-		if (lvExcl25===24) {return g.study13Bindings[25]?"Sullied Galaxy (80)":"Dreamers' Galaxy (24)"}
-		if (lvExcl25===56) {return g.study13Bindings[25]?"Sea of Disgraced Reflections (112)":"The Amazing Mirror (56)"}
-		if (lvExcl25===96) {return g.study13Bindings[25]?"Fallen Achievement 〜 Tenth Circle of Hell (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
-		if (lvExcl25===144) {return g.study13Bindings[25]?"Study of Obscenities (200)":"Study of Triads (144)"}
-		if (lvExcl25===200) {return g.study13Bindings[25]?("Approach It Not, Gaze Not Upon It; Heaven Lies Hidden Inside the Portal to Nothing 〜 "+g.playerName+"'s Device (256)"):"Thirteenth Hell 〜 Development Hell (200)"}
+		if (lvExcl25===0) {return g.study13Bindings[25]?"Space (56)":"The First Study (0)"}
+		if (lvExcl25===24) {return g.study13Bindings[25]?"Time Dimension (80)":"Dreamers' Galaxy (24)"}
+		if (lvExcl25===56) {return g.study13Bindings[25]?"The Sea of Lifeblood Where Miracles Reflect (112)":"The Amazing Mirror (56)"}
+		if (lvExcl25===96) {return g.study13Bindings[25]?"Aeon, the Realmstone of Achievements (152)":"Pure Achievement 〜 Whereabouts of the Tenth (96)"}
+		if (lvExcl25===144) {return g.study13Bindings[25]?"Matrix of the Four Triads (200)":"Study of Triads (144)"}
+		if (lvExcl25===200) {return g.study13Bindings[25]?("Approach It Not, Gaze Not Upon It; Heaven Lies Hidden Beyond This Brave Old World 〜 "+g.playerName+"'s Device (256)"):"Thirteenth Hell 〜 Development Hell (200)"}
 		let used = []
 		function bindingRank(id) {return (id===25)?Infinity:(Math.floor(id/10)*100+Math.min(id%10,10-(id%10))*9+study13.bindings[id].lv*11+Math.sin(id))} // use this to identify the strongest bindings
 		while ((available.length>0)&&(used.length<3)) { // we will only ever use 3 so use an O(n) method instead of sorting which is O(n^2)
@@ -61,8 +61,12 @@ const study13 = {
 			base = "[1]"+basename([...available,...used])+"[2][0]"
 			for (let i=0;i<3;i++) {base = base.replace("["+i+"]",(used.length>i)?(" "+study13.bindings[used[i]].nameMod[i]+" "):"")}
 		}
-		let special25Name = g.study13Bindings[25]?["Filthy ","Sullied ","Disgraced ","Fallen ","Obscene "][Math.floor(Math.sqrt(25+lvExcl25)*48)%5]:""
-		return capitalize((special25Name+base+" ("+studyPower(13)+")").trim())
+		base = capitalize(base.trim())
+		if (g.study13Bindings[25]) {
+			let special25Name = ["Crystallized Space","Crystallized Time","Game of Life","Great Realm","Matrix"][Math.floor(Math.sqrt(25+lvExcl25)*1438)%5]
+			base = special25Name+" \""+base+"\""
+		}
+		return base+" ("+studyPower(13)+")"
 	},
 	activeT3:"bindings",
 	openT3:function(name) {
@@ -128,13 +132,14 @@ const study13 = {
 					nameMod:["Stars","Stellar","Blazing"]
 				},
 				25:{
-					numDesc:function(){return study13.bindingEff(25).noLeadFormat(4)},
-					formulaDesc:function(){return "10<sup>max((B + 1800) ÷ 200, (B + 360) ÷ 56)</sup>"},
-					description:function(){return "The starting points of the Exotic and Dark Axis Corruptions are lowered to the "+study13.bindingEff(25).noLeadFormat(3)+(study13.bindingEff(25).lte(c.e10)?ordinal(study13.bindingEff(25).toNumber()).replaceAll(/[0-9]/g,""):"th")+" root (based on total binding levels)"},
+					description:function(){return "Exotic matter and dark matter gain as well as total exotic and dark axis cost divisors are mapped by "+formulaFormat("x → max(log<sup>["+study13.bindingEff(25).noLeadFormat(4)+"]</sup>(x), 0)")},
 					adjacent_req:[],
-					icon:"<span style=\"color:rgba(255,153,255,0.6);\">C</span><sup>+++</sup>",
+					icon:(()=>{
+						function f(x){return "<div style=\"height:14px;\"><table><tr><td style=\"height:18px;width:18px;font-size:14px;vertical-align:center;text-align:center;padding:0px;color:"+x+";\">◉</td></tr></table></div>"}
+						return f("#556677")+"<br>"+f("#3333ff")+f("#00cc00")+"<br>"+f("#996600")
+					})(),
 					lv:56,
-					effect:function(power){let x = studyPower(13);x = Math.max((x+1800)/200,(x+360)/56);return N(x).mul(power).pow10()},
+					effect:function(power){return power.div(c.d40)},
 					// Binding 25 does not affect names in the normal way
 				},
 				26:{
@@ -535,8 +540,8 @@ const study13 = {
 				},
 				225:{
 					numDesc:function(){return study13.bindingEff(225).noLeadFormat(3)},
-					formulaDesc:function(){return "min(log<sub>"+this.discoveryReq(study13.bindingPower(225)).noLeadFormat(3)+"</sub>(υD ÷ "+g.totalDiscoveries.format()+"), 1)"},
-					description:function(){return "You can only spend a maximum of "+this.discoveryReq(study13.bindingPower(225)).mul(c.e2).noLeadFormat(3)+"% of your Discoveries ("+g.spentDiscoveries.format(0,3)+" / "+this.spendableDiscoveries().format(0,3)+").<br><br>If you spend more than this, exotic matter, stardust, dark matter and mastery power gain are significantly reduced (currently: "+arrowJoin("x","10<sup>log(x)<sup>"+numOrFormula(225)+"</sup></sup>")+")"},
+					formulaDesc:function(){return "min(log<sub>"+this.discoveryReq(study13.bindingPower(225)).noLeadFormat(3)+"</sub>(1 - υD ÷ "+g.totalDiscoveries.format()+"), 1)"},
+					description:function(){return "You can only spend a maximum of "+this.discoveryReq(study13.bindingPower(225)).mul(c.e2).noLeadFormat(3)+"% of your Discoveries ("+g.spentDiscoveries.format(0,3)+" / "+this.spendableDiscoveries().format(0,3)+").<br><br>If you spend more than this, exotic matter, stardust, dark matter and mastery power gain are significantly reduced (currently: "+unbreak(arrowJoin("x","10<sup>log(<i>x</i>)<sup>"+numOrFormula(225)+"</sup></sup>"))+" if "+formulaFormat("x > 10")+")"},
 					adjacent_req:[192,198,204,206],
 					icon:studyIcon(5),
 					lv:4,
@@ -599,7 +604,7 @@ const study13 = {
 				},
 				248:{
 					numDesc:function(){return study13.bindingEff(248).noLeadFormat(2)},
-					formulaDesc:function(){return "(S = 0) ? 1 : 10<sup>10<sup>S"+formulaFormat.mult(study13.bindingPower(248))+" - 1</sup>"+formulaFormat.mult(study13.bindingPower(248))+"</sup>"},
+					formulaDesc:function(){return "(S = 0) ? 1 : 10<sup>10<sup>(S - 1)"+formulaFormat.mult(study13.bindingPower(248))+"</sup>"+formulaFormat.mult(study13.bindingPower(248))+"</sup>"},
 					description:function(){return "Stardust gain is reduced based on the number of Stardust resets done (currently: ÷"+numOrFormula(248)+")"},
 					adjacent_req:[236],
 					icon:studyIcon(4),
@@ -635,11 +640,11 @@ const study13 = {
 					numDesc:function(){return study13.bindingEff(275).noLeadFormat(2)},
 					formulaDesc:function(){
 						let p = study13.bindingPower(275);
-						out = "((1 + log<sup>[2]</sup>(DM + 10) ÷ 100)<sup>331.3</sup>"+(p.eq(c.d1)?" ":"<br>")+"× 10<sup>5</sup>)"+formulaFormat.exp(p.recip())+formulaFormat.mult(p.recip())
+						let out = "((1 + log<sup>[2]</sup>(DM + 10) ÷ 100)<sup>331.3</sup>"+(p.eq(c.d1)?" ":"<br>")+"× 10<sup>5</sup>)"+formulaFormat.exp(p.recip())+formulaFormat.mult(p.recip())
 						if (StudyE(12)) {out = "1 - 1 ÷ ("+out+" + 1)"}
 						return out
 					},
-					description:function(){return "Dark matter gain is capped at 1, but Titanium Empowerments are available and fortitude gain and cap is multiplied by "+numOrFormula(275)+" (based on dark matter)"},
+					description:function(){return "Dark matter gain is capped at 1, but Titanium Empowerments are available and fortitude gain and cap is multiplied by "+numOrFormula(275)+" (based on dark matter)"+(StudyE(12)?"<br><br><i>(note: the fortitude multiplier does not work if simultaneously in Study XII)</i>":"")},
 					adjacent_req:[265],
 					get icon(){return studyIcon(12)},
 					lv:6,
@@ -1117,7 +1122,7 @@ const study13 = {
 				breakpoints:[176,188,200,208,216,224,232,240,248,256],
 				type:"scaling",
 				eff:function(lv=study13.rewardLevels.purifier){return {e:Decimal.FC_NN(1,0,1+lv/5-lv**2/100),d:Decimal.FC_NN(1,0,1+lv**2/100)}},
-				desc:function(curr,prev){return "Normal Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).e.noLeadFormat(2))+" later<br>Dark Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).d.noLeadFormat(2))+" later"}
+				desc:function(curr,prev){return "Normal Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).e.noLeadFormat(4))+" later<br>Dark Axis Corruption starts ^"+scaleFormat(curr,prev,x=>this.eff(x).d.noLeadFormat(4))+" later"}
 			},
 			hyperdrive:{
 				name:"Chromatic Hyperdrive",

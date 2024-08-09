@@ -908,14 +908,14 @@ tab {
 	border-color:rgba(76,102,153,0.75);
 }
 .studyDiv {
-	height:400px;
-	width:400px;
+	height:420px;
+	width:420px;
 	border-style:solid;
 	border-width:5px;
 	border-radius:32px;
-	margin:16px;
+	margin:12px;
 	font-size:13px;
-	padding:20px;
+	padding:12px;
 }
 .studyDiv.comp0 {
 	border-color:rgba(51,0,0,0.9);
@@ -1003,7 +1003,7 @@ tab {
 	border-width:2px;
 	margin:4px;
 }
-#achievementInfo {
+#achievementInfo, #secretAchievementInfo {
 	max-width:min(500px,calc(100vw - 100px));
 }
 .tooltip {

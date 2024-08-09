@@ -469,7 +469,7 @@ const achievementList = {
 					progress:function(){return (g.timeThisStardustReset<4)?{percent:achievement.percent(g.exoticmatter,req,(i>1)?1:0),text:(4-g.timeThisStardustReset)+" seconds left"}:"Failed"},
 					prevReq:(i===0)?[]:[211+i],
 					reward:"The game runs 0.4% faster",
-					flavor:["You think a five-minute mile is fast?","(Δt')²+(Δt)²=c²","You're made for the mile, not the 400, and the sooner you realize that, the better off you're gonna be.","In skating over thin ice our safety is in our speed."][i]
+					flavor:["You think a five-minute mile is fast?","(Δt')²+v²=c²","You're made for the mile, not the 400, and the sooner you realize that, the better off you're gonna be.","In skating over thin ice our safety is in our speed."][i]
 				}
 			}
 			return out
@@ -1026,7 +1026,7 @@ const achievementList = {
 			event:"axisBuy",
 			progress:function(){return ((g.darkstars.eq(c.d0)||achievement.ownedInTier(5)>=7)&&this.active())?achievement.percent(stat.totalDarkAxis,c.d160,0):"Failed";},
 			failed:function(){return !this.active()},
-			get reward(){return "Dark star cost scaling starts {} dark stars later"+((Decimal.gte(g.lumens[5],this.yellowBreakpoints[0])&&(g.studyCompletions[12]===0))?" <span style=\"color:#666600\">(requires Study XII completion to be boosted)</span>":"")},
+			get reward(){return "Dark Star Scaling starts {} dark stars later"+((Decimal.gte(g.lumens[5],this.yellowBreakpoints[0])&&(g.studyCompletions[12]===0))?" <span style=\"color:#666600\">(requires Study XII completion to be boosted)</span>":"")},
 			flavor:"Einstein would agree",
 			effect:function(y=this.yellowValue){return studies[12].reward(2).mul(y).add(c.d4)},
 			effectFormat:x=>x.noLeadFormat(3),
@@ -1113,9 +1113,11 @@ const achievementList = {
 			progress:function(){return achievement.percent(g.lumens.slice(0,3).map(x=>x.min(c.d1)).sumDecimals(),c.d3,0)},
 			reward:"{} chroma gain (based on total lumens)",
 			flavor:"The soul becomes dyed with the color of its thoughts.",
-			effect:function(){return g.lumens.sumDecimals().div(c.d100).add(c.d1)},
+			yellowMult:function(y=this.yellowValue){return y.lt(2/47)?y.mul(2.35):y.mul(0.94).add(0.06)},
+			effect:function(y=this.yellowValue){return Decimal.add(g.lumens.sumDecimals().div(c.d100),[g.lumens.productDecimals().pow(c.d0_1),this.yellowMult(y)].productDecimals().pow10())},
 			effectFormat:x=>percentOrMult(x,2,true),
-			formulaText:()=>g.lumens.sumDecimals().gte(c.d900)?"ΣL ÷ 100 + 1×":"+ΣL%"
+			yellowBreakpoints:[c.e6,c.e100,1],
+			formulaText:function(){return (g.lumens.sumDecimals().gte(c.d900))?("ΣL ÷ 100 + "+(this.yellowValue.eq(c.d0)?"1":("10<sup>(ΠL)<sup>0.1</sup>"+formulaFormat.mult(this.yellowMult())))+"×"):"+ΣL<span style=\"font-style:normal;\">%</span>"}
 		},
 		604:{
 			name:"Graduation",
@@ -1151,9 +1153,10 @@ const achievementList = {
 			progress:function(){return achievement.percent(g.darkEnergy,this.req,1)},
 			reward:"{} all energy gain (based on dark energy)",
 			flavor:"Programming graphics in X is like finding the square root of π using Roman numerals",
-			effect:function(){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.d2)},
+			effect:function(y=this.yellowValue){return g.darkEnergy.mul(c.ee10).layerplus(-3).pow(c.pi.sub(c.d2).mul(y).add(c.d2))},
 			effectFormat:x=>percentOrMult(x,2,true),
-			formulaText:()=>"log<sup>[3]</sup>(DE × "+c.ee10.format()+")<sup>2</sup>×"
+			yellowBreakpoints:[N(1e6),N(1570796),1],
+			formulaText:function(){return "log<sup>[3]</sup>(DE × "+c.ee10.format()+")<sup>"+c.pi.sub(c.d2).mul(this.yellowValue).add(c.d2).noLeadFormat(4)+"</sup>×"}
 		},
 		607:{
 			name:"There are Four Lights",
@@ -1207,7 +1210,7 @@ const achievementList = {
 			event:"researchBuy",
 			progress:function(){return "Not Completed!"},
 			prevReq:[607],
-			get reward(){return "+0.25% chroma gain per dark star (total: "+percentOrMult(N(1.0025).pow(g.darkstars),2,true)+")"},
+			get reward(){return "+0.25% chroma gain per purchased dark star (total: "+percentOrMult(N(1.0025).pow(g.darkstars),2,true)+")"},
 			flavor:"Stars, hide your fires, let not light see my black and deep desires"
 		},
 		612:{
@@ -1351,9 +1354,10 @@ const achievementList = {
 			failed:function(){return stat.totalNormalAxis.neq(c.d0)||(!g.ach524possible)||(g.TotalStardustResets!==0)||(g.stars!==0)||(effectiveStardustUpgrades()!==6)||(totalResearch.temporary!==0)},
 			reward:"+{} to the base mastery power gain exponent (based on time since last Mastery unassignment)",
 			flavor:"This is not Iron Will VI",
-			effect:function(){return stat.masteryTimer.log10()},
+			effect:function(y=this.yellowValue){return stat.masteryTimer.log10().add1PowSub1(y.add(c.d1))},
 			effectFormat:x=>x.format(3),
-			formulaText:()=>"log(t + 1)",
+			yellowBreakpoints:[N(7e5),N(777777),0],
+			formulaText:function(){return this.yellowValue.eq(c.d0)?"log(t + 1)":("(log(t + 1) + 1)<sup>"+this.yellowValue.add(c.d1).noLeadFormat(4)+"</sup> - 1")},
 		},
 		...(()=>{
 			let out = {}
@@ -1654,7 +1658,7 @@ const achievementList = {
 			event:"gameloop",
 			progress:function(){return ((achievement.ownedInTier(5)<7)&&g.darkstars.gt(c.d0))?"Failed due to resetting dark stars":(!g.ach526possible)?"Failed due to having normal axis in the current Wormhole":(stat.totalDarkAxis.sign===1)?"Failed due to having dark axis in the current Wormhole":achievement.percent(stat.realDarkStars.add(g.stars+g.galaxies),N(this.req),0)},
 			failed:function(){return ((achievement.ownedInTier(5)<7)&&g.darkstars.gt(c.d0))||(!g.ach526possible)||(stat.totalDarkAxis.sign!==0)},
-			reward:"The dark star cost scaling is 5% weaker",
+			reward:"Dark Star Scaling is 5% weaker",
 			flavor:"I don't need sleep, I don't need answers. I need to determine where, in this swamp of unbalanced formulas, squatteth the toad of truth.",
 		},
 		814:{
@@ -1941,14 +1945,22 @@ const achievementList = {
 		},
 		913:{
 			name:"Axistential Dread",
-			get description(){return "Make the product of the effective levels of all exotic axis exceed "+BEformat(1e40)},
-			check:function(){return g.OAxis.neq(c.d0)&&g.darkOAxis.neq(c.d0)&&g.antiOAxis.neq(c.d0)&&this.value().gte(1e40)}, // first three conditions for lag prevention
+			description:"Have twelve distinct axis types affected by Corruption simultaneously, including at least one type of O axis",
+			check:function(){return this.hasO()&&(this.value()>=12)},
 			event:"gameloop",
-			progress:function(){return achievement.percent(this.value(),N(1e95),0)},
+			progress:function(){return this.hasO()?achievement.percent(N(this.value()),c.d12,0):"Need a corrupted O axis"},
 			prevReq:[912],
 			reward:"Unlock Study XIII Binding 25",
 			flavor:"Fifteen birds in five firtrees,<br>their feathers were fanned in a fiery breeze!<br>But, funny little birds, they had no wings!<br>O what shall we do with the funny little things?<br>Roast 'em alive, or stew them in a pot;<br>fry them, boil them and eat them hot?",
-			value:function(){return axisCodes.map(x=>stat["real"+x+"Axis"]).productDecimals()},
+			value:function(){
+				let out = 0
+				for (let i of ["axis","darkAxis","antiAxis"]) {for (let j of axisCodes) {if (corruption.list[i].isCorrupted(j)) {out++}}}
+				return out
+			},
+			hasO:function(){
+				for (let i of ["axis","darkAxis","antiAxis"]) {if (corruption.list[i].isCorrupted("O")) {return true}}
+				return false
+			},
 			beta:true
 		},
 		914:{
@@ -2008,7 +2020,7 @@ const achievementList = {
 			check:function(){return stat.realDarkStars.gte(c.d308)},
 			event:"gameloop",
 			progress:function(){return achievement.percent(stat.realDarkStars,c.d308,0)},
-			get reward(){return "+3.08% chroma per dark star (currently: "+percentOrMult(N(1.0308).pow(stat.realDarkStars),2,true)+")"},
+			get reward(){return "+3.08% chroma per effective dark star (currently: "+percentOrMult(N(1.0308).pow(stat.realDarkStars),2,true)+")"},
 			flavor:"The ability to destroy a planet is insignificant compared to the power of the Force."
 		},
 		919:{
@@ -2444,7 +2456,7 @@ const secretAchievementList = {
 	},
 	34:{
 		name:"Wrong game?",
-		description:"Import a save string from Antimatter Dimensions",
+		description:"Import a save string from <i>Antimatter Dimensions</i>",
 		check:function(){return true},
 		flavor:"alemaninc knows what it is like to get mistaken for someone far grander than yourself.<br>alemaninc gets angrier.",
 		rarity:2
@@ -2619,8 +2631,24 @@ const secretAchievementList = {
 		return Object.fromEntries(out)
 	})(),
 	...(()=>{
+		function dialogueGen(array){return "<div><table>"+array.map(x=>(x.length===1)?("<tr><td style=\"width:360px;text-align:center;vertical-align:top;\" colspan=\"2\">"+x[0]+"</td></tr>"):("<tr><td style=\"width:60px;text-align:left;vertical-align:top;\">"+x[0]+"</td><td style=\"width:300px;text-align:left;vertical-align:top;\">"+x[1]+"</td></tr>")).join("")+"</table></div>"}
 		let flavors = {
-			1:""
+			1:[["<i>A long, long corridor. Is it a lunatic illusion being shown by someone? To the youkai, this closer moon brought faint, nostalgic memories.</i>"]],
+			2:[["<b>EIRIN YAGOKORO enters</b>"],["EIRIN:","Hahaha."],["","Good, so you're following me."]],
+			3:[["YUKARI:","This corridor is strange. It can't possibly be this long."],["REIMU:","The outside's turned into some world I've never seen!"]],
+			4:[["<b>EIRIN YAGOKORO exits</b>"],["REIMU:","It looks like that long corridor has ended now. How about giving up soon?"]],
+			5:[["<b>EIRIN YAGOKORO enters</b>"],["EIRIN:","Ahahaha. My, aren't you two stupid."],["YUKARI:","Hey, she just said we're stupid. It's because I let a shrine maiden do her things."],["<b>Brain of the Moon<br>Eirin Yagokoro</b>"]],
+			6:[["EIRIN:","The morning will come soon."],["","After that, I'll return the full moon to you."],["REIMU:","My, aren't you a good listener?"],["EIRIN:","My spell is already complete.<br>It's impossible for anyone to take the princess from here."],["YUKARI:","A princess? We had no interest in a princess to begin with."],["REIMU:","We only want you to return the full moon."]],
+			7:[["EIRIN:","Don't worry. When the morning comes, I'l give it right back."],["REIMU:","That's not good enough.<br>We came here to get it back <i>before</i> the morning."],["EIRIN:","You're so impatient.<br>But, look at the place we're in right now. Do you know where this is?"],["REIMU:","??"]],
+			8:[["EIRIN:","This place is the corridor between the false moon and the Earth.<br>That endless corridor just now was a false passage that connects the two.<br>You two were fooled by an illusion that the false full moon produced, and came here."],["REIMU:","And? So what about it?"],["EIRIN:","Do you have any method of returning home?"]],
+			9:[["YUKARI:","I see. Let's take care of that after beating you.<br>We're in no hurry."],["EIRIN:","How can someone who was so perfectly deceived by my spell think they can still oppose me? It's quite strange.<br>Well, I'm no demon myself.<br>Until morning, I'll play with you."]],
+			10:[["REIMU:","I don't quite get it, but...<br>If we defeat her, it'll solve everything?"],["YUKARI:","See, that's why she called you stupid.<br>But you're exactly right.<br>Everything Reimu Hakurei says is entirely correct."]],
+			11:[["EIRIN:","Right now, all Earthlings will wander forever without ever reaching the moon.<br>And the people of the moon are just the same.<br>With this, none of the moon's people should be able to reach the Earth.<br>This is one of my greatest secret spells. The Earth has become a gigantic sealed chamber."]],
+			12:[["YUKARI:","She's just like that rabbit from before. There's so many lunatics in here."],["REIMU:","So, Yukari. Let's beat her up quick, and head back to the Earth."]],
+			13:[["EIRIN:","Oh, it looks like you want to play with me now.<br>I'm afraid I lack the power to play forever, but..."]],
+			14:[],
+			15:[],
+			16:[]
 		}
 		let out = []
 		function countByRarity(rarity) {
@@ -2628,16 +2656,17 @@ const secretAchievementList = {
 			for (let i of Object.keys(secretAchievementList)) {if (g.secretAchievement[i]&&(secretAchievementList[i].rarity===rarity)) {out++}}
 			return out
 		}
+
 		for (let r=1;r<7;r++) {
 			for (let n=0;n<[1,5,4,3,2,1][r-1];n++) {
 				let num = 10+10*n
 				let rarity = r+n+1
-				out.push([out.length+114,{
+				out.push([[119,125,118,121,128,114,123,116,124,115,117,126,122,127,129,120][out.length],{
 					name:"Medallion of Numbers Going Up, Part "+(out.length+1)+" of 16",
 					description:"Have "+num+" "+secretAchievementRarityNames[r]+" secret achievements",
 					event:"secretMeta",
 					check:function(){return betaActive&&(countByRarity(r)>=num)},
-					flavor:flavors[out.length+1],
+					flavor:dialogueGen(flavors[out.length+1]),
 					rarity:rarity
 				}])
 			}

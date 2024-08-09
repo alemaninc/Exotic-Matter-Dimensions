@@ -715,6 +715,14 @@ const statTemplates = {
 		}}
 		functionError("statTemplates.binding225",arguments)
 	},
+	binding25:{
+		label:"Study XIII Binding 25",
+		func:function(prev){return study13.bound(25)?prev.layerf(x=>Math.max(x-study13.bindingEff(25).toNumber(),-1)):prev},
+		text:function(){return "log<sup>["+study13.bindingEff(25).noLeadFormat(4)+"]</sup>(<i>x</i>)"},
+		dependencies:[...bindingDependencies(25)],
+		show:function(prev){return study13.bound(25)},
+		color:"var(--binding)"
+	},
 	trinity3:{
 		label:study13.rewardLabel("trinity3"),
 		func:function(prev){return ((study13.rewardLevels.trinity3===1)&&prev.gt(c.d1))?prev.add1PowSub1(study13.rewards.trinity3.eff()):prev},
@@ -883,6 +891,7 @@ miscStats.exoticmatterPerSec={
 		// dilations
 		statTemplates.study9,
 		statTemplates.binding225(3),
+		statTemplates.binding25,
 		// tickspeed
 		statTemplates.tickspeed()
 	]
@@ -1232,6 +1241,7 @@ miscStats.darkmatterPerSec={
 		// dilations
 		statTemplates.study9,
 		statTemplates.binding225(3),
+		statTemplates.binding25,
 		// limits
 		{
 			label:"Fortitude",
@@ -3393,7 +3403,14 @@ miscStats.luckShardsPerSec={
 		},
 		// multipliers
 		statTemplates.achievementMul(807),
-		...researchGroupList.study7.contents.map(x=>statTemplates.researchMul(x)),
+		{
+			label:"Crystal Research",
+			mod:function(){return researchGroupList.study7.contents.map(x=>g.research[x]?researchEffect(researchRow(x),researchCol(x)):c.d1).productDecimals()},
+			func:function(prev){return prev.mul(this.mod())},
+			text:function(){return "× "+this.mod().noLeadFormat(2)+" <span class=\"small\">("+researchGroupList.study7.contents.filter(x=>g.research[x]).map(x=>researchEffect(researchRow(x),researchCol(x)).noLeadFormat(2)).join(" × ")+")</span>"},
+			dependencies:researchGroupList.study7.contents.map(x=>researchDependencies(x)).flat(),
+			show:function(){return this.mod().neq(c.d1)}
+		},
 		{
 			label:prismaticUpgradeName("prismRune"),
 			func:function(prev){return prev.mul(prismaticUpgrades.prismRune.eff.x())},

@@ -79,7 +79,7 @@ const HTPtexts = [
 				["Π<span class=\"xscript\"><sup>b</sup><sub>a</sub></span>x","Product: for example, Π<span class=\"xscript\"><sup>4</sup><sub>1</sub></span>n<sup>n</sup> = "+[1,2,3,4].map(x=>"("+x+")<sup>("+x+")</sup>").join(" × ")+" = 27648"],
 				["Ξ<sup>[x]</sup>n","Iterated exponentiation: for example, Ξ<sup>[2]</sup>3 = 10<sup>10<sup>3</sup></sup>"],
 				["dB(x)","'Decibel' function - returns a 'nice' value close to 10<sup>x ÷ 10</sup><br>(Exact value is [1,1.25,1.6,2,2.5,3.2,4,5,6.4,8][x mod 10] × 10<sup>⌊x ÷ 10⌋</sup>"]
-			],"","","border-style:solid;border-width:1px;border-color:#00ff00;padding:5px;")
+			],"","","border-style:solid;border-width:1px;border-color:#00ff00;padding:5px;",false)
 		],
 		dynamics:[
 			()=>formatHotkey(g.hotkeys["Show/hide formulas"])
