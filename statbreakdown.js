@@ -3688,8 +3688,8 @@ miscStats.antiWAxisEffect={
 				if (ach933) {out = [out,N(20.21),N(4.11).pow(stat.realantiWAxis)].productDecimals()}
 				return out
 			},
-			func:function(){return Decimal.mul(g.antimatter.add(c.d10).min(this.softcap()).log10().pow(c.d0_3),g.antimatter.add(c.d10).log10().log10().pow(c.d2)).pow10()},
-			text:function(){let am=statFormat("AM",g.antimatter.format(),"_antimatter");return "10 ^ (log(min("+am+(g.antimatter.lt(c.e17)?" + 10":"")+", "+this.softcap().format()+") + 10) ^ 0.3 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
+			func:function(){return Decimal.mul(g.antimatter.min(this.softcap()).add(c.d1).log10().pow(c.d0_3),g.antimatter.add(c.d10).log10().log10().pow(c.d2)).pow10()},
+			text:function(){let am=statFormat("AM",g.antimatter.format(),"_antimatter");return "10 ^ (log(min("+am+", "+this.softcap().format()+") + 1) ^ 0.3 × log<sup>[2]</sup>("+am+" + 10) ^ 2)"},
 			dependencies:["realantiWAxis"],
 			show:function(){return true}
 		},

@@ -721,7 +721,7 @@ const achievementList = {
 			},
 			effectFormat:x=>x.format(2),
 			formulaText:function(){
-				let out = this.base().noLeadFormat()+"<sup>★<sup>2</sup></sup>"
+				let out = this.base().noLeadFormat(3)+"<sup>★<sup>2</sup></sup>"
 				if (!g.research.r11_5) {out = formulaFormat.logSoftcap(out,c.inf,c.d1,this.effect().gt(c.inf))}
 				return out
 			}
@@ -2598,6 +2598,7 @@ const secretAchievementList = {
 		check:function(){return betaActive&&g.antimatter.gt(c.inf)},
 		event:"gameloop",
 		flavor:unbreak("<div style=\"text-align:left\"><code>"+["studies nowait purchase 11-304","while total tt < 12900 {","  studies nowait purchase 11-304","}","studies nowait purchase 11-304","if tp < 10 {","  unlock dilation","  start dilation","  pause 0.1s","  eternity nowait","}","studies purchase 11-304","wait 0 > 0"].map((x,i)=>"<span style=\"opacity:0.5;\">"+String(i+1).padStart(2," ")+"</span>  "+x).join("<br>")+"</code></div>"),
+		noQuotes:true,
 		rarity:1
 	},
 	// skip 50 numbers for meta-achievements
@@ -2617,8 +2618,8 @@ const secretAchievementList = {
 		return Object.fromEntries(out)
 	})(),
 	...(()=>{
-		let names = []
-		let flavors = []
+		let names = ["\"Something-Colored Mugenri\"","QEF \"Ripple of About 500-or-So Years\""]
+		let flavors = ["Based on <i>\"Scarlet Gensokyo\"</i> from Remilia Scarlet","Based on <i>\""]
 		let out = []
 		for (let i=0;i<6;i++) {out.push([108+i,{
 			name:names[i]??"TBD",
@@ -2631,24 +2632,24 @@ const secretAchievementList = {
 		return Object.fromEntries(out)
 	})(),
 	...(()=>{
-		function dialogueGen(array){return "<div><table>"+array.map(x=>(x.length===1)?("<tr><td style=\"width:360px;text-align:center;vertical-align:top;\" colspan=\"2\">"+x[0]+"</td></tr>"):("<tr><td style=\"width:60px;text-align:left;vertical-align:top;\">"+x[0]+"</td><td style=\"width:300px;text-align:left;vertical-align:top;\">"+x[1]+"</td></tr>")).join("")+"</table></div>"}
+		function dialogueGen(array){return "<div><table>"+array.map(x=>(x.length===1)?("<tr><td style=\"width:360px;text-align:left;vertical-align:top;padding-bottom:2px;\" colspan=\"2\">"+x[0]+"</td></tr>"):("<tr><td style=\"width:60px;text-align:left;vertical-align:top;padding-bottom:2px;\">"+x[0]+"</td><td style=\"width:300px;text-align:left;vertical-align:top;padding-bottom:2px;\">"+x[1]+"</td></tr>")).join("")+"</table></div>"}
 		let flavors = {
 			1:[["<i>A long, long corridor. Is it a lunatic illusion being shown by someone? To the youkai, this closer moon brought faint, nostalgic memories.</i>"]],
-			2:[["<b>EIRIN YAGOKORO enters</b>"],["EIRIN:","Hahaha."],["","Good, so you're following me."]],
+			2:[["<b>Eirin Yagokoro ENTERS</b>"],["EIRIN:","Hahaha."],["","Good, so you're following me."]],
 			3:[["YUKARI:","This corridor is strange. It can't possibly be this long."],["REIMU:","The outside's turned into some world I've never seen!"]],
-			4:[["<b>EIRIN YAGOKORO exits</b>"],["REIMU:","It looks like that long corridor has ended now. How about giving up soon?"]],
-			5:[["<b>EIRIN YAGOKORO enters</b>"],["EIRIN:","Ahahaha. My, aren't you two stupid."],["YUKARI:","Hey, she just said we're stupid. It's because I let a shrine maiden do her things."],["<b>Brain of the Moon<br>Eirin Yagokoro</b>"]],
-			6:[["EIRIN:","The morning will come soon."],["","After that, I'll return the full moon to you."],["REIMU:","My, aren't you a good listener?"],["EIRIN:","My spell is already complete.<br>It's impossible for anyone to take the princess from here."],["YUKARI:","A princess? We had no interest in a princess to begin with."],["REIMU:","We only want you to return the full moon."]],
-			7:[["EIRIN:","Don't worry. When the morning comes, I'l give it right back."],["REIMU:","That's not good enough.<br>We came here to get it back <i>before</i> the morning."],["EIRIN:","You're so impatient.<br>But, look at the place we're in right now. Do you know where this is?"],["REIMU:","??"]],
-			8:[["EIRIN:","This place is the corridor between the false moon and the Earth.<br>That endless corridor just now was a false passage that connects the two.<br>You two were fooled by an illusion that the false full moon produced, and came here."],["REIMU:","And? So what about it?"],["EIRIN:","Do you have any method of returning home?"]],
-			9:[["YUKARI:","I see. Let's take care of that after beating you.<br>We're in no hurry."],["EIRIN:","How can someone who was so perfectly deceived by my spell think they can still oppose me? It's quite strange.<br>Well, I'm no demon myself.<br>Until morning, I'll play with you."]],
-			10:[["REIMU:","I don't quite get it, but...<br>If we defeat her, it'll solve everything?"],["YUKARI:","See, that's why she called you stupid.<br>But you're exactly right.<br>Everything Reimu Hakurei says is entirely correct."]],
-			11:[["EIRIN:","Right now, all Earthlings will wander forever without ever reaching the moon.<br>And the people of the moon are just the same.<br>With this, none of the moon's people should be able to reach the Earth.<br>This is one of my greatest secret spells. The Earth has become a gigantic sealed chamber."]],
+			4:[["<b>Eirin Yagokoro EXITS</b>"],["REIMU:","It looks like that long corridor has ended now. How about giving up soon?"]],
+			5:[["<b>Eirin Yagokoro ENTERS</b>"],["EIRIN:","Ahahaha. My, aren't you two stupid."],["YUKARI:","Hey, she just said we're stupid. It's because I let a shrine maiden do her things."]],
+			6:[["EIRIN:","The morning will come soon."],["","After that, I'll return the full moon to you."],["REIMU:","My, aren't you a good listener?"],["EIRIN:","My spell is already complete."],["","It's impossible for anyone to take the princess from here."],["YUKARI:","A princess? We had no interest in a princess to begin with."],["REIMU:","We only want you to return the full moon."]],
+			7:[["EIRIN:","Don't worry. When the morning comes, I'll give it right back."],["REIMU:","That's not good enough."],["","We came here to get it back <i>before</i> the morning."],["EIRIN:","You're so impatient."],["","But, look at the place we're in right now. Do you know where this is?"],["REIMU:","??"]],
+			8:[["EIRIN:","This place is the corridor between the false moon and the Earth."],["","That endless corridor just now was a false passage that connects the two."],["","You two were fooled by an illusion that the false full moon produced, and came here."],["REIMU:","And? So what about it?"],["EIRIN:","Do you have any method of returning home?"]],
+			9:[["YUKARI:","I see. Let's take care of that after beating you."],["","We're in no hurry."],["EIRIN:","How can someone who was so perfectly deceived by my spell think they can still oppose me? It's quite strange."],["","Well, I'm no demon myself."],["","Until morning, I'll play with you."]],
+			10:[["REIMU:","I don't quite get it, but..."],["","If we defeat her, it'll solve everything?"],["YUKARI:","See, that's why she called you stupid."],["","But you're exactly right."],["","Everything Reimu Hakurei says is entirely correct."]],
+			11:[["EIRIN:","Right now, all Earthlings will wander forever without ever reaching the moon."],["","And the people of the moon are just the same."],["","With this, none of the moon's people should be able to reach the Earth."],["","This is one of my greatest secret spells. The Earth has become a gigantic sealed chamber."]],
 			12:[["YUKARI:","She's just like that rabbit from before. There's so many lunatics in here."],["REIMU:","So, Yukari. Let's beat her up quick, and head back to the Earth."]],
-			13:[["EIRIN:","Oh, it looks like you want to play with me now.<br>I'm afraid I lack the power to play forever, but..."]],
-			14:[],
-			15:[],
-			16:[]
+			13:[["EIRIN:","Oh, it looks like you want to play with me now."],["","I'm afraid I lack the power to play forever, but..."],["","Even so, I can play until morning."]],
+			14:[["YUKARI:","I wouldn't mind playing forever. But some other time..."],["EIRIN:","Now, the dawn of Gensokyo is at hand!"]],
+			15:[["<b>Eirin Yagokoro DEFEATED</b>"],["KAGUYA:","What are you playing at!?"],["<b>Kaguya Houraisan ENTERS</b>"],["KAGUYA:","Eirin, I grant you one more chance with my power."],["","If you lose this time..."],["","You there, human and youkai!"],["","With the medicine made by my power, and Eirin's true strength, you'll never forget this as long as you live!"],["<b>Eirin Yagokoro REVIVES</b>"]],
+			16:[["<b>Eirin Yagokoro DEFEATED</b>"],["<b>Normal Ending #5</b>"]]
 		}
 		let out = []
 		function countByRarity(rarity) {
@@ -2656,17 +2657,18 @@ const secretAchievementList = {
 			for (let i of Object.keys(secretAchievementList)) {if (g.secretAchievement[i]&&(secretAchievementList[i].rarity===rarity)) {out++}}
 			return out
 		}
-
+		let storyOrder = [6,12,5,8,15,1,10,3,11,2,4,13,9,14,16,7]
 		for (let r=1;r<7;r++) {
 			for (let n=0;n<[1,5,4,3,2,1][r-1];n++) {
 				let num = 10+10*n
 				let rarity = r+n+1
-				out.push([[119,125,118,121,128,114,123,116,124,115,117,126,122,127,129,120][out.length],{
-					name:"Medallion of Numbers Going Up, Part "+(out.length+1)+" of 16",
+				out.push([114+out.length,{
+					name:"Medallion of Numbers Going Up, Part "+String(storyOrder[out.length]).padStart(2,"0")+" of 16",
 					description:"Have "+num+" "+secretAchievementRarityNames[r]+" secret achievements",
 					event:"secretMeta",
-					check:function(){return betaActive&&(countByRarity(r)>=num)},
-					flavor:dialogueGen(flavors[out.length+1]),
+					check:function(){return (countByRarity(r)>=num)},
+					flavor:dialogueGen(flavors[storyOrder[out.length]]),
+					noQuotes:true,
 					rarity:rarity
 				}])
 			}
@@ -2824,6 +2826,6 @@ function showSecretAchievementInfo(id) {
 	info["border-color"] = colors.light
 	let txt = ["<h3 style=\"text-decoration:underline;font-weight:700;margin:0px;\">"+ach.name+"</h3><span style=\"font-size:75%\">"+secretAchievementRarityNames[ach.rarity]+" 〜 "+ach.rarity+" point"+((ach.rarity===1)?"":"s")+"</span>","<b>Requirement</b><br>"+ach.description];
 	if (ach.reward !== undefined) {txt.push("<b>Reward</b><br>"+ach.reward);}
-	txt.push("<div style=\"font-size:75%;color:"+blackOrWhiteContrast(hexToRGB(colors.dark))+"\">\""+ach.flavor+"\"</div>");
+	txt.push("<div style=\"font-size:75%;color:"+blackOrWhiteContrast(hexToRGB(colors.dark))+"\">"+(ach.noQuotes?"":"\"")+ach.flavor+(ach.noQuotes?"":"\"")+"</div>");
 	d.innerHTML("secretAchievementInfo",txt.join("<hr style=\"color:inherit;opacity:0.5;\">"))
 }

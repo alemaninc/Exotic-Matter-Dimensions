@@ -1,4 +1,5 @@
 const newsSupport = {
+	itemsShown:0,
 	br:function(x){
 		if (newsSupport.brMode===0) {return "<span style=\"padding-left:"+x+"px\"></span>"}
 		if (newsSupport.brMode===1) {return "<br>"}
@@ -530,7 +531,7 @@ const newsList = [
 	{text:"We have updated our Exotic Matter Privacy Policy."},
 	{get text(){return "<div style=\"width:"+ranint(400,1200,true)+"px;height:20px;background-image:linear-gradient(90deg,rgba(255,0,255,0),rgba(255,0,0,0.5),rgba(255,255,0,0.5),rgba(0,255,0,0.5),rgba(0,255,255,0.5),rgba(0,0,255,0.5),rgba(255,0,255,0.5),rgba(255,0,0,0.5),rgba(255,255,0,0))\"></div>"}},
 	{get text(){return "Congratulations! You have reached the end of <i>Exotic Matter Dimensions</i> "+version.current+"! While we wait for alemaninc to produce another release, why don't you experience the fun all over again? It's really easy, just go to Options, press the big black button and input the password."}},
-	{get text(){let contributors = this.contributors.select(2);return "If <span style=\"color:#0000ff\">alemaninc</span> is <span style=\"color:#0000ff\">blue</span> and <span style=\"color:"+contributors[0][2]+"\">"+contributors[0][0]+"</span> is <span style=\"color:"+contributors[0][2]+"\">"+contributors[0][1]+"</span>, what color is <span style=\"color:"+contributors[1][2]+"\">"+contributors[1][0]+"</span>?"},contributors:[["xhwzwka","red","#ff0000"],["Stat Mark","cyan","#00ffff"],["hyperbolia",":blob:","#fac112"],["nicodium","blue but light but not quite","#4285f4"]],get weight(){return newsSupport.ord(1)}},
+	{get text(){let contributors = this.contributors.select(2);return "If <span style=\"color:#0000ff\">alemaninc</span> is <span style=\"color:#0000ff\">blue</span> and <span style=\"color:"+contributors[0][2]+"\">"+contributors[0][0]+"</span> is <span style=\"color:"+contributors[0][2]+"\">"+contributors[0][1]+"</span>, what color is <span style=\"color:"+contributors[1][2]+"\">"+contributors[1][0]+"</span>?"},contributors:[["xhwzwka","red","#ff0000"],["Stat Mark","cyan","#00ffff"],["hyperbolia",img("blob","blob",16),"#fac112"],["nicodium","blue but light but not quite","#4285f4"]],get weight(){return newsSupport.ord(1)}},
 	{get text(){return "Did you know "+ranint(60,140)+"% of statistics are made up on the spot?"}},
 	{text:"\"But the R axis does exist! You just won't be able to experience it until around 𝕍6.9...\" - xhwzwka"+newsSupport.br(100)+"Little does xhwzwka know, that the R axis will enter the playing field as soon as 𝕍1.5.",get weight(){return (g.stardustUpgrades[0]===4)?1:0}},
 	{get text(){return "Have you ever wondered what a news message looks like in reversed order? Here is a random news message, inverted: \""+deHTML(newsSupport.randomVisible().text).split("").reverse().join("")+"\""}},
@@ -697,18 +698,17 @@ const newsList = [
 	{text:"🐢How did the turtle cross the road?🐢",get weight(){return (g.newsTickerSpeed<=40)?1:0}},
 	{get text(){return "Day "+BEformat(Math.ceil(((g.timePlayed+((g.dilatedTime>1e9)?0:g.dilatedTime))/86400)))+" of quarantine: created a universe of exotic matter, got raided by federal agents for violating "+numword(ranint(1,9,true)*10+ranint(1,9))+" international peace treaties, taken to the lunatic asylum - everything normal"}},
 	{get text(){let incName = Object.keys(newsSupport.ticker325games).random(), randInc = newsSupport.ticker325games[incName], eff = secretAchievementPoints/(randInc[2]??1);return "Your "+BEformat(secretAchievementPoints)+" secret achievement points are increasing "+randInc[0]+" by "+randInc[1](eff)+" while you are playing <i>"+incName+"</i>"},get weight(){return Math.sign(secretAchievementPoints)}},
-	{text:"Blob asks why the Study of Studies moves? Well, there are 4 Triad Studies and 4 levels of the Study of Studies: the only explanation is that Hevipelle saw EMD when it was in v1.0 and wanted the Triads to have moving research. We don't want to disappoint the game that inspired this whole project, no?",get weight(){return g.achievement[810]?1:0}}
+	{text:"Blob asks why the Study of Studies moves? Well, there are 4 Triad Studies and 4 levels of the Study of Studies: the only explanation is that Hevipelle saw EMD when it was in v1.0 and wanted the Triads to have moving research. We don't want to disappoint the game that inspired this whole project, no?",get weight(){return g.achievement[810]?1:0}},
+	{text:"Once upon a time, there was a great and powerful Developer called alemaninc. As the most powerful of the Developers, alemaninc took His seat as Celestial 8. One day, He said: \"ima go listen to some touhou music bye\", and left His seat. So, the great and powerful hyperbolia became Celestial 8. One time, hyperbolia was asked: \"What did you contribute to EMD?\" To which He replied: \"Thanks to the great magic of the power of "+img("blob","blob",16)+", 640 is a number that exists.\"",get weight(){return (g.EMDLevel>=18)?1:0}}
 ]
 // bottom
 var currentNewsItem
 var currentNewsOffset = 0
-var recentlyUsedNews = []
 function randomNewsItem() {
-	let selectable = countTo(newsList.length,true).filter(x=>!recentlyUsedNews.includes(x)).map(x=>[x,newsList[x].frequency])
-	if (selectable.length===0) {recentlyUsedNews.splice(0,recentlyUsedNews.length/2);return randomNewsItem()}
+	let selectable = countTo(newsList.length,true).map(x=>[x,newsList[x].frequency*(newsList[x].weight??1)*(newsSupport.itemsShown-(newsList[x].lastShown??(-newsList.length)))])
 	let next = Array.weightedRandom(selectable)
-	if (recentlyUsedNews.length===Math.floor(newsList.length*0.75)) {recentlyUsedNews.shift()}
-	recentlyUsedNews.push(next)
+	newsSupport.itemsShown++
+	newsList[next].lastShown = newsSupport.itemsShown
 	return next
 }
 function initialNewsOffset() {return (currentNewsOffset<0)?(viewportWidth()+d.element("newsline").offsetWidth):0}
