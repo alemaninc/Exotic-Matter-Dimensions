@@ -5,23 +5,24 @@ const version = {
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[
-		0.25,0.25,       // Level 9 balance
+		0.9,0.9,       // Level 9 balance
 		1,       // Level 9 code
-		0,0,0,     // Level 10 balance
+		0,0,0,0,0, // Level 10 balance
 		0,         // Realmstone code (basic)
 		0,         // Realmstone code (special)
 		0,         // Lifeblood code
 		0,         // Space code
 		0,         // Time code
-		0,         // Celestial 1 balance
+		0,0,       // Celestial 1 balance
 		0,         // Celestial 1 code
-		0,         // Celestial 2 balance
+		0,0,         // Celestial 2 balance
 		0,         // Celestial 2 code
-		0,         // Celestial 3 balance
+		0,0,         // Celestial 3 balance
 		0,         // Celestial 3 code
-		0,         // Celestial 4 balance
-		0,         // Celestial 4 code
-		0,0,0,0,0,0,0,0,0,0  // Interface fix
+		0,0,         // Celestial 4 balance
+		0,      // Celestial 4 code
+		1,1,1,  // Interface fix
+		1,1,1   // Code cleanup
 	],
 	nextUpdateHint:"Machine medicine",
 }
