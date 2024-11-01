@@ -1,18 +1,18 @@
 "use strict";
 var initComplete = false
 const version = {
-	current:"𝕍1ω.13.1",
+	current:"𝕍1ω.13.2",
 	nextPercentage:function(x=version.nextProgress){return (typeof x === "number")?x:(x.map(i=>version.nextPercentage(i)).sum()/x.length)},
 	percentage:function(){return "["+(this.nextPercentage()*100).toFixed(0)+"%]"},
 	nextProgress:[
-		0.9,0.9,       // Level 9 balance
+		0.95,0.95,       // Level 9 balance
 		1,       // Level 9 code
 		0,0,0,0,0, // Level 10 balance
-		0,         // Realmstone code (basic)
+		0.6,         // Realmstone code (basic)
 		0,         // Realmstone code (special)
-		0,         // Lifeblood code
-		0,         // Space code
-		0,         // Time code
+		0.02,         // Lifeblood code
+		0.75,         // Space code
+		0.75,         // Time code
 		0,0,       // Celestial 1 balance
 		0,         // Celestial 1 code
 		0,0,         // Celestial 2 balance
