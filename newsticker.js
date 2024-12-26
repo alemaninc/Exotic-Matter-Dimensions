@@ -507,7 +507,7 @@ const newsList = [
 	{text:"If the 26th axis is the A axis, then what is the 27th axis?"},
 	{text:"\"Shouldn't it be called 'Exotic Matter Axes'?\""},
 	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\"https://ivark.github.io/AntimatterDimensions/\" target=\"_blank\">Antimatter Dimensions</a>."},
-	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\"http://semenar.ru/matter-dim-test/\" target=\"_blank\">Matter Dimensions</a>."},
+	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\https://semenar.am/matter-dim/index.html\" target=\"_blank\">Matter Dimensions</a>."},
 	{text:"An unidentified developer of <i>Exotic Matter Dimensions</i> would like to recommend that you play <a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" onClick=\"addSecretAchievement(25)\" target=\"_blank\">Strange Matter Dimensions</a>."},
 	{text:"2 + 2 = 2 × 2 = 2<sup>2</sup> = 2⇈2"},
 	{get text(){if(g.dilationUpgradesUnlocked===4){return "error"};return "You're so close to unlocking Dilation Upgrade "+(g.dilationUpgradesUnlocked+1)+"! You only need "+BEformat(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)+"× tickspeed"},get weight(){return [0,4].includes(g.dilationUpgradesUnlocked)?0:1}},
