@@ -26,8 +26,8 @@ function updateHTML() {
 	d.display("footer",showFooter()?"inline-block":"none")
 	if (showFooter()) {
 		if (g.achOnProgressBar!=="N") {
-			if (achievement(g.achOnProgressBar).maxMilestones===undefined) {if (g.achievement[g.achOnProgressBar]) {g.achOnProgressBar="N"}}
-			else {if (achievement(g.achOnProgressBar).milestones()===achievement(g.achOnProgressBar).maxMilestones) {g.achOnProgressBar="N"}}
+			if (achievement(g.achOnProgressBar).maxMilestones===undefined&&g.achievement[g.achOnProgressBar]) g.achOnProgressBar="N"
+			else if (achievement(g.achOnProgressBar).milestones()===achievement(g.achOnProgressBar).maxMilestones) g.achOnProgressBar="N"
 		}
 		ProgressBar()
 		d.innerHTML("span_footerEMDLevel",dictionary(g.EMDLevelDisplayInFooter,{0:"",1:" | EMD Level "+g.EMDLevel,2:" | EMD Level "+g.EMDLevel+" (Score "+BEformat(EMDScore())+")"}))
@@ -52,7 +52,7 @@ function updateHTML() {
 		}
 	}
 	if (g.activeTab==="main") {
-		if (StudyE(1)) {if (g.activeSubtabs.main!=="offlineTime") openSubTab("main","offlineTime")};
+		if (StudyE(1) && g.activeSubtabs.main!=="offlineTime") openSubTab("main","offlineTime")};
 		if (g.activeSubtabs.main==="axis") {
 			d.display("div_exoticmatter_disabledTop",g.topResourcesShown.exoticmatter?"none":"inline-block")
 			if (!g.topResourcesShown.exoticmatter) {
@@ -167,10 +167,10 @@ function updateHTML() {
 			d.innerHTML("colortheme",g.colortheme);
 			d.innerHTML("notation",g.notation);
 			d.innerHTML("toggleAutosave",g.autosaveIsOn?"On":"Off");
-			d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,{"All tabs":"Showing footer in all tabs","Only Axis tab":"Only showing footer in Axis tab","None":"Hiding footer"}))
-			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis")
-			d.innerHTML("span_newsTickerSpeed",N(g.newsTickerSpeed).noLeadFormat(2))
-			d.innerHTML("span_newsTickerDilation",dictionary(g.newsTickerDilation,{"0":"None","0.0625":"Weak","0.125":"Moderate","0.1875":"Strong","0.25":"Extreme"}))
+			d.innerHTML("button_footerDisplay",dictionary(g.footerDisplay,{"All tabs":"Showing footer in all tabs","Only Axis tab":"Only showing footer in Axis tab","None":"Hiding footer"}));
+			d.innerHTML("span_newsTickerActive",g.newsTickerActive?"en":"dis");
+			d.innerHTML("span_newsTickerSpeed",N(g.newsTickerSpeed).noLeadFormat(2));
+			d.innerHTML("span_newsTickerDilation",dictionary(g.newsTickerDilation,{"0":"None","0.0625":"Weak","0.125":"Moderate","0.1875":"Strong","0.25":"Extreme"}));
 			let doubleClickToBuy = [
 				["assign Mastery",unlocked("Masteries")&&(g.masteryContainerStyle==="Modern")],
 				["assign Star",unlocked("Stardust")&&(g.starContainerStyle==="Modern")],
@@ -546,8 +546,8 @@ function updateHTML() {
 			for (let i of ["r27_8","r33_3","r33_13","r44_8"]) {if (visible.includes(i)) {d.innerHTML("button_research_"+i+"_visible",research[i].icon)}}
 		} else if (g.activeSubtabs.wormhole==="studies") {
 			let visible = visibleStudies()
-			if (!["Compact","Detailed"].includes(g.studyContainerStyle)) {g.studyContainerStyle = "Detailed"}
-			for (let i of ["Compact","Detailed"]) {d.display("studyContainer"+i,(g.studyContainerStyle===i)?"inline-block":"none")}
+			if (!["Compact","Detailed"].includes(g.studyContainerStyle)) g.studyContainerStyle = "Detailed"
+			for (let i of ["Compact","Detailed"]) d.display("studyContainer"+i,(g.studyContainerStyle===i)?"inline-block":"none")
 			for (let i=1;i<13;i++) {
 				if (visible.map(x => Number(x)).includes(Number(i))) {
 					d.display("div_study"+i+g.studyContainerStyle,"inline-block");
@@ -758,13 +758,13 @@ function updateHTML() {
 		} else if (g.activeSubtabs.wormhole==="study13") {
 			let p = studyPower(13)-(g.study13Bindings[25]?56:0), colors // [border, background, text]
 			let h = ((p<24)?(p/24):(p<56)?((p+8)/32):(p<96)?((p+24)/40):(p<144)?((p+48)/48):(p<200)?((p+80)/56):5)+(g.study13Bindings[25]?1:0)
-			if (h===6) {h = ((Math.floor(Date.now()/5000)+0.5+Math.sin(((Date.now()%5000)-2500)*Math.PI/5000)/2)%6)}
-			if (h<1) {colors = ["rgba(51,"+(51*h)+",0,0.9)","rgba(102,"+(102*h)+",0,0.9)","rgb(204,"+(204*h)+",0)"]}
-			else if (h<2) {colors = ["rgba("+(51*(2-h))+",51,0,0.9)","rgba("+(102*(2-h))+",102,0,0.9)","rgb("+(204*(2-h))+",204,0)"]}
-			else if (h<3) {colors = ["rgba(0,51,"+(51*(h-2))+",0.9)","rgba(0,102,"+(102*(h-2))+",0.9)","rgb(0,204,"+(204*(h-2))+")"]}
-			else if (h<4) {colors = ["rgba(0,"+(51*(4-h))+",51,0.9)","rgba(0,"+(102*(4-h))+",102,0.9)","rgb(0,"+(204*(4-h))+",204)"]}
-			else if (h<5) {colors = ["rgba("+(51*(h-4))+",0,51,0.9)","rgba("+(102*(h-4))+",0,102,0.9)","rgb("+(204*(h-4))+",0,204)"]}
-			else if (h<6) {colors = ["rgba(51,0,"+(51*(6-h))+",0.9)","rgba(102,0,"+(102*(6-h))+",0.9)","rgba(204,0,"+(204*(6-h))+")"]}
+			if (h===6) h = ((Math.floor(Date.now()/5000)+0.5+Math.sin(((Date.now()%5000)-2500)*Math.PI/5000)/2)%6)
+			if (h<1) colors = ["rgba(51,"+(51*h)+",0,0.9)","rgba(102,"+(102*h)+",0,0.9)","rgb(204,"+(204*h)+",0)"]
+			else if (h<2) colors = ["rgba("+(51*(2-h))+",51,0,0.9)","rgba("+(102*(2-h))+",102,0,0.9)","rgb("+(204*(2-h))+",204,0)"]
+			else if (h<3) {colors = ["rgba(0,51,"+(51*(h-2))+",0.9)","rgba(0,102,"+(102*(h-2))+",0.9)","rgb(0,204,"+(204*(h-2))+")"]
+			else if (h<4) {colors = ["rgba(0,"+(51*(4-h))+",51,0.9)","rgba(0,"+(102*(4-h))+",102,0.9)","rgb(0,"+(204*(4-h))+",204)"]
+			else if (h<5) {colors = ["rgba("+(51*(h-4))+",0,51,0.9)","rgba("+(102*(h-4))+",0,102,0.9)","rgb("+(204*(h-4))+",0,204)"]
+			else if (h<6) {colors = ["rgba(51,0,"+(51*(6-h))+",0.9)","rgba(102,0,"+(102*(6-h))+",0.9)","rgba(204,0,"+(204*(6-h))+")"]
 			d.element("div_study13").style["border-color"] = colors[0]
 			d.element("div_study13").style["background-color"] = colors[1]
 			d.element("div_study13").style["color"] = colors[2]
@@ -787,7 +787,7 @@ function updateHTML() {
 					let data = study13.bindings[selections.study13Binding]
 					d.innerHTML("study13BindingInfo",(study13.bindingPower(selections.study13Binding).eq(c.d1)?"":("<span style=\"float:right;font-size:50%\">"+study13.bindingPower(selections.study13Binding).mul(c.e2).noLeadFormat(3)+"% Powered</span><br>"))+"<h6 style=\"font-size:16px;margin:0px;\">Binding "+selections.study13Binding+"</h6><p>"+data.description()+"</p><p>["+data.lv+" binding level"+((data.lv===1)?"":"s")+"]</p>"+((g.study13ShowParentBindings&&(data.adjacent_req.length>0))?("<p>[Need Binding"+((data.adjacent_req.length===1)?"":"s")+" "+data.adjacent_req.joinWithAnd()+"]</p>"):"")+"<p>"+(g.study13Bindings[selections.study13Binding]?"<span style=\"color:#ff6666\">(Active)</span>":"<span style=\"color:#999999\">(Inactive)</span>")+"</p>")
 				}
-				for (let i of [236,265,275]) {d.innerHTML("button_study13Binding"+i,study13.bindings[i].icon)}
+				for (let i of [236,265,275]) d.innerHTML("button_study13Binding"+i,study13.bindings[i].icon)
 				d.display("button_study13Binding25",g.achievement[913]?"inline-block":"none")
 			} else if (study13.activeT3==="rewards") {
 				if (study13.rewardSelected===undefined) {
@@ -848,7 +848,7 @@ function tick(time) {																																		 // The game loop, which 
 
 	
 	// Dilation section
-	if (g.dilationUpgradesUnlocked<4) if (stat.tickspeed.gte(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
+	if (g.dilationUpgradesUnlocked<4 && stat.tickspeed.gte(dilationUpgrades[g.dilationUpgradesUnlocked+1].tickspeedNeeded)) unlockDilationUpgrade()
 
 
 	// Mastery section
@@ -868,7 +868,7 @@ function tick(time) {																																		 // The game loop, which 
 	if (Decimal.gt(stat.tickspeed,g.bestTickspeed)) {g.bestTickspeed = stat.tickspeed}
 	if (g.baselessMilestones[4]!==13) {
 		milestoneLoop: for (let i=0;i<5;i++) {
-			if ((g.activeStudy!==13)||(studyPower(13)<[24,56,96,144,200][i])) {continue milestoneLoop}
+			if ((g.activeStudy!==13)||(studyPower(13)<[24,56,96,144,200][i])) continue milestoneLoop
 			while (g.baselessMilestones[i]<13) {
 				if (Decimal.gte(numberOfDigits(g.exoticmatter),achievement(921+i).nextMilestone(g.baselessMilestones[i]))) {g.baselessMilestones[i]++} else {continue milestoneLoop}
 			}
@@ -883,11 +883,11 @@ function tick(time) {																																		 // The game loop, which 
 	
 	
 	// Dark Matter section
-	if (StudyE(12)||study13.bound(275)) {g.study12.fortitude = studies[12].fortitude.lim(studies[12].fortitude.invlim(g.study12.fortitude,studies[12].fortitude.max()).add(studies[12].fortitude.gain().mul(time)),studies[12].fortitude.max())}
+	if (StudyE(12)||study13.bound(275)) g.study12.fortitude = studies[12].fortitude.lim(studies[12].fortitude.invlim(g.study12.fortitude,studies[12].fortitude.max()).add(studies[12].fortitude.gain().mul(time)),studies[12].fortitude.max())
 
 
 	// Research section
-	g.totalDiscoveries=discoveriesFromKnowledge().floor().max(g.totalDiscoveries).fix(c.d0);
+	g.totalDiscoveries = =discoveriesFromKnowledge().floor().max(g.totalDiscoveries).fix(c.d0);
 
 
 	// Study section
@@ -908,7 +908,7 @@ function tick(time) {																																		 // The game loop, which 
 
 	// Incrementer section - this comes last because otherwise resets don't work properly
 	for (let i=0;i<energyTypes.length;i++) {   // energy comes first to make Study III harder :D
-		if (energyTypesUnlocked()>i) {o.mul(energyTypes[i]+"Energy",energyPerSec(i).pow(time));}
+		if (energyTypesUnlocked()>i) o.mul(energyTypes[i]+"Energy",energyPerSec(i).pow(time));
 		else {g[energyTypes[i]+"Energy"]=c.d1;}
 	}
 	incrementExoticMatter(stat.exoticmatterPerSec.mul(time));
@@ -919,7 +919,7 @@ function tick(time) {																																		 // The game loop, which 
 	}
 	if ((achievement.ownedInTier(5)===30)&&(g.activeStudy===0)) incrementStardust(stat.pendingstardust.sub(g.stardust).max(c.d0));
 	incrementStardust(stat.stardustPerSec.mul(time));
-	if (g.stardustUpgrades[4]>0) {incrementDarkMatter(stat.darkmatterPerSec.mul(time))};
+	if (g.stardustUpgrades[4]>0) incrementDarkMatter(stat.darkmatterPerSec.mul(time));
 	if (unlocked("Hawking Radiation")) o.add("knowledge",stat.knowledgePerSec.mul(time));
 	let chromaToGet = stat.chromaPerSec.mul(time)
 	if (g.achievement[815]&&g.ach815RewardActive) {
@@ -934,7 +934,7 @@ function tick(time) {																																		 // The game loop, which 
 		g.study9.xp = g.study9.xp.add(g.study9.fracxp.floor())
 		g.study9.fracxp = g.study9.fracxp.sub(g.study9.fracxp.floor())
 	}
-	if (g.studyCompletions[9]>0) {incrementAntimatter(stat.antimatterPerSec.mul(time))}
+	if (g.studyCompletions[9]>0) incrementAntimatter(stat.antimatterPerSec.mul(time))
 
 
 	// Automation section
@@ -951,26 +951,29 @@ function tick(time) {																																		 // The game loop, which 
 	}
 	if (achievement.ownedInTier(5)>=3 && g.stardustUpgradeAutobuyerOn) stardustUpgradeAutobuyerProgress+=time/autobuyerMeta.interval("stardustUpgrade");
 	if (stardustUpgradeAutobuyerProgress > 1) {
-		for (let i=1;i<=g.stardustUpgrades.length;i++) while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]==="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))&&(!((((achievement.maxForLocks.specificStardustUpgrades[g.achOnProgressBar]?.[i]??Infinity)===g.stardustUpgrades[i-1])||((achievement.maxForLocks.totalStardustUpgrades[g.achOnProgressBar]??Infinity)===effectiveStardustUpgrades()))&&achievement.locking(g.achOnProgressBar)))) buyStardustUpgrade(i)
+		for (let i=1;i<=g.stardustUpgrades.length;i++)
+			while ((g.stardustUpgrades[i-1]<(g.stardustUpgradeAutobuyerCaps[i-1]==="u"?stat["stardustUpgrade"+i+"Cap"]:Math.min(stat["stardustUpgrade"+i+"Cap"],g.stardustUpgradeAutobuyerCaps[i-1])))&&(g.stardust.gte(stat["stardustUpgrade"+i+"Cost"]))&&(!((((achievement.maxForLocks.specificStardustUpgrades[g.achOnProgressBar]?.[i]??Infinity)===g.stardustUpgrades[i-1])||((achievement.maxForLocks.totalStardustUpgrades[g.achOnProgressBar]??Infinity)===effectiveStardustUpgrades()))&&achievement.locking(g.achOnProgressBar)))) buyStardustUpgrade(i)
 		stardustUpgradeAutobuyerProgress%=1;
 	}
 	if (achievement.ownedInTier(5)>=4 && (g.starAutobuyerOn || g.starAllocatorOn)) starAutobuyerProgress+=time/autobuyerMeta.interval("star");
 	if (starAutobuyerProgress > 1) {
-		if (g.starAutobuyerOn) {while (starCost().lt(g.stardust)&&(g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap)))&&(!((g.stars===achievement.maxForLocks.stars[g.achOnProgressBar])&&achievement.locking(g.achOnProgressBar)))) buyStar(false);}
+		if (g.starAutobuyerOn)
+			while (starCost().lt(g.stardust)&&(g.stars<(g.starAutobuyerCap==="u"?Infinity:Number(g.starAutobuyerCap)))&&(!((g.stars===achievement.maxForLocks.stars[g.achOnProgressBar])&&achievement.locking(g.achOnProgressBar))))
+				buyStar(false);
 		if (unspentStars()>0&&g.starAllocatorOn&&(totalStars<g.starAllocatorBuild.length)) for (let i of g.starAllocatorBuild) buyStarUpgrade(i);
 		starAutobuyerProgress%=1;
 	}
 	if (achievement.ownedInTier(5)>=8 && g.stardustAutomatorOn) {
 		let doReset = false;
 		let mode = g.stardustAutomatorMode
-		if (mode === 0) {doReset = stat.pendingstardust.gte(g.stardustAutomatorValue)} // at X stardust
-		else if (mode === 1) {doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue)} // at X seconds
-		else if (mode === 2) {doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue))} // multiply current stardust by X
-		else if (mode === 3) {doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue))} // power current stardust by X
-		else if (mode === 4) {doReset = stat.pendingstardust.gte((g.previousStardustRuns.last10.length===0)?c.d0:N(g.previousStardustRuns.last10[0].gain).mul(g.stardustAutomatorValue))} // multiply previous stardust by X
-		else if (mode === 5) {doReset = stat.pendingstardust.gte((g.previousStardustRuns.last10.length===0)?c.d0:N(g.previousStardustRuns.last10[0].gain).pow(g.stardustAutomatorValue))} // power previous stardust by X
+		if (mode === 0) doReset = stat.pendingstardust.gte(g.stardustAutomatorValue) // at X stardust
+		else if (mode === 1) doReset = g.timeThisStardustReset>=Number(g.stardustAutomatorValue) // at X seconds
+		else if (mode === 2) doReset = stat.pendingstardust.gte(g.stardust.mul(g.stardustAutomatorValue)) // multiply current stardust by X
+		else if (mode === 3) doReset = stat.pendingstardust.gte(g.stardust.pow(g.stardustAutomatorValue)) // power current stardust by X
+		else if (mode === 4) doReset = stat.pendingstardust.gte((g.previousStardustRuns.last10.length===0)?c.d0:N(g.previousStardustRuns.last10[0].gain).mul(g.stardustAutomatorValue)) // multiply previous stardust by X
+		else if (mode === 5) doReset = stat.pendingstardust.gte((g.previousStardustRuns.last10.length===0)?c.d0:N(g.previousStardustRuns.last10[0].gain).pow(g.stardustAutomatorValue)) // power previous stardust by X
 		else {
-			if (achievement.ownedInTier(5)>=8) {popup({text:"Due to an error, stardust automator mode was reverted to the default value of amount of stardust."})}
+			if (achievement.ownedInTier(5)>=8) popup({text:"Due to an error, stardust automator mode was reverted to the default value of amount of stardust."})
 			g.stardustAutomatorMode = 0
 		}
 		if (doReset) attemptStardustReset(false);
@@ -979,12 +982,12 @@ function tick(time) {																																		 // The game loop, which 
 	if (achievement.ownedInTier(5)>=12 && g.wormholeAutomatorOn) {
 		let doReset = false;
 		let mode = g.wormholeAutomatorMode
-		if (mode === 0) {doReset = stat.pendinghr.gte(g.wormholeAutomatorValue)} // at X HR
-		else if (mode === 1) {doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue)} // at X seconds
-		else if (mode === 2) {doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue))} // multiply HR by X
-		else if (mode === 3) {doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue))} // power HR by X
-		else if (mode === 4) {doReset = stat.pendinghr.gte((g.previousWormholeRuns.last10.length===0)?c.d0:N(g.previousWormholeRuns.last10[0].gain).mul(g.wormholeAutomatorValue))} // multiply previous HR by X
-		else if (mode === 5) {doReset = stat.pendinghr.gte((g.previousWormholeRuns.last10.length===0)?c.d0:N(g.previousWormholeRuns.last10[0].gain).pow(g.wormholeAutomatorValue))} // power previous HR by X
+		if (mode === 0) doReset = stat.pendinghr.gte(g.wormholeAutomatorValue) // at X HR
+		else if (mode === 1) doReset = g.timeThisWormholeReset>=Number(g.wormholeAutomatorValue) // at X seconds
+		else if (mode === 2) doReset = stat.pendinghr.gte(g.hawkingradiation.mul(g.wormholeAutomatorValue)) // multiply HR by X
+		else if (mode === 3) doReset = stat.pendinghr.gte(g.hawkingradiation.pow(g.wormholeAutomatorValue)) // power HR by X
+		else if (mode === 4) doReset = stat.pendinghr.gte((g.previousWormholeRuns.last10.length===0)?c.d0:N(g.previousWormholeRuns.last10[0].gain).mul(g.wormholeAutomatorValue)) // multiply previous HR by X
+		else if (mode === 5) doReset = stat.pendinghr.gte((g.previousWormholeRuns.last10.length===0)?c.d0:N(g.previousWormholeRuns.last10[0].gain).pow(g.wormholeAutomatorValue)) // power previous HR by X
 		else {
 			if (achievement.ownedInTier(5)>=12) {popup({text:"Due to an error, wormhole automator mode was reverted to the default value of amount of HR."})}
 			g.wormholeAutomatorMode = 0
@@ -1006,7 +1009,7 @@ function tick(time) {																																		 // The game loop, which 
 					updateBuyableResearch()
 					bought=true
 				}
-			} else {g.researchAutobuyerMode=0} // error detection
+			} else g.researchAutobuyerMode=0 // error detection
 			if (bought) {updateResearchTree();generateResearchCanvas()}
 		}
 		researchAutobuyerProgress%=1;
