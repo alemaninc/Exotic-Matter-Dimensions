@@ -92,7 +92,7 @@ const classes = ["E","E+","D/E","D-","D","D+","C/D","C-","C","C+","B/C","B-","B"
 function classToScore(x){
 	if (x==="Ω"){return Infinity}
 	let pos = classes.indexOf(x)
-	return Math.exp(pos/Math.E)
+	return Math.exp(pos)-1
 }
 function overallClass(arr) {
 	if (arr.length===0) {return "F"}
@@ -114,6 +114,7 @@ function news(id,txt,lv,grd) {return {text:"#"+id+" \""+txt+"\"",EMDLevel:lv,cla
 function person(name){return "<button style=\"background-color:#000000;border-style:solid;border-width:1px;border-radius:10px;border-color:"+contributorColor(name)+";color:"+contributorColor(name)+";height:20px;\" onClick=\"showContributions('"+name+"')\">"+name+"</button>"}
 const contributions = {
 	// ![A-Z]
+	"Ʀ":{}
 	"10mart10":{
 		"Disinsection Crew":[
 			{text:"Pointed out Study V breaking the game",EMDLevel:6,class:"B/C"},
