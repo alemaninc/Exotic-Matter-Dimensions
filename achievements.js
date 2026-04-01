@@ -121,7 +121,7 @@ achievement.maxForLocks = {
 	},
 	stars:{
 		516:0,
-		528:0,
+		528:40,
 		609:0,
 		707:0,
 		get 711(){return Math.min(39-achievement(711).milestones(),40)},
