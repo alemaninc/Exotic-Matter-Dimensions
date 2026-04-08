@@ -1242,7 +1242,8 @@ const achievementList = {
 		614:{
 			name:"Redstone Clock",
 			description:"Have each of the last 10 Wormhole resets be less than or equal to 1 second long",
-			check:function(){return (g.previousWormholeRuns.last10.length===10)&&(!g.previousWormholeRuns.last10.map(x=>x.time<=1).includes(false))},
+			check:function(){return (g.previousWormholeRuns.last10.length==10)&&(!g.previousWormholeRuns.last10.map(x=>parseFloat(x.time.toFixed(14))<=1.0).includes(false))},
+			/* check the float down to e-14, allowing up to 10 femtoseconds of buffer, making it less "nitpicky" */
 			prevReq:[510],
 			event:"wormholeResetAfter",
 			progress:function(){return (g.previousWormholeRuns.last10.length===10)?{percent:achievement.percent(N(this.time()),c.d1,x=>x.recip()),text:"Slowest run is "+timeFormat(this.time())}:("Do 10 Wormhole resets first (currently: "+g.previousWormholeRuns.last10.length+")")},
