@@ -1405,8 +1405,12 @@ function buyStar(manual=false) {
 	}
 }
 function affordableStars(gal=g.galaxies) {
-	for (let i=59;i>=0;i--) if (starCost(i,gal).lt(g.stardust)) {return i+1}
-	return 0
+	for (let i=0; i < 60; i++) {
+		if (starCost(i,gal).gt(g.stardust)) {
+			return i;
+		}
+	}
+	return 60;
 }
 function tryBuyStarUpgrade(x) {
 	if (g.confirmations.doubleClickToBuy&&(g.starContainerStyle==="Modern")) {
