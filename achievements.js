@@ -1283,7 +1283,7 @@ const achievementList = {
 			progress:function(){return "Not Completed!"},
 			get reward(){return "The first 40 stars cost less (-^0.01 per star below 40, currently: ^"+this.realEffect().noLeadFormat(4)+")"},
 			realEffect:function(){return Decimal.FC_NN(1,0,1-0.01*Math.max(0,40-g.stars))},
-			flavor:"Did you know you can play <i>Exotic Matter Dimensions</i> on <a href=\"https://galaxy.click/play/129\" target=\"_blank\">galaxy.click</a>? Try it!"
+			flavor:"Did you know <i>Exotic Matter Dimensions</i> used to be playable on <a href=\"about:blank\" target=\"_blank\">galaxy.click</a>?"
 		},
 		702:{
 			name:"Double Galaxy",
@@ -1292,7 +1292,7 @@ const achievementList = {
 			event:"galaxyGain",
 			progress:function(){return achievement.percent(N(g.galaxies),c.d2,0)},
 			get reward(){return "The star cost is divided by {} per star, per star (based on time in the current Wormhole) (current total: "+this.effect().pow(g.stars**2).format(2)+")"},
-			flavor:"Did you know you can also play <i>Exotic Matter Dimensions</i> on <a href=\"https://alemaninc.github.io/Exotic-Matter-Dimensions/\" target=\"_blank\">alemaninc.github.io</a>? Try that too!",
+			flavor:"Did you know you can still play <i>Exotic Matter Dimensions</i> on <a href=\"https://alemaninc.github.io/Exotic-Matter-Dimensions/\" target=\"_blank\">alemaninc.github.io</a>? Try that too!",
 			effect:function(){return g.truetimeThisWormholeReset.div(c.e7).add(c.d1).pow(c.e2)},
 			effectFormat:x=>x.formatFrom1(3),
 			formulaText:()=>"(1 + t ÷ "+c.e7.format()+")<sup>100</sup>"
