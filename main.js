@@ -1972,7 +1972,7 @@ function wormholeReset(showPopups=false) {
 	}
 	if (g.activeStudy!==0) {
 		if (stat.totalDarkAxis.gte(studies[g.activeStudy].goal())) {
-			g.studyCompletions[g.activeStudy] = (g.activeStudy===13)?Math.max(studyPower(13),g.studyCompletions[13]):Math.min(studyPower(g.activeStudy)+1,4); // study X proof - no completions from doing Stellar Triad 4 times!
+			g.studyCompletions[g.activeStudy] = (g.activeStudy===13)?Math.max(studyPower(13),g.studyCompletions[13]):Math.min(Math.max(studyPower(g.activeStudy)+1, g.studyCompletions[g.activeStudy]), 4); // study X proof - no completions from doing Stellar Triad 4 times!
 			if (g.activeStudy===13) {
 				study13.updateRewardLevels()
 			} else {
