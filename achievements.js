@@ -1075,7 +1075,7 @@ const achievementList = {
 			name:"Big Bang",
 			description:"Bulk buy 4,800 normal axis at once",
 			check:function(){return unlocked("Hawking Radiation");},	 // checked locally by axis-buying function, but no spoilers
-			progress:function(){return achievement.percent(axisCodes.map(x => maxAffordableAxis(x)).reduce((x,y)=>x.add(y)).sub(stat.totalNormalAxis),c.d4800,0);},
+			progress:function(){return achievement.percent(axisCodes.slice(0, stat.axisUnlocked).map(x => maxAffordableAxis(x)).reduce((x,y)=>x.add(y)).sub(stat.totalNormalAxis),c.d4800,0);},
 			reward:"Dark axis cost scaling is 1% weaker",
 			flavor:"Did God create man or did man create God?"
 		}
