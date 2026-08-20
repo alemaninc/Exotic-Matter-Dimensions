@@ -59,7 +59,7 @@ function updateHTML() {
 				d.innerHTML("span_exoticmatter_disabledTop",g.exoticmatter.format())
 				d.innerHTML("span_exoticmatterPerSec_disabledTop",stat.exoticmatterPerSec.noLeadFormat(2))
 			}
-			d.innerHTML("span_affordableAxis",axisCodes.slice(0,g.stardustUpgrades[0]+4).map(x=>maxAffordableAxis(x).sub(g[x+"Axis"]).max(c.d0)).sumDecimals().format())
+			d.innerHTML("span_affordableAxis",axisCodes.slice(0,stat.axisUnlocked).map(x=>maxAffordableAxis(x).sub(g[x+"Axis"]).max(c.d0)).sumDecimals().format())
 			for (let i=0;i<12;i++) {
 				let type = axisCodes[i];
 				d.display("button_"+type+"Axis",(stat.axisUnlocked>i)?"inline-block":"none");
